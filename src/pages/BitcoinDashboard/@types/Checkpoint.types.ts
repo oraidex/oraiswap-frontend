@@ -48,25 +48,25 @@ export interface SigsetInterface {
 }
 
 export interface TransactionInput {
-  previous_output: String;
-  script_sig: String;
+  previous_output: string;
+  script_sig: string;
   sequence: number;
-  witness: String[];
+  witness: string[];
 }
 
 export interface TransactionParsedInput {
-  txid: String;
+  txid: string;
   vout: number;
 }
 
 export interface TransactionOutput {
-  script_pubkey: String;
+  script_pubkey: string;
   value: number;
 }
 
 export interface TransactionParsedOutput {
-  txid: String;
-  address: String;
+  txid: string;
+  address: string;
   value: number;
 }
 
@@ -89,7 +89,7 @@ export interface CheckpointData {
   sigset: SigsetInterface;
   status: CheckpointStatus;
   transaction: {
-    hash: String;
+    hash: string;
     data: TransactionData;
   };
 }
@@ -101,7 +101,7 @@ export interface CheckpointParsedData {
   sigset: SigsetInterface;
   status: CheckpointStatus;
   transaction: {
-    hash: String;
+    hash: string;
     data: TransactionParsedData;
   };
 }

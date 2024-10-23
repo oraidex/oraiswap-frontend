@@ -16,6 +16,8 @@ import useTheme from 'hooks/useTheme';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.scss';
+import Lottie from 'lottie-react';
+import PoolV3Lottie from 'assets/lottie/poolv3-beta.json';
 
 const Sidebar: React.FC<{}> = React.memo(() => {
   const location = useLocation();
@@ -84,12 +86,11 @@ const Sidebar: React.FC<{}> = React.memo(() => {
         {icon}
         <span className={classNames(styles.menu_item_text, { [styles.active]: link === to }, styles[theme])}>
           {title}
-
-          {/* {to === `/pools/v3` && (
+          {to === `/bitcoin-dashboard-v2` && (
             <span className={classNames(styles.suffix)}>
               <Lottie animationData={PoolV3Lottie} autoPlay={open} loop />
             </span>
-          )} */}
+          )}
         </span>
       </Link>
     );
@@ -109,6 +110,7 @@ const Sidebar: React.FC<{}> = React.memo(() => {
             {renderLink('/staking', 'Staking', setLink, <StakingIcon />)}
             {renderLink('/co-harvest', 'Co-Harvest', setLink, <CohavestIcon />)}
             {renderLink('/bitcoin-dashboard', 'BTC Dashboard', setLink, <BtcDashboardIcon />)}
+            {renderLink('/bitcoin-dashboard-v2', 'BTC V2', setLink, <BtcDashboardIcon />)}
             {!isBeta && renderLink('https://beta.oraidex.io', 'OraiDEX Beta', setLink, <OraidexBetaIcon />, true)}
           </div>
         </div>

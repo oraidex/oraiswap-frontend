@@ -19,6 +19,9 @@ import dayjs from 'dayjs';
 import { isNumber } from 'lodash';
 import { FC, memo } from 'react';
 import styles from './index.module.scss';
+import { isMobile } from '@walletconnect/browser-utils';
+import cn from 'classnames/bind';
+import { format, formatDefaultLocale } from '@visx/vendor/d3-format';
 
 export const theme = {
   colors: {
@@ -104,8 +107,8 @@ export const theme = {
     black: 'black',
     inherit: 'inherit',
     barFill: '#373F31',
-    chartGradientPrimary: '#AEE67F',
-    chartGradientSecondary: '#AEE67F',
+    chartGradientPrimary: 'rgba(174, 230, 127, 0.3)',
+    chartGradientSecondary: 'rgba(174, 230, 127, 0)',
     yourBalanceActionButton: '#2A2553'
   },
   fontSize: {
@@ -321,6 +324,14 @@ export const theme = {
   }
 };
 
+const yAxisFormatter = (value) => {
+  if (value < 1) {
+    return format('.6~f')(value); // For values less than 1, use two decimals without SI-prefix
+  } else {
+    return format('~s')(value); // For values >= 1, use SI-prefix with two decimals
+  }
+};
+
 const HistoricalPriceChart: FC<{
   data: { close: number; time: number }[];
   margin?: Partial<Margin>;
@@ -342,6 +353,7 @@ const HistoricalPriceChart: FC<{
    */
   showTooltip?: boolean;
   fiatSymbol?: string;
+  extendLeft: number;
 }> = memo(
   ({
     data,
@@ -351,18 +363,20 @@ const HistoricalPriceChart: FC<{
     onPointerOut,
     showGradient = true,
     minimal = false,
-    xNumTicks = 4,
+    xNumTicks = 3,
     showTooltip = false,
-    fiatSymbol
+    fiatSymbol,
+    extendLeft = 0
   }) => (
     <ParentSize className={styles.parentSize}>
       {({ height, width }) => {
-        // const maxHeight = 340;
-        // const customHeight = Math.min(height, maxHeight);
-
         return (
           <XYChart
-            margin={minimal ? { top: 0, right: 0, bottom: 24, left: 0 } : { top: 0, right: 0, bottom: 24, left: 36 }}
+            margin={
+              minimal
+                ? { top: 0, right: 0, bottom: 24, left: 0 }
+                : { top: 0, right: 0, bottom: 24, left: 20 + extendLeft }
+            }
             height={height}
             width={width}
             xScale={{
@@ -385,18 +399,17 @@ const HistoricalPriceChart: FC<{
             }}
             theme={buildChartTheme({
               backgroundColor: 'transparent',
-              colors: showGradient ? [theme.colors.wosmongton['300']] : ['white'],
-              gridColor: theme.colors.osmoverse['600'],
-              gridColorDark: theme.colors.osmoverse['300'],
+              colors: ['#A6BE93'],
+              gridColor: '#232521',
+              gridColorDark: '#232521',
               svgLabelSmall: {
                 fill: '#979995',
-                fontSize: 12,
-                fontWeight: 500
+                fontSize: 9,
+                fontWeight: 400
               },
               svgLabelBig: {
-                fill: '#979995',
-                fontSize: 12,
-                fontWeight: 500
+                fontSize: 9,
+                fontWeight: 400
               },
               tickLength: 1,
               xAxisLineStyles: {
@@ -411,8 +424,8 @@ const HistoricalPriceChart: FC<{
             })}
           >
             <AnimatedAxis orientation="bottom" numTicks={xNumTicks} hideTicks={minimal} hideZero={minimal} />
-            {!minimal && <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />}
-            {!minimal && <AnimatedGrid columns={false} numTicks={5} />}
+            {!minimal && <AnimatedAxis orientation="left" numTicks={7} strokeWidth={0} tickFormat={yAxisFormatter} />}
+            {!minimal && <AnimatedGrid columns={false} numTicks={7} />}
 
             {showGradient ? (
               <>
@@ -447,23 +460,38 @@ const HistoricalPriceChart: FC<{
                 stroke={theme.colors.wosmongton['200']}
               />
             )}
-            {annotations.map((dec, i) => (
-              <Annotation
-                key={`historical-${i}`}
-                dataKey="depth"
-                xAccessor={(d: { close: number; time: number }) => d.time}
-                yAccessor={(d: { close: number; time: number }) => d.close}
-                datum={{ close: Number(dec.toString()), time: 0 }}
-              >
-                <AnnotationConnector />
-                <AnnotationLineSubject
-                  orientation="horizontal"
-                  stroke={theme.colors.wosmongton['500']}
-                  strokeWidth={2}
-                  strokeDasharray={4}
-                />
-              </Annotation>
-            ))}
+
+            <Annotation
+              key={`historical-1`}
+              dataKey="depth"
+              xAccessor={(d: { close: number; time: number }) => d.time}
+              yAccessor={(d: { close: number; time: number }) => d.close}
+              datum={{ close: Number(annotations[0].toString()), time: 0 }}
+            >
+              <AnnotationConnector />
+              <AnnotationLineSubject
+                orientation="horizontal"
+                stroke={'#0ECB81'}
+                strokeWidth={2}
+                // strokeDasharray={4}
+              />
+            </Annotation>
+            <Annotation
+              key={`historical-2`}
+              dataKey="depth"
+              xAccessor={(d: { close: number; time: number }) => d.time}
+              yAccessor={(d: { close: number; time: number }) => d.close}
+              datum={{ close: Number(annotations[1].toString()), time: 0 }}
+            >
+              <AnnotationConnector />
+              <AnnotationLineSubject
+                orientation="horizontal"
+                stroke={'#FFF27A'}
+                strokeWidth={2}
+                // strokeDasharray={4}
+              />
+            </Annotation>
+
             <Tooltip
               detectBounds
               showDatumGlyph
@@ -481,13 +509,35 @@ const HistoricalPriceChart: FC<{
               }}
               showVerticalCrosshair={true}
               renderTooltip={({ tooltipData }: any) => {
-                return (
-                  <div
-                    style={{
-                      visibility: 'hidden'
-                    }}
-                  ></div>
-                );
+                const close = tooltipData?.nearestDatum?.datum?.close;
+                const time = tooltipData?.nearestDatum?.datum?.time;
+
+                if (time && close) {
+                  const date = dayjs(time).format('MMM DD, hh:mma');
+                  const minimumDecimals = 2;
+                  const maxDecimals = Math.max(getDecimalCount(close), minimumDecimals);
+
+                  const closeDec = new Dec(close);
+
+                  const formatOpts = getPriceExtendedFormatOptions(closeDec);
+
+                  return (
+                    <div className={styles.toolTipWrapper}>
+                      <h6>
+                        {fiatSymbol}
+                        {formatPretty(closeDec, {
+                          maxDecimals,
+                          ...formatOpts
+                        }) || ''}
+                      </h6>
+
+                      <p>{date}</p>
+                    </div>
+                    // <div></div>
+                  );
+                }
+
+                return <div></div>;
               }}
             />
           </XYChart>
@@ -579,7 +629,7 @@ export function formatPretty(
 
 function decFormatter(dec: Dec, opts: FormatOptionsWithDefaults = DEFAULT): string {
   const options: Intl.NumberFormatOptions = {
-    maximumSignificantDigits: 3,
+    maximumSignificantDigits: 2,
     notation: 'compact',
     compactDisplay: 'short',
     ...opts
@@ -646,7 +696,7 @@ export function getNumberMagnitude(val: string | number) {
 
 function priceFormatter(price: PricePretty, opts: FormatOptionsWithDefaults = DEFAULT): string {
   const options: Intl.NumberFormatOptions = {
-    maximumSignificantDigits: 3,
+    maximumSignificantDigits: 2,
     notation: 'compact',
     compactDisplay: 'short',
     style: 'currency',

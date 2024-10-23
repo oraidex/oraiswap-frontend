@@ -288,10 +288,10 @@ async function loadBtcEntries(
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
-    const nativeBtc = btcTokens.find((t) => chain.chainId === t.chainId);
+    const nativeBtcs = btcTokens.filter((t) => chain.chainId === t.chainId);
 
     const nativeBalance = await loadNativeBtcBalance(address, chain);
-    let entries: [string, string][] = [[nativeBtc.denom, nativeBalance.toString()]];
+    let entries: [string, string][] = nativeBtcs.map((item) => [item.denom, nativeBalance.toString()]);
     return entries;
   } catch (error) {
     console.log('error querying BTC balance: ', error);

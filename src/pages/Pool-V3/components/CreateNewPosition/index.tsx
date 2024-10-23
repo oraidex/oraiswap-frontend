@@ -2,18 +2,17 @@ import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/Oraiswap
 import { poolKeyToString } from '@oraichain/oraiswap-v3';
 import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
 import classNames from 'classnames';
-import TooltipHover from 'components/TooltipHover';
 import { oraichainTokens } from '@oraichain/oraidex-common';
 import { getIcon } from 'helper';
 import useTheme from 'hooks/useTheme';
 import { useRef, useState } from 'react';
-import CreatePositionFormNew from '../CreatePositionFormNew';
 import styles from './index.module.scss';
 import cn from 'classnames/bind';
-import { reduceString } from 'libs/utils';
 import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import { useDispatch } from 'react-redux';
+import { setToDefault } from 'reducer/poolDetailV3';
 import CreatePositionForm from '../CreatePositionForm';
 
 const cx = cn.bind(styles);
@@ -31,6 +30,7 @@ const CreateNewPosition = ({
   showModal?: boolean;
   setShowModal?: (isModal: boolean) => void;
 }) => {
+  const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [slippage, setSlippage] = useState(1);
   const refContent = useRef();
@@ -40,6 +40,7 @@ const CreateNewPosition = ({
 
   const onCloseModal = () => {
     setShowModal(false);
+    dispatch(setToDefault());
   };
 
   const tokenFrom = oraichainTokens.find((e) => extractAddress(e) === pool.pool_key.token_x);
@@ -75,42 +76,45 @@ const CreateNewPosition = ({
       <div className={classNames(styles.modalWrapper, { [styles.activeModal]: showModal })}>
         <div className={styles.contentWrapper} ref={refContent}>
           <div className={styles.header}>
-            <div>
+            <div className={styles.poolInfoWrapper}>
               <div className={classNames(styles.icons, styles[theme])}>
-                {TokenFromIcon}
-                {TokenToIcon}
+                <div className={styles.tokenIcon}>
+                  {TokenFromIcon}
+                  {TokenToIcon}
+                </div>
+                <span className={styles.pairName}>
+                  {tokenFrom.name} / {tokenTo.name}
+                </span>
+                {/* <TooltipHover
+                  setIsVisible={setIsVisible}
+                  isVisible={isVisible}
+                  content={
+                    <div>
+                      <div className={classNames(styles.infoPool, styles[theme])}>
+                        <div className={classNames(styles.infoPoolName)}>
+                          {tokenFrom.name} / {tokenTo.name}
+                          <span>v3</span>
+                        </div>
+                        <div className={styles.infoPoolfee}>
+                          <span>Fee: {Number(pool.pool_key.fee_tier.fee) / 10 ** 10}%</span>
+                        </div>
+                        <div className={styles.infoPoolfee}>
+                          <span>0.01% Spread</span>
+                        </div>
+                      </div>
+                      <div className={classNames(styles.infoMarket)}>
+                        Market ID: {reduceString(poolKeyToString(pool.pool_key), 16, 20)}
+                      </div>
+                    </div>
+                  }
+                  position="bottom"
+                  children={
+                    
+                  }
+                /> */}
               </div>
-              <TooltipHover
-                setIsVisible={setIsVisible}
-                isVisible={isVisible}
-                content={
-                  <div>
-                    <div className={classNames(styles.infoPool, styles[theme])}>
-                      <div className={classNames(styles.infoPoolName)}>
-                        {tokenFrom.name} / {tokenTo.name}
-                        <span>v3</span>
-                      </div>
-                      <div className={styles.infoPoolfee}>
-                        <span>Fee: {Number(pool.pool_key.fee_tier.fee) / 10 ** 10}%</span>
-                      </div>
-                      <div className={styles.infoPoolfee}>
-                        <span>0.01% Spread</span>
-                      </div>
-                    </div>
-                    <div className={classNames(styles.infoMarket)}>
-                      Market ID: {reduceString(poolKeyToString(pool.pool_key), 16, 20)}
-                    </div>
-                  </div>
-                }
-                position="bottom"
-                children={
-                  <span>
-                    {tokenFrom.name} / {tokenTo.name}
-                  </span>
-                }
-              />
 
-              <div className={styles.feeInfo}>Fee: {Number(pool.pool_key.fee_tier.fee) / 10 ** 10}%</div>
+              <div className={styles.fee}>Fee: {Number(pool.pool_key.fee_tier.fee) / 10 ** 10}%</div>
             </div>
             <div className={styles.headerActions}>
               <div className={styles.setting}>
@@ -123,15 +127,13 @@ const CreateNewPosition = ({
             </div>
           </div>
           <CreatePositionForm
-            tokenFrom={tokenFrom}
-            tokenTo={tokenTo}
-            feeTier={pool.pool_key.fee_tier}
-            poolData={pool}
+            poolId={poolKeyToString(pool.pool_key)}
             showModal={showModal}
             slippage={slippage}
             onCloseModal={async () => {
               onCloseModal();
               await refetchPositions();
+              dispatch(setToDefault());
             }}
           />
         </div>

@@ -2,11 +2,12 @@ import { useState } from 'react';
 
 export const LIMIT_PAGE = 10;
 
-const usePagination = ({ data }) => {
+const usePagination = ({ data, search }) => {
   const [limit, _setLimit] = useState(LIMIT_PAGE);
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(data.length / limit);
-  const indexOfLastItem = page * limit;
+  let indexOfLastItem = page * limit;
+  if (search) indexOfLastItem = limit;
   const indexOfFirstItem = indexOfLastItem - limit;
 
   const handleNext = () => {

@@ -38,7 +38,10 @@ export const PendingDeposits: React.FC<{}> = ({}) => {
   const [theme] = useConfigReducer('theme');
   const mobile = isMobile();
   const [oraichainAddress] = useConfigReducer('address');
-  const fee = useRelayerFeeToken(btcTokens[0], oraichainTokens[19]);
+  const fee = useRelayerFeeToken(
+    btcTokens.find((item) => item.name === 'BTC V2'),
+    oraichainTokens.find((item) => item.name === 'BTC V2')
+  );
   const depositFee = useGetDepositFee();
   const fetchedPendingDeposits = useGetPendingDeposits(oraichainAddress);
   const checkpointQueue = useGetCheckpointQueue();
@@ -86,7 +89,6 @@ export const PendingDeposits: React.FC<{}> = ({}) => {
     if (!depositPendingUpdate) return;
     const depositPendingPopout = handlePopOutPending(depositPendingUpdate);
     if (!depositPendingPopout) return;
-    console.log(allPendingDeposits, 'allPendingDeposits');
     setAllPendingDeposits({
       ...allPendingDeposits,
       [oraichainAddress]: depositPendingPopout
@@ -160,16 +162,18 @@ export const PendingDeposits: React.FC<{}> = ({}) => {
       width: '13%',
       align: 'left',
       sortField: 'amount',
-      accessor: (data) => (
-        <span>
-          {(
-            toDisplay(BigInt(data.amount || 0), 8) -
-            fee.relayerFee -
-            toDisplay(BigInt(depositFee?.deposit_fees || 0), 14)
-          ).toFixed(6)}{' '}
-          BTC
-        </span>
-      )
+      accessor: (data) => {
+        return (
+          <span>
+            {(
+              toDisplay(BigInt(Number(data.amount).toFixed(0) || 0), 8) -
+              fee.relayerFee -
+              toDisplay(BigInt(depositFee?.deposit_fees || 0), 14)
+            ).toFixed(6)}{' '}
+            BTC
+          </span>
+        );
+      }
     },
     vout: {
       name: 'Vout',

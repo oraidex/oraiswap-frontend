@@ -23,7 +23,7 @@ export const TokenItemBtc: React.FC<TokenItemProps> = ({ onDepositBtc, isBtcOfOw
         <div className={styles.tokenItems}>
           <div>{isLightTheme ? <DepositBtcLight /> : <DepositBtcDark />}</div>
           <div className={styles.context}>
-            <p className={styles.transferBTC}>Transfer BTC to Oraichain</p>
+            <p className={styles.transferBTC}>Transfer BTC V2 to Oraichain</p>
             <p className={styles.depositFromCex}>Deposit from CEX (Binance, Coinbase, KuCoin,...)</p>
           </div>
         </div>

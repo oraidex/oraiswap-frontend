@@ -49,13 +49,13 @@
 
 .itemInput {
   display: flex;
-  padding: 16px;
+  padding: 14px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 6px;
   align-self: stretch;
   border-radius: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
 
   @include theme {
     background: theme-get('neutral-6');
@@ -223,6 +223,7 @@
 .tokenOutput {
   display: flex;
   align-items: flex-start;
+  margin-bottom: 12px;
 
   @include mobile {
     flex-direction: column;
@@ -253,7 +254,7 @@
 
       color: var(--Colors-Neutral-Text-title, #efefef);
       font-size: 18px;
-      font-weight: 500;
+      font-weight: 400;
       line-height: 150%;
       /* 27px */
 
@@ -276,8 +277,8 @@
       width: 60%;
       position: relative;
       color: var(--Colors-Neutral-Text-title, #efefef);
-      font-size: 20px;
-      font-weight: 500;
+      font-size: 18px;
+      font-weight: 400;
       line-height: 120%;
       /* 27px */
 
@@ -311,6 +312,48 @@
   }
 }
 
+.aprWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 12px;
+
+  @include theme {
+    border: 1px solid theme-get('neutral-border-border-default');
+  }
+
+
+  .title {
+    font-size: 14px;
+    font-weight: 500;
+    align-self: center;
+
+    @include theme {
+      color: theme-get('colors-neutral-text-body');
+    }
+  }
+
+  .amountWrap {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+
+    svg {
+      align-self: center;
+    }
+
+    .amount {
+      font-size: 20px;
+      font-weight: 600;
+      
+      @include theme {
+        color: theme-get('primary-1');
+      }
+    }
+  }
+}
+
 .feeInfoWrapper {
   margin-top: 16px;
   display: flex;
@@ -326,6 +369,31 @@
     background: theme-get('neutral-surface-bg-strong');
   }
 
+  .priceToken {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+
+    .ratio {
+      font-size: 14px;
+      font-weight: 500;
+
+      @include theme {
+        color: theme-get('colors-neutral-text-body-on-row');
+      }
+    }
+
+    .divide {
+      font-size: 14px;
+      font-weight: 400;
+
+      @include theme {
+        color: theme-get('colors-neutral-border-border-bold');
+      }
+    }
+  }
+
   .item {
     display: flex;
     width: 100%;
@@ -336,6 +404,18 @@
     font-size: 14px;
 
     .info {
+      span {
+        display: inline-block;
+        padding-bottom: 2px;
+
+        @include theme {
+          color: theme-get('neutral-8');
+          // border-bottom: 1px dashed theme-get('neutral-5');
+        }
+      }
+    }
+
+    .itemHasTooltip {
       span {
         display: inline-block;
         padding-bottom: 2px;

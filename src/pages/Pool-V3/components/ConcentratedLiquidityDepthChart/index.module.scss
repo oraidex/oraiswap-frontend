@@ -2,9 +2,10 @@
 @import 'src/styles/mixins';
 
 .parentSize {
-  margin-top: 0.7281rem;
+  // margin-top: 0.7281rem;
   overflow: hidden;
   flex: 1 1 0%;
+  max-width: 254px;
 
   svg {
     overflow: visible;

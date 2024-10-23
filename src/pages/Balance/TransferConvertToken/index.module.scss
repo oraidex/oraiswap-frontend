@@ -2,6 +2,16 @@
 @import 'src/styles/mixins';
 @import 'src/styles/themes';
 
+.fastMode {
+  margin-top: 8px;
+
+  .switch {
+    &::before {
+      background-color: #8363c9;
+    }
+  }
+}
+
 .transferTab {
   width: 100%;
   margin-top: 20px;

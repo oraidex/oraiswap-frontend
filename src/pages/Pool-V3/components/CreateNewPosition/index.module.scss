@@ -86,14 +86,15 @@
   .contentWrapper {
     display: flex;
     width: 100vw;
-    max-width: 1300px;
+    max-width: 1000px;
     flex-direction: column;
     align-items: flex-end;
 
-    border-radius: 16px;
+    border-radius: 20px;
 
     @include theme {
       background: theme-get('colors-neutral-surface-bg');
+      backdrop-filter: blur(4px)
     }
 
     .header {
@@ -205,50 +206,42 @@
         }
       }
 
-      div {
-        span {
-          display: inline-block;
-          margin-left: 0.5rem;
-          font-weight: 500;
-          font-size: 16px;
-          line-height: 24px;
-        }
-
-        .feeInfo {
-          height: 24px;
-          padding: 12px 8px;
-          border: 1px solid #494949;
-          border-radius: 5px;
-          margin-left: 0.5rem;
-          transform: translateY(-2px);
-
-          display: inline-block;
-          font-weight: 400;
-          font-size: 12px;
-          line-height: 0;
-        }
+      .poolInfoWrapper {
+        display: flex;
+        gap: 12px;
+        align-items: center;
 
         .icons {
-          display: inline-flex;
-          margin-top: 12px;
-          transform: translateY(4px);
+          display: flex;
 
-          img,
-          svg {
-            width: 20px;
-            height: 20px;
-            padding: 1px;
+          .tokenIcon {
+            display: flex;
+            align-self: center;
 
-            &:not(:first-of-type) {
-              margin-left: -6px;
+            svg {
+              &:not(:first-child) {
+                transform: translateX(-6px);
+              }
             }
           }
 
-          &.light {
-            img {
-              filter: invert(1);
-            }
+          .pairName {
+            font-weight: 450;
+            font-size: 15px;
           }
+        }
+
+        .fee {
+          padding: 12px 8px;
+          font-weight: 100;
+          font-size: 12px;
+          line-height: 0;
+
+          @include theme {
+            border: 1px solid theme-get('colors-neutral-border-border-bold');
+            border-radius: 6px;
+          }
+
         }
       }
     }
@@ -327,7 +320,7 @@
             background-color: theme-get('neutral-6');
           }
 
-          &>span {
+          & > span {
             svg {
               width: 32px;
               height: 32px;

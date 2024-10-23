@@ -40,7 +40,6 @@ import NumberFormat from 'react-number-format';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
 import NewPositionNoPool from '../NewPositionNoPool';
-import { PlotTickData, TickPlotPositionData } from '../PriceRangePlot/PriceRangePlot';
 import {
   calcPrice,
   calcTicksAmountInRange,
@@ -51,8 +50,10 @@ import {
   getTickAtSqrtPriceFromBalance,
   handleGetCurrentPlotTicks,
   nearestTickIndex,
+  PlotTickData,
   PositionTokenBlock,
   printBigint,
+  TickPlotPositionData,
   toMaxNumericPlaces,
   trimLeadingZeros
 } from '../PriceRangePlot/utils';

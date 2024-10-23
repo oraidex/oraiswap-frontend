@@ -1,6 +1,6 @@
 import styles from './index.module.scss';
 import { BigDecimal, CoinGeckoPrices, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
 import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
@@ -15,9 +15,11 @@ import ZappingText from 'components/Zapping';
 import { ZapInLiquidityResponse } from '@oraichain/oraiswap-v3';
 import { getIcon } from 'helper';
 import cn from 'classnames/bind';
+import { ReactComponent as LeafIcon } from 'assets/icons/leaf.svg';
 
 interface ZapInTabProps {
   tokenZap: TokenItemType;
+  apr: number;
   zapAmount: number;
   simulating: boolean;
   zapError: string;
@@ -32,14 +34,12 @@ interface ZapInTabProps {
   tokenToIcon: JSX.Element;
   zapImpactPrice: number;
   swapFee: number;
-  isVisible: boolean;
   zapFee: number;
   totalFee: number;
   matchRate: number;
-  endRef: React.MutableRefObject<any>;
-  setIsVisible: (value: boolean) => void;
+  extendedPrice: CoinGeckoPrices<string>;
   setZapAmount: (value: number) => void;
-  setFocusId: (value: string | null) => void;
+  setFocusId: (value: 'zap' | 'x' | 'y') => void;
   setTokenZap: (token: TokenItemType) => void;
 }
 
@@ -47,6 +47,7 @@ const cx = cn.bind(styles);
 
 const ZapInTab: FC<ZapInTabProps> = ({
   tokenZap,
+  apr,
   zapAmount,
   simulating,
   zapError,
@@ -61,25 +62,25 @@ const ZapInTab: FC<ZapInTabProps> = ({
   tokenToIcon,
   zapImpactPrice,
   swapFee,
-  isVisible,
   zapFee,
   totalFee,
   matchRate,
-  endRef,
-  setIsVisible,
+  extendedPrice,
   setZapAmount,
   setFocusId,
   setTokenZap
 }) => {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
   return (
+    // <div className={styles.introZap}>
+    //   <IconInfo />
+    //   <span>
+    //     Zap In: Instantly swap your chosen token for two pool tokens and provide liquidity to the pool, all in one
+    //     seamless transaction.
+    //   </span>
+    // </div>
     <>
-      <div className={styles.introZap}>
-        <IconInfo />
-        <span>
-          Zap In: Instantly swap your chosen token for two pool tokens and provide liquidity to the pool, all in one
-          seamless transaction.
-        </span>
-      </div>
       <div className={classNames(styles.itemInput, { [styles.disabled]: false })}>
         <div className={styles.balance}>
           <p className={styles.bal}>
@@ -94,7 +95,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 const val = toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals);
                 const haftValue = new BigDecimal(val).div(2).toNumber();
                 setZapAmount(haftValue);
-                setFocusId('zapper');
+                setFocusId('zap');
               }}
             >
               50%
@@ -105,7 +106,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
               onClick={() => {
                 const val = toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals);
                 setZapAmount(val);
-                setFocusId('zapper');
+                setFocusId('zap');
               }}
             >
               100%
@@ -126,7 +127,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
           {/* </div> */}
           <div className={styles.input}>
             <NumberFormat
-              onFocus={() => setFocusId('zapper')}
+              onFocus={() => setFocusId('zap')}
               onBlur={() => setFocusId(null)}
               placeholder="0"
               thousandSeparator
@@ -181,7 +182,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
             <div className={styles.item}>
               <div className={styles.info}>
                 <div className={styles.infoIcon}>{tokenFromIcon}</div>
-                <span>{tokenFrom.name}</span>
+                <span>{tokenFrom?.name}</span>
               </div>
               <div className={styles.value}>
                 {simulating && <div className={styles.mask} />}
@@ -205,7 +206,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
             <div className={styles.item}>
               <div className={styles.info}>
                 <div className={styles.infoIcon}>{tokenToIcon}</div>
-                <span>{tokenTo.name}</span>
+                <span>{tokenTo?.name}</span>
               </div>
               <div className={styles.value}>
                 {simulating && <div className={styles.mask} />}
@@ -222,7 +223,31 @@ const ZapInTab: FC<ZapInTabProps> = ({
               </div>
             </div>
           </div>
+
+          <div className={styles.aprWrapper}>
+            <p className={styles.title}>Est APR</p>
+            <div className={styles.amountWrap}>
+              <p className={styles.amount}>~{numberWithCommas(apr, undefined, { maximumFractionDigits: 2 })}%</p>
+              <LeafIcon />
+            </div>
+          </div>
+
           <div className={styles.feeInfoWrapper}>
+            <div className={styles.priceToken}>
+              <p className={styles.ratio}>
+                1 {tokenFrom.name} ≈ $
+                {extendedPrice?.[tokenFrom?.coinGeckoId]
+                  ? numberWithCommas(extendedPrice[tokenFrom.coinGeckoId], undefined, { maximumFractionDigits: 2 })
+                  : '0'}
+              </p>
+              <p className={styles.divide}>/</p>
+              <p className={styles.ratio}>
+                1 {tokenTo.name} ≈ $
+                {extendedPrice?.[tokenTo?.coinGeckoId]
+                  ? numberWithCommas(extendedPrice[tokenTo.coinGeckoId], undefined, { maximumFractionDigits: 2 })
+                  : '0'}
+              </p>
+            </div>
             <div className={styles.item}>
               <div className={styles.info}>
                 <span>Price Impact</span>
@@ -245,11 +270,11 @@ const ZapInTab: FC<ZapInTabProps> = ({
               </div>
             </div>
             <div className={styles.item}>
-              <div className={styles.info}>
+              <div className={styles.itemHasTooltip}>
                 <TooltipHover
                   isVisible={isVisible}
                   setIsVisible={setIsVisible}
-                  content={<div>The amount of token you'll swap to provide liquidity.</div>}
+                  content={<div>Protocol fee, and it's free now!</div>}
                   position="right"
                   children={<span>Zap Fee</span>}
                 />
@@ -282,7 +307,6 @@ const ZapInTab: FC<ZapInTabProps> = ({
           </div>
         </>
       )}
-      <div ref={endRef}></div>
     </>
   );
 };

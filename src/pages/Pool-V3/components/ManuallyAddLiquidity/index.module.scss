@@ -158,3 +158,45 @@
       }
     }
   }
+
+  .aprWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-radius: 12px;
+
+    @include theme {
+      border: 1px solid theme-get('neutral-border-border-default');
+    }
+
+
+    .title {
+      font-size: 14px;
+      font-weight: 500;
+      align-self: center;
+
+      @include theme {
+        color: theme-get('colors-neutral-text-body');
+      }
+    }
+
+    .amountWrap {
+      display: flex;
+      flex-direction: row;
+      gap: 6px;
+
+      svg {
+        align-self: center;
+      }
+
+      .amount {
+        font-size: 20px;
+        font-weight: 600;
+        
+        @include theme {
+          color: theme-get('primary-1');
+        }
+      }
+    }
+  }

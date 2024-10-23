@@ -11,12 +11,12 @@ import PoolDetail from 'pages/Pools/PoolDetail';
 import UniversalSwap from 'pages/UniversalSwap/index';
 import CoHarvest from 'pages/CoHarvest';
 import BitcoinDashboard from 'pages/BitcoinDashboard';
+import BitcoinDashboardV2 from 'pages/BitcoinDashboardV2';
 import StakingPage from 'pages/Staking';
 import DownloadApp from 'pages/DownloadApp';
 import SwapPoolV3 from 'pages/Pool-V3/components/Swap';
 import PositionDetail from 'pages/Pool-V3/components/PositionDetail';
 import PoolV3Detail from 'pages/Pool-V3/components/PoolDetail';
-import CreatePosition from 'pages/Pool-V3/components/CreatePosition';
 
 export default () => (
   <Suspense
@@ -38,6 +38,7 @@ export default () => (
       <Route path="/" element={<UniversalSwap />} />
       <Route path="/bridge" element={<Balance />} />
       <Route path="/bitcoin-dashboard" element={<BitcoinDashboard />} />
+      <Route path="/bitcoin-dashboard-v2" element={<BitcoinDashboardV2 />} />
       <Route path="/universalswap" element={<UniversalSwap />} />
       <Route path="/swap" element={<UniversalSwap />} />
       {/* <Route path="/pools" element={<Pools />} /> */}
@@ -45,7 +46,7 @@ export default () => (
       <Route path="/pools-v3" element={<Navigate to="/pools" replace />} />
       <Route path="/pools/v3/:poolId" element={<PoolV3Detail />} />
       <Route path="/pools/v2/:poolUrl" element={<PoolDetail />} />
-      <Route path="/new-position/:item" element={<CreatePosition />} />
+      {/* <Route path="/new-position/:item" element={<CreatePosition />} /> */}
       <Route path="/staking" element={<StakingPage />} />
       <Route path="/co-harvest" element={<CoHarvest />} />
       <Route path="/download-owallet" element={<DownloadApp />} />

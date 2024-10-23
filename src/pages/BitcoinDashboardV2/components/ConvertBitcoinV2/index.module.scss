@@ -1,0 +1,216 @@
+@import 'src/styles/mixins';
+@import 'src/styles/variables';
+@import 'src/styles/themes';
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .container {
+    display: flex;
+    padding: 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    align-self: stretch;
+
+    border-radius: 24px;
+
+    @include theme {
+      background: theme-get('neutral-6');
+    }
+
+    @include small-mobile {
+      padding: 16px;
+    }
+
+    .inputBalance {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      border-radius: 12px;
+      @include theme {
+        background: theme-get('neutral-6');
+      }
+
+      .title {
+        @include theme {
+          color: theme-get('neutral-9');
+        }
+
+        font-size: 14px;
+        font-weight: 400;
+
+        letter-spacing: 0.1px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+
+        .text {
+          @include theme {
+            color: theme-get('neutral-text-text-dropdown');
+          }
+          font-size: 16px;
+          font-weight: 500;
+
+          @include small-mobile {
+            font-size: 14px;
+          }
+        }
+
+        .info {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .balance {
+          text-align: right;
+
+          @include small-mobile {
+            font-size: 12px;
+          }
+        }
+      }
+
+      .inputWrapper {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .input {
+          display: flex;
+          height: 56px;
+          padding: 12px 16px;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          flex: 1;
+
+          font-size: 20px;
+          font-weight: 600;
+          line-height: 150%;
+          border-radius: 99px;
+
+          @include theme {
+            color: theme-get('neutral-text-text-dropdown');
+            background: theme-get('neutral-surface-bg-section-4');
+          }
+
+          input {
+            flex: 1;
+            width: 70%;
+          }
+
+          .symbol {
+            display: flex;
+            align-items: center;
+
+            svg {
+              width: 18px;
+              height: 18px;
+            }
+          }
+
+          .usd {
+            @include theme {
+              color: theme-get('neutral-9');
+            }
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.1px;
+          }
+        }
+      }
+
+      .stakeBtn {
+        button {
+          white-space: nowrap;
+
+          @include small-mobile {
+            width: 100%;
+            font-size: 14px;
+          }
+        }
+
+        &.inDesktop {
+          @include small-mobile {
+            display: none;
+          }
+        }
+
+        &.inMobile {
+          display: none;
+
+          @include small-mobile {
+            display: block;
+          }
+        }
+
+        &.unstakeMode {
+          display: flex;
+          gap: 8px;
+          margin-top: 8px;
+
+          button {
+            flex: 1;
+            padding: 12px 4px;
+          }
+        }
+      }
+
+      .coeff {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+
+        @include theme() {
+          color: theme-get('text-color');
+        }
+        text-align: center;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 150%;
+
+        .button {
+          display: flex;
+          height: 34px;
+          padding: 0px 12px 0px 20px;
+          justify-content: center;
+          align-items: center;
+          flex: 1 0 0;
+          border-radius: 99px;
+
+          @include theme() {
+            color: theme-get('neutral-text-text-dropdown');
+            background-color: theme-get('neutral-surface-bg-section-3');
+          }
+
+          @include small-mobile {
+            padding: 0px 12px 0px 12px;
+          }
+
+          &:hover {
+            @include theme() {
+              background-color: theme-get('neutral-surface-bg-section-hover');
+              opacity: 1;
+            }
+          }
+
+          &.active {
+            @include theme() {
+              color: theme-get('sea-stone-800');
+              border: 1px solid theme-get('sea-stone-800');
+              background-color: theme-get('neutral-surface-bg-section-active');
+            }
+          }
+        }
+      }
+    }
+  }
+}

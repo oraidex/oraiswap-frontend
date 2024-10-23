@@ -11,89 +11,91 @@
 
   .item {
     flex: 1;
-  }
 
-  .percent {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 1rem;
+    .percent {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 0.5rem;
 
-    @include mobile {
-      flex-direction: column;
-    }
+      @include mobile {
+        flex-direction: column;
+      }
 
-    @include theme {
-      color: theme-get('neutral-8');
-    }
+      @include theme {
+        color: theme-get('neutral-8');
+      }
 
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 150%;
-    /* 19.5px */
-    letter-spacing: 0.013px;
-
-    .value {
-      color: var(--chart-bear, #ff4d52);
       font-size: 13px;
       font-weight: 400;
       line-height: 150%;
       /* 19.5px */
       letter-spacing: 0.013px;
 
-      &.positive {
-        color: #0ecb81;
+      .value {
+        color: var(--chart-bear, #ff4d52);
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 150%;
+        /* 19.5px */
+        letter-spacing: 0.013px;
+
+        &.positive {
+          color: #0ecb81;
+        }
       }
     }
-  }
 
-  .maxCurrentPrice {
-    justify-content: end;
-  }
-
-  .minMaxPrice {
-    border-radius: 8px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-
-    @include theme {
-      background-color: theme-get('neutral-6');
+    .maxCurrentPrice {
+      justify-content: end;
     }
 
-    width: 100%;
-    padding: 12px;
+    .minMaxPrice {
+      border-radius: 8px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
 
-    .minMaxPriceTitle {
       @include theme {
-        color: theme-get('neutral-8');
+        background-color: theme-get('neutral-6');
       }
 
-      font-size: 13px;
-      text-align: end;
-      font-weight: 400;
-      line-height: 18px;
-    }
+      width: 100%;
+      padding: 9px 16px 9px 16px;
 
-    .minMaxPriceValue {
-      @include theme {
-        color: theme-get('colors-neutral-text-text-token-name');
-      }
-
-      font-size: 18px;
-      text-align: end;
-      font-weight: 600;
-      line-height: 30px;
-
-      .pair {
+      .minMaxPriceTitle {
         @include theme {
           color: theme-get('neutral-8');
         }
 
-        font-size: 12px;
+        font-size: 13px;
+        // text-align: end;
         font-weight: 400;
         line-height: 18px;
+      }
+
+      .minMaxPriceValue {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        .amount {
+          font-size: 14px;
+          font-weight: 500;
+          @include theme {
+            color: theme-get('colors-neutral-text-text-token-name');
+          }
+        }
+
+        .pair {
+          font-size: 12px;
+          font-weight: 400;
+          @include theme {
+            color: theme-get('neutral-8');
+          }
+          text-align: end;
+        }
       }
     }
   }

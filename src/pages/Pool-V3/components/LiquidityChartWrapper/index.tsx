@@ -1,11 +1,8 @@
 import { FC, useCallback, useMemo } from 'react';
 import styles from './index.module.scss';
-import { ReactComponent as RefreshIcon } from 'assets/icons/refresh-ccw.svg';
-import { ReactComponent as ZoomInIcon } from 'assets/icons/zoom-in.svg';
-import { ReactComponent as ZoomOutIcon } from 'assets/icons/zoom-out.svg';
 import { ConcentratedLiquidityDepthChart } from '../ConcentratedLiquidityDepthChart';
 import { LiquidityChartData } from 'reducer/poolDetailV3';
-import { debounce } from 'lodash';
+import { OptionType } from 'pages/Pool-V3/hooks/useCreatePositionForm';
 
 interface LiquidityChartWrapperProps {
   minPrice: number;
@@ -20,6 +17,7 @@ interface LiquidityChartWrapperProps {
   zoomIn: () => void;
   zoomOut: () => void;
   resetRange: () => void;
+  setOptionType: (option: OptionType) => void;
 }
 
 const LiquidityChartWrapper: FC<LiquidityChartWrapperProps> = ({
@@ -34,16 +32,13 @@ const LiquidityChartWrapper: FC<LiquidityChartWrapperProps> = ({
   setMinPrice,
   zoomIn,
   zoomOut,
-  resetRange
+  resetRange,
+  setOptionType
 }) => {
   return (
     <div className={styles.chartLiquid}>
       <div className={styles.chart}>
-        <div className={styles.actions}>
-          <RefreshIcon onClick={resetRange} />
-          <ZoomOutIcon onClick={zoomOut} />
-          <ZoomInIcon onClick={zoomIn} />
-        </div>
+        
         <ConcentratedLiquidityDepthChart
           min={minPrice}
           max={maxPrice}
@@ -58,32 +53,25 @@ const LiquidityChartWrapper: FC<LiquidityChartWrapperProps> = ({
             [xRange, currentPrice]
           )}
           // eslint-disable-next-line react-hooks/exhaustive-deps
-        //   onMoveMax={useCallback(
-        //     debounce((num: number) => setMaxPrice(num), 250),
-        //     []
-        //   )}
-        //   // eslint-disable-next-line react-hooks/exhaustive-deps
-        //   onMoveMin={useCallback(
-        //     debounce((num: number) => setMinPrice(num), 250),
-        //     []
-        //   )}
-        onMoveMax={() => {}}
-        onMoveMin={(val: number) => {
-            console.log("move min", val);
-        }}
-          onSubmitMin={useCallback(
-            (val: number) => {
-              console.log("submit min", val);
-              setMinPrice(val);
-            },
-            [setMinPrice]
-          )}
-          onSubmitMax={useCallback(
-            (val: number) => {
-              setMaxPrice(val);
-            },
-            [setMaxPrice]
-          )}
+          //   onMoveMax={useCallback(
+          //     debounce((num: number) => setMaxPrice(num), 2),
+          //     []
+          //   )}
+          //   // eslint-disable-next-line react-hooks/exhaustive-deps
+          //   onMoveMin={useCallback(
+          //     debounce((num: number) => setMinPrice(num), 2),
+          //     []
+          //   )}
+          onMoveMax={(val: number) => {}}
+          onMoveMin={(val: number) => {}}
+          onSubmitMin={(val: number) => {
+            setOptionType(OptionType.CUSTOM);
+            setMinPrice(val);
+          }}
+          onSubmitMax={(val: number) => {
+            setOptionType(OptionType.CUSTOM);
+            setMaxPrice(val);
+          }}
           offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
           horizontal
           fullRange={fullRange}

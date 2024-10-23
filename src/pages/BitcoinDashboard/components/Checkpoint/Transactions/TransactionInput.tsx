@@ -83,19 +83,19 @@ export const TransactionInput: React.FC<{ data: TransactionParsedInput[] }> = ({
     }
   };
   const checkRenderUI = () => {
-    if (data?.length > 0) {
-      if (mobile)
-        return (
-          <TransactionsMobile
-            generateIcon={() => generateIcon(tokens.bitcoin, tokens.oraichain)}
-            symbols={'BTC/ORAI'}
-            transactions={data}
-          />
-        );
-      return <Table headers={headers} data={data} defaultSorted="txid" />;
-    }
-    return <FallbackEmptyData />;
+    if (!data?.length) return <FallbackEmptyData />;
+
+    return mobile ? (
+      <TransactionsMobile
+        generateIcon={() => generateIcon(tokens.oraichain, tokens.bitcoin)}
+        symbols={'ORAI/BTC'}
+        transactions={data}
+      />
+    ) : (
+      <Table headers={headers} data={data} defaultSorted="txid" />
+    );
   };
+
   return (
     <div className={styles.transactions}>
       <h2 className={styles.transactions_title}>Transaction Inputs:</h2>

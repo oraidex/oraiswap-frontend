@@ -11,9 +11,10 @@ interface PriceDetailProps {
   currentPrice: number;
   tokenX: TokenItemType;
   tokenY: TokenItemType;
+  isXToY: boolean;
 }
 
-const PriceDetail: FC<PriceDetailProps> = ({ leftInput, rightInput, currentPrice, tokenX, tokenY }) => {
+const PriceDetail: FC<PriceDetailProps> = ({ leftInput, rightInput, currentPrice, tokenX, tokenY, isXToY }) => {
   return (
     <div className={styles.minMaxPriceWrapper}>
       <div className={styles.item}>
@@ -22,11 +23,11 @@ const PriceDetail: FC<PriceDetailProps> = ({ leftInput, rightInput, currentPrice
             <p>Min Price</p>
           </div>
           <div className={styles.minMaxPriceValue}>
-            <p>
-              <p>{minimize(leftInput.toString())}</p>
-              <p className={styles.pair}>
-                {tokenY.name.toUpperCase()} / {tokenX.name.toUpperCase()}
-              </p>
+            <p className={styles.amount}>{minimize(leftInput.toString())}</p>
+            <p className={styles.pair}>
+              {isXToY
+                ? `${tokenY.name.toUpperCase()} / ${tokenX.name.toUpperCase()}`
+                : `${tokenX.name.toUpperCase()} / ${tokenY.name.toUpperCase()}`}
             </p>
           </div>
         </div>
@@ -47,21 +48,20 @@ const PriceDetail: FC<PriceDetailProps> = ({ leftInput, rightInput, currentPrice
             <p>Max Price</p>
           </div>
           <div className={styles.minMaxPriceValue}>
-            <p>
-              {/* <p>{numberWithCommas(Number(rightInputRounded), undefined, { maximumFractionDigits: 6 })}</p> */}
-              <p>{minimize(rightInput.toString())}</p>
-              <p className={styles.pair}>
-                {tokenY.name.toUpperCase()} / {tokenX.name.toUpperCase()}
-              </p>
+            <p className={styles.amount}>{minimize(rightInput.toString())}</p>
+            <p className={styles.pair}>
+              {isXToY
+                ? `${tokenY.name.toUpperCase()} / ${tokenX.name.toUpperCase()}`
+                : `${tokenX.name.toUpperCase()} / ${tokenY.name.toUpperCase()}`}
             </p>
           </div>
         </div>
         <div className={classNames(styles.percent, styles.maxCurrentPrice)}>
           <p>Max Current Price:</p>
           <span className={classNames(styles.value, { [styles.positive]: true })}>
-            {numberWithCommas(((+rightInput - currentPrice) / currentPrice) * 100, undefined, {
+            {leftInput !== 0 ? numberWithCommas(((+rightInput - currentPrice) / currentPrice) * 100, undefined, {
               maximumFractionDigits: 3
-            })}
+            }) : '9999999'}
             %
           </span>
         </div>

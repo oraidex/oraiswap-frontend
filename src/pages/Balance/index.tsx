@@ -1,4 +1,4 @@
-import { makeStdTx } from '@cosmjs/amino';
+import { coin, makeStdTx } from '@cosmjs/amino';
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
 import { Decimal } from '@cosmjs/math';
 import { DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate';
@@ -42,7 +42,13 @@ import {
   handleErrorTransaction,
   networks
 } from 'helper';
-import { DEFAULT_RELAYER_FEE, RELAYER_DECIMAL, bitcoinChainId } from 'helper/constants';
+import {
+  CWAppBitcoinContractAddress,
+  CWBitcoinFactoryDenom,
+  DEFAULT_RELAYER_FEE,
+  RELAYER_DECIMAL,
+  bitcoinChainId
+} from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
@@ -61,7 +67,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './Balance.module.scss';
-import DepositBtcModal from './DepositBtcModal';
 import {
   calculatorTotalFeeBtc,
   convertKwt,
@@ -72,13 +77,18 @@ import {
   mapUtxos,
   moveOraibToOraichain,
   transferIbcCustom,
-  transferIBCKwt
+  transferIBCKwt,
+  useDepositFeesBitcoinV2,
+  useGetWithdrawlFeesBitcoinV2
 } from './helpers';
 import KwtModal from './KwtModal';
 import StuckOraib from './StuckOraib';
 import useGetOraiBridgeBalances from './StuckOraib/useGetOraiBridgeBalances';
 import TokenItem, { TokenItemProps } from './TokenItem';
 import { TokenItemBtc } from './TokenItem/TokenItemBtc';
+import DepositBtcModalV2 from './DepositBtcModalV2';
+import { CwBitcoinContext } from 'context/cw-bitcoin-context';
+import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
 
 interface BalanceProps {}
 
@@ -92,6 +102,7 @@ const Balance: React.FC<BalanceProps> = () => {
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const feeConfig = useSelector((state: RootState) => state.token.feeConfigs);
   const nomic = useContext(NomicContext);
+  const cwBitcoinContext = useContext(CwBitcoinContext);
 
   // state internal
   const [loadingRefresh, setLoadingRefresh] = useState(false);
@@ -110,6 +121,12 @@ const Balance: React.FC<BalanceProps> = () => {
   const [tronAddress] = useConfigReducer('tronAddress');
   const [btcAddress] = useConfigReducer('btcAddress');
   const [addressRecovery, setAddressRecovery] = useState('');
+  const [isFastMode, setIsFastMode] = useState(true);
+  const depositV2Fee = useDepositFeesBitcoinV2(true);
+  const withdrawV2Fee = useGetWithdrawlFeesBitcoinV2({
+    enabled: true,
+    bitcoinAddress: btcAddress
+  });
 
   const ref = useRef(null);
   //@ts-ignore
@@ -123,6 +140,15 @@ const Balance: React.FC<BalanceProps> = () => {
       console.log('🚀 ~ getAddress ~ error:', error);
     }
   };
+
+  useEffect(() => {
+    // TODO: should dynamic generate address when change destination chain.
+    if (oraiAddress) {
+      cwBitcoinContext.generateAddress({
+        address: oraiAddress
+      });
+    }
+  }, [isOwallet, oraiAddress]);
   useEffect(() => {
     if (isOwallet) {
       getAddress();
@@ -242,6 +268,7 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const handleTransferBTCToOraichain = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
+    const isV2 = fromToken.name === 'BTC V2';
     const utxos = await getUtxos(btcAddr, fromToken.rpc);
     const feeRate = await getFeeRate({
       url: from.rpc
@@ -256,8 +283,7 @@ const Balance: React.FC<BalanceProps> = () => {
       message: '',
       transactionFee: feeRate
     });
-    console.log(totalFee, 'totalFee');
-    const { bitcoinAddress: address } = nomic.depositAddress;
+    const { bitcoinAddress: address } = isV2 ? cwBitcoinContext.depositAddress : nomic.depositAddress;
     if (!address) throw Error('Not found address OraiBtc');
     const amount = new BitcoinUnit(transferAmount, 'BTC').to('satoshi').getValue();
     const dataRequest = {
@@ -296,7 +322,7 @@ const Balance: React.FC<BalanceProps> = () => {
       if (rs?.rawTxHex) {
         setTxHash(rs.rawTxHex);
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `/bitcoin-dashboard?tab=pending_deposits`
+          customLink: `/bitcoin-dashboard${isV2 ? '-v2' : ''}?tab=pending_deposits`
         });
         setTimeout(async () => {
           await loadTokenAmounts({ metamaskAddress, tronAddress, oraiAddress, btcAddress: btcAddr });
@@ -315,6 +341,47 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const handleTransferOraichainToBTC = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
+    if (fromToken.name === 'BTC V2') {
+      try {
+        if (!withdrawV2Fee?.withdrawal_fees) {
+          throw Error('Withdrawal fees are not found!');
+        }
+        if (!depositV2Fee?.deposit_fees) {
+          throw Error('Deposit fees are not found!');
+        }
+        const fee = isFastMode ? depositV2Fee?.deposit_fees : withdrawV2Fee?.withdrawal_fees;
+        console.log(fee);
+        const amountInput = BigInt(
+          Decimal.fromUserInput(toAmount(transferAmount, 14).toString(), 14).atomics.toString()
+        );
+        const amount = Decimal.fromAtomics(amountInput.toString(), 14).toString();
+        let sender = await window.Keplr.getKeplrAddr(fromToken?.chainId);
+        let cwBitcoinClient = new AppBitcoinClient(window.client, sender, CWAppBitcoinContractAddress);
+        const result = await cwBitcoinClient.withdrawToBitcoin(
+          {
+            btcAddress: btcAddr,
+            fee
+          },
+          'auto',
+          '',
+          [coin(amount, CWBitcoinFactoryDenom)]
+        );
+
+        processTxResult(
+          fromToken.rpc,
+          // @ts-ignore-check
+          result,
+          '/bitcoin-dashboard-v2?tab=pending_withdraws'
+        );
+      } catch (ex) {
+        console.log(ex);
+        handleErrorTransaction(ex, {
+          tokenName: from.name,
+          chainName: from.chainId
+        });
+      }
+      return;
+    }
     const { bitcoinAddress: address } = nomic.depositAddress;
 
     if (!address) throw Error('Not found Orai BTC Address');
@@ -359,20 +426,19 @@ const Balance: React.FC<BalanceProps> = () => {
     }
   };
 
-  const checkTransferBtc = async (fromAmount: number, isBTCtoOraichain: boolean, isOraichainToBTC: boolean) => {
-    if (isBTCtoOraichain || isOraichainToBTC)
-      return handleTransferBTC({
-        isBTCToOraichain: isBTCtoOraichain,
-        fromToken: from,
-        transferAmount: fromAmount
-      });
+  const checkTransferBtc = () => {
+    const isBTCtoOraichain = from.chainId === bitcoinChainId && to.chainId === 'Oraichain';
+    const isOraichainToBTC = from.chainId === 'Oraichain' && to.chainId === bitcoinChainId;
+    return [isBTCtoOraichain, isBTCtoOraichain || isOraichainToBTC];
   };
 
   const handleTransferBTC = async ({ isBTCToOraichain, fromToken, transferAmount }) => {
     const btcAddr = await window.Bitcoin.getAddress();
     if (!btcAddr) throw Error('Not found your bitcoin address!');
     if (isBTCToOraichain) {
-      await handleRecoveryAddress();
+      if (fromToken.name !== 'BTC V2') {
+        await handleRecoveryAddress();
+      }
       return handleTransferBTCToOraichain(fromToken, transferAmount, btcAddr);
     }
     return handleTransferOraichainToBTC(fromToken, transferAmount, btcAddr);
@@ -411,6 +477,7 @@ const Balance: React.FC<BalanceProps> = () => {
     try {
       await handleCheckWallet();
 
+      console.log(from, to);
       assert(from && to, 'Please choose both from and to tokens');
 
       // get & check balance
@@ -433,10 +500,14 @@ const Balance: React.FC<BalanceProps> = () => {
         return;
       }
 
-      const isBTCtoOraichain = from.chainId === bitcoinChainId && to.chainId === 'Oraichain';
-      const isOraichainToBTC = from.chainId === 'Oraichain' && to.chainId === bitcoinChainId;
-      if (isBTCtoOraichain || isOraichainToBTC) {
-        return await checkTransferBtc(fromAmount, isBTCtoOraichain, isOraichainToBTC);
+      // [BTC Native] <==> ORAICHAIN
+      let [isBTCToOraichain, isBtcBridge] = checkTransferBtc();
+      if (isBtcBridge) {
+        return handleTransferBTC({
+          isBTCToOraichain: isBTCToOraichain,
+          fromToken: from,
+          transferAmount: fromAmount
+        });
       }
 
       let newToToken = to;
@@ -652,7 +723,8 @@ const Balance: React.FC<BalanceProps> = () => {
                   window?.owallet?.isOwallet;
 
                 const isBtcToken = t.chainId === bitcoinChainId && t?.coinGeckoId === 'bitcoin';
-                const TokenItemELement: React.FC<TokenItemProps> = isBtcToken ? TokenItemBtc : TokenItem;
+                const isV2 = false;
+                const TokenItemELement: React.FC<TokenItemProps> = isBtcToken && isV2 ? TokenItemBtc : TokenItem;
                 return (
                   <div key={t.denom}>
                     {!isOwallet && !isMobile() && isBtcToken && (
@@ -694,6 +766,8 @@ const Balance: React.FC<BalanceProps> = () => {
                           });
                         }
                       }}
+                      isFastMode={isFastMode}
+                      setIsFastMode={setIsFastMode}
                     />
                   </div>
                 );
@@ -714,11 +788,9 @@ const Balance: React.FC<BalanceProps> = () => {
             setFilterNetworkUI(chainId);
           }}
         />
-        <DepositBtcModal
+        <DepositBtcModalV2
           prices={prices}
           isOpen={isDepositBtcModal}
-          addressRecovery={addressRecovery}
-          handleRecoveryAddress={handleRecoveryAddress}
           open={() => setIsDepositBtcModal(true)}
           close={() => setIsDepositBtcModal(false)}
         />

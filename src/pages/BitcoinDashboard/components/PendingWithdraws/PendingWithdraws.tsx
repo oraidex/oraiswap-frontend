@@ -10,7 +10,6 @@ import { ReactComponent as OraiLightIcon } from 'assets/icons/oraichain_light.sv
 import { CheckpointStatus, TransactionParsedOutput } from 'pages/BitcoinDashboard/@types';
 import { useGetCheckpointData, useGetCheckpointQueue } from 'pages/BitcoinDashboard/hooks';
 import { isMobile } from '@walletconnect/browser-utils';
-import RenderIf from '../RenderIf/RenderIf';
 import TransactionsMobile from '../Checkpoint/Transactions/TransactionMobiles/TransactionMobile';
 
 type Icons = {
@@ -29,10 +28,15 @@ const tokens = {
   } as Icons
 };
 
-export const PendingWithdraws: React.FC<{}> = ({}) => {
+export const PendingWithdraws: React.FC<{
+  btcAddresses?: String[];
+  withdrawFee?: bigint;
+  showTx?: boolean;
+  additionOutputs?: TransactionParsedOutput[];
+}> = ({ btcAddresses, withdrawFee = 0n, showTx = true, additionOutputs = [] }) => {
   const [theme] = useConfigReducer('theme');
   const mobile = isMobile();
-  const btcAddress = useConfigReducer('btcAddress');
+  const fetchedBtcAddrs = useConfigReducer('btcAddress');
   const checkpointQueue = useGetCheckpointQueue();
   const buildingCheckpointIndex = checkpointQueue?.index || 0;
   const checkpointData = useGetCheckpointData(buildingCheckpointIndex);
@@ -55,7 +59,10 @@ export const PendingWithdraws: React.FC<{}> = ({}) => {
       }))
     : [];
   const finalOutputs = hasSigningCheckpoint ? [...allOutputs, ...previousOutputs] : allOutputs;
-  const data = finalOutputs.filter((item) => item.address == btcAddress[0]);
+  const defaultBtcAddress = fetchedBtcAddrs?.[0] || '';
+  const data = [...finalOutputs, ...additionOutputs].filter((item) =>
+    (btcAddresses || [defaultBtcAddress]).includes(item.address)
+  );
 
   const generateIcon = (baseToken: Icons, quoteToken: Icons): JSX.Element => {
     let [BaseTokenIcon, QuoteTokenIcon] = [DefaultIcon, DefaultIcon];
@@ -71,8 +78,8 @@ export const PendingWithdraws: React.FC<{}> = ({}) => {
     );
   };
 
-  const handleNavigate = (txid: String) => {
-    window.open(`https://blockstream.info/address/${txid}`, '_blank');
+  const handleNavigate = (hash: string) => {
+    window.open(showTx ? `https://blockstream.info/tx/${hash}` : `https://blockstream.info/address/${hash}`, '_blank');
   };
 
   const headers: TableHeaderProps<TransactionParsedOutput> = {
@@ -87,11 +94,11 @@ export const PendingWithdraws: React.FC<{}> = ({}) => {
       align: 'left'
     },
     txid: {
-      name: 'Txid',
+      name: showTx ? 'Txid' : 'Address',
       width: '60%',
       accessor: (data) => (
-        <div onClick={() => handleNavigate(data.txid)}>
-          <span>{`${data.txid}`}</span>
+        <div onClick={() => handleNavigate(showTx ? data.txid : data.address)}>
+          <span>{`${showTx ? data.txid : data.address}`}</span>
         </div>
       ),
       sortField: 'txid',
@@ -102,22 +109,21 @@ export const PendingWithdraws: React.FC<{}> = ({}) => {
       width: '21%',
       align: 'right',
       sortField: 'value',
-      accessor: (data) => <span>{toDisplay(BigInt(data.value || 0), 8)} BTC</span>
+      accessor: (data) => <span>{toDisplay(BigInt(data.value || 0) - withdrawFee, 8)} BTC</span>
     }
   };
   const checkRenderUI = () => {
-    if (data?.length > 0) {
-      if (mobile)
-        return (
-          <TransactionsMobile
-            generateIcon={() => generateIcon(tokens.oraichain, tokens.bitcoin)}
-            symbols={'ORAI/BTC'}
-            transactions={data}
-          />
-        );
-      return <Table headers={headers} data={data} defaultSorted="txid" />;
-    }
-    return <FallbackEmptyData />;
+    if (!data?.length) return <FallbackEmptyData />;
+
+    return mobile ? (
+      <TransactionsMobile
+        generateIcon={() => generateIcon(tokens.oraichain, tokens.bitcoin)}
+        symbols={'ORAI/BTC'}
+        transactions={data}
+      />
+    ) : (
+      <Table headers={headers} data={data} defaultSorted="txid" />
+    );
   };
   return (
     <div className={styles.pending_withdraws}>

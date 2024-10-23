@@ -28,7 +28,6 @@ const useZap = () => {
       // approve
       const coins: Coin[] = [];
       if (tokenZap.contractAddress) {
-        console.log({ tokenZap, zapAmount });
         msg.push({
           contractAddress: tokenZap.contractAddress,
           msg: {

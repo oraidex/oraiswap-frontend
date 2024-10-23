@@ -18,7 +18,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
-import { TickPlotPositionData } from '../PriceRangePlot/PriceRangePlot';
+import { TickPlotPositionData } from '../PriceRangePlot/utils';
 import { determinePositionTokenBlock, extractDenom, PositionTokenBlock } from '../PriceRangePlot/utils';
 import SelectToken from '../SelectToken';
 import styles from './index.module.scss';

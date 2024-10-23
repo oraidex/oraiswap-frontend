@@ -1,0 +1,214 @@
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.header {
+  display: flex;
+  flex-direction: column;
+
+  &_title {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+
+
+    &_text {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      font-size: 24px;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        vertical-align: top;
+      }
+
+      .priceOrai {
+        @include theme() {
+          color: theme-get('neutral-9');
+        }
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 120%; /* 28.8px */
+      }
+
+      @include mobile() {
+        display: none;
+      }
+    }
+
+    @include theme() {
+      color: theme-get('neutral-text-text-token-name');
+    }
+
+    text-align: center;
+
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 150%;
+    /* 27px */
+
+    .filter_day_wrapper {
+      display: flex;
+      height: 36px;
+      padding: 4px;
+      align-items: center;
+      gap: 4px;
+      border-radius: 99px;
+      color: $neutron-text-body-light;
+
+      display: none;
+
+      @include mobile() {
+        margin-top: 80px;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      @include small-mobile {
+        margin-top: 0px;
+      }
+
+      @include theme() {
+        background: theme-get('neutral-border-border-default');
+      }
+
+      .filter_day {
+        display: flex;
+        padding: 0px 16px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border-radius: 99px;
+
+        width: 100%;
+
+        &.active {
+          background: $white-color;
+
+          @include theme() {
+            color: theme-get('neutral-text-text-btn-default');
+          }
+        }
+      }
+    }
+  }
+
+  &_overrall {
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    margin-bottom: 16px;
+
+    @include mobile() {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    @include theme() {
+      background-color: theme-get('neutral-surface-bg-section');
+    }
+
+    &_item {
+      display: flex;
+      padding: 16px;
+      flex-direction: column;
+      flex: 1 0 0;
+
+
+      color: $neutron-text-body-light;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 100%;
+
+      @include mobile() {
+        width: 100%;
+      }
+
+      .info {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        .content {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          gap: 16px;
+        }
+      }
+
+      .chart {
+        max-height: 0px;
+        padding: 0px 16px;
+        border-radius: 12px;
+        margin-top: 0px;
+
+        overflow: hidden;
+        transition: max-height ease-in-out 0.5s, padding ease-in-out 0.5s, margin-top ease-in-out 0.5s;
+
+        @include theme {
+          background: theme-get('neutral-surface-bg-2');
+        }
+
+        &.active {
+          padding: 16px;
+          margin-top: 16px;
+          max-height: 300px;
+        }
+      }
+
+      &:nth-child(even) {
+        border-start-end-radius: 12px;
+        border-end-end-radius: 12px;
+
+        @include theme() {
+          background-color: theme-get('neutral-surface-bg-section-3');
+        }
+
+        @include mobile {
+          border-radius: unset;
+          border-end-start-radius: 12px;
+          border-end-end-radius: 12px;
+        }
+      }
+
+      &_info {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        align-self: stretch;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        .overrall_value {
+          font-size: 24px;
+          font-weight: 500;
+          line-height: 120%;
+
+          /* 28.8px */
+          @include theme() {
+            color: theme-get('sea-stone-200');
+          }
+        }
+
+        .liq_suffix {
+          font-size: 16px;
+          font-weight: 500;
+          line-height: 150%;
+          color: $success-color;
+
+          &.negative {
+            color: $error-color;
+          }
+        }
+      }
+    }
+  }
+}

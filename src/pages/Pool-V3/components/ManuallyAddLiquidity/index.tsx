@@ -4,25 +4,28 @@ import { FC } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
 import NumberFormat from 'react-number-format';
+import { ReactComponent as LeafIcon } from 'assets/icons/leaf.svg';
 
 interface ManuallyAddLiquidityProps {
+  apr: number;
   isFromBlocked: boolean;
   isToBlocked: boolean;
   amounts: AmountDetails;
   tokenFrom: TokenItemType;
   setAmountFrom: (value: number) => void;
   setAmountTo: (value: number) => void;
-  setFocusId: (value: string | null) => void;
+  setFocusId: (value: 'zap' | 'x' | 'y') => void;
   TokenFromIcon: JSX.Element;
   amountFrom: number;
   amountTo: number;
-  fromUsd: number;
+  fromUsd: string;
+  toUsd: string;
   tokenTo: TokenItemType;
   TokenToIcon: JSX.Element;
-  toUsd: number;
 }
 
 const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
+  apr,
   isFromBlocked,
   isToBlocked,
   amounts,
@@ -54,7 +57,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
                 const val = toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals);
                 const haftValue = new BigDecimal(val).div(2).toNumber();
                 setAmountFrom(haftValue);
-                setFocusId('from');
+                setFocusId('x');
               }}
             >
               50%
@@ -65,7 +68,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
               onClick={() => {
                 const val = toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals);
                 setAmountFrom(val);
-                setFocusId('from');
+                setFocusId('x');
               }}
             >
               100%
@@ -85,7 +88,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
           </div>
           <div className={styles.input}>
             <NumberFormat
-              onFocus={() => setFocusId('from')}
+              onFocus={() => setFocusId('x')}
               onBlur={() => setFocusId(null)}
               placeholder="0"
               thousandSeparator
@@ -124,7 +127,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
                 const val = toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals);
                 const haftValue = new BigDecimal(val).div(2).toNumber();
                 setAmountTo(haftValue);
-                setFocusId('to');
+                setFocusId('y');
               }}
             >
               50%
@@ -135,7 +138,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
               onClick={() => {
                 const val = toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals);
                 setAmountTo(val);
-                setFocusId('to');
+                setFocusId('y');
               }}
             >
               100%
@@ -155,7 +158,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
           </div>
           <div className={styles.input}>
             <NumberFormat
-              onFocus={() => setFocusId('to')}
+              onFocus={() => setFocusId('y')}
               onBlur={() => setFocusId(null)}
               placeholder="0"
               thousandSeparator
@@ -178,6 +181,13 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
               ≈ ${amountTo ? numberWithCommas(Number(toUsd) || 0, undefined, { maximumFractionDigits: 6 }) : 0}
             </div>
           </div>
+        </div>
+      </div>
+      <div className={styles.aprWrapper}>
+        <p className={styles.title}>Est APR</p>
+        <div className={styles.amountWrap}>
+          <p className={styles.amount}>~{numberWithCommas(apr, undefined, { maximumFractionDigits: 2 })}%</p>
+          <LeafIcon />
         </div>
       </div>
     </>

@@ -45,7 +45,14 @@ import { useEffect, useState } from 'react';
 import { OraiBtcSubnetChain } from 'libs/nomic/models/ibc-chain';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { BitcoinUnit } from 'bitcoin-units';
-import { MIN_DEPOSIT_BTC, MIN_WITHDRAW_BTC, bitcoinChainId, bitcoinLcd, btcNetwork } from 'helper/constants';
+import {
+  MIN_DEPOSIT_BTC,
+  MIN_WITHDRAW_BTC,
+  bitcoinChainId,
+  bitcoinLcd,
+  bitcoinLcdV2,
+  btcNetwork
+} from 'helper/constants';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
 
 export const transferIBC = async (data: {
@@ -658,6 +665,72 @@ export const useDepositFeesBitcoin = (enabled: boolean) => {
   };
 
   const { data } = useQuery(['deposit_fees', enabled], () => getDepositFeeBTC(), {
+    refetchOnWindowFocus: true,
+    enabled
+  });
+
+  return data;
+};
+
+export const useGetWithdrawlFeesBitcoinV2 = ({
+  enabled,
+  bitcoinAddress
+}: {
+  enabled: boolean;
+  bitcoinAddress: string;
+}) => {
+  const getWithdrawFeeBTC = async (bitcoinAddr) => {
+    if (!bitcoinAddr) {
+      return {
+        withdrawal_fees: 0
+      };
+    }
+    try {
+      const { data } = await axios({
+        baseURL: bitcoinLcdV2,
+        method: 'get',
+        url: `/api/checkpoint/withdraw_fee`,
+        params: {
+          address: bitcoinAddr
+        }
+      });
+      return {
+        withdrawal_fees: data.data
+      };
+    } catch (error) {
+      console.log({ errorGetWithdrawFeeBTC: error });
+      return {
+        withdrawal_fees: 0
+      };
+    }
+  };
+
+  const { data } = useQuery(['withdrawl_fees_v2', bitcoinAddress, enabled], () => getWithdrawFeeBTC(bitcoinAddress), {
+    refetchOnWindowFocus: true,
+    enabled: !!bitcoinAddress && !!enabled
+  });
+
+  return data;
+};
+
+export const useDepositFeesBitcoinV2 = (enabled: boolean) => {
+  const getDepositFeeBTC = async () => {
+    try {
+      const { data } = await axios({
+        baseURL: bitcoinLcdV2,
+        method: 'get',
+        url: `/api/checkpoint/deposit_fee`
+      });
+      return { deposit_fees: data.data };
+    } catch (error) {
+      console.log({ errorGetDepositFeeBTC: error });
+      return {
+        deposit_fees: 0
+      };
+    }
+  };
+
+  const { data } = useQuery(['deposit_fees_v2', enabled], () => getDepositFeeBTC(), {
     refetchOnWindowFocus: true,
     enabled
   });

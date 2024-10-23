@@ -48,6 +48,19 @@ const App = () => {
 
   useTronEventListener();
 
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        const oraiAddr = await window.Keplr.getKeplrAddr();
+        if (oraiAddr && oraiAddr !== address) {
+          setOraiAddress(oraiAddr);
+        }
+      }
+    })();
+
+    return () => {};
+  }, []);
+
   // TODO: polyfill evm, tron, need refactor
   useEffect(() => {
     if (tron) {

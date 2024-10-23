@@ -29,7 +29,7 @@ const queryClient = new QueryClient();
 
 if (process.env.REACT_APP_SENTRY_ENVIRONMENT === 'production') {
   Sentry.init({
-    environment: process.env.REACT_APP_SENTRY_ENVIRONMENT,
+    environment: process.env.REACT_APP_SENTRY_ENVIRONMENT || 'production',
     dsn: 'https://763cf7889ff3440d86c7c1fbc72c8780@o1323226.ingest.sentry.io/6580749',
     denyUrls: [
       /extensions\//i,
@@ -67,7 +67,6 @@ window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 const initApp = async () => {
   const root = createRoot(document.getElementById('oraiswap'));
   root.render(
-    // <UrqlProvider value={client}>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ToastProvider>
@@ -83,7 +82,6 @@ const initApp = async () => {
         </ToastProvider>
       </PersistGate>
     </Provider>
-    // </UrqlProvider>
   );
 
   // init cosmwasm client when user connected cosmos wallet
