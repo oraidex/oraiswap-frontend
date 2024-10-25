@@ -30,10 +30,10 @@ import { CoinGeckoPrices } from 'hooks/useCoingecko';
 const ZOOM_STEP = 0.05;
 
 export enum OptionType {
-  CUSTOM,
-  WIDE,
-  NARROW,
-  FULL_RANGE
+  CUSTOM = "Set your own price range for liquidity. Balance fee potential and risk based on market conditions.",
+  WIDE = "Adds liquidity to a wider range, balancing fees and risk. Stays active longer than narrow ranges but may earn lower fees.",
+  NARROW = "Adds liquidity to a specific price range. Earns the most fees when the price stays in range but stops earning if the price moves out",
+  FULL_RANGE = "Adds liquidity for the full price range. Stays active regardless of price changes, but may earn lower fees."
 }
 
 const TICK_SPACING_TO_RANGE = {

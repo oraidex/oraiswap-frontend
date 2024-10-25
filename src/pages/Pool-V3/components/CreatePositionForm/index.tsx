@@ -2,10 +2,10 @@ import { CW20_DECIMALS, toDisplay } from '@oraichain/oraidex-common';
 import { extractAddress, poolKeyToString } from '@oraichain/oraiswap-v3';
 import { isMobile } from '@walletconnect/browser-utils';
 import { ReactComponent as CustomIcon } from 'assets/icons/custom.svg';
-import { ReactComponent as FullRangeIcon } from 'assets/icons/full-range.svg';
-import { ReactComponent as NarrowIcon } from 'assets/icons/narrow.svg';
+import { ReactComponent as FullRangeIcon } from 'assets/icons/passive.svg';
+import { ReactComponent as NarrowIcon } from 'assets/icons/active.svg';
 import { ReactComponent as RefreshIcon } from 'assets/icons/refresh-ccw.svg';
-import { ReactComponent as WideIcon } from 'assets/icons/wide.svg';
+import { ReactComponent as WideIcon } from 'assets/icons/balanced.svg';
 import { ReactComponent as ZoomInIcon } from 'assets/icons/zoom-in.svg';
 import { ReactComponent as ZoomOutIcon } from 'assets/icons/zoom-out.svg';
 import classNames from 'classnames';
@@ -241,18 +241,6 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
             <div className={styles.strategyBtnList}>
               <div
                 onClick={() => {
-                  if (!cache7Day) return;
-                  setOptionType(OptionType.CUSTOM);
-                  handleOptionCustom();
-                }}
-                className={classNames(styles.btn, { [styles.chosen]: optionType === OptionType.CUSTOM })}
-              >
-                <CustomIcon />
-                <br />
-                <span>Custom</span>
-              </div>
-              <div
-                onClick={() => {
                   if (!cache3Month) return;
                   setOptionType(OptionType.WIDE);
                   handleOptionWide();
@@ -286,13 +274,22 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                 <br />
                 <span>Full range</span>
               </div>
+              <div
+                onClick={() => {
+                  if (!cache7Day) return;
+                  setOptionType(OptionType.CUSTOM);
+                  handleOptionCustom();
+                }}
+                className={classNames(styles.btn, { [styles.chosen]: optionType === OptionType.CUSTOM })}
+              >
+                <CustomIcon />
+                <br />
+                <span>Custom</span>
+              </div>
             </div>
           )}
           <div className={styles.explain}>
-            <p>
-              Add liquidity to a specific price range. Earns the most fees when the price stays in range but stops
-              earning if the price moves out
-            </p>
+            <p>{optionType}</p>
           </div>
         </div>
 
