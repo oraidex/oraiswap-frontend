@@ -119,6 +119,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "vite",
     "build": "vite build",
+    "serve": "vite serve",
     "ts-check": "tsc --noEmit",
     "postinstall": "patch-package",
     "prepare": "husky install",
