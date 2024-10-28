@@ -7,7 +7,7 @@ const usePagination = ({ data, search }) => {
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(data.length / limit);
   let indexOfLastItem = page * limit;
-  if (search) indexOfLastItem = limit;
+  if (search && data && data.length <= limit) indexOfLastItem = limit;
   const indexOfFirstItem = indexOfLastItem - limit;
 
   const handleNext = () => {

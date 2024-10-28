@@ -629,8 +629,19 @@
 
   .swap-ai-dot {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: end;
     gap: 8px;
+    .noRoutes {
+      color: $warning-color;
+      text-align: right;
+      font-family: 'IBM Plex Sans';
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 150%;
+      letter-spacing: 0.013px;
+    }
   }
 
   .ratio {
