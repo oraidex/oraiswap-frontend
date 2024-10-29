@@ -218,7 +218,7 @@ const ConvertBitcoinV2: React.FC<{}> = ({}) => {
             <div className={`${styles.stakeBtn} ${styles.inDesktop}`}>
               <Button
                 type="primary"
-                // disabled={loading || withdrawFeeBtc?.withdrawal_fees === undefined}
+                disabled={loading || withdrawFeeBtc?.withdrawal_fees === undefined}
                 onClick={handleConvertBTC}
               >
                 {loading && <Loader width={22} height={22} />}&nbsp;
