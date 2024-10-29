@@ -14,8 +14,7 @@ export default defineConfig({
     port: 3000
   },
   define: {
-    global: 'globalThis',
-    exports: {}
+    global: 'globalThis'
   },
   test: {
     server: {
@@ -35,6 +34,7 @@ export default defineConfig({
     }
   },
   build: {
+    commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
     rollupOptions: {}
   }
