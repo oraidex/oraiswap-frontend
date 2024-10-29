@@ -216,14 +216,14 @@ const ConvertBitcoinV2: React.FC<{}> = ({}) => {
             </div>
 
             <div className={`${styles.stakeBtn} ${styles.inDesktop}`}>
-              {/* <Button
+              <Button
                 type="primary"
                 // disabled={loading || withdrawFeeBtc?.withdrawal_fees === undefined}
                 onClick={handleConvertBTC}
               >
                 {loading && <Loader width={22} height={22} />}&nbsp;
                 {'Convert'}
-              </Button> */}
+              </Button>
             </div>
           </div>
           <div className={styles.coeff}>
