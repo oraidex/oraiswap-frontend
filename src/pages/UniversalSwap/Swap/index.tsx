@@ -176,7 +176,7 @@ const SwapComponent: React.FC<{
   } = fees;
   const { expectOutputDisplay, minimumReceiveDisplay, isWarningSlippage } = outputs;
   const { fromAmountTokenBalance, usdPriceShowFrom, usdPriceShowTo } = tokenInfos;
-  const { averageRatio, averageSimulateData } = averageSimulateDatas;
+  const { averageRatio, averageSimulateData, isAveragePreviousSimulate } = averageSimulateDatas;
   const { simulateData, setSwapAmount, fromAmountToken, toAmountToken, debouncedFromAmount, isPreviousSimulate } =
     simulateDatas;
 
@@ -587,7 +587,7 @@ const SwapComponent: React.FC<{
             }
       ${originalToToken.name}`}
           </span>
-          {!!isRoutersSwapData && !isPreviousSimulate && (
+          {!!isRoutersSwapData && !isPreviousSimulate && !!routersSwapData?.routes.length && (
             <img src={!openRoutes ? DownArrowIcon : UpArrowIcon} alt="arrow" />
           )}
         </div>
@@ -597,6 +597,56 @@ const SwapComponent: React.FC<{
   };
 
   const getSwitchIcon = () => (isLightMode ? SwitchLightImg : SwitchDarkImg);
+
+  const noRoutesFound =
+    !isAveragePreviousSimulate &&
+    (!averageSimulateData?.displayAmount ||
+      (averageSimulateData?.displayAmount &&
+        !averageSimulateData?.routes.routes.length &&
+        originalToToken.coinGeckoId !== originalFromToken.coinGeckoId));
+
+  const hasRoutesData =
+    !!isRoutersSwapData &&
+    !!averageSimulateData?.displayAmount &&
+    !isPreviousSimulate &&
+    Array.isArray(routersSwapData?.routes) &&
+    routersSwapData.routes.length > 0;
+
+  const volumnPercentage = (amount, returnAmount) =>
+    Math.round(new BigDecimal(returnAmount).div(amount).mul(100).toNumber());
+
+  const renderRoutes = (routes) => {
+    return routes.map((route, ind) => {
+      const volumn = volumnPercentage(routersSwapData.amount, route.returnAmount);
+      return (
+        <div key={ind} className={cx('smart-router-item')}>
+          <div className={cx('smart-router-item-volumn')}>{volumn.toFixed(0)}%</div>
+          {route.paths.map((path, i, acc) => {
+            const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, chainIcons, assets);
+            return (
+              <React.Fragment key={i}>
+                <div className={cx('smart-router-item-line')}>
+                  <div className={cx('smart-router-item-line-detail')} />
+                </div>
+                <div className={cx('smart-router-item-pool')} onClick={() => setOpenSmartRoute(!openSmartRoute)}>
+                  <div className={cx('smart-router-item-pool-wrap')} onClick={() => setIndSmartRoute([ind, i])}>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkFromIcon />}</div>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkToIcon />}</div>
+                  </div>
+                </div>
+                {i === acc.length - 1 && (
+                  <div className={cx('smart-router-item-line')}>
+                    <div className={cx('smart-router-item-line-detail')} />
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+          <div className={cx('smart-router-item-volumn')}>{volumn.toFixed(0)}%</div>
+        </div>
+      );
+    });
+  };
 
   return (
     <div className={cx('swap-box-wrapper')}>
@@ -663,71 +713,14 @@ const SwapComponent: React.FC<{
                 <AIRouteSwitch isLoading={isPreviousSimulate} />
               )} */}
               {generateRatioComp()}
+              {noRoutesFound && <div className={styles.noRoutes}>NO ROUTES FOUND</div>}
             </div>
           </div>
-          {!!isRoutersSwapData &&
-            !!averageSimulateData?.displayAmount &&
-            !isPreviousSimulate &&
-            !!routersSwapData?.routes.length && (
-              <div className={cx('smart', !openRoutes ? 'hidden' : '')}>
-                <div className={cx('smart-router')}>
-                  {routersSwapData?.routes.map((route, ind) => {
-                    const volumn = Math.round(
-                      new BigDecimal(route.returnAmount).div(routersSwapData.amount).mul(100).toNumber()
-                    );
-                    return (
-                      <div key={ind} className={cx('smart-router-item')}>
-                        <div className={cx('smart-router-item-volumn')}>{volumn.toFixed(0)}%</div>
-                        {route.paths.map((path, i, acc) => {
-                          const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, chainIcons, assets);
-                          return (
-                            <React.Fragment key={i}>
-                              <div className={cx('smart-router-item-line')}>
-                                <div className={cx('smart-router-item-line-detail')} />
-                              </div>
-                              <div
-                                className={cx('smart-router-item-pool')}
-                                onClick={() => setOpenSmartRoute(!openSmartRoute)}
-                              >
-                                <div
-                                  className={cx('smart-router-item-pool-wrap')}
-                                  onClick={() => setIndSmartRoute([ind, i])}
-                                >
-                                  <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkFromIcon />}</div>
-                                  <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkToIcon />}</div>
-                                </div>
-                              </div>
-                              {i === acc.length - 1 && (
-                                <div className={cx('smart-router-item-line')}>
-                                  <div className={cx('smart-router-item-line-detail')} />
-                                </div>
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                        <div className={cx('smart-router-item-volumn')}>{volumn.toFixed(0)}%</div>
-                      </div>
-                    );
-                  })}
-                  {/* <div className={cx('smart-router-price-impact')}>
-                  <div className={cx('smart-router-price-impact-title')}>Price Impact:</div>
-                  <div
-                    className={cx(
-                      'smart-router-price-impact-warning',
-                      waringImpactBiggerTen
-                        ? 'smart-router-price-impact-warning-ten'
-                        : waringImpactBiggerFive && 'smart-router-price-impact-warning-five'
-                    )}
-                  >
-                    <span>
-                      {waringImpactBiggerFive && <WarningIcon />} ≈{' '}
-                      {numberWithCommas(impactWarning, undefined, { minimumFractionDigits: 2 })}%
-                    </span>
-                  </div>
-                </div> */}
-                </div>
-              </div>
-            )}
+          {hasRoutesData && (
+            <div className={cx('smart', !openRoutes ? 'hidden' : '')}>
+              <div className={cx('smart-router')}>{renderRoutes(routersSwapData.routes)}</div>
+            </div>
+          )}
           <div className={cx('to')}>
             <div className={cx('input-wrapper')}>
               <InputSwap

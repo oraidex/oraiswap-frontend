@@ -241,18 +241,6 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
             <div className={styles.strategyBtnList}>
               <div
                 onClick={() => {
-                  if (!cache7Day) return;
-                  setOptionType(OptionType.CUSTOM);
-                  handleOptionCustom();
-                }}
-                className={classNames(styles.btn, { [styles.chosen]: optionType === OptionType.CUSTOM })}
-              >
-                <CustomIcon />
-                <br />
-                <span>Custom</span>
-              </div>
-              <div
-                onClick={() => {
                   if (!cache3Month) return;
                   setOptionType(OptionType.WIDE);
                   handleOptionWide();
@@ -286,13 +274,22 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                 <br />
                 <span>Full range</span>
               </div>
+              <div
+                onClick={() => {
+                  if (!cache7Day) return;
+                  setOptionType(OptionType.CUSTOM);
+                  handleOptionCustom();
+                }}
+                className={classNames(styles.btn, { [styles.chosen]: optionType === OptionType.CUSTOM })}
+              >
+                <CustomIcon />
+                <br />
+                <span>Custom</span>
+              </div>
             </div>
           )}
           <div className={styles.explain}>
-            <p>
-              Add liquidity to a specific price range. Earns the most fees when the price stays in range but stops
-              earning if the price moves out
-            </p>
+            <p>{optionType}</p>
           </div>
         </div>
 

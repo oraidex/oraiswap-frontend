@@ -72,7 +72,7 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
       simulateOption
     );
 
-  const { simulateData: averageSimulateData } = useSimulate(
+  const { simulateData: averageSimulateData, isPreviousSimulate: isAveragePreviousSimulate } = useSimulate(
     'average-simulate-data',
     fromTokenInfoData,
     toTokenInfoData,
@@ -183,7 +183,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
 
     averageSimulateDatas: {
       averageRatio,
-      averageSimulateData
+      averageSimulateData,
+      isAveragePreviousSimulate
     },
 
     simulateDatas: {
