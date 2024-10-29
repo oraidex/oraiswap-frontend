@@ -63,7 +63,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
               decimalScale={tokenFrom?.decimals || 6}
               disabled={isFromBlocked}
               type="text"
-              value={amountFrom === 0 ? '' : amountFrom}
+              value={amountFrom}
               onChange={() => {}}
               isAllowed={(values) => {
                 const { floatValue } = values;
@@ -118,7 +118,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
               decimalScale={tokenTo?.decimals || 6}
               disabled={isToBlocked}
               type="text"
-              value={amountTo === 0 ? '' : amountTo}
+              value={amountTo}
               onChange={() => {}}
               isAllowed={(values) => {
                 const { floatValue } = values;
