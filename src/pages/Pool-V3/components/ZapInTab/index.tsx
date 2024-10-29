@@ -104,7 +104,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
               decimalScale={tokenZap?.decimals || 6}
               disabled={false}
               type="text"
-              value={zapAmount === 0 ? '' : zapAmount}
+              value={zapAmount}
               onChange={() => {}}
               isAllowed={(values) => {
                 const { floatValue } = values;
