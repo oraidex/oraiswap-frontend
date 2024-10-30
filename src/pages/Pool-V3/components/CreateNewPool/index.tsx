@@ -1,9 +1,9 @@
 import { toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { FeeTier, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { ReactComponent as OpenBlankTabIcon } from 'assets/icons/arrow_right_ic.svg';
-import { ReactComponent as BackIcon } from 'assets/icons/back.svg';
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as SettingIcon } from 'assets/icons/setting.svg';
+import OpenBlankTabIcon from 'assets/icons/arrow_right_ic.svg?react';
+import BackIcon from 'assets/icons/back.svg?react';
+import CloseIcon from 'assets/icons/close.svg?react';
+import SettingIcon from 'assets/icons/setting.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import { ALL_FEE_TIERS_DATA } from 'libs/contractSingleton';

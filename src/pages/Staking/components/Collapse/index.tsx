@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react';
 
-import { ReactComponent as MinusIcon } from 'assets/icons/minus.svg';
-import { ReactComponent as PlusIcon } from 'assets/icons/plusIcon.svg';
+import MinusIcon from 'assets/icons/minus.svg?react';
+import PlusIcon from 'assets/icons/plusIcon.svg?react';
 import styles from './index.module.scss';
 
 export type CollapseType = { label: string; content: string | ReactElement; key?: React.Key };

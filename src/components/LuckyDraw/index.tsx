@@ -30,7 +30,7 @@ import {
   useLuckyDrawConfig
 } from './useLuckyDraw';
 import { handleErrorTransaction } from 'helper';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
 import CongratulationLottie from 'assets/lottie/congratulation.json';
 import { network } from 'config/networks';
 import classNames from 'classnames';

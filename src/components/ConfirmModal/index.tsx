@@ -1,6 +1,6 @@
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as CloseIcon } from 'assets/icons/close-icon.svg';
-import { ReactComponent as InfoIcon } from 'assets/icons/toast_info.svg';
+import CloseIcon from 'assets/icons/close-icon.svg?react';
+import InfoIcon from 'assets/icons/toast_info.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import useOnClickOutside from 'hooks/useOnClickOutside';

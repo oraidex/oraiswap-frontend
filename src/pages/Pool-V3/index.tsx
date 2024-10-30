@@ -1,6 +1,6 @@
-import SearchLightSvg from 'assets/images/search-light-svg.svg';
-import SearchSvg from 'assets/images/search-svg.svg';
-import { ReactComponent as ArrowIcon } from 'assets/icons/down-arrow.svg';
+import SearchLightSvg from 'assets/images/search-light-svg.svg?react';
+import SearchSvg from 'assets/images/search-svg.svg?react';
+import ArrowIcon from 'assets/icons/down-arrow.svg?react';
 import classNames from 'classnames';
 import useTheme from 'hooks/useTheme';
 import React, { useEffect, useRef, useState } from 'react';

@@ -1,13 +1,14 @@
-import { ReactComponent as OraidexBetaIcon } from 'assets/icons/ic_beta.svg';
-import { ReactComponent as BridgeIcon } from 'assets/icons/ic_bridge.svg';
-import { ReactComponent as BtcDashboardIcon } from 'assets/icons/ic_btc_dashboard.svg';
-import { ReactComponent as CohavestIcon } from 'assets/icons/ic_cohavest.svg';
-import { ReactComponent as StakingIcon } from 'assets/icons/ic_staking.svg';
-import { ReactComponent as UniversalSwapIcon } from 'assets/icons/ic_universalswap.svg';
-import { ReactComponent as LogoDownloadOwalletIcon } from 'assets/icons/logo_download.svg';
-import { ReactComponent as DownloadOwalletIcon } from 'assets/icons/logo_owallet_gateway.svg';
-import { ReactComponent as DownloadOwalletIconDark } from 'assets/icons/logo_owallet_gateway_dark.svg';
-import { ReactComponent as PoolV3Icon } from 'assets/icons/pool-v3.svg';
+import OraidexBetaIcon from 'assets/icons/ic_beta.svg?react';
+import BridgeIcon from 'assets/icons/ic_bridge.svg?react';
+import BtcDashboardIcon from 'assets/icons/ic_btc_dashboard.svg?react';
+import CohavestIcon from 'assets/icons/ic_cohavest.svg?react';
+import StakingIcon from 'assets/icons/ic_staking.svg?react';
+import UniversalSwapIcon from 'assets/icons/ic_universalswap.svg?react';
+import LogoDownloadOwalletIcon from 'assets/icons/logo_download.svg?react';
+import DownloadOwalletIcon from 'assets/icons/logo_owallet_gateway.svg?react';
+import DownloadOwalletIconDark from 'assets/icons/logo_owallet_gateway_dark.svg?react';
+import PoolV3Icon from 'assets/icons/pool-v3.svg?react';
+import PoolV3Lottie from 'assets/lottie/poolv3-beta.json';
 import classNames from 'classnames';
 import ModalDownloadOwallet from 'components/Modals/ModalDownloadOwallet/ModalDownloadOwallet';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
@@ -17,7 +18,6 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.scss';
 import Lottie from 'lottie-react';
-import PoolV3Lottie from 'assets/lottie/poolv3-beta.json';
 
 const Sidebar: React.FC<{}> = React.memo(() => {
   const location = useLocation();

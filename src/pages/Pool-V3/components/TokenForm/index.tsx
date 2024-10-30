@@ -1,6 +1,6 @@
 import { toAmount as toAmountFn, toDisplay, TokenItemType, CW20_DECIMALS } from '@oraichain/oraidex-common';
 import { FeeTier, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { ReactComponent as SwitchIcon } from 'assets/icons/ant_swap_light.svg';
+import SwitchIcon from 'assets/icons/ant_swap_light.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';

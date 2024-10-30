@@ -1,7 +1,7 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 // https://subql-staging.orai.io/
-export const endpoint_gql = `https//staging-ammv3-indexer.oraidex.io/`;
+export const endpoint_gql = `https//ammv3-indexer.oraidex.io/`;
 const config: CodegenConfig = {
   schema: endpoint_gql,
   documents: ['src/**/*.tsx'],

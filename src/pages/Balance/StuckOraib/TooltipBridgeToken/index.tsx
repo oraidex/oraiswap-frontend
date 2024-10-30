@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import Tippy, { TippyProps } from '@tippyjs/react';
 import classNames from 'classnames';
-import { ReactComponent as InfoIcon } from 'assets/icons/info.svg';
+import InfoIcon from 'assets/icons/info.svg?react';
 
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light-border.css';

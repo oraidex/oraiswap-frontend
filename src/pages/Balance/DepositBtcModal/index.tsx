@@ -4,12 +4,12 @@ import QRCode from 'qrcode';
 import copy from 'copy-to-clipboard';
 import styles from './index.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as CopyIcon } from 'assets/icons/copy.svg';
-import { ReactComponent as SuccessIcon } from 'assets/icons/toast_success.svg';
-import { ReactComponent as BTCToken } from 'assets/images/token-btc.svg';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
+import CopyIcon from 'assets/icons/copy.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
+import BTCToken from 'assets/images/token-btc.svg?react';
 import { NomicContext } from 'context/nomic-context';
-import { ReactComponent as CloseIcon } from 'assets/icons/close-icon.svg';
+import CloseIcon from 'assets/icons/close-icon.svg?react';
 import { reduceString } from 'libs/utils';
 import { timeAgo } from 'helper';
 

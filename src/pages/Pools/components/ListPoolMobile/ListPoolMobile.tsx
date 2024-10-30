@@ -1,6 +1,6 @@
 import { TokenItemType } from '@oraichain/oraidex-common';
-import NoDataSvg from 'assets/images/NoDataPool.svg';
-import NoDataLightSvg from 'assets/images/NoDataPoolLight.svg';
+import NoDataSvg from 'assets/images/NoDataPool.svg?react';
+import NoDataLightSvg from 'assets/images/NoDataPoolLight.svg?react';
 import useTheme from 'hooks/useTheme';
 import { PoolTableData } from 'pages/Pools';
 import { useState } from 'react';

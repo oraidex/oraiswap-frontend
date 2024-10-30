@@ -1,4 +1,4 @@
-import { ReactComponent as DisconnectIcon } from 'assets/icons/ic_logout.svg';
+import DisconnectIcon from 'assets/icons/ic_logout.svg?react';
 import React from 'react';
 import styles from './index.module.scss';
 

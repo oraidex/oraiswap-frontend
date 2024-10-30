@@ -1,6 +1,6 @@
 import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { getUsd } from 'libs/utils';

@@ -1,8 +1,8 @@
 import { toDisplay } from '@oraichain/oraidex-common';
 import Loading from 'assets/gif/loading.gif';
-import { ReactComponent as BootsIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BootsIcon } from 'assets/icons/boost-icon.svg';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import { TooltipIcon } from 'components/Tooltip';

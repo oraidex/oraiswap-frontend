@@ -1,10 +1,10 @@
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right_ic.svg';
-import { ReactComponent as CloseIcon } from 'assets/icons/close-icon.svg';
-import { ReactComponent as IconTooltip } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as OraiXIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
+import ArrowRight from 'assets/icons/arrow_right_ic.svg?react';
+import CloseIcon from 'assets/icons/close-icon.svg?react';
+import IconTooltip from 'assets/icons/icon_tooltip.svg?react';
+import OraiXIcon from 'assets/icons/oraix.svg?react';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';

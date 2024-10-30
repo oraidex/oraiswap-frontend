@@ -1,6 +1,6 @@
 import { toDisplay, USDC_CONTRACT } from '@oraichain/oraidex-common';
-import { ReactComponent as ChartUpIcon } from 'assets/icons/chartUpIcon.svg';
-import { ReactComponent as PercentIcon } from 'assets/icons/percentIcon.svg';
+import ChartUpIcon from 'assets/icons/chartUpIcon.svg?react';
+import PercentIcon from 'assets/icons/percentIcon.svg?react';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import { ORAIX_TOKEN_INFO, USDC_TOKEN_INFO } from 'pages/Staking/constants';

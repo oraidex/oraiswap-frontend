@@ -1,4 +1,4 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/ic_close_modal.svg';
+import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import { useRef } from 'react';
 import ChartDetail from '../ChartDetailContent';
