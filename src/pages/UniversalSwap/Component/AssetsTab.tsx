@@ -63,8 +63,6 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     }
   ];
 
-  console.log({ listAsset });
-
   if (!networkFilter || networkFilter === 'Oraichain') {
     listAsset = [
       ...listAsset,

@@ -1,7 +1,7 @@
 import cn from 'classnames/bind';
 import styles from './StepByStep.module.scss';
 import { FC, useState } from 'react';
-import OraiIcon from 'assets/icons/oraichain_light.svg?react';
+import OraiIcon from 'assets/icons/oraichain_light.svg';
 
 const cx = cn.bind(styles);
 

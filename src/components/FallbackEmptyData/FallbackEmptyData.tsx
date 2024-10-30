@@ -1,5 +1,5 @@
-import NoDataSvg from 'assets/images/NoDataPool.svg?react';
-import NoDataLightSvg from 'assets/images/NoDataPoolLight.svg?react';
+import NoDataSvg from 'assets/images/NoDataPool.svg';
+import NoDataLightSvg from 'assets/images/NoDataPoolLight.svg';
 import useTheme from 'hooks/useTheme';
 import styles from './FallbackEmptyData.module.scss';
 

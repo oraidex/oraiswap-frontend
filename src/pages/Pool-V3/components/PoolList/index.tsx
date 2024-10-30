@@ -1,13 +1,10 @@
 import { BigDecimal, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import Loading from 'assets/gif/loading.gif';
-import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
-import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
 import SortDownIcon from 'assets/icons/down_icon.svg?react';
 import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import UpIcon from 'assets/icons/up-arrow.svg?react';
-import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
-import AddLPIcon from 'assets/icons/addLP_ic.svg?react';
 import SortUpIcon from 'assets/icons/up_icon.svg?react';
 import NoDataDark from 'assets/images/NoDataPool.svg?react';
 import NoData from 'assets/images/NoDataPoolLight.svg?react';
@@ -16,6 +13,7 @@ import LoadingBox from 'components/LoadingBox';
 import Pagination from 'components/Pagination';
 import usePagination from 'components/Pagination/usePagination';
 import { CoefficientBySort, SortType } from 'components/Table';
+import TokenBalance from 'components/TokenBalance';
 import { TooltipIcon } from 'components/Tooltip';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -27,17 +25,15 @@ import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
 import { useGetPoolLiquidityVolume } from 'pages/Pool-V3/hooks/useGetPoolLiquidityVolume';
 import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
 import { useGetPoolPositionInfo } from 'pages/Pool-V3/hooks/useGetPoolPositionInfo';
-import { formatDisplayUsdt } from 'pages/Pools/helpers';
+import { AddLiquidityModal } from 'pages/Pools/components/AddLiquidityModal';
+import LiquidityChart from 'pages/Pools/components/LiquidityChart';
+import VolumeChart from 'pages/Pools/components/VolumeChart';
 import { useEffect, useRef, useState } from 'react';
+import { FILTER_DAY } from 'reducer/type';
 import CreateNewPosition from '../CreateNewPosition';
 import styles from './index.module.scss';
 import PoolItemDataMobile from './PoolItemDataMobile';
 import PoolItemTData from './PoolItemTData';
-import { AddLiquidityModal } from 'pages/Pools/components/AddLiquidityModal';
-import LiquidityChart from 'pages/Pools/components/LiquidityChart';
-import VolumeChart from 'pages/Pools/components/VolumeChart';
-import { FILTER_DAY } from 'reducer/type';
-import TokenBalance from 'components/TokenBalance';
 
 export enum PoolColumnHeader {
   POOL_NAME = 'Pool name',

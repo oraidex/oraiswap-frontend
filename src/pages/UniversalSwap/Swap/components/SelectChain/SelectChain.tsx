@@ -1,20 +1,15 @@
-import { CoinIcon, TokenItemType, CustomChainInfo } from '@oraichain/oraidex-common';
-import { TokenInfo } from 'types/token';
-import styles from './SelectChain.module.scss';
-import SearchInput from 'components/SearchInput';
-import cn from 'classnames/bind';
-import { chainIcons } from 'config/chainInfos';
-import OraiIcon from 'assets/icons/oraichain.svg?react';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
-import { networks } from 'helper';
 import NetworkImg from 'assets/icons/network.svg';
-import CheckImg from 'assets/icons/check.svg?react';
-import { getTotalUsd } from 'libs/utils';
+import cn from 'classnames/bind';
 import { tokenMap } from 'config/bridgeTokens';
-import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { chainIcons } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
-import { formatDisplayUsdt } from 'pages/Pools/helpers';
+import { networks } from 'helper';
+import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
+import { formatDisplayUsdt } from 'pages/Pools/helpers';
+import styles from './SelectChain.module.scss';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {

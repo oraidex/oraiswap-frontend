@@ -1,5 +1,5 @@
-import ArrowImg from 'assets/icons/arrow_right.svg?react';
-import OpenNewWindowImg from 'assets/icons/open_new_window.svg?react';
+import ArrowImg from 'assets/icons/arrow_right.svg';
+import OpenNewWindowImg from 'assets/icons/open_new_window.svg';
 import cn from 'classnames/bind';
 import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { Table, TableHeaderProps } from 'components/Table';
