@@ -481,9 +481,15 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                           walletAddress,
                           [tokenX.contractAddress, tokenY.contractAddress].filter(Boolean)
                         );
-                        onCloseModal();
-                        setZapApr(0);
-                        navigate(`/pools/v3/${encodeURIComponent(poolKeyToString(poolKey))}`);
+                        // wait 2s to update position
+                        setTimeout(() => {
+                          onCloseModal();
+                          setZapApr(0);
+                          navigate(`/pools/v3/${encodeURIComponent(poolKeyToString(poolKey))}`);
+                        }, 2000);
+                        // onCloseModal();
+                        // setZapApr(0);
+                        // navigate(`/pools/v3/${encodeURIComponent(poolKeyToString(poolKey))}`);
                       },
                       (e) => {
                         console.log({ errorZap: e });

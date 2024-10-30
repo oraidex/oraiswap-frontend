@@ -275,6 +275,7 @@ async function loadEvmEntries(
     return entries;
   } catch (error) {
     console.log('error querying EVM balance: ', error);
+    console.log({chain});
     let retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT) console.error(`Cannot query EVM balance with error: ${error}`);
     await new Promise((resolve) => setTimeout(resolve, 2000));

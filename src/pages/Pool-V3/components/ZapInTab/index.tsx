@@ -175,9 +175,9 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 {simulating && <div className={styles.mask} />}
                 <span>
                   {zapInResponse
-                    ? numberWithCommas(Number(zapInResponse.amountX) / 10 ** tokenFrom.decimals, undefined, {
+                    ? (tokenFrom && numberWithCommas(Number(zapInResponse.amountX) / 10 ** tokenFrom.decimals, undefined, {
                         maximumFractionDigits: 3
-                      })
+                      }))
                     : 0}
                 </span>
                 <span className={styles.usd}>
@@ -196,12 +196,12 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 <span>{tokenTo?.name}</span>
               </div>
               <div className={styles.value}>
-                {simulating && <div className={styles.mask} />}
+                {simulating && tokenTo && <div className={styles.mask} />}
                 <span>
                   {zapInResponse
-                    ? numberWithCommas(Number(zapInResponse.amountY) / 10 ** tokenTo.decimals, undefined, {
+                    ? (tokenTo && numberWithCommas(Number(zapInResponse.amountY) / 10 ** tokenTo.decimals, undefined, {
                         maximumFractionDigits: 3
-                      })
+                      }))
                     : 0}
                 </span>
                 <span className={styles.usd}>
@@ -221,19 +221,19 @@ const ZapInTab: FC<ZapInTabProps> = ({
 
           <div className={styles.feeInfoWrapper}>
             <div className={styles.priceToken}>
-              <p className={styles.ratio}>
+              {tokenFrom && <p className={styles.ratio}>
                 1 {tokenFrom.name} ≈ $
                 {extendedPrice?.[tokenFrom?.coinGeckoId]
                   ? numberWithCommas(extendedPrice[tokenFrom.coinGeckoId], undefined, { maximumFractionDigits: 2 })
                   : '0'}
-              </p>
+              </p>}
               <p className={styles.divide}>/</p>
-              <p className={styles.ratio}>
+              {tokenTo && <p className={styles.ratio}>
                 1 {tokenTo.name} ≈ $
                 {extendedPrice?.[tokenTo?.coinGeckoId]
                   ? numberWithCommas(extendedPrice[tokenTo.coinGeckoId], undefined, { maximumFractionDigits: 2 })
                   : '0'}
-              </p>
+              </p>}
             </div>
             <div className={styles.item}>
               <div className={styles.info}>
