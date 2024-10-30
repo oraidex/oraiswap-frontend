@@ -1,5 +1,5 @@
 import { CW20_DECIMALS, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import classNames from 'classnames';
 import TokenBalance from 'components/TokenBalance';
 import useTheme from 'hooks/useTheme';
@@ -7,8 +7,8 @@ import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useState } from 'react';
 import { PoolDetail } from 'types/pool';
-import { ReactComponent as BootsIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BootsIcon } from 'assets/icons/boost-icon.svg';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import styles from './OverviewPool.module.scss';
 import { formatDisplayUsdt, formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';

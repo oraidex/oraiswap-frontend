@@ -1,8 +1,8 @@
 import { TokenItemType } from '@oraichain/oraidex-common';
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as EditIcon } from 'assets/icons/edit_icon.svg';
-import { ReactComponent as SelectTokenIcon } from 'assets/icons/select_token.svg';
-import { ReactComponent as EmptyImg } from 'assets/images/img_empty.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
+import EditIcon from 'assets/icons/edit_icon.svg?react';
+import SelectTokenIcon from 'assets/icons/select_token.svg?react';
+import EmptyImg from 'assets/images/img_empty.svg?react';
 import { Button } from 'components/Button';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTheme from 'hooks/useTheme';
@@ -18,7 +18,7 @@ import {
 import { AddressManagementStep } from 'reducer/type';
 import AddressBookForm from '../AddressForm';
 import styles from './index.module.scss';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 
 const AddressBook = ({ tokenTo, onSelected }: { tokenTo: TokenItemType; onSelected: (addr: string) => void }) => {
   const dispatch = useDispatch();

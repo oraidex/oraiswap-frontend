@@ -1,9 +1,9 @@
 import { toDisplay } from '@oraichain/oraidex-common';
 import Loading from 'assets/gif/loading.gif';
-import { ReactComponent as AddLPIcon } from 'assets/icons/addLP_ic.svg';
-import { ReactComponent as BootsIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BootsIcon } from 'assets/icons/boost-icon.svg';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
+import AddLPIcon from 'assets/icons/addLP_ic.svg?react';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import classNames from 'classnames';
 import { TooltipIcon } from 'components/Tooltip';
 import { formatDisplayUsdt, numberWithCommas, parseAssetOnlyDenom } from 'pages/Pools/helpers';

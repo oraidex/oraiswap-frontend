@@ -1,6 +1,3 @@
-import { ReactComponent as OraiLightIcon } from 'assets/icons/oraichain_light.svg';
-import { ReactComponent as LineIcon } from 'assets/icons/line.svg';
-import OraiIcon from 'assets/icons/oraichain_light.svg';
 import styles from './Routing.module.scss';
 
 import cn from 'classnames/bind';

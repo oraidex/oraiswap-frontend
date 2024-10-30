@@ -1,4 +1,4 @@
-import { ReactComponent as StuckOraibridge } from 'assets/icons/stuck_oraib.svg';
+import StuckOraibridge from 'assets/icons/stuck_oraib.svg?react';
 import TokenBalance from 'components/TokenBalance';
 import styles from './style.module.scss';
 import loadingGif from 'assets/gif/loading.gif';

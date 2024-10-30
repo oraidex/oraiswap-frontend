@@ -1,5 +1,5 @@
-import { ReactComponent as ObridgeDarkImg } from 'assets/icons/obridge_full_dark.svg';
-import { ReactComponent as ObridgeLightImg } from 'assets/icons/obridge_full_light.svg';
+import ObridgeDarkImg from 'assets/icons/obridge_full_dark.svg?react';
+import ObridgeLightImg from 'assets/icons/obridge_full_light.svg?react';
 import cn from 'classnames/bind';
 import { ConfigTheme, EVENT_CONFIG_THEME } from 'config/eventConfig';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';

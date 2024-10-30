@@ -1,9 +1,9 @@
 import { TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as LinkIcon } from 'assets/icons/link.svg';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
-import { ReactComponent as NoDataDark } from 'assets/images/nodata-bid-dark.svg';
-import { ReactComponent as NoData } from 'assets/images/nodata-bid.svg';
+import LinkIcon from 'assets/icons/link.svg?react';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
+import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
+import NoData from 'assets/images/nodata-bid.svg?react';
 import LoadingBox from 'components/LoadingBox';
 import { network } from 'config/networks';
 import { getTransactionUrl } from 'helper';

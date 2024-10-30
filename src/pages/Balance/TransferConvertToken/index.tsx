@@ -6,9 +6,9 @@ import {
   TokenItemType
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
-import { ReactComponent as ArrowDownIcon } from 'assets/icons/arrow.svg';
-import { ReactComponent as ArrowDownIconLight } from 'assets/icons/arrow_light.svg';
-import { ReactComponent as SuccessIcon } from 'assets/icons/toast_success.svg';
+import ArrowDownIcon from 'assets/icons/arrow.svg?react';
+import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import classNames from 'classnames';
 import Input from 'components/Input';
 import Loader from 'components/Loader';

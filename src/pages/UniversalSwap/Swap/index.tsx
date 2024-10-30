@@ -12,18 +12,18 @@ import {
   toDisplay
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { ReactComponent as BookIcon } from 'assets/icons/book_icon.svg';
+import BookIcon from 'assets/icons/book_icon.svg?react';
 import DownArrowIcon from 'assets/icons/down-arrow-v2.svg';
-import { ReactComponent as FeeIcon } from 'assets/icons/fee.svg';
-import { ReactComponent as FeeDarkIcon } from 'assets/icons/fee_dark.svg';
-import { ReactComponent as IconOirSettings } from 'assets/icons/iconoir_settings.svg';
-import { ReactComponent as SendIcon } from 'assets/icons/send.svg';
-import { ReactComponent as SendDarkIcon } from 'assets/icons/send_dark.svg';
+import FeeIcon from 'assets/icons/fee.svg?react';
+import FeeDarkIcon from 'assets/icons/fee_dark.svg?react';
+import IconOirSettings from 'assets/icons/iconoir_settings.svg?react';
+import SendIcon from 'assets/icons/send.svg?react';
+import SendDarkIcon from 'assets/icons/send_dark.svg?react';
 import SwitchLightImg from 'assets/icons/switch-new-light.svg';
 import SwitchDarkImg from 'assets/icons/switch-new.svg';
 import UpArrowIcon from 'assets/icons/up-arrow.svg';
-import { ReactComponent as WarningIcon } from 'assets/icons/warning_icon.svg';
-import { ReactComponent as RefreshImg } from 'assets/images/refresh.svg';
+import WarningIcon from 'assets/icons/warning_icon.svg?react';
+import RefreshImg from 'assets/images/refresh.svg?react';
 import { assets } from 'chain-registry';
 import cn from 'classnames/bind';
 import Loader from 'components/Loader';
@@ -385,7 +385,7 @@ const SwapComponent: React.FC<{
       });
     } finally {
       setSwapLoading(false);
-      if (process.env.REACT_APP_SENTRY_ENVIRONMENT === 'production') {
+      if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
         const address = [oraiAddress, metamaskAddress, tronAddress].filter(Boolean).join(' ');
         const logEvent = {
           address,

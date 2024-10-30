@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styles from './index.module.scss';
 import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
 import { calculateTimeoutTimestamp, toAmount, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as BitcoinIcon } from 'assets/icons/bitcoin.svg';
+import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import { getUsd } from 'libs/utils';
 import Loader from 'components/Loader';
 import { Button } from 'components/Button';

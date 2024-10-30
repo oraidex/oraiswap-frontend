@@ -13,7 +13,7 @@ import { WalletItem } from '../WalletItem';
 import styles from './WalletByNetwork.module.scss';
 import { useInactiveConnect } from 'hooks/useMetamask';
 import Metamask from 'libs/metamask';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { ChainEnableByNetwork, triggerUnlockOwalletInEvmNetwork } from 'components/WalletManagement/wallet-helper';
 
 export type ConnectStatus = 'init' | 'confirming-switch' | 'confirming-disconnect' | 'loading' | 'failed' | 'success';

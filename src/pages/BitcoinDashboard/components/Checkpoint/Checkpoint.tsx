@@ -1,5 +1,5 @@
 import { toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import Search from 'components/SearchInput';
 import TokenBalance from 'components/TokenBalance';
 import useConfigReducer from 'hooks/useConfigReducer';

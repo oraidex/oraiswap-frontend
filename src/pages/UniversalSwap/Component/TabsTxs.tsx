@@ -62,7 +62,7 @@ const TabsNetwork: React.FC<{
             setNetworkFilter(initNetworkFilter);
             setIsNetwork(false);
           }}
-          icons={<img className={cx('logo')} src={theme === 'light' ? NetworkImg : NetworkImg} alt="network" />}
+          icons={<img className={cx('logo')} src={NetworkImg} alt="network" />}
           item={{ chainName: 'All networks' }}
           theme={theme}
           isCheck={networkFilter === 'All networks'}
@@ -175,12 +175,12 @@ export const TabsTxs: React.FC<{
                 <networkFilter.Icon className={cx('logo')} />
               )
             ) : (
-              <img src={theme === 'light' ? NetworkImg : NetworkImg} alt="network" />
+              <img src={NetworkImg} alt="network" />
             )}
             <div className={cx('all-network')}>
               <span className={cx(`detail`)}>{networkFilter?.label ?? 'All Networks'}</span>
             </div>
-            <img src={theme === 'light' ? ArrowImg : ArrowImg} alt="arrow" />
+            <img src={ArrowImg} alt="arrow" />
           </div>
           {isNetwork && (
             <TabsNetwork

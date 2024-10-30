@@ -17,10 +17,10 @@ import {
 } from '@oraichain/oraidex-common';
 import { isSupportedNoPoolSwapEvm, UniversalSwapHandler } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as ArrowDownIcon } from 'assets/icons/arrow.svg';
-import { ReactComponent as ArrowDownIconLight } from 'assets/icons/arrow_light.svg';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as RefreshIcon } from 'assets/icons/reload.svg';
+import ArrowDownIcon from 'assets/icons/arrow.svg?react';
+import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
+import RefreshIcon from 'assets/icons/reload.svg?react';
 import { BitcoinUnit } from 'bitcoin-units';
 import classNames from 'classnames';
 import CheckBox from 'components/CheckBox';

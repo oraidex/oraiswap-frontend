@@ -1,6 +1,6 @@
-import { ReactComponent as AprIcon } from 'assets/icons/ic_apr.svg';
-import { ReactComponent as BoostIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BoostIconLight } from 'assets/icons/boost-icon.svg';
+import AprIcon from 'assets/icons/ic_apr.svg?react';
+import BoostIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BoostIconLight from 'assets/icons/boost-icon.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';

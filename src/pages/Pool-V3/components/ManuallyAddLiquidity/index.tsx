@@ -4,7 +4,7 @@ import { FC } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
 import NumberFormat from 'react-number-format';
-import { ReactComponent as LeafIcon } from 'assets/icons/leaf.svg';
+import LeafIcon from 'assets/icons/leaf.svg?react';
 
 interface ManuallyAddLiquidityProps {
   apr: number;

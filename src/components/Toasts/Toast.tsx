@@ -1,8 +1,8 @@
-import { ReactComponent as LinkIcon } from 'assets/icons/link.svg';
-import { ReactComponent as FailedIcon } from 'assets/icons/ic_failed_trans.svg';
-import { ReactComponent as InfoIcon } from 'assets/icons/ic_info_trans.svg';
-import { ReactComponent as SuccessIcon } from 'assets/icons/ic_status_done.svg';
-import { ReactComponent as CloseIcon } from 'assets/icons/ic_close_toast.svg';
+import LinkIcon from 'assets/icons/link.svg?react';
+import FailedIcon from 'assets/icons/ic_failed_trans.svg?react';
+import InfoIcon from 'assets/icons/ic_info_trans.svg?react';
+import SuccessIcon from 'assets/icons/ic_status_done.svg?react';
+import CloseIcon from 'assets/icons/ic_close_toast.svg?react';
 import Loader from 'components/Loader';
 import { reduceString } from 'libs/utils';
 import { toast, ToastOptions } from 'react-toastify';
