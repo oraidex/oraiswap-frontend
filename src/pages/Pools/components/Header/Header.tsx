@@ -1,11 +1,5 @@
 import { ExecuteInstruction } from '@cosmjs/cosmwasm-stargate';
 import { CW20_DECIMALS, ORAI, ORAI_INFO, USDT_CONTRACT, toDecimal, toDisplay } from '@oraichain/oraidex-common';
-import UpIcon from 'assets/icons/up-arrow.svg?react';
-import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
-import OraiIcon from 'assets/icons/oraichain.svg?react';
-import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
-import bg_claim_btn from 'assets/images/bg_claim_btn.svg?react';
-import bg_claim_btn_light from 'assets/images/bg_claim_btn_light.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';

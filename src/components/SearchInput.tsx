@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './SearchInput.module.scss';
-import SearchSvg from 'assets/images/search-svg.svg?react';
-import SearchLightSvg from 'assets/images/search-light-svg.svg?react';
+import SearchSvg from 'assets/images/search-svg.svg';
+import SearchLightSvg from 'assets/images/search-light-svg.svg';
 import Input, { InputProps } from './Input';
 
 const Search: React.FC<InputProps> = ({ className, isBorder, theme, style, ...props }) => {
