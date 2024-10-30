@@ -37,7 +37,6 @@ const PoolV3Detail = () => {
   const { poolLiquidities, poolVolume } = useGetPoolLiquidityVolume(poolPrice);
   const [isOpenCreatePosition, setIsOpenCreatePosition] = useState(false);
   const navigate = useNavigate();
-  const isMobileMode = isMobile();
   const theme = useTheme();
   const { poolId } = useParams<{ poolId: string }>();
 

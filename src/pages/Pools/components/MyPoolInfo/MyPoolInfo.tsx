@@ -20,6 +20,7 @@ import { StakeLPModal } from '../StakeLPModal';
 import { UnstakeLPModal } from '../UnstakeLPModal';
 import { WithdrawLiquidityModal } from '../WithdrawLiquidityModal';
 import styles from './MyPoolInfo.module.scss';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
 
 type ModalPool = 'deposit' | 'withdraw' | 'stake' | 'unstake';
 type Props = { myLpBalance: bigint; onLiquidityChange: () => void };
