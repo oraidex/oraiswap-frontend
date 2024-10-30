@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import DoneStepImg from 'assets/images/done-step.svg?react';
+import DoneStepImg from 'assets/images/done-step.svg';
 import cn from 'classnames/bind';
 import Modal from 'components/Modal';
 import Pie from 'components/Pie';

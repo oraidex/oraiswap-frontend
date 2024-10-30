@@ -1,6 +1,6 @@
-import OraiBtc from 'assets/icons/btc-icon.svg?react';
+import OraiBtc from 'assets/icons/btc-icon.svg';
 import { config } from '../config';
-import Orai from 'assets/icons/btc-icon.svg?react';
+import Orai from 'assets/icons/btc-icon.svg';
 import { network } from 'config/networks';
 import { BTC_CONTRACT } from '@oraichain/oraidex-common';
 
