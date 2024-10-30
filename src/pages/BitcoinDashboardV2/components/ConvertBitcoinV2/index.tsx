@@ -215,7 +215,7 @@ const ConvertBitcoinV2: React.FC<{}> = ({}) => {
               <span className={styles.usd}>{formatDisplayUsdt(amountUSD)}</span>
             </div>
 
-            <div className={`${styles.stakeBtn} ${styles.inDesktop}`}>
+            <div className={`${styles.stakeBtn}`}>
               <Button
                 type="primary"
                 disabled={loading || withdrawFeeBtc?.withdrawal_fees === undefined}
