@@ -17,8 +17,8 @@ import {
   ZapOutLiquidityResponse,
   ZapOutResult
 } from '@oraichain/oraiswap-v3';
-import { ReactComponent as ErrorIcon } from 'assets/icons/error-fill-icon.svg';
-import { ReactComponent as OutputIcon } from 'assets/icons/zapOutput-ic.svg';
+import ErrorIcon from 'assets/icons/error-fill-icon.svg?react';
+import OutputIcon from 'assets/icons/zapOutput-ic.svg?react';
 import classNames from 'classnames';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
@@ -37,6 +37,7 @@ import useTheme from 'hooks/useTheme';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import mixpanel from 'mixpanel-browser';
+import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
 import useZap from 'pages/Pool-V3/hooks/useZap';
 import { FC, useEffect, useState } from 'react';
@@ -46,7 +47,6 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from 'store/configure';
 import SelectToken from '../SelectToken';
 import styles from './index.module.scss';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
 
 const cx = cn.bind(styles);
 
@@ -202,7 +202,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
       console.log('error', error);
     } finally {
       setLoading(false);
-      if (process.env.REACT_APP_SENTRY_ENVIRONMENT === 'production') {
+      if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
         const logEvent = {
           address: walletAddress,
           tokenZap: tokenZap.name,

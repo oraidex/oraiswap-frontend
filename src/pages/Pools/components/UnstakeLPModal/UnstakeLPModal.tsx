@@ -1,5 +1,5 @@
 import { ORAI, toAmount } from '@oraichain/oraidex-common';
-import { ReactComponent as CloseIcon } from 'assets/icons/ic_close_modal.svg';
+import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';

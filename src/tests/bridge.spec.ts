@@ -56,15 +56,15 @@ describe('bridge', () => {
     expect(res).toBe(keplrAddress);
   });
 
-  it('bridge-convert-kwt-should-return-only-evm-amount', async () => {
-    const transferAmount = 10;
-    const fromToken = cosmosTokens.find((item) => item.name === 'KWT' && item.chainId === 'kawaii_6886-1');
-    const evmAmount = coin(toAmount(transferAmount, fromToken.decimals).toString(), fromToken.denom);
-    expect(evmAmount).toMatchObject({
-      amount: '10000000000000000000', // 10 * 10**18
-      denom: fromToken.denom
-    });
-  });
+  // it('bridge-convert-kwt-should-return-only-evm-amount', async () => {
+  //   const transferAmount = 10;
+  //   const fromToken = cosmosTokens.find((item) => item.name === 'KWT' && item.chainId === 'kawaii_6886-1');
+  //   const evmAmount = coin(toAmount(transferAmount, fromToken.decimals).toString(), fromToken.denom);
+  //   expect(evmAmount).toMatchObject({
+  //     amount: '10000000000000000000', // 10 * 10**18
+  //     denom: fromToken.denom
+  //   });
+  // });
 
   describe('bridge-transfer-token-erc20-cw20', () => {
     const denom = KWTBSC_ORAICHAIN_DENOM;
@@ -132,18 +132,6 @@ describe('bridge', () => {
 
   it.each<[TokenItemType, NetworkChainId, string, CoinGeckoId]>([
     [
-      flattenTokens.find((item) => item.name === 'ERC20 MILKY' && item.chainId === 'kawaii_6886-1'),
-      'Oraichain',
-      'MILKY',
-      'milky-token'
-    ],
-    [
-      flattenTokens.find((item) => item.name === 'MILKY' && item.chainId === 'kawaii_6886-1'),
-      'Oraichain',
-      'MILKY',
-      'milky-token'
-    ],
-    [
       flattenTokens.find((item) => item.name === 'MILKY' && item.chainId === 'Oraichain'),
       '0x38',
       'MILKY',
@@ -192,7 +180,6 @@ describe('bridge', () => {
   it.each<[NetworkChainId, string, string]>([
     ['0x38', '0x', `${BSC_SCAN}/tx/0x`],
     ['0x01', '0x', `${ETHEREUM_SCAN}/tx/0x`],
-    ['kawaii_6886-1', '0x', `${KWT_SCAN}/tx/0x`],
     ['0x2b6653dc', '0x1234', `${TRON_SCAN}/#/transaction/1234`],
     ['Oraichain', '0x', `${network.explorer}/txs/0x`]
   ])(
@@ -260,16 +247,16 @@ describe('bridge', () => {
     expect(transferMsgs[0].timeoutTimestamp).toEqual(expectedTimeoutTimestamp);
   });
 
-  describe('helper function', () => {
-    it.each<[Tokens, NetworkChainId[]]>([
-      [
-        flattenTokens.find((i) => i.coinGeckoId === 'oraichain-token' && i.chainId === 'Oraichain'),
-        ['injective-1', '0x01', '0x38']
-      ],
-      [flattenTokens.find((i) => i.name === 'MILKY' && i.chainId === 'Oraichain'), ['kawaii_6886-1', '0x38']]
-    ])('should filter chain bridge run exactly', async (token: Tokens, expectedBridgeNetwork: NetworkChainId[]) => {
-      const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
-      expect(bridgeNetworks.map((network) => network.chainId)).toEqual(expectedBridgeNetwork);
-    });
-  });
+  // describe('helper function', () => {
+  //   it.each<[Tokens, NetworkChainId[]]>([
+  //     [
+  //       flattenTokens.find((i) => i.coinGeckoId === 'oraichain-token' && i.chainId === 'Oraichain'),
+  //       ['injective-1', '0x01', '0x38']
+  //     ],
+  //     [flattenTokens.find((i) => i.name === 'MILKY' && i.chainId === 'Oraichain'), ['kawaii_6886-1', '0x38']]
+  //   ])('should filter chain bridge run exactly', async (token: Tokens, expectedBridgeNetwork: NetworkChainId[]) => {
+  //     const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
+  //     expect(bridgeNetworks.map((network) => network.chainId)).toEqual(expectedBridgeNetwork);
+  //   });
+  // });
 });

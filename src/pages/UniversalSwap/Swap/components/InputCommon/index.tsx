@@ -2,8 +2,8 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import styles from './index.module.scss';
 import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { reduceString } from 'libs/utils';
-import { ReactComponent as ErrorIcon } from 'assets/icons/icon_error.svg';
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
+import ErrorIcon from 'assets/icons/icon_error.svg?react';
+import CloseIcon from 'assets/icons/close.svg?react';
 import { isMobile } from '@walletconnect/browser-utils';
 import classNames from 'classnames';
 

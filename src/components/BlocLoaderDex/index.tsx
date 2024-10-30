@@ -1,4 +1,4 @@
-import { ReactComponent as ORAIX } from 'assets/icons/oraix.svg';
+import ORAIX from 'assets/icons/oraix.svg?react';
 import cn from 'classnames/bind';
 import React from 'react';
 import styles from './index.module.scss';

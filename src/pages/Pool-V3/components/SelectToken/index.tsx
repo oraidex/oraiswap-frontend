@@ -1,8 +1,8 @@
 import { TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
-import { ReactComponent as CloseIcon } from 'assets/icons/close-icon.svg';
-import { ReactComponent as ArrowIcon } from 'assets/icons/ic_arrow_down.svg';
-import { ReactComponent as NoResultDark } from 'assets/images/no-result-dark.svg';
-import { ReactComponent as NoResultLight } from 'assets/images/no-result.svg';
+import CloseIcon from 'assets/icons/close-icon.svg?react';
+import ArrowIcon from 'assets/icons/ic_arrow_down.svg?react';
+import NoResultDark from 'assets/images/no-result-dark.svg?react';
+import NoResultLight from 'assets/images/no-result.svg?react';
 import classNames from 'classnames';
 import SearchInput from 'components/SearchInput';
 import { oraichainTokensWithIcon } from 'config/chainInfos';

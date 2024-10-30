@@ -1,5 +1,5 @@
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as DownArrowIcon } from 'assets/icons/down-arrow.svg';
+import DownArrowIcon from 'assets/icons/down-arrow.svg?react';
 import cn from 'classnames/bind';
 import { allWallets } from 'components/WalletManagement/walletConfig';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';

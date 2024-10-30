@@ -4,8 +4,8 @@ import Input from 'components/Input';
 import NumberFormat from 'react-number-format';
 import CheckBox from 'components/CheckBox';
 import { tokenMap } from 'config/bridgeTokens';
-import { ReactComponent as WalletIcon } from 'assets/icons/wallet1.svg';
-import { ReactComponent as TokensIcon } from 'assets/icons/tokens.svg';
+import WalletIcon from 'assets/icons/wallet1.svg?react';
+import TokensIcon from 'assets/icons/tokens.svg?react';
 import { toAmount, toDisplay } from '@oraichain/oraidex-common';
 
 const cx = cn.bind(styles);

@@ -1,7 +1,7 @@
 import { CW20_STAKING_CONTRACT, ORAI, calculateMinReceive, toDisplay, BigDecimal } from '@oraichain/oraidex-common';
-import { ReactComponent as OraiXIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
+import OraiXIcon from 'assets/icons/oraix.svg?react';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 
 import useConfigReducer from 'hooks/useConfigReducer';
 

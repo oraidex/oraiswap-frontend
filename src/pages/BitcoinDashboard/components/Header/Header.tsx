@@ -1,5 +1,5 @@
 import { toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as BitcoinIcon } from 'assets/icons/bitcoin.svg';
+import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import TokenBalance from 'components/TokenBalance';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';

@@ -5,6 +5,7 @@
   "repository": "https://github.com/oraichain/oraiswap-frontend.git",
   "author": "Oraichain Labs",
   "license": "Apache-2.0",
+  "type": "module",
   "dependencies": {
     "@babel/plugin-proposal-import-wasm-source": "^7.24.7",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
@@ -31,6 +32,7 @@
     "@tanstack/react-query": "^4.32.6",
     "@tharsis/proto": "^0.1.17",
     "@tippyjs/react": "^4.2.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "@visx/curve": "^2.17.0",
     "@visx/gradient": "^3.3.0",
     "@visx/responsive": "^2.17.0",
@@ -67,7 +69,9 @@
     "redux-persist": "^6.0.0",
     "serialize-error": "8.0.0",
     "tronweb": "^5.1.0",
-    "urql": "^4.1.0"
+    "urql": "^4.1.0",
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-tsconfig-paths": "^5.0.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -81,6 +85,7 @@
     "@oraichain/oraidex-contracts-build": "1.0.22",
     "@oraichain/oraiswap-v3": "0.1.22",
     "@sentry/webpack-plugin": "^2.10.3",
+    "@testing-library/jest-dom": "^6.5.0",
     "@types/classnames": "^2.2.10",
     "@types/jest": "^29.5.10",
     "@types/lodash": "^4.14.182",
@@ -89,36 +94,41 @@
     "@types/react-dom": "^18.0.11",
     "@types/react-modal": "^3.13.1",
     "@types/react-router-dom": "^5.3.3",
+    "@vitest/coverage-v8": "2.0.2",
     "crypto-browserify": "^3.12.0",
     "firebase-tools": "^11.30.0",
     "graphql": "^16.9.0",
     "https-browserify": "^1.0.0",
     "husky": "^8.0.3",
+    "jsdom": "^25.0.0",
     "node-polyfill-webpack-plugin": "^3.0.0",
     "patch-package": "^6.5.1",
     "process": "^0.11.10",
-    "react-app-rewired": "^2.2.1",
-    "react-scripts": "^5.0.1",
     "sass": "^1.65.1",
     "source-map-explorer": "^2.5.3",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "ts-jest": "^29.1.1",
     "typed-scss-modules": "^7.1.4",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "vite": "^5.4.10",
+    "vite-plugin-wasm": "^3.3.0",
+    "vitest": "2.0.2"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "cross-env IMAGE_INLINE_SIZE_LIMIT=1000 GENERATE_SOURCEMAP=false react-app-rewired start",
-    "build": "cross-env IMAGE_INLINE_SIZE_LIMIT=1000 GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-app-rewired build",
-    "test": "react-app-rewired test --watchAll",
-    "test:ci": "react-app-rewired test --watchAll=false",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite serve",
     "ts-check": "tsc --noEmit",
     "postinstall": "patch-package",
     "prepare": "husky install",
     "ts-css": "typed-scss-modules src --watch --implementation sass -n all -e default",
     "clear-module-cache": "rm -rf node_modules/.cache/vendor & rm -rf public/vendor*",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage --watch=false"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -140,7 +150,7 @@
     "bitcoinjs-lib": "5.2.0",
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
-    "@oraichain/oraidex-common": "1.1.27"
+    "@oraichain/oraidex-common": "1.1.28"
   },
   "engines": {
     "node": "^18 || ^20"

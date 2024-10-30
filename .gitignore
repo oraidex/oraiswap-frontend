@@ -13,6 +13,7 @@
 
 # vendor 
 vendor
+dist/
 public/vendor.*
 
 # misc

@@ -69,15 +69,10 @@ export class MetamaskOfflineSigner implements OfflineAminoSigner {
     try {
       const result = localStorage.getItem(EIP_EIP_STORAGE_KEY_ACC);
       const parsedResult = JSON.parse(result);
-      return (
-        {
-          ...parsedResult,
-          accounts: [{ ...parsedResult.accounts[0], pubkey: this.stringToUint8Array(parsedResult.accounts[0].pubkey) }]
-        } ?? {
-          accounts: [],
-          cosmosToEvm: {}
-        }
-      );
+      return {
+        ...parsedResult,
+        accounts: [{ ...parsedResult.accounts[0], pubkey: this.stringToUint8Array(parsedResult.accounts[0].pubkey) }]
+      };
     } catch (error) {
       console.log('error getAccountFromStorage: ', error);
       return { accounts: [], cosmosToEvm: {} };

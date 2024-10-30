@@ -1,11 +1,10 @@
 import { toDisplay } from '@oraichain/oraidex-common';
-import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as AddIcon } from 'assets/icons/Add.svg';
-import { ReactComponent as BackIcon } from 'assets/icons/back.svg';
-import { ReactComponent as BootsIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BootsIcon } from 'assets/icons/boost-icon.svg';
-import { ReactComponent as NoDataDark } from 'assets/images/NoDataPool.svg';
-import { ReactComponent as NoData } from 'assets/images/NoDataPoolLight.svg';
+import AddIcon from 'assets/icons/Add.svg?react';
+import BackIcon from 'assets/icons/back.svg?react';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import NoDataDark from 'assets/images/NoDataPool.svg?react';
+import NoData from 'assets/images/NoDataPoolLight.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import LoadingBox from 'components/LoadingBox';
@@ -38,7 +37,6 @@ const PoolV3Detail = () => {
   const { poolLiquidities, poolVolume } = useGetPoolLiquidityVolume(poolPrice);
   const [isOpenCreatePosition, setIsOpenCreatePosition] = useState(false);
   const navigate = useNavigate();
-  const isMobileMode = isMobile();
   const theme = useTheme();
   const { poolId } = useParams<{ poolId: string }>();
 

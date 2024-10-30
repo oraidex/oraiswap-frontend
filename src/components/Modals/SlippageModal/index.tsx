@@ -1,5 +1,5 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import TransSetting from 'assets/images/trans_setting.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
+import TransSetting from 'assets/images/trans_setting.svg?react';
 import cn from 'classnames/bind';
 import { DEFAULT_MANUAL_SLIPPAGE, DEFAULT_SLIPPAGE, OPTIONS_SLIPPAGE } from '@oraichain/oraidex-common';
 import { FC, useState } from 'react';

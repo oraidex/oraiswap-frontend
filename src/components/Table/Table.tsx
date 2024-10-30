@@ -1,5 +1,5 @@
-import { ReactComponent as SortDownIcon } from 'assets/icons/down_icon.svg';
-import { ReactComponent as SortUpIcon } from 'assets/icons/up_icon.svg';
+import SortDownIcon from 'assets/icons/down_icon.svg?react';
+import SortUpIcon from 'assets/icons/up_icon.svg?react';
 import { compareNumber } from 'helper';
 import { ReactNode, useState } from 'react';
 import styles from './Table.module.scss';

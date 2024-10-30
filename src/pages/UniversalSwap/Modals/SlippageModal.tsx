@@ -1,7 +1,7 @@
 import { DEFAULT_SLIPPAGE, OPTIONS_SLIPPAGE } from '@oraichain/oraidex-common';
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as IconTooltip } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as WarningIcon } from 'assets/icons/warning_icon.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
+import IconTooltip from 'assets/icons/icon_tooltip.svg?react';
+import WarningIcon from 'assets/icons/warning_icon.svg?react';
 import cn from 'classnames/bind';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { FC, useState } from 'react';

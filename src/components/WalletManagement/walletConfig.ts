@@ -1,8 +1,8 @@
 import { WalletType as WalletCosmosType } from '@oraichain/oraidex-common/build/constant';
-import { ReactComponent as KeplrIcon } from 'assets/icons/keplr-icon.svg';
-import { ReactComponent as MetamaskIcon } from 'assets/icons/metamask-icon.svg';
-import { ReactComponent as OwalletIcon } from 'assets/icons/owallet-icon.svg';
-import { ReactComponent as TronIcon } from 'assets/icons/tron-icon.svg';
+import KeplrIcon from 'assets/icons/keplr-icon.svg?react';
+import MetamaskIcon from 'assets/icons/metamask-icon.svg?react';
+import OwalletIcon from 'assets/icons/owallet-icon.svg?react';
+import TronIcon from 'assets/icons/tron-icon.svg?react';
 import { cosmosNetworksWithIcon, evmNetworksIconWithoutTron, tronNetworksWithIcon, btcNetworksWithIcon } from 'helper';
 
 export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin';

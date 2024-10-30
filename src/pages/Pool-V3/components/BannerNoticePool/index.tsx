@@ -1,7 +1,7 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as HamsterIcon } from 'assets/icons/hmstr.svg';
-import { ReactComponent as PepeIcon } from 'assets/icons/pepe.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
+import HamsterIcon from 'assets/icons/hmstr.svg?react';
+import PepeIcon from 'assets/icons/pepe.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './index.module.scss';

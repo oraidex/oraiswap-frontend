@@ -1,3 +1,10 @@
+import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
+import classNames from 'classnames';
+import RewardIcon from 'assets/icons/rewardIc.svg?react';
+import LiquidityIcon from 'assets/icons/liquidity.svg?react';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import {
   BigDecimal,
   CW20_DECIMALS,
@@ -7,16 +14,10 @@ import {
   TokenItemType
 } from '@oraichain/oraidex-common';
 import { Tick } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { ReactComponent as BootsIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BootsIcon } from 'assets/icons/boost-icon.svg';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
-import { ReactComponent as LiquidityIcon } from 'assets/icons/liquidity.svg';
-import { ReactComponent as RewardIcon } from 'assets/icons/rewardIc.svg';
-import classNames from 'classnames';
+
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TooltipIcon } from 'components/Tooltip';
-import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTheme from 'hooks/useTheme';
 import SingletonOraiswapV3, { fetchPositionAprInfo, poolKeyToString, PositionAprInfo } from 'libs/contractSingleton';

@@ -3,9 +3,9 @@ import { BigDecimal, CoinGeckoPrices, toDisplay, TokenItemType } from '@oraichai
 import { FC, useState } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
-import { ReactComponent as ErrorIcon } from 'assets/icons/error-fill-icon.svg';
-import { ReactComponent as OutputIcon } from 'assets/icons/zapOutput-ic.svg';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
+import ErrorIcon from 'assets/icons/error-fill-icon.svg?react';
+import OutputIcon from 'assets/icons/zapOutput-ic.svg?react';
 import TooltipHover from 'components/TooltipHover';
 import NumberFormat from 'react-number-format';
 import SelectToken from '../SelectToken';
@@ -15,7 +15,7 @@ import ZappingText from 'components/Zapping';
 import { ZapInLiquidityResponse } from '@oraichain/oraiswap-v3';
 import { getIcon } from 'helper';
 import cn from 'classnames/bind';
-import { ReactComponent as LeafIcon } from 'assets/icons/leaf.svg';
+import LeafIcon from 'assets/icons/leaf.svg?react';
 
 interface ZapInTabProps {
   tokenZap: TokenItemType;

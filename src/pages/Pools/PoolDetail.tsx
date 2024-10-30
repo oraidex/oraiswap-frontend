@@ -1,7 +1,7 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { useQueryClient } from '@tanstack/react-query';
-import { ReactComponent as BackIcon } from 'assets/icons/ic_back.svg';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import BackIcon from 'assets/icons/ic_back.svg?react';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { network } from 'config/networks';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
@@ -26,7 +26,7 @@ import classNames from 'classnames';
 import Tabs from 'components/TabCustom';
 import { isMobile } from '@walletconnect/browser-utils';
 import { Button } from 'components/Button';
-import { ReactComponent as AddIcon } from 'assets/icons/Add.svg';
+import AddIcon from 'assets/icons/Add.svg?react';
 import { parseAssetOnlyDenom } from './helpers';
 import { AddLiquidityModal } from './components/AddLiquidityModal';
 import { numberWithCommas } from 'helper/format';

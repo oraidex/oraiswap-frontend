@@ -1,7 +1,7 @@
 import { CustomChainInfo, TokenItemType, truncDecimals, HMSTR_ORAICHAIN_DENOM } from '@oraichain/oraidex-common';
-import { ReactComponent as IconoirCancel } from 'assets/icons/iconoir_cancel.svg';
-import { ReactComponent as NoResultDark } from 'assets/images/no-result-dark.svg';
-import { ReactComponent as NoResultLight } from 'assets/images/no-result.svg';
+import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
+import NoResultDark from 'assets/images/no-result-dark.svg?react';
+import NoResultLight from 'assets/images/no-result.svg?react';
 import cn from 'classnames/bind';
 import SearchInput from 'components/SearchInput';
 import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';

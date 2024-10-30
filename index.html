@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.svg" />
+    <link rel="icon" href="/favicon.svg" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8T22XRLHXY"></script>
     <script>
@@ -14,31 +14,36 @@
       gtag('config', 'G-8T22XRLHXY');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <title>%REACT_APP_SITE_TITLE%</title>
+    <title>%VITE_APP_SITE_TITLE%</title>
+
+    <base href="/" />
+
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="%REACT_APP_SITE_DESC%" />
+    <meta name="description" content="%VITE_APP_SITE_DESC%" />
 
     <meta name="keywords" content="OraiDEX, copyright, AI, Blockchain, Swap" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="%REACT_APP_SITE_TITLE%" />
-    <meta property="og:description" content="%REACT_APP_SITE_DESC%" />
+    <meta property="og:title" content="%VITE_APP_SITE_TITLE%" />
+    <meta property="og:description" content="%VITE_APP_SITE_DESC%" />
     <meta property="og:image" content="%PUBLIC_URL%/thumbnail_oraidex_final.png" />
     <meta property="og:image:width" content="1024" />
     <meta property="og:image:height" content="576" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="%REACT_APP_SITE_TITLE%" />
-    <meta name="twitter:description" content="%REACT_APP_SITE_DESC%" />
-
+    <meta name="twitter:title" content="%VITE_APP_SITE_TITLE%" />
+    <meta name="twitter:description" content="%VITE_APP_SITE_DESC%" />
     <meta name="twitter:image" content="%PUBLIC_URL%/thumbnail_oraidex_final.png" />
 
     <meta property="twitter:url" content="%PUBLIC_URL%" />
     <meta property="twitter:domain" content="%PUBLIC_URL%" />
+    <script>
+      var exports = {};
+    </script>
   </head>
   <body>
     <div id="oraiswap"></div>
     <script src="https://do.featurebase.app/js/sdk.js" id="featurebase-sdk"></script>
-    <script src="/vendor.%VENDOR_VERSION%.js"></script>
+    <script type="module" src="/src/index.tsx"></script>
     <script type="text/javascript">
       (function (c, l, a, r, i, t, y) {
         c[a] =

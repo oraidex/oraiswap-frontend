@@ -1,5 +1,5 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as IconOirSettings } from 'assets/icons/iconoir_settings.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
+import IconOirSettings from 'assets/icons/iconoir_settings.svg?react';
 import styles from './index.module.scss';
 import classNames from 'classnames';
 import { floatToPercent } from 'helper';
