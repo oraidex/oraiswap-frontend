@@ -379,10 +379,11 @@ export const getProtocolsSmartRoute = (
 ) => {
   const protocols = ['Oraidex', 'OraidexV3'];
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
+  if (fromToken.chainId === 'noble-1' || toToken.chainId === 'noble-1') return protocols;
 
   const allowOsmosisProtocols = ['injective-1', 'Neutaro-1', 'noble-1', 'osmosis-1', 'cosmoshub-4', 'celestia'];
   const isAllowOsmosisProtocol =
-    allowOsmosisProtocols.includes(fromToken.chainId) || allowOsmosisProtocols.includes(toToken.chainId);
+    allowOsmosisProtocols.includes(fromToken?.chainId) || allowOsmosisProtocols.includes(toToken?.chainId);
 
   if (isAllowOsmosisProtocol) return [...protocols, 'Osmosis'];
   return protocols;
