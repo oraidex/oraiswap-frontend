@@ -19,7 +19,7 @@ import {
   getEvmAddress,
   tronToEthAddress
 } from '@oraichain/oraidex-common';
-import { isEvmNetworkNativeSwapSupported } from '@oraichain/oraidex-universal-swap';
+import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { chainInfos, evmChains } from 'config/chainInfos';
 import { network } from 'config/networks';
 import { ethers } from 'ethers';
@@ -38,6 +38,7 @@ export type LoadTokenParams = {
 
 async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo: { chainId: string; rpc: string }) {
   if (!address) return;
+  if (!tokenInfo) return;
   try {
     const client = await StargateClient.connect(tokenInfo.rpc);
     const amountAll = await client.getAllBalances(address);
@@ -242,9 +243,12 @@ async function loadEvmEntries(
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
-    const tokens = evmTokens.filter((t) => t.chainId === chain.chainId && t.contractAddress);
+    const tokens = evmTokens.filter((t) => t.chainId === chain?.chainId && t.contractAddress);
     const nativeEvmToken = evmTokens.find(
-      (t) => !t.contractAddress && isEvmNetworkNativeSwapSupported(chain.chainId) && chain.chainId === t.chainId
+      (t) =>
+        !t.contractAddress &&
+        UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId) &&
+        chain?.chainId === t.chainId
     );
     if (!tokens.length) return [];
     const multicall = new Multicall({
