@@ -96,6 +96,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
     zapApr,
     cache3Month,
     cache7Day,
+    setIsFullRange,
     setApr,
     setZapApr,
     setTokenZap,
@@ -358,8 +359,18 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                     liquidityChartData={liquidityChartData}
                     currentPrice={currentPrice}
                     fullRange={fullRange}
-                    setMaxPrice={setMaxPrice}
-                    setMinPrice={setMinPrice}
+                    setMaxPrice={(value: number) => {
+                      setMaxPrice(value);
+                      if (optionType === OptionType.FULL_RANGE) {
+                        setIsFullRange(false);
+                      }
+                    }}
+                    setMinPrice={(value: number) => {
+                      setMinPrice(value);
+                      if (optionType === OptionType.FULL_RANGE) {
+                        setIsFullRange(false);
+                      }
+                    }}
                     zoomIn={zoomIn}
                     zoomOut={zoomOut}
                     resetRange={resetRange}

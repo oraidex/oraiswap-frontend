@@ -170,7 +170,7 @@ export const _calculateTokenAmounts = (pool: Pool, position: Position, sign: boo
 // 8e-6 usdt = 1 pepe
 
 export const calculateFee = (pool: Pool, position: Position, lowerTick: Tick, upperTick: Tick): TokenAmounts => {
-  return wasmCalculateFee(
+  const res = wasmCalculateFee(
     lowerTick.index,
     BigInt(lowerTick.fee_growth_outside_x),
     BigInt(lowerTick.fee_growth_outside_y),
@@ -184,6 +184,11 @@ export const calculateFee = (pool: Pool, position: Position, lowerTick: Tick, up
     BigInt(position.fee_growth_inside_y),
     BigInt(position.liquidity)
   );
+
+  res.x = BigInt(res.x) > 4000000000000000n ? 0n : BigInt(res.x);
+  res.y = BigInt(res.y) > 4000000000000000n ? 0n : BigInt(res.y);
+
+  return res;
 };
 
 export const getTick = (tickData) => {

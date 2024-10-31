@@ -190,6 +190,10 @@ export default class SingletonOraiswapV3 {
     return this._dex;
   }
 
+  public static get cosmwasmClient() {
+    return this._cosmwasmClient;
+  }
+
   private constructor() {}
 
   public static async load(signingClient: SigningCosmWasmClient, sender: string) {
