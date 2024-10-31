@@ -94,10 +94,8 @@
       width: 100%;
     }
 
-    background: #2b2d3b;
-
-    &.light {
-      background-color: $light-bg-primary-box;
+    @include theme {
+      background: theme-get('neutral-surface-bg-btn-disabled');
     }
 
     text-align: center;
@@ -131,7 +129,7 @@
 
   &_form {
     width: 420px;
-    background: #2b2d3b;
+    background: #232521;
     border-radius: 8px;
     padding: 12px;
     height: 56px;
@@ -173,9 +171,9 @@
   flex-direction: row;
 
   .tfBtn {
+    background-color: $primary-bg-btn;
     @include theme() {
-      background-color: theme-get('bg-btn-primary');
-      box-shadow: theme-get('shadow-btn');
+      color: theme-get('neutral-text-text-btn-default');
     }
 
     border-radius: 8px;
@@ -273,11 +271,11 @@
 
   &_element {
     margin-bottom: 20px;
-    background-color: #191b21;
+    background-color: #232521;
     border-radius: 16px;
 
     &.light {
-      background-color: $light-bg-primary-box;
+      background-color: #f7f7f7;
     }
   }
 }
@@ -285,11 +283,11 @@
 .balances {
   display: flex;
   justify-content: center;
-  padding-top: 12px;
+  padding: 12px 8px 0 8px;
   width: 100%;
 
-  .light {
-    color: #a871df;
+  @include theme {
+    color: theme-get('colors-neutral-text-text-token-name');
   }
 
   .box {
@@ -320,7 +318,16 @@
       }
 
       :hover {
-        color: #a871df;
+        text-decoration: underline;
+        filter: brightness(1.5);
+      }
+
+      svg {
+        path {
+          @include theme {
+            fill: theme-get('primary-surface-default-dark-3');
+          }
+        }
       }
     }
   }

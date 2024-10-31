@@ -4,12 +4,6 @@
 
 .fastMode {
   margin-top: 8px;
-
-  .switch {
-    &::before {
-      background-color: #8363c9;
-    }
-  }
 }
 
 .transferTab {
@@ -17,12 +11,11 @@
   margin-top: 20px;
 
   .tfBtn {
+    background-color: $primary-bg-btn;
     @include theme() {
-      background-color: theme-get('bg-btn-primary');
-      box-shadow: theme-get('shadow-btn');
+      color: theme-get('neutral-text-text-btn-default');
     }
 
-    color: $white-color;
     border-radius: 8px;
     padding: 16px;
     @include flex();
@@ -58,7 +51,9 @@
   font-size: 14px;
   line-height: 150%;
   text-align: center;
-  color: #777e90;
+  @include theme() {
+    color: theme-get('neutral-8');
+  }
   align-self: flex-start;
   margin: 8px 8px 8px 0;
 }
@@ -96,7 +91,10 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 100%;
-  color: #777e90;
+
+  @include theme {
+    color: theme-get('neutral-8');
+  }
 
   &.token {
     align-self: flex-end;
@@ -120,8 +118,19 @@
   }
 
   .balanceBtn {
+    @include theme {
+      border: 1px solid transparent;
+      background: theme-get('primary-surface-default-subtle');
+      color: theme-get('primary-surface-default-dark-3');
+    }
+
+    &:hover {
+      @include theme {
+        border: 1px solid theme-get('primary-surface-default-dark-3');
+      }
+    }
+
     cursor: pointer;
-    background: #191b21;
     border-radius: 8px;
     width: 66px;
     padding: 10px;
@@ -137,26 +146,22 @@
       margin-left: 8px;
       padding: 6px;
     }
-
-    color: #a871df;
   }
 }
 
 .amount {
   text-align: left;
-  background: #2b2d3b;
   border-radius: 8px;
   height: 48px;
   width: 180px;
   padding: 12px;
   box-sizing: border-box;
-  color: #ebebeb;
   font-weight: 600;
   font-size: 24px;
 
-  &.light {
-    background: #efefef;
-    color: $light-text-color;
+  @include theme {
+    background: theme-get('neutral-surface-bg-btn-disabled');
+    color: theme-get('colors-neutral-text-text-token-name');
   }
 
   @include mobile {
@@ -188,13 +193,20 @@
     }
 
     .balanceBtn {
-      background: #2e283d;
+      @include theme {
+        border: 1px solid transparent;
+        background: theme-get('primary-surface-default-subtle');
+        color: theme-get('primary-surface-default-dark-3');
+      }
+
+      &:hover {
+        @include theme {
+          border: 1px solid theme-get('primary-surface-default-dark-3');
+        }
+      }
+
       font-weight: 500;
       border-radius: 8px;
-
-      &.light {
-        background-color: #efe6f8;
-      }
 
       @include desktop {
         width: 66px;
@@ -207,7 +219,6 @@
       }
 
       height: 48px;
-      color: #a871df;
       text-align: center;
     }
 
@@ -218,8 +229,9 @@
       display: flex;
       gap: 10px;
 
-      &.light {
-        background-color: $blue-color;
+      background-color: $primary-bg-btn;
+      @include theme() {
+        color: theme-get('neutral-text-text-btn-default');
       }
     }
   }
@@ -270,12 +282,15 @@
         .address {
           margin-left: 10px;
           border-radius: 8px;
-          border: 1px solid #777e90;
           padding: 2px 8px;
-          color: #777e90;
           font-size: 13px;
           display: flex;
           justify-content: center;
+
+          @include theme {
+            color: theme-get('neutral-8');
+            border: 1px solid theme-get('neutral-8');
+          }
         }
       }
     }
@@ -286,13 +301,13 @@
       cursor: pointer;
 
       &_filter {
-        background: #2b2d3b;
         text-align: center;
         border-radius: 8px;
         padding: 12px;
 
-        &.light {
-          background: #efefef;
+        @include theme {
+          background: theme-get('neutral-surface-bg-btn-disabled');
+          color: theme-get('neutral-8');
         }
       }
 
@@ -356,8 +371,8 @@
 .items {
   position: absolute;
   width: 100%;
-  background: #2b2d3b;
-  border: 1.5px solid #5a5270;
+  background: #232521;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
   z-index: 1;
 
   &_chain {
@@ -375,13 +390,19 @@
 
   li {
     padding: 12px 24px 12px 24px;
+    border-radius: 8px;
   }
 
   li:hover {
-    background-color: #703cde;
+    @include theme {
+      background-color: theme-get('neutral-6');
+    }
+    filter: brightness(1.25);
 
     div {
-      color: $white-color;
+      @include theme {
+        color: theme-get('neutral-8');
+      }
     }
   }
 

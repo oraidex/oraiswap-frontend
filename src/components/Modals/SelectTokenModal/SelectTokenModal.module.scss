@@ -1,5 +1,5 @@
 @import 'src/styles/themes';
-@import "src/styles/mixins";
+@import 'src/styles/mixins';
 
 .select {
   background: #141416;
@@ -28,7 +28,7 @@
     /* aiRight/White */
 
     &.light {
-     color: #6F767E;
+      color: #6f767e;
     }
   }
 
@@ -42,10 +42,9 @@
     .item {
       &.light {
         &.light {
-          color: #6F767E;
-         }
+          color: #6f767e;
+        }
       }
-
 
       border-radius: 8px;
       display: flex;
@@ -69,12 +68,13 @@
 
       &:hover {
         cursor: pointer;
-        background: #333642;
+        background: #232521;
+        opacity: 0.7;
       }
 
       &.light:hover {
-        background-color: $blue-color;
-        color: #fff;
+        background-color: #f7f7f7;
+        opacity: 0.7;
       }
 
       .logo {

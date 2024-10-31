@@ -211,17 +211,14 @@ export const OraiToken: BridgeAppCurrency = {
 
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
-  currencies: [
-    ...customOraichainNetwork.currencies
-    // {
-    //   coinDenom: 'BTC V2',
-    //   coinGeckoId: 'bitcoin',
-    //   coinMinimalDenom: CWBitcoinFactoryDenom,
-    //   bridgeTo: ['bitcoin'] as any,
-    //   coinDecimals: 14 as any,
-    //   coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'
-    // }
-  ]
+  currencies: [...customOraichainNetwork.currencies].map((tk) => {
+    if (tk.coinGeckoId === 'the-open-network') {
+      const bridgeToken = { ...tk, bridgeTo: [TonChainId, 'osmosis-1'] };
+      return bridgeToken;
+    }
+
+    return tk;
+  })
 };
 
 export const OraiBTCBridgeNetwork = {
@@ -278,7 +275,7 @@ export const OraiBTCBridgeNetwork = {
   }
 };
 
-export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork];
+export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork, tonNetworkMainnet];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 
 // exclude kawaiverse subnet and other special evm that has different cointype

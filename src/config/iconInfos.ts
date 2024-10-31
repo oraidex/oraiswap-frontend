@@ -29,6 +29,7 @@ import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
+import { TonChainId } from 'context/ton-provider';
 
 export type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
 export type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight'>;
@@ -236,6 +237,11 @@ export const chainIconsInfos: ChainIcon[] = [
     chainId: 'celestia',
     Icon: CelestiaIcon,
     IconLight: CelestiaIcon
+  },
+  {
+    chainId: TonChainId,
+    Icon: TonIcon,
+    IconLight: TonIcon
   }
 ];
 
