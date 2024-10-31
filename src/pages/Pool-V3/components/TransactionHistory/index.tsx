@@ -9,11 +9,11 @@ import { network } from 'config/networks';
 import { getTransactionUrl } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { getUsd, reduceString } from 'libs/utils';
+import { reduceString } from 'libs/utils';
 import { formatDateV2, formatTime } from 'pages/CoHarvest/helpers';
+import { useTransactionHistory } from 'pages/Pool-V3/hooks/useTransactionHistory';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import styles from './index.module.scss';
-import { useTransactionHistory } from 'pages/Pool-V3/hooks/useTransactionHistory';
 
 const TransactionHistory = ({
   baseToken,
@@ -97,8 +97,8 @@ const TransactionHistory = ({
                           </div> */}
                           <div className={styles.time}>
                             <div>
-                              <span>{formatDateV2(item.timestamp * 1000)}</span>
-                              <span>{formatTime(item.timestamp * 1000)}</span>
+                              <span>{formatDateV2(new Date(item.timestamp))}</span>
+                              <span>{formatTime(new Date(item.timestamp))}</span>
                             </div>
                           </div>
                         </div>
@@ -199,8 +199,8 @@ const TransactionHistory = ({
                           </td>
                           <td className={styles.time}>
                             <div>
-                              <span>{formatDateV2(item.timestamp * 1000)}</span>
-                              <span>{formatTime(item.timestamp * 1000)}</span>
+                              <span>{formatDateV2(new Date(item.timestamp))}</span>
+                              <span>{formatTime(new Date(item.timestamp))}</span>
                             </div>
                           </td>
                           <td className={`${styles.pay}`}>

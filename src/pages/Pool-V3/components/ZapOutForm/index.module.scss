@@ -24,7 +24,10 @@
   .mask {
     height: 170px;
     width: 100%;
-    background: linear-gradient(180deg, transparent 0%, rgba(174, 230, 127, 0.16) 185px);
+    
+    @include theme {
+      background: theme-get('neutral-text-text-disabled');
+    }
     position: absolute;
     top: 0;
     left: 0;
@@ -761,11 +764,21 @@
 
   .bar {
     flex: 1;
-    border-top: 1px solid #232521;
+
+    @include theme {
+      border-top: 1px solid theme-get('neutral-surface-bg-modal');
+    }
   }
 
   svg {
     vertical-align: middle;
+
+    rect {
+      @include theme {
+        stroke: theme-get('bg-result-arrow-stroke');
+        fill: theme-get('bg-result-arrow');
+      }
+    }
   }
 }
 
@@ -788,14 +801,19 @@
     flex: 1;
 
     border-radius: 16px;
-    background: var(--Colors-Neutral-Surface-bg-swap-pair, #232521);
+    
+    @include theme {
+      background: theme-get('neutral-surface-bg-section');
+    }
 
     .info {
       display: flex;
       align-items: center;
       gap: 8px;
 
-      color: var(--Colors-Neutral-Text-title, #efefef);
+      @include theme {
+        color: theme-get('neutral-2');
+      }
       font-size: 18px;
 
       @include mobile {
@@ -818,7 +836,9 @@
       flex-direction: column;
       align-items: flex-end;
 
-      color: var(--Colors-Neutral-Text-title, #efefef);
+      @include theme {
+        color: theme-get('neutral-2');
+      }
       font-size: 18px;
 
       @include mobile {
@@ -893,14 +913,19 @@
     flex: 1;
 
     border-radius: 16px;
-    background: var(--Colors-Neutral-Surface-bg-swap-pair, #232521);
+  
+    @include theme {
+      background: theme-get('neutral-surface-bg-section');
+    }
 
     .info {
       display: flex;
       align-items: center;
       gap: 8px;
 
-      color: var(--Colors-Neutral-Text-title, #efefef);
+      @include theme {
+        color: theme-get('neutral-2');
+      }
       font-size: 18px;
       font-weight: 500;
       line-height: 150%;
@@ -918,7 +943,9 @@
       flex-direction: column;
       align-items: flex-end;
 
-      color: var(--Colors-Neutral-Text-title, #efefef);
+      @include theme {
+        color: theme-get('neutral-2');
+      }
       font-size: 18px;
       font-weight: 500;
       line-height: 150%;
