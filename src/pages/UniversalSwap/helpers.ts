@@ -389,6 +389,7 @@ export const getProtocolsSmartRoute = (
 };
 
 export const isAllowAlphaIbcWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
+  return true;
   // from chainId and to chainId is CELESTIA_CHAIN_ID & INJECTVE_CHAIN_ID
   if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID)) return true;
   if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)) return true;
@@ -425,6 +426,8 @@ const listAllowSmartRoute = {
  * @returns boolean
  */
 export const isAllowIBCWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
+  return false;
+
   const fromTokenIsOraichain = fromToken?.chainId === 'Oraichain';
   const fromTokenIsCosmos = fromToken?.cosmosBased;
 
