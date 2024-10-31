@@ -145,7 +145,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
   const minimumReceiveDisplay = isSimulateDataDisplay
     ? new BigDecimal(simulateDisplayAmount)
         .sub(new BigDecimal(simulateDisplayAmount).mul(userSlippage).div(100).toString())
-        .sub(relayerFee)
+        // TODO:  Fee has been deducted from simulated price
+        // .sub(relayerFee)
         .sub(bridgeTokenFee)
         .toNumber()
     : 0;
