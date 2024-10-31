@@ -117,7 +117,6 @@ export function formatDate(date: Date | number) {
 }
 
 export function formatDateV2(date: Date | number) {
-  console.log('date', date);
   const obj = dateTimeFormatter.formatToJson(date);
   return `${obj.day}/${obj.month}/${obj.year}`;
 }
