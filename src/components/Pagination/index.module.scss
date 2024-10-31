@@ -1,0 +1,42 @@
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+.pagination {
+  display: flex;
+  list-style: none;
+  gap: 5px;
+
+  li {
+    margin: 0 5px;
+
+    @include small-mobile {
+      margin: 0 2px;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 10px;
+
+      @include small-mobile {
+        padding: 4px 8px;
+      }
+
+      @include theme {
+        background-color: theme-get('neutral-surface-bg-section-3');
+        color: theme-get('neutral-text-text-token-name');
+      }
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &.active button {
+      font-weight: bold;
+      background-color: $primary-bg-btn;
+      color: $text-btn-default;
+    }
+  }
+}

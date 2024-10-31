@@ -49,7 +49,8 @@ const getCheckpointQueue = async (): Promise<CheckpointQueueInterface> => {
 export const useGetCheckpointQueue = () => {
   const { data } = useQuery(['checkpoint_queue'], getCheckpointQueue, {
     refetchOnWindowFocus: true,
-    staleTime: 30 * 1000
+    staleTime: 30 * 1000,
+    refetchInterval: 30 * 1000
   });
   return data;
 };
@@ -213,7 +214,8 @@ const getCheckpointData = async (checkpointIndex?: number): Promise<CheckpointPa
 export const useGetCheckpointData = (checkpointIndex?: number) => {
   const { data } = useQuery(['bitcoin_checkpoint', checkpointIndex], () => getCheckpointData(checkpointIndex), {
     refetchOnWindowFocus: true,
-    staleTime: 30 * 1000
+    staleTime: 30 * 1000,
+    refetchInterval: 30 * 1000
   });
   return data;
 };

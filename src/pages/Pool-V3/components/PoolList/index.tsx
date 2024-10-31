@@ -1,520 +1,489 @@
 import { BigDecimal, toDisplay } from '@oraichain/oraidex-common';
+import { isMobile } from '@walletconnect/browser-utils';
 import Loading from 'assets/gif/loading.gif';
-import { ReactComponent as BootsIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BootsIcon } from 'assets/icons/boost-icon.svg';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
-import { ReactComponent as NoDataDark } from 'assets/images/NoDataPool.svg';
-import { ReactComponent as NoData } from 'assets/images/NoDataPoolLight.svg';
-import SearchLightSvg from 'assets/images/search-light-svg.svg';
-import SearchSvg from 'assets/images/search-svg.svg';
+import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
+import SortDownIcon from 'assets/icons/down_icon.svg?react';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
+import UpIcon from 'assets/icons/up-arrow.svg?react';
+import SortUpIcon from 'assets/icons/up_icon.svg?react';
+import NoDataDark from 'assets/images/NoDataPool.svg?react';
+import NoData from 'assets/images/NoDataPoolLight.svg?react';
 import classNames from 'classnames';
-import { TooltipIcon } from 'components/Tooltip';
-import { network } from 'config/networks';
-import { useCoinGeckoPrices } from 'hooks/useCoingecko';
-import useTheme from 'hooks/useTheme';
-import SingletonOraiswapV3, { fetchPoolAprInfo, PoolAprInfo, poolKeyToString } from 'libs/contractSingleton';
-import { getCosmWasmClient } from 'libs/cosmjs';
-import { formatPoolData, parsePoolKeyString } from 'pages/Pool-V3/helpers/format';
-import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './index.module.scss';
-import useConfigReducer from 'hooks/useConfigReducer';
-import axios from 'axios';
-import { oraichainTokens } from 'config/bridgeTokens';
 import LoadingBox from 'components/LoadingBox';
+import Pagination from 'components/Pagination';
+import usePagination from 'components/Pagination/usePagination';
+import { CoefficientBySort, SortType } from 'components/Table';
+import TokenBalance from 'components/TokenBalance';
+import { TooltipIcon } from 'components/Tooltip';
+import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import useConfigReducer from 'hooks/useConfigReducer';
+import useOnClickOutside from 'hooks/useOnClickOutside';
+import useTheme from 'hooks/useTheme';
+import { fetchPoolAprInfo } from 'libs/contractSingleton';
+import { POOL_TYPE } from 'pages/Pool-V3';
+import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
+import { useGetPoolLiquidityVolume } from 'pages/Pool-V3/hooks/useGetPoolLiquidityVolume';
+import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
+import { useGetPoolPositionInfo } from 'pages/Pool-V3/hooks/useGetPoolPositionInfo';
+import { AddLiquidityModal } from 'pages/Pools/components/AddLiquidityModal';
+import LiquidityChart from 'pages/Pools/components/LiquidityChart';
+import VolumeChart from 'pages/Pools/components/VolumeChart';
+import { useEffect, useRef, useState } from 'react';
+import { FILTER_DAY } from 'reducer/type';
+import CreateNewPosition from '../CreateNewPosition';
+import styles from './index.module.scss';
+import PoolItemDataMobile from './PoolItemDataMobile';
+import PoolItemTData from './PoolItemTData';
 
-const PoolList = () => {
-  const { data: prices } = useCoinGeckoPrices();
-  const [liquidityPools, setLiquidityPools] = useConfigReducer('liquidityPools');
+export enum PoolColumnHeader {
+  POOL_NAME = 'Pool name',
+  LIQUIDITY = 'Liquidity',
+  VOLUME = 'Volume (24h)',
+  APR = 'Apr'
+}
+
+const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYPE }) => {
+  const theme = useTheme();
+  const { data: price } = useCoinGeckoPrices();
+  const [, setLiquidityPools] = useConfigReducer('liquidityPools');
   const [volumnePools, setVolumnePools] = useConfigReducer('volumnePools');
   const [aprInfo, setAprInfo] = useConfigReducer('aprPools');
   const [openTooltip, setOpenTooltip] = useState(false);
+  const [openSort, setOpenSort] = useState(false);
+  const mobileMode = isMobile();
+  const sortRef = useRef();
 
-  const theme = useTheme();
+  const [sort, setSort] = useState<Record<PoolColumnHeader, SortType>>({
+    [PoolColumnHeader.VOLUME]: SortType.DESC
+  } as Record<PoolColumnHeader, SortType>);
+  const [sortField, sortOrder] = Object.entries(sort)[0];
 
-  const bgUrl = theme === 'light' ? SearchLightSvg : SearchSvg;
+  const [currentPool, setCurrentPool] = useState(null);
+  const [isOpenCreatePosition, setIsOpenCreatePosition] = useState(false);
+  const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
 
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState<string>();
-  const [dataPool, setDataPool] = useState([...Array(0)]);
+  // const [dataPool, setDataPool] = useState([...Array(0)]);
+  const [totalVolume, setTotalVolume] = useState(0);
+  const [totalLiquidity, setTotalLiquidity] = useState(0);
+  const { feeDailyData } = useGetFeeDailyData();
+  const { poolList: dataPool, poolPrice, loading } = useGetPoolList(price);
+  const { poolLiquidities, poolVolume } = useGetPoolLiquidityVolume(poolPrice); // volumeV2, liquidityV2
+  const { poolPositionInfo } = useGetPoolPositionInfo(poolPrice);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const pools = await SingletonOraiswapV3.getPools();
+  const isMobileMode = isMobile();
+  const [openChart, setOpenChart] = useState(false); // !isMobileMode
+  const [filterDay, setFilterDay] = useState(FILTER_DAY.DAY);
+  const [liquidityDataChart, setLiquidityDataChart] = useState(0);
+  const [volumeDataChart, setVolumeDataChart] = useState(0);
 
-        const fmtPools = (pools || [])
-          .map((p) => {
-            const isLight = theme === 'light';
-            return formatPoolData(p, isLight);
-          })
-          .filter((e) => e.isValid);
-        // .sort((a, b) => Number(b.pool.liquidity) - Number(a.pool.liquidity));
-        setDataPool(fmtPools);
-      } catch (error) {
-        console.log('error: get pools', error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-
-    return () => {};
-  }, [theme]);
-
-  const totalLiquidity = useMemo(() => {
-    if (liquidityPools && Object.values(liquidityPools).length) {
-      return Object.values(liquidityPools).reduce((acc, cur) => Number(acc) + Number(cur), 0);
+  const liquidityData = [
+    {
+      name: 'Total Liquidity',
+      Icon: null,
+      suffix: 5.25,
+      value: liquidityDataChart, // || statisticData.totalLiquidity,
+      isNegative: false,
+      decimal: 2,
+      chart: <LiquidityChart filterDay={filterDay} onUpdateCurrentItem={setLiquidityDataChart} />,
+      openChart: openChart
+    },
+    {
+      name: 'Volume',
+      Icon: null,
+      suffix: 3.93,
+      value: volumeDataChart,
+      isNegative: false,
+      decimal: 2,
+      chart: <VolumeChart filterDay={filterDay} onUpdateCurrentItem={setVolumeDataChart} />,
+      openChart: openChart
     }
-    return 0;
-  }, [liquidityPools]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        if (dataPool.length) {
-          const liquidityByPools = await SingletonOraiswapV3.getPoolLiquidities(dataPool, prices);
-          setLiquidityPools(liquidityByPools);
-        }
-      } catch (error) {
-        console.log('error: get liquidities', error);
-      }
-    })();
-  }, [dataPool]);
+  ];
 
   useEffect(() => {
     const getAPRInfo = async () => {
-      const poolKeys = dataPool.map((pool) => parsePoolKeyString(pool.poolKey));
-
-      const res = await fetchPoolAprInfo(poolKeys, prices, liquidityPools);
+      const res = await fetchPoolAprInfo(dataPool, poolPrice, poolPositionInfo, feeDailyData);
       setAprInfo(res);
     };
-    if (dataPool.length && prices && liquidityPools) {
+    if (dataPool.length && poolPrice && Object.keys(poolPositionInfo).length) {
       getAPRInfo();
     }
-  }, [dataPool, prices, liquidityPools]);
+  }, [dataPool, Object.keys(poolPositionInfo).length, poolPrice]);
+
+  const handleClickSort = (sortField: PoolColumnHeader) => {
+    let newSort = { [sortField]: SortType.DESC } as Record<PoolColumnHeader, SortType>;
+
+    if (sort[sortField] === SortType.DESC) {
+      newSort = { [sortField]: SortType.ASC } as Record<PoolColumnHeader, SortType>;
+      setSort(newSort);
+      return;
+    }
+
+    setSort(newSort);
+  };
 
   useEffect(() => {
-    const fetchStatusAmmV3 = async () => {
-      try {
-        const res = await axios.get('/pool-v3/status', { baseURL: 'https://api-staging.oraidex.io/v1' });
-        return res.data;
-      } catch (error) {
-        return [];
-      }
-    };
+    if (Object.values(poolVolume).length > 0) {
+      const totalVolume24h = Object.values(poolVolume).reduce((acc, cur) => acc + cur, 0);
 
-    fetchStatusAmmV3().then(async (data) => {
-      const pools = await SingletonOraiswapV3.getPools();
-      const allPoolsData = pools.map((pool) => {
-        return {
-          tokenX: pool.pool_key.token_x,
-          tokenY: pool.pool_key.token_y,
-          fee: BigInt(pool.pool_key.fee_tier.fee),
-          poolKey: poolKeyToString(pool.pool_key)
-        };
-      });
-      const poolsDataObject: Record<
-        string,
-        {
-          tokenX: string;
-          tokenY: string;
-          fee: bigint;
-          poolKey: string;
-        }
-      > = {};
-      allPoolsData.forEach((pool) => {
-        poolsDataObject[pool.poolKey.toString()] = pool;
-      });
-
-      // let allTokens = oraichainTokens.reduce((acc, cur) => {
-      //   return { ...acc, [cur.contractAddress || cur.denom]: cur };
-      // }, {});
-
-      // const unknownTokens = new Set<string>();
-      // allPoolsData.forEach((pool) => {
-      //   if (!allTokens[pool.tokenX.toString()]) {
-      //     unknownTokens.add(pool.tokenX);
-      //   }
-
-      //   if (!allTokens[pool.tokenY.toString()]) {
-      //     unknownTokens.add(pool.tokenY);
-      //   }
-      // });
-
-      // const tokenInfos = await SingletonOraiswapV3.getTokensInfo([...unknownTokens]);
-      // // yield* put(poolsActions.addTokens(newTokens))
-
-      // const preparedTokens: Record<string, any> = {};
-      // Object.entries(allTokens).forEach(([key, val]) => {
-      //   // @ts-ignore
-      //   if (typeof val.coinGeckoId !== 'undefined') {
-      //     preparedTokens[key] = val as Required<any>;
-      //   }
-      // });
-
-      // let tokensPricesData: Record<string, any> = {};
-
-      // const volume24 = {
-      //   value: 0,
-      //   change: 0
-      // };
-      // const tvl24 = {
-      //   value: 0,
-      //   change: 0
-      // };
-      // const fees24 = {
-      //   value: 0,
-      //   change: 0
-      // };
-
-      // const tokensDataObject: Record<string, any> = {};
-      let poolsData: {
-        poolAddress: string;
-        tokenX: string;
-        tokenY: string;
-        fee: number;
-        volume24: number;
-        tvl: number;
-        apy: number;
-      }[] = [];
-      // const volumeForTimestamps: Record<string, number> = {};
-      // const liquidityForTimestamps: Record<string, number> = {};
-      // const feesForTimestamps: Record<string, number> = {};
-
-      const lastTimestamp = Math.max(
-        ...Object.values(data)
-          .filter((snaps: any) => snaps.length > 0)
-          .map((snaps: any) => +snaps[snaps.length - 1].timestamp)
+      // const totalAllPoolVol = new BigDecimal(totalVolume24h).add(volumeV2).toNumber();
+      setTotalVolume(totalVolume24h);
+      setVolumnePools(
+        Object.keys(poolVolume).map((poolAddress) => {
+          return {
+            apy: 0,
+            poolAddress,
+            fee: 0,
+            volume24: poolVolume[poolAddress],
+            tokenX: null,
+            tokenY: null,
+            tvl: null
+          };
+        })
       );
+    }
+  }, [poolVolume, dataPool]);
 
-      Object.entries(data).forEach(([address, snapshots]) => {
-        //   if (!poolsDataObject[address]) {
-        //     return;
-        //   }
-        //   const tokenXId = preparedTokens?.[poolsDataObject[address].tokenX.toString()]?.coingeckoId ?? '';
-        //   const tokenYId = preparedTokens?.[poolsDataObject[address].tokenY.toString()]?.coingeckoId ?? '';
-        //   if (!tokensDataObject[poolsDataObject[address].tokenX.toString()]) {
-        //     tokensDataObject[poolsDataObject[address].tokenX.toString()] = {
-        //       address: poolsDataObject[address].tokenX,
-        //       price: tokensPricesData?.[tokenXId]?.price ?? 0,
-        //       volume24: 0,
-        //       tvl: 0,
-        //       priceChange: 0
-        //     };
-        //   }
-        //   if (!tokensDataObject[poolsDataObject[address].tokenY.toString()]) {
-        //     tokensDataObject[poolsDataObject[address].tokenY.toString()] = {
-        //       address: poolsDataObject[address].tokenY,
-        //       price: tokensPricesData?.[tokenYId]?.price ?? 0,
-        //       volume24: 0,
-        //       tvl: 0,
-        //       priceChange: 0
-        //     };
-        //   }
-        // @ts-ignore
-        if (!snapshots.length) {
-          poolsData.push({
-            volume24: 0,
-            tvl: 0,
-            tokenX: poolsDataObject[address].tokenX,
-            tokenY: poolsDataObject[address].tokenY,
-            // TODO: hard code decimals
-            fee: Number(poolsDataObject[address].fee),
-            apy: 0, // TODO: calculate apy
-            poolAddress: address
-          });
-          return;
-        }
-        //   const tokenX = allTokens[poolsDataObject[address].tokenX.toString()];
-        //   const tokenY = allTokens[poolsDataObject[address].tokenY.toString()];
-        //@ts-ignore
-        const lastSnapshot = snapshots[snapshots.length - 1];
-        //   console.log('token: ', tokenX.coingeckoId, tokenY.coingeckoId, lastSnapshot, lastTimestamp);
-        //   tokensDataObject[(tokenX.contractAddress || tokenX.denom).toString()].volume24 +=
-        //     lastSnapshot.timestamp === lastTimestamp ? lastSnapshot.volumeX.usdValue24 : 0;
-        //   tokensDataObject[(tokenX.contractAddress || tokenX.denom).toString()].volume24 +=
-        //     lastSnapshot.timestamp === lastTimestamp ? lastSnapshot.volumeY.usdValue24 : 0;
-        //   tokensDataObject[(tokenX.contractAddress || tokenX.denom).toString()].tvl += lastSnapshot.liquidityX.usdValue24;
-        //   tokensDataObject[(tokenX.contractAddress || tokenX.denom).toString()].tvl += lastSnapshot.liquidityY.usdValue24;
-        poolsData.push({
-          volume24:
-            lastSnapshot.timestamp === lastTimestamp
-              ? lastSnapshot.volumeX.usdValue24 + lastSnapshot.volumeY.usdValue24
-              : 0,
-          tvl:
-            lastSnapshot.timestamp === lastTimestamp
-              ? lastSnapshot.liquidityX.usdValue24 + lastSnapshot.liquidityY.usdValue24
-              : 0,
-          tokenX: poolsDataObject[address]?.tokenX,
-          tokenY: poolsDataObject[address]?.tokenY,
-          fee: Number(poolsDataObject[address]?.fee),
-          apy: 0, // TODO: calculate apy
-          poolAddress: address
-        });
-        //   // @ts-ignore
-        //   snapshots.slice(-30).forEach((snapshot) => {
-        //     const timestamp = snapshot.timestamp.toString();
-        //     if (!volumeForTimestamps[timestamp]) {
-        //       volumeForTimestamps[timestamp] = 0;
-        //     }
-        //     if (!liquidityForTimestamps[timestamp]) {
-        //       liquidityForTimestamps[timestamp] = 0;
-        //     }
-        //     if (!feesForTimestamps[timestamp]) {
-        //       feesForTimestamps[timestamp] = 0;
-        //     }
-        //     volumeForTimestamps[timestamp] += snapshot.volumeX.usdValue24 + snapshot.volumeY.usdValue24;
-        //     liquidityForTimestamps[timestamp] += snapshot.liquidityX.usdValue24 + snapshot.liquidityY.usdValue24;
-        //     feesForTimestamps[timestamp] += snapshot.feeX.usdValue24 + snapshot.feeY.usdValue24;
-        //   });
-      });
+  useEffect(() => {
+    if (Object.values(poolLiquidities).length > 0) {
+      const totalLiqudity = Object.values(poolLiquidities).reduce((acc, cur) => acc + cur, 0);
+      setLiquidityPools(poolLiquidities);
+      // const totalAllPoolLiq = new BigDecimal(totalLiqudity).add(liquidityV2).toNumber();
+      setTotalLiquidity(totalLiqudity);
+    }
+  }, [poolLiquidities, dataPool]);
 
-      // const volumePlot: any[] = Object.entries(volumeForTimestamps)
-      //   .map(([timestamp, value]) => ({
-      //     timestamp: +timestamp,
-      //     value
-      //   }))
-      //   .sort((a, b) => a.timestamp - b.timestamp);
-      // const liquidityPlot: any[] = Object.entries(liquidityForTimestamps)
-      //   .map(([timestamp, value]) => ({
-      //     timestamp: +timestamp,
-      //     value
-      //   }))
-      //   .sort((a, b) => a.timestamp - b.timestamp);
-      // const feePlot: any[] = Object.entries(feesForTimestamps)
-      //   .map(([timestamp, value]) => ({
-      //     timestamp: +timestamp,
-      //     value
-      //   }))
-      //   .sort((a, b) => a.timestamp - b.timestamp);
+  const filteredPool = dataPool
+    .map((item) => {
+      let volumeV3 = 0;
+      if (item?.poolKey) {
+        const findPool = volumnePools && volumnePools.find((vo) => vo.poolAddress === item?.poolKey);
+        if (findPool) volumeV3 = findPool.volume24;
+      }
 
-      const tiersToOmit = [0.001, 0.003];
+      const { type, totalLiquidity: liquidityV2, volume24Hour: volumeV2, liquidityAddr, poolKey } = item || {};
 
-      poolsData = poolsData.filter((pool) => !tiersToOmit.includes(pool.fee));
+      const showLiquidity =
+        type === POOL_TYPE.V3 ? poolLiquidities?.[item?.poolKey] : toDisplay(Math.trunc(liquidityV2 || 0).toString());
+      const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
 
-      // volume24.value = volumePlot.length ? volumePlot[volumePlot.length - 1].value : 0;
-      // tvl24.value = liquidityPlot.length ? liquidityPlot[liquidityPlot.length - 1].value : 0;
-      // fees24.value = feePlot.length ? feePlot[feePlot.length - 1].value : 0;
+      let showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr] || {};
 
-      // const prevVolume24 = volumePlot.length > 1 ? volumePlot[volumePlot.length - 2].value : 0;
-      // const prevTvl24 = liquidityPlot.length > 1 ? liquidityPlot[liquidityPlot.length - 2].value : 0;
-      // const prevFees24 = feePlot.length > 1 ? feePlot[feePlot.length - 2].value : 0;
+      if (type === POOL_TYPE.V2) {
+        showApr = {
+          ...showApr,
+          apr: {
+            min: (showApr['apr']?.['min'] || 0) / 100,
+            max: (showApr['apr']?.['max'] || 0) / 100
+          },
+          swapFee: (showApr['swapFee'] || 0) / 100
+        };
+      }
 
-      // volume24.change = ((volume24.value - prevVolume24) / prevVolume24) * 100;
-      // tvl24.change = ((tvl24.value - prevTvl24) / prevTvl24) * 100;
-      // fees24.change = ((fees24.value - prevFees24) / prevFees24) * 100;
+      return {
+        ...item,
+        showVolume,
+        showLiquidity,
+        showApr
+      };
+    })
+    .sort((a, b) => {
+      switch (sortField) {
+        case PoolColumnHeader.LIQUIDITY:
+          // return (
+          //   Number(CoefficientBySort[sortOrder]) *
+          //   ((poolLiquidities?.[a?.poolKey] || 0) - (poolLiquidities?.[b?.poolKey] || 0))
+          // );
+          return Number(CoefficientBySort[sortOrder]) * ((a.showLiquidity || 0) - (b.showLiquidity || 0));
+        case PoolColumnHeader.POOL_NAME:
+          return CoefficientBySort[sortOrder] * (a?.tokenXinfo?.name || '').localeCompare(b.tokenXinfo?.name || '');
+        case PoolColumnHeader.VOLUME:
+          return new BigDecimal(CoefficientBySort[sortOrder]).mul(a.showVolume - b.showVolume).toNumber();
+        case PoolColumnHeader.APR:
+          return new BigDecimal(CoefficientBySort[sortOrder])
+            .mul((a?.showApr.apr.max || 0) - (b?.showApr.apr.max || 0))
+            .toNumber();
 
-      setVolumnePools(poolsData);
+        default:
+          return 0;
+      }
+    })
+    .filter((p) => {
+      const { tokenXinfo, tokenYinfo, type } = p;
+      let conditions = true;
+
+      if (search) {
+        conditions =
+          conditions &&
+          ((tokenXinfo && tokenXinfo.name.toLowerCase().includes(search.toLowerCase())) ||
+            (tokenYinfo && tokenYinfo.name.toLowerCase().includes(search.toLowerCase())));
+      }
+
+      if (filterType && filterType !== POOL_TYPE.ALL) {
+        conditions = conditions && type === filterType;
+      }
+
+      return conditions;
     });
-  }, []);
+
+  const { setPage, page, handleNext, handlePrev, totalPages, indexOfLastItem, indexOfFirstItem } = usePagination({
+    data: filteredPool,
+    search
+  });
+
+  useOnClickOutside(sortRef, () => {
+    setOpenSort(false);
+  });
+
+  const renderList = () => {
+    return mobileMode ? (
+      <div className={styles.listMobile}>
+        <div className={styles.header}>
+          <span>List Pools</span>
+
+          <div className={styles.sortMobileWrapper}>
+            <div
+              className={styles.sortBtn}
+              onClick={() => {
+                const [sortField] = Object.entries(sort)[0];
+
+                handleClickSort(sortField as PoolColumnHeader);
+              }}
+            >
+              {sortOrder === SortType.ASC ? <SortUpIcon /> : <SortDownIcon />}
+            </div>
+            <div className={styles.labelSort} ref={sortRef} onClick={() => setOpenSort(!openSort)}>
+              {sortField}
+              <div className={classNames(styles.sortList, { [styles.active]: openSort })}>
+                {Object.values(PoolColumnHeader).map((item, k) => {
+                  return (
+                    <span
+                      key={`${k}-sort-item-${item}`}
+                      className={styles.item}
+                      onClick={() => {
+                        handleClickSort(item);
+                      }}
+                    >
+                      {item}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+        {filteredPool.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
+          const { showLiquidity, showVolume, showApr } = item || {};
+          return (
+            <PoolItemDataMobile
+              key={`${index}-item-mobile-${item?.id}`}
+              item={item}
+              theme={theme}
+              volume={showVolume ?? 0}
+              liquidity={showLiquidity ?? 0}
+              aprInfo={{
+                apr: 0,
+                incentives: [],
+                swapFee: 0,
+                incentivesApr: 0,
+                ...showApr
+              }}
+              setCurrentPool={setCurrentPool}
+              setIsOpenCreatePosition={setIsOpenCreatePosition}
+              setPairDenomsDeposit={setPairDenomsDeposit}
+            />
+          );
+        })}
+      </div>
+    ) : (
+      <div className={styles.tableWrapper}>
+        <table>
+          <thead>
+            <tr>
+              <th style={{ width: '40%' }} onClick={() => handleClickSort(PoolColumnHeader.POOL_NAME)}>
+                Pool name
+                {sortField === PoolColumnHeader.POOL_NAME &&
+                  (sortOrder === SortType.ASC ? <SortUpIcon /> : <SortDownIcon />)}
+              </th>
+              <th
+                style={{ width: '15%' }}
+                className={styles.textRight}
+                onClick={() => handleClickSort(PoolColumnHeader.LIQUIDITY)}
+              >
+                Liquidity
+                {sortField === PoolColumnHeader.LIQUIDITY &&
+                  (sortOrder === SortType.ASC ? <SortUpIcon /> : <SortDownIcon />)}
+              </th>
+              <th
+                style={{ width: '15%' }}
+                className={styles.textRight}
+                onClick={() => handleClickSort(PoolColumnHeader.VOLUME)}
+              >
+                Volume (24H)
+                {sortField === PoolColumnHeader.VOLUME &&
+                  (sortOrder === SortType.ASC ? <SortUpIcon /> : <SortDownIcon />)}
+              </th>
+              <th
+                style={{ width: '15%' }}
+                className={classNames(styles.textRight, styles.aprHeader)}
+                onClick={() => handleClickSort(PoolColumnHeader.APR)}
+              >
+                APR
+                <TooltipIcon
+                  className={styles.tooltipWrapperApr}
+                  placement="top"
+                  visible={openTooltip}
+                  icon={<IconInfo />}
+                  setVisible={setOpenTooltip}
+                  content={
+                    <div className={classNames(styles.tooltipApr, styles[theme])}>
+                      <h3 className={styles.titleApr}>How are APRs calculated?</h3>
+                      <p className={styles.desc}>
+                        All APRs are estimated. They are calculated by taking the average APR for liquidity in the pool.
+                      </p>
+                      <br />
+                      <p className={styles.desc}>
+                        In concentrated pools, most users will receive lower rewards. This is due to positions that are
+                        more concentrated, which capture more of the incentives.
+                      </p>
+                    </div>
+                  }
+                />
+                {sortField === PoolColumnHeader.APR && (sortOrder === SortType.ASC ? <SortUpIcon /> : <SortDownIcon />)}
+              </th>
+              <th style={{ width: '15%' }}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredPool.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
+              const { showLiquidity, showVolume, showApr } = item || {};
+
+              // const { type, totalLiquidity: liquidityV2, volume24Hour: volumeV2, liquidityAddr, poolKey } = item || {};
+
+              // const showLiquidity =
+              //   type === POOL_TYPE.V3 ? poolLiquidities?.[item?.poolKey] : toDisplay(Math.trunc(liquidityV2 || 0).toString());
+              // const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
+              // const showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr];
+
+              return (
+                <tr className={styles.item} key={`${index}-pool-${item?.id}`}>
+                  <PoolItemTData
+                    item={item}
+                    theme={theme}
+                    volume={showVolume ?? 0}
+                    liquidity={showLiquidity ?? 0}
+                    aprInfo={{
+                      apr: 0,
+                      incentives: [],
+                      swapFee: 0,
+                      incentivesApr: 0,
+                      ...showApr
+                    }}
+                    setCurrentPool={setCurrentPool}
+                    setIsOpenCreatePosition={setIsOpenCreatePosition}
+                    setPairDenomsDeposit={setPairDenomsDeposit}
+                  />
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   return (
     <div className={styles.poolList}>
       <div className={styles.headerTable}>
-        <div className={styles.total}>
-          <p>Total liquidity</p>
-          {totalLiquidity === 0 || totalLiquidity ? (
-            <h1>{formatDisplayUsdt(Number(totalLiquidity) || 0)}</h1>
-          ) : (
-            <img src={Loading} alt="loading" width={32} height={32} />
-          )}
-        </div>
-        <div className={styles.search}>
-          <input
-            type="text"
-            placeholder="Search pool"
-            value={search}
-            onChange={(e) => {
-              e.preventDefault();
-              setSearch(e.target.value);
-            }}
-            style={{
-              paddingLeft: 40,
-              backgroundImage: `url(${bgUrl})`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: '16px center'
-            }}
-          />
+        <div className={styles.headerInfo}>
+          {/* <div className={styles.total}>
+            <p>Total liquidity</p>
+            {totalLiquidity === 0 || totalLiquidity ? (
+              <h1>{formatDisplayUsdt(Number(totalLiquidity) || 0)}</h1>
+            ) : (
+              <img src={Loading} alt="loading" width={32} height={32} />
+            )}
+          </div>
+          <div className={styles.total}>
+            <p>24H volume</p>
+            {totalVolume ? (
+              <h1>{formatDisplayUsdt(Number(totalVolume))}</h1>
+            ) : (
+              <img src={Loading} alt="loading" width={32} height={32} />
+            )}
+          </div> */}
+          <div className={styles.headerInfo}>
+            {liquidityData.map((e) => (
+              <div key={e.name} className={`${styles.headerInfo_item} ${openChart ? styles.activeChart : ''}`}>
+                <div className={styles.info} onClick={() => setOpenChart((open) => !open)}>
+                  <div className={styles.content}>
+                    <span>{e.name}</span>
+                    <div className={styles.headerInfo_item_info}>
+                      {e.Icon && (
+                        <div>
+                          <e.Icon />
+                        </div>
+                      )}
+                      {!e.value ? (
+                        <img src={Loading} alt="loading_img" />
+                      ) : (
+                        <TokenBalance
+                          balance={e.value}
+                          prefix="$"
+                          className={styles.liq_value}
+                          decimalScale={e.decimal || 6}
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <div>{e.value && openChart ? <UpIcon /> : <DownIcon />}</div>
+                </div>
+                <div className={`${styles.chart} ${e.value && openChart ? styles.active : ''}`}>{e.chart}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <LoadingBox loading={loading} styles={{ minHeight: '60vh', height: 'fit-content' }}>
         <div className={styles.list}>
-          {dataPool?.length > 0 ? (
-            <div className={styles.tableWrapper}>
-              <table>
-                <thead>
-                  <tr>
-                    <th style={{ width: '40%' }}>Pool name</th>
-                    <th style={{ width: '15%' }} className={styles.textRight}>
-                      Liquidity
-                    </th>
-                    <th style={{ width: '15%' }} className={styles.textRight}>
-                      Volume (24H)
-                    </th>
-                    <th style={{ width: '15%' }} className={classNames(styles.textRight, styles.aprHeader)}>
-                      APR
-                      <TooltipIcon
-                        className={styles.tooltipWrapper}
-                        placement="top"
-                        visible={openTooltip}
-                        icon={<IconInfo />}
-                        setVisible={setOpenTooltip}
-                        content={
-                          <div className={classNames(styles.tooltipApr, styles[theme])}>
-                            <h3 className={styles.titleApr}>How are APRs calculated?</h3>
-                            <p className={styles.desc}>
-                              All APRs are estimated. They are calculated by taking the average APR for liquidity in the
-                              pool.
-                            </p>
-                            <br />
-                            <p className={styles.desc}>
-                              In concentrated pools, most users will receive lower rewards. This is due to positions
-                              that are more concentrated, which capture more of the incentives.
-                            </p>
-                          </div>
-                        }
-                      />
-                    </th>
-                    <th style={{ width: '15%' }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dataPool
-                    .filter((p) => {
-                      if (!search) return true;
+          {filteredPool?.length > 0
+            ? renderList()
+            : !loading && (
+                <div className={styles.nodata}>
+                  {theme === 'light' ? <NoData /> : <NoDataDark />}
+                  <span>{!dataPool.length ? 'No Pools!' : !filteredPool.length && 'No Matched Pools!'}</span>
+                </div>
+              )}
+        </div>
 
-                      const { tokenXinfo, tokenYinfo } = p;
-
-                      return (
-                        (tokenXinfo && tokenXinfo.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (tokenYinfo && tokenYinfo.name.toLowerCase().includes(search.toLowerCase()))
-                      );
-                    })
-                    .sort((a, b) => (liquidityPools?.[b?.poolKey] || 0) - (liquidityPools?.[a?.poolKey] || 0))
-                    .map((item, index) => {
-                      let volumn = 0;
-                      if (item?.poolKey) {
-                        const findPool = volumnePools && volumnePools.find((vo) => vo.poolAddress === item?.poolKey);
-                        if (findPool) volumn = findPool.volume24;
-                      }
-
-                      return (
-                        <tr className={styles.item} key={`${index}-pool-${item?.id}`}>
-                          <PoolItemTData
-                            item={item}
-                            theme={theme}
-                            volumn={volumn}
-                            liquidity={liquidityPools?.[item?.poolKey]}
-                            aprInfo={{
-                              apr: 0,
-                              incentives: [],
-                              swapFee: 0,
-                              incentivesApr: 0,
-                              ...aprInfo?.[item?.poolKey]
-                            }}
-                          />
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            !loading && (
-              <div className={styles.nodata}>
-                {theme === 'light' ? <NoData /> : <NoDataDark />}
-                <span>No Pools!</span>
-              </div>
-            )
+        <div className={styles.paginate}>
+          {totalPages > 1 && (
+            <Pagination
+              totalPages={totalPages}
+              paginate={setPage}
+              currentPage={page}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
+            />
           )}
         </div>
+
+        {isOpenCreatePosition && currentPool && (
+          <CreateNewPosition
+            showModal={isOpenCreatePosition}
+            setShowModal={setIsOpenCreatePosition}
+            pool={currentPool}
+          />
+        )}
+
+        {pairDenomsDeposit && (
+          <AddLiquidityModal
+            isOpen={!!pairDenomsDeposit}
+            close={() => setPairDenomsDeposit('')}
+            pairDenoms={pairDenomsDeposit}
+          />
+        )}
       </LoadingBox>
     </div>
-  );
-};
-
-const PoolItemTData = ({ item, theme, liquidity, volumn, aprInfo }) => {
-  const navigate = useNavigate();
-  const [openTooltip, setOpenTooltip] = useState(false);
-
-  const isLight = theme === 'light';
-  const IconBoots = isLight ? BootsIcon : BootsIconDark;
-  const { FromTokenIcon, ToTokenIcon, feeTier, tokenXinfo, tokenYinfo, poolKey } = item;
-
-  return (
-    <>
-      <td>
-        <div className={styles.name} onClick={() => navigate(`/pools-v3/${encodeURIComponent(poolKey)}`)}>
-          <div className={classNames(styles.icons, styles[theme])}>
-            <FromTokenIcon />
-            <ToTokenIcon />
-          </div>
-          <span>
-            {tokenXinfo?.name} / {tokenYinfo?.name}
-          </span>
-
-          <div>
-            <span className={styles.fee}>Fee: {toDisplay(BigInt(feeTier), 10)}%</span>
-          </div>
-        </div>
-      </td>
-      <td className={styles.textRight}>
-        <span className={classNames(styles.amount, { [styles.loading]: !liquidity })}>
-          {liquidity === 0 || liquidity ? (
-            formatDisplayUsdt(liquidity)
-          ) : (
-            <img src={Loading} alt="loading" width={30} height={30} />
-          )}
-        </span>
-      </td>
-      <td className={styles.textRight}>
-        <span className={styles.amount}>{formatDisplayUsdt(volumn)}</span>
-      </td>
-      <td>
-        <div className={styles.apr}>
-          <span className={styles.amount}>{numberWithCommas((aprInfo.apr ?? 0) * 100)}%</span>
-          <TooltipIcon
-            className={styles.tooltipWrapper}
-            placement="top"
-            visible={openTooltip}
-            icon={<IconInfo />}
-            setVisible={setOpenTooltip}
-            content={
-              <div className={classNames(styles.tooltip, styles[theme])}>
-                <div className={styles.itemInfo}>
-                  <span>Swap fee</span>
-                  <span className={styles.value}>{numberWithCommas((aprInfo.swapFee ?? 0) * 100)}%</span>
-                </div>
-                <div className={styles.itemInfo}>
-                  <span>
-                    Incentives Boost&nbsp;
-                    <IconBoots />
-                  </span>
-                  <span className={styles.value}>{numberWithCommas((aprInfo.incentivesApr ?? 0) * 100)}%</span>
-                </div>
-                <div className={styles.itemInfo}>
-                  <span>Total APR</span>
-                  <span className={styles.totalApr}>{numberWithCommas((aprInfo.apr ?? 0) * 100)}%</span>
-                </div>
-              </div>
-            }
-          />
-        </div>
-      </td>
-      <td className={styles.actions}>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/new-position/${encodeURIComponent(poolKeyToString(item.pool_key))}`);
-          }}
-          className={styles.add}
-        >
-          Add Position
-        </button>
-      </td>
-    </>
   );
 };
 

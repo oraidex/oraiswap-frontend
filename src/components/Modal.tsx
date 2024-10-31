@@ -1,4 +1,4 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
 import { ComponentType, FC, useState } from 'react';
 import ReactModal from 'react-modal';
 import styles from './Modal.module.scss';

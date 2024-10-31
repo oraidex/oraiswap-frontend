@@ -1,5 +1,5 @@
 import Tippy, { TippyProps } from '@tippyjs/react';
-import { ReactComponent as TooltipIconImg } from 'assets/icons/icon_tooltip.svg';
+import TooltipIconImg from 'assets/icons/icon_tooltip.svg?react';
 import classNames from 'classnames';
 import React, { FC, ReactElement } from 'react';
 

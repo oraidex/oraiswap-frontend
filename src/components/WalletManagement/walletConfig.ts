@@ -1,9 +1,4 @@
 import { WalletType as WalletCosmosType } from '@oraichain/oraidex-common/build/constant';
-import { ReactComponent as KeplrIcon } from 'assets/icons/keplr-icon.svg';
-import { ReactComponent as MetamaskIcon } from 'assets/icons/metamask-icon.svg';
-import { ReactComponent as OwalletIcon } from 'assets/icons/owallet-icon.svg';
-import { ReactComponent as TronIcon } from 'assets/icons/tron-icon.svg';
-import { ReactComponent as TonIcon } from 'assets/icons/ton.svg';
 import {
   cosmosNetworksWithIcon,
   evmNetworksIconWithoutTron,
@@ -11,6 +6,11 @@ import {
   btcNetworksWithIcon,
   tonNetworksWithIcon
 } from 'helper';
+import TonIcon from 'assets/icons/ton.svg?react';
+import KeplrIcon from 'assets/icons/keplr-icon.svg?react';
+import MetamaskIcon from 'assets/icons/metamask-icon.svg?react';
+import OwalletIcon from 'assets/icons/owallet-icon.svg?react';
+import TronIcon from 'assets/icons/tron-icon.svg?react';
 
 export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin' | 'ton';
 export type WalletType = WalletCosmosType | 'metamask' | 'tronLink' | 'eip191' | 'bitcoin' | 'ton';

@@ -8,20 +8,20 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 40px;
+  gap: 24px;
   flex-shrink: 0;
   width: 100%;
 
   @include mobile {
-    gap: 24px;
-    padding: 90px 10px 48px 10px;
+    padding: 90px 10px 84px 10px;
   }
 
   .header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    align-self: stretch;
+    gap: 8px;
+    flex-wrap: wrap;
 
     .headerTab {
       display: flex;
@@ -34,22 +34,33 @@
 
       @include theme {
         background: theme-get('neutral-surface-bg-modal');
-        color: theme-get('neutral-9');
+        color: theme-get('neutral-8');
       }
 
       font-size: 16px;
       font-weight: 500;
-      line-height: 150%; /* 24px */
+      line-height: 150%;
+      /* 24px */
+
+      @include small-mobile {
+        width: 100%;
+      }
 
       .item {
+        white-space: nowrap;
         display: flex;
         padding: 12px 24px;
         justify-content: center;
         align-items: center;
         gap: 10px;
         align-self: stretch;
+        flex: 1;
 
         border-radius: var(--Dimension-Corner-Radius-button, 99px);
+
+        @include small-mobile {
+          padding: 12px 18px;
+        }
 
         &.active {
           @include theme {
@@ -57,6 +68,111 @@
             border: 1px solid theme-get('neutral-border-border-default');
             background: theme-get('neutral-surface-bg-strong');
           }
+        }
+      }
+    }
+
+    .right {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+
+      @include medium_mobile {
+        flex-direction: column-reverse;
+      }
+    }
+
+    .search {
+      width: 258px;
+      height: 36px;
+      padding: 8px 16px 8px 0;
+      border-radius: 99px;
+      font-weight: 400;
+      font-size: 14px;
+
+      @include theme() {
+        background-color: theme-get('neutral-surface-bg-section');
+        color: theme-get('neutral-text-body');
+        border-color: theme-get('border-color');
+      }
+
+      @media (max-width: 575px) {
+        font-size: 15px;
+        width: 100%;
+      }
+
+      &::placeholder {
+        @include theme() {
+          color: theme-get('text-color-placeholder');
+        }
+      }
+    }
+
+    .dropDown {
+      position: relative;
+
+      .btn {
+        display: flex;
+        width: 156px;
+        padding: 7px 8px 7px 16px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        align-self: stretch;
+        border-radius: var(--Dimension-Corner-Radius-dropdown, 99px);
+
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 150%;
+        /* 21px */
+
+        cursor: pointer;
+
+        svg {
+          vertical-align: middle;
+        }
+
+        @include theme() {
+          background-color: theme-get('neutral-surface-bg-section');
+          color: theme-get('colors-neutral-text-body-on-row');
+          border-color: theme-get('border-color');
+        }
+
+        @media (max-width: 575px) {
+          width: 100%;
+        }
+      }
+
+      .dropdownContent {
+        cursor: pointer;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 156px;
+        padding: 10px;
+        border-radius: 12px;
+        margin-top: 6px;
+
+        .filterItem {
+          padding: 4px 8px;
+          border-radius: 6px;
+
+          @include theme() {
+            background-color: theme-get('neutral-surface-bg-section');
+          }
+
+          &:hover {
+            filter: brightness(1.5);
+          }
+        }
+
+        border: 1px solid #494949;
+
+        @include theme() {
+          background-color: theme-get('neutral-surface-bg-section');
+          color: theme-get('colors-neutral-text-body-on-row');
+          border: 1px solid #494949;
         }
       }
     }
@@ -78,6 +194,7 @@
         background: theme-get('colors-neutral-surface-bg-section-3');
         color: theme-get('colors-neutral-text-body-on-row');
       }
+
       text-align: center;
       font-size: 16px;
       font-weight: 500;
@@ -87,5 +204,9 @@
 
   .content {
     width: 100%;
+
+    &.light.stats {
+      filter: invert(1);
+    }
   }
 }

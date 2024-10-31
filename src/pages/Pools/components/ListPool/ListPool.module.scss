@@ -94,9 +94,55 @@
   }
 
   &_list {
-    display: flex;
-    gap: 35px;
-    flex-wrap: wrap;
+    border-radius: 24px;
+    overflow-x: auto;
+    width: calc(100vw - 346px);
+    max-width: 100%;
+    margin-top: 24px;
+
+    @include mobile {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    border: 1px solid;
+
+    @include theme {
+      border-color: theme-get('neutral-border-border-default');
+      background: theme-get('neutral-surface-bg-swap');
+    }
+
+    table {
+      min-width: 900px;
+
+      thead {
+        tr {
+          padding: 24px 8px 24px 12px;
+        }
+
+        th {
+          padding: 0 12px;
+
+          @include theme {
+            color: theme-get('neutral-8');
+          }
+
+          font-size: 12px;
+          font-weight: 500;
+          line-height: 150%;
+        }
+      }
+
+      tbody {
+        tr {
+          padding: 12px;
+        }
+      }
+    }
   }
 }
 
@@ -105,19 +151,17 @@
   align-items: center;
 
   &_logo {
-    margin-right: 12px;
+    svg {
+      width: 32px;
+      height: 32px;
+    }
 
     &_right {
       position: relative;
       right: 10px;
-      width: 44px;
-      height: 44px;
     }
 
-    &_left {
-      width: 44px;
-      height: 44px;
-    }
+    &_left {}
   }
 
   &_name {
@@ -183,4 +227,16 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+
+  .add {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 150%;
+    white-space: nowrap;
+
+    @include theme {
+      border: 1px solid theme-get('colors-neutral-text-text-token-name');
+      color: theme-get('colors-neutral-text-text-token-name');
+    }
+  }
 }

@@ -11,7 +11,7 @@ import { CoinGeckoId } from '@oraichain/oraidex-common';
  */
 export const buildCoinGeckoPricesURL = (tokens: readonly string[]): string =>
   // `https://api.coingecko.com/api/v3/simple/price?ids=${tokens.join('%2C')}&vs_currencies=usd`;
-  `https://price.market.orai.io/simple/price?ids=${tokens.join('%2C')}&vs_currencies=usd`;
+  `https://price.market.orai.io/simple/price?ids=${tokens.join('%2C')}&vs_currencies=usd&include_24hr_vol=true`;
 
 /**
  * Prices of each token.
@@ -32,6 +32,7 @@ export const useCoinGeckoPrices = <T extends CoinGeckoId>(
 
   // use cached first then update by query, if is limited then return cached version
   const [cachePrices, setCachePrices] = useConfigReducer('coingecko');
+  const [tokenRank, setTokenRank] = useConfigReducer('tokenRank');
 
   return useQuery({
     initialData: cachePrices,
@@ -39,8 +40,9 @@ export const useCoinGeckoPrices = <T extends CoinGeckoId>(
     // make unique
     queryKey: ['coinGeckoPrices', ...tokens],
     queryFn: async ({ signal }) => {
-      const prices = await getCoingeckoPrices(tokens, cachePrices, signal);
+      const { prices, ranks } = await getCoingeckoPrices(tokens, cachePrices, tokenRank, signal);
       setCachePrices(prices);
+      setTokenRank(ranks);
 
       return Object.fromEntries(tokens.map((token) => [token, prices[token]])) as CoinGeckoPrices<T>;
     }
@@ -50,11 +52,13 @@ export const useCoinGeckoPrices = <T extends CoinGeckoId>(
 export const getCoingeckoPrices = async <T extends CoinGeckoId>(
   tokens: string[],
   cachePrices?: CoinGeckoPrices<string>,
+  cacheRank?: CoinGeckoPrices<string>,
   signal?: AbortSignal
-): Promise<CoinGeckoPrices<string>> => {
+): Promise<{ prices: CoinGeckoPrices<string>; ranks: CoinGeckoPrices<string> }> => {
   const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
 
   const prices = { ...cachePrices };
+  const ranks = { ...cacheRank };
 
   // by default not return data then use cached version
   try {
@@ -62,15 +66,17 @@ export const getCoingeckoPrices = async <T extends CoinGeckoId>(
     const rawData = (await resp.json()) as {
       [C in T]?: {
         usd: number;
+        usd_24h_vol: number;
       };
     };
     // update cached
     for (const key in rawData) {
       prices[key] = rawData[key].usd;
+      ranks[key] = rawData[key].usd_24h_vol || 0;
     }
   } catch {
     // remain old cache
     console.log('error getting coingecko prices: ', prices);
   }
-  return prices;
+  return { prices, ranks };
 };

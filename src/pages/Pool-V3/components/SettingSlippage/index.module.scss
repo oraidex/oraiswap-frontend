@@ -69,7 +69,8 @@
 
     font-size: 20px;
     font-weight: 600;
-    line-height: 150%; /* 30px */
+    line-height: 150%;
+    /* 30px */
   }
 
   .close {
@@ -121,11 +122,13 @@
 
     .desc {
       @include theme {
-        color: theme-get('neutral-9');
+        color: theme-get('neutral-8');
       }
+
       font-size: 13px;
       font-weight: 400;
-      line-height: 150%; /* 19.5px */
+      line-height: 150%;
+      /* 19.5px */
       letter-spacing: 0.013px;
     }
   }

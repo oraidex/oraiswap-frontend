@@ -1,5 +1,9 @@
+import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import { useGetPoolLiquidityVolume } from 'pages/Pool-V3/hooks/useGetPoolLiquidityVolume';
+import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
 import { useEffect, useState } from 'react';
 import { FILTER_DAY } from 'reducer/type';
+import { getChartPoolsV3ByDay, MILIS_PER_DAY } from 'rest/graphClient';
 import axios from 'rest/request';
 
 export const useLiquidityEventChart = (
@@ -7,6 +11,9 @@ export const useLiquidityEventChart = (
   onUpdateCurrentItem?: React.Dispatch<React.SetStateAction<number>>,
   pair?: string
 ) => {
+  const { data: price } = useCoinGeckoPrices();
+  const { poolPrice } = useGetPoolList(price);
+  const { poolLiquidities } = useGetPoolLiquidityVolume(poolPrice);
   const [currentDataLiquidity, setCurrentDataLiquidity] = useState([]);
   const [currentItem, setCurrentItem] = useState<{
     value: number;
@@ -27,18 +34,46 @@ export const useLiquidityEventChart = (
 
   const onChangeRangeLiquidity = async (value: FILTER_DAY = FILTER_DAY.DAY) => {
     try {
-      let data = [];
+      let dataV2 = [];
 
       if (pair) {
-        data = await getDataLiquidityHistoricalByPair(pair, value);
+        dataV2 = await getDataLiquidityHistoricalByPair(pair, value);
       } else {
-        data = await getDataLiquidityHistoricalAll(value);
+        dataV2 = await getDataLiquidityHistoricalAll(value);
+        dataV2 = dataV2.slice(-90); // just get latest 90 days data of liquidity
       }
 
-      setCurrentDataLiquidity(data);
-      if (data.length > 0) {
-        setCurrentItem({ ...data[data.length - 1] });
-        onUpdateCurrentItem && onUpdateCurrentItem(data[data.length - 1]?.value || 0);
+      const poolsV3VData = await getChartPoolsV3ByDay();
+      const dataVolumeV3 = poolsV3VData.map((poolV3) => {
+        const dayIndex = poolV3.keys[0];
+        const currentDayIndex = Math.round(new Date().getTime() / MILIS_PER_DAY);
+        if (Number(dayIndex) === currentDayIndex) {
+          const totalLiqudity = Object.values(poolLiquidities).reduce((acc, cur) => acc + cur, 0);
+
+          return {
+            time: new Date(dayIndex * MILIS_PER_DAY).toJSON(),
+            value: totalLiqudity
+          };
+        }
+        return {
+          time: new Date(dayIndex * MILIS_PER_DAY).toJSON(),
+          value: poolV3.sum.tvlUSD
+        };
+      });
+
+      const combinedData = dataV2.map((dataV2ByDay) => {
+        const dataV3ByDay = dataVolumeV3.find((item) => item.time === dataV2ByDay.time);
+
+        return {
+          time: dataV2ByDay.time,
+          value: dataV2ByDay.value + (dataV3ByDay?.value ?? 0)
+        };
+      });
+
+      setCurrentDataLiquidity(combinedData);
+      if (combinedData.length > 0) {
+        setCurrentItem({ ...combinedData[combinedData.length - 1] });
+        onUpdateCurrentItem && onUpdateCurrentItem(combinedData[combinedData.length - 1]?.value || 0);
       }
     } catch (e) {
       console.log('Liquidity ERROR:', e);
@@ -46,8 +81,9 @@ export const useLiquidityEventChart = (
   };
 
   useEffect(() => {
+    if (!Object.keys(poolLiquidities).length) return;
     onChangeRangeLiquidity(type);
-  }, [type]);
+  }, [type, poolLiquidities]);
 
   return {
     currentDataLiquidity,

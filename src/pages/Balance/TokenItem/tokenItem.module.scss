@@ -5,27 +5,34 @@
   display: flex;
   justify-content: space-between;
   padding: 16px;
+
   @include theme() {
     background: theme-get('bg-color');
   }
+
   border-radius: 12px;
   margin-top: -15px;
   align-items: center;
+
   .tokenItems {
     display: flex;
     align-items: center;
+
     .context {
       padding-left: 16px;
+
       .transferBTC {
         font-size: 16px;
         font-weight: 600;
+
         @include theme() {
           color: theme-get('neutral-text-text-dropdown');
         }
       }
+
       .depositFromCex {
         @include theme() {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
       }
     }

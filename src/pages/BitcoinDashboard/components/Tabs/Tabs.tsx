@@ -29,7 +29,7 @@ const LIST_FILTERS = [
   }
 ];
 
-export const Tabs: FC<{}> = ({}) => {
+export const Tabs: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = searchParams.get('tab');
 

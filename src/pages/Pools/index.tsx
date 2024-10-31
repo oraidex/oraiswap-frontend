@@ -1,6 +1,6 @@
 import { CW20_DECIMALS, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { oraichainTokensWithIcon } from 'config/chainInfos';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
@@ -137,30 +137,30 @@ const Pools: React.FC<{}> = () => {
   };
 
   return (
-    <Content nonBackground otherBackground>
-      <div className={styles.pools}>
-        <Header dataSource={pools} />
-        <div>
-          <Filter setFilteredPools={setFilteredPools} pools={pools} setIsOpenNewTokenModal={setIsOpenNewTokenModal} />
-          {mobileMode ? (
-            <ListPoolsMobile poolTableData={poolTableData} generateIcon={generateIcon} />
-          ) : (
-            <ListPools poolTableData={poolTableData} generateIcon={generateIcon} />
-          )}
-        </div>
+    // <Content nonBackground otherBackground>
+    <div className={styles.pools}>
+      <Header dataSource={pools} />
+      <div>
+        <Filter setFilteredPools={setFilteredPools} pools={pools} setIsOpenNewTokenModal={setIsOpenNewTokenModal} />
+        {mobileMode ? (
+          <ListPoolsMobile poolTableData={poolTableData} generateIcon={generateIcon} />
+        ) : (
+          <ListPools poolTableData={poolTableData} generateIcon={generateIcon} />
+        )}
+      </div>
 
-        {/* <NewPoolModal
+      {/* <NewPoolModal
           isOpen={isOpenNewPoolModal}
           open={() => setIsOpenNewPoolModal(true)}
           close={() => setIsOpenNewPoolModal(false)}
         /> */}
-        <NewTokenModal
-          isOpen={isOpenNewTokenModal}
-          open={() => setIsOpenNewTokenModal(true)}
-          close={() => setIsOpenNewTokenModal(false)}
-        />
-      </div>
-    </Content>
+      <NewTokenModal
+        isOpen={isOpenNewTokenModal}
+        open={() => setIsOpenNewTokenModal(true)}
+        close={() => setIsOpenNewTokenModal(false)}
+      />
+    </div>
+    // </Content>
   );
 };
 

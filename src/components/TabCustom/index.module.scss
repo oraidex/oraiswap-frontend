@@ -1,0 +1,56 @@
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+.tabsWrapper {
+  .headerTab {
+    display: flex;
+
+    @include theme {
+      border-bottom: 1px solid theme-get('neutral-border-border-default');
+      color: theme-get('colors-neutral-text-text-token-name');
+    }
+
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    width: 100%;
+
+    .item {
+      @include theme {
+        border-bottom: 1px solid transparent;
+        color: theme-get('neutral-8');
+      }
+
+      cursor: pointer;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 150%;
+
+      white-space: nowrap;
+      padding: 0 12px 12px 12px;
+
+      @include small-mobile {
+        flex: 1 0 0;
+      }
+
+      &.active {
+        @include theme {
+          color: theme-get('colors-neutral-text-text-token-name');
+          border-bottom: 1px solid theme-get('colors-neutral-text-text-token-name');
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .content {
+    width: 100%;
+    margin-top: 24px;
+
+    &.light.stats {
+      filter: invert(1);
+    }
+  }
+}

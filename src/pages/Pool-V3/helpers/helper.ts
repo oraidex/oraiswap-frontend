@@ -1,32 +1,29 @@
-import { BigDecimal, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
-import { reduce } from 'lodash';
 import { Coin } from '@cosmjs/proto-signing';
+import { BigDecimal, CW20_DECIMALS, oraichainTokens, TokenItemType } from '@oraichain/oraidex-common';
+import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
 import { PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { oraichainTokens } from 'config/bridgeTokens';
-import SingletonOraiswapV3, { poolKeyToString } from 'libs/contractSingleton';
-import { PRICE_SCALE, printBigint } from '../components/PriceRangePlot/utils';
 import {
   AmountDeltaResult,
-  Pool,
-  Position,
-  Tick,
-  TokenAmounts,
   calculateAmountDelta,
   calculateSqrtPrice,
   getPercentageDenominator,
   getSqrtPriceDenominator,
   getTickAtSqrtPrice,
+  Pool,
+  Position,
+  Tick,
+  TokenAmounts,
   calculateFee as wasmCalculateFee
-} from '../packages/wasm/oraiswap_v3_wasm';
-import { getIconPoolData } from './format';
-import { network } from 'config/networks';
-import { SwapHop } from '../packages/sdk/OraiswapV3.types';
-import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
-import { ClaimFee, Position as PositionsNode } from 'gql/graphql';
+} from '@oraichain/oraiswap-v3';
 import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { network } from 'config/networks';
+import { Position as PositionsNode } from 'gql/graphql';
+import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import SingletonOraiswapV3, { poolKeyToString } from 'libs/contractSingleton';
+import { PRICE_SCALE, printBigint } from '../components/PriceRangePlot/utils';
+import { extractAddress, getIconPoolData } from './format';
+import { numberWithCommas } from 'helper/format';
 
-// export const PERCENTAGE_SCALE = Number(getPercentageScale());
 export interface InitPositionData {
   poolKeyData: PoolKey;
   lowerTick: number;
@@ -143,7 +140,7 @@ export const TokenList = oraichainTokens.reduce((acc, cur) => {
 export const addressTickerMap: { [key: string]: string } = TokenList;
 
 export const calcYPerXPriceByTickIndex = (tickIndex: number, xDecimal: number, yDecimal: number): number => {
-  const sqrt = +printBigint(calculateSqrtPrice(tickIndex), PRICE_SCALE);
+  const sqrt = +printBigint(calculateSqrtPrice(tickIndex), Number(PRICE_SCALE));
 
   const proportion = sqrt * sqrt;
 
@@ -151,10 +148,8 @@ export const calcYPerXPriceByTickIndex = (tickIndex: number, xDecimal: number, y
 };
 
 export const calcYPerXPriceBySqrtPrice = (sqrtPrice: bigint, xDecimal: number, yDecimal: number): number => {
-  const sqrt = +printBigint(sqrtPrice, PRICE_SCALE);
-
+  const sqrt = +printBigint(sqrtPrice, Number(PRICE_SCALE));
   const proportion = sqrt * sqrt;
-
   return proportion / 10 ** (yDecimal - xDecimal);
 };
 
@@ -172,6 +167,7 @@ export const _calculateTokenAmounts = (pool: Pool, position: Position, sign: boo
     position.lower_tick_index
   );
 };
+// 8e-6 usdt = 1 pepe
 
 export const calculateFee = (pool: Pool, position: Position, lowerTick: Tick, upperTick: Tick): TokenAmounts => {
   return wasmCalculateFee(
@@ -248,7 +244,7 @@ const newtonIteration = (n: bigint, x0: bigint): bigint => {
 
 const sqrt = (value: bigint): bigint => {
   if (value < 0n) {
-    throw 'square root of negative numbers is not supported';
+    throw Error('square root of negative numbers is not supported');
   }
 
   if (value < 2n) {
@@ -323,20 +319,25 @@ export const approveToken = async (token: string, amount: bigint, address: strin
   return result.transactionHash;
 };
 
-export const approveListToken = async (msg: any, address: string): Promise<string> => {
+export const executeMultiple = async (msg: any, address: string): Promise<string> => {
   const result = await SingletonOraiswapV3.dex.client.executeMultiple(address, msg, 'auto');
   return result.transactionHash;
 };
 
-export const genMsgAllowance = (datas: string[]) => {
-  const MAX_ALLOWANCE_AMOUNT = '18446744073709551615';
+export const genMsgAllowance = (
+  datas: {
+    token: string;
+    amount: bigint;
+  }[]
+) => {
+  // const MAX_ALLOWANCE_AMOUNT = '18446744073709551615';
   const spender = network.pool_v3;
 
   return datas.map((data) => ({
-    contractAddress: data,
+    contractAddress: data.token,
     msg: {
       increase_allowance: {
-        amount: MAX_ALLOWANCE_AMOUNT,
+        amount: data.amount.toString(),
         spender
       }
     }
@@ -357,6 +358,22 @@ export const createPoolTx = async (poolKey: PoolKey, initSqrtPrice: string, addr
       token1: poolKey.token_y
     })
   ).transactionHash;
+};
+
+export const createPoolMsg = (poolKey: PoolKey, initSqrtPrice: string) => {
+  const initTick = getTickAtSqrtPrice(BigInt(initSqrtPrice), poolKey.fee_tier.tick_spacing);
+  return {
+    contractAddress: network.pool_v3,
+    msg: {
+      create_pool: {
+        fee_tier: poolKey.fee_tier,
+        init_sqrt_price: initSqrtPrice,
+        init_tick: initTick,
+        token_0: poolKey.token_x,
+        token_1: poolKey.token_y
+      }
+    }
+  };
 };
 
 export const createPositionTx = async (
@@ -387,6 +404,32 @@ export const createPositionTx = async (
   return res.transactionHash;
 };
 
+export const createPositionMsg = (
+  poolKey: PoolKey,
+  lowerTick: number,
+  upperTick: number,
+  liquidityDelta: bigint,
+  spotSqrtPrice: bigint,
+  slippageTolerance: bigint
+) => {
+  const slippageLimitLower = calculateSqrtPriceAfterSlippage(spotSqrtPrice, Number(slippageTolerance), false);
+  const slippageLimitUpper = calculateSqrtPriceAfterSlippage(spotSqrtPrice, Number(slippageTolerance), true);
+
+  return {
+    contractAddress: network.pool_v3,
+    msg: {
+      create_position: {
+        pool_key: poolKey,
+        lower_tick: lowerTick,
+        upper_tick: upperTick,
+        liquidity_delta: liquidityDelta.toString(),
+        slippage_limit_lower: slippageLimitLower.toString(),
+        slippage_limit_upper: slippageLimitUpper.toString()
+      }
+    }
+  };
+};
+
 export const createPositionWithNativeTx = async (
   poolKey: PoolKey,
   lowerTick: number,
@@ -406,11 +449,11 @@ export const createPositionWithNativeTx = async (
 
   const fund: Coin[] = [];
 
-  if (isNativeToken(token_x)) {
+  if (isNativeToken(token_x) && initialAmountX > 0n) {
     fund.push({ denom: token_x, amount: initialAmountX.toString() });
   }
 
-  if (isNativeToken(token_y)) {
+  if (isNativeToken(token_y) && initialAmountY > 0n) {
     fund.push({ denom: token_y, amount: initialAmountY.toString() });
   }
 
@@ -418,7 +461,6 @@ export const createPositionWithNativeTx = async (
     SingletonOraiswapV3.load(SingletonOraiswapV3.dex.client, address);
   }
 
-  // console.log({ poolKey, lowerTick, upperTick, liquidityDelta, slippageLimitLower, slippageLimitUpper })
   const res = await SingletonOraiswapV3.dex.createPosition(
     {
       poolKey,
@@ -436,39 +478,72 @@ export const createPositionWithNativeTx = async (
   return res.transactionHash;
 };
 
+export const createPositionWithNativeMsg = (
+  poolKey: PoolKey,
+  lowerTick: number,
+  upperTick: number,
+  liquidityDelta: bigint,
+  spotSqrtPrice: bigint,
+  slippageTolerance: bigint,
+  initialAmountX: bigint,
+  initialAmountY: bigint
+) => {
+  const slippageLimitLower = calculateSqrtPriceAfterSlippage(spotSqrtPrice, Number(slippageTolerance), false);
+  const slippageLimitUpper = calculateSqrtPriceAfterSlippage(spotSqrtPrice, Number(slippageTolerance), true);
+
+  const token_x = poolKey.token_x;
+  const token_y = poolKey.token_y;
+
+  const fund: Coin[] = [];
+
+  if (isNativeToken(token_x) && initialAmountX > 0n) {
+    fund.push({ denom: token_x, amount: initialAmountX.toString() });
+  }
+
+  if (isNativeToken(token_y) && initialAmountY > 0n) {
+    fund.push({ denom: token_y, amount: initialAmountY.toString() });
+  }
+
+  return {
+    contractAddress: network.pool_v3,
+    msg: {
+      create_position: {
+        pool_key: poolKey,
+        lower_tick: lowerTick,
+        upper_tick: upperTick,
+        liquidity_delta: liquidityDelta.toString(),
+        slippage_limit_lower: slippageLimitLower.toString(),
+        slippage_limit_upper: slippageLimitUpper.toString()
+      }
+    },
+    funds: fund
+  };
+};
+
 export const formatClaimFeeData = (feeClaimData: PositionsNode[]) => {
   const fmtFeeClaimData = feeClaimData.reduce((acc, cur) => {
-    const { principalAmountX, principalAmountY, poolId, id, fees } = cur || {};
+    const { principalAmountX, principalAmountY, id, fees } = cur || {};
 
-    const totalEarn = (fees.nodes || []).reduce(
-      (total, fee) => {
-        total.earnX = new BigDecimal(total.earnX).add(fee.amountX).toNumber();
-        total.earnY = new BigDecimal(total.earnY).add(fee.amountY).toNumber();
-        total.earnIncentive = fee.claimFeeIncentiveTokens.nodes.reduce((acc, currentFee) => {
-          if (!acc[currentFee.tokenId]?.amount) {
-            acc[currentFee.tokenId] = {
-              amount: 0,
-              token: oraichainTokensWithIcon.find(
-                (tk) => tk.contractAddress === currentFee.tokenId || tk.denom === currentFee.tokenId
-              )
-            };
-          }
+    const totalEarn = {
+      earnX: 0,
+      earnY: 0,
+      earnIncentive: {}
+    };
 
-          acc[currentFee.tokenId].amount = new BigDecimal(acc[currentFee.tokenId]?.amount || 0)
-            .add(currentFee.rewardAmount)
-            .toNumber();
-
-          return acc;
-        }, {});
-
-        return total;
-      },
-      {
-        earnX: 0,
-        earnY: 0,
-        earnIncentive: {}
-      }
-    );
+    fees.nodes.forEach((fee) => {
+      totalEarn.earnX = new BigDecimal(totalEarn.earnX).add(fee.amountX).toNumber();
+      totalEarn.earnY = new BigDecimal(totalEarn.earnY).add(fee.amountY).toNumber();
+      fee.claimFeeIncentiveTokens.nodes.forEach((incentiveClaimed) => {
+        const tokenId = incentiveClaimed.tokenId;
+        totalEarn.earnIncentive[tokenId] = totalEarn.earnIncentive[tokenId] || {
+          amount: 0,
+          token: oraichainTokensWithIcon.find((tk) => extractAddress(tk) === tokenId)
+        };
+        totalEarn.earnIncentive[tokenId].amount = new BigDecimal(totalEarn.earnIncentive[tokenId].amount)
+          .add(incentiveClaimed.rewardAmount)
+          .toNumber();
+      });
+    });
 
     acc[id] = {
       principalAmountX,
@@ -479,7 +554,6 @@ export const formatClaimFeeData = (feeClaimData: PositionsNode[]) => {
     return acc;
   }, {});
 
-  console.log('fmtFeeClaimData', fmtFeeClaimData);
   return fmtFeeClaimData;
 };
 
@@ -502,7 +576,7 @@ export const convertPosition = ({
 }) => {
   const fmtFeeClaim = formatClaimFeeData(feeClaimData);
 
-  return positions
+  const fmtData = positions
     .map((position: Position & { poolData: { pool: Pool }; ind: number; token_id: number }) => {
       const [tokenX, tokenY] = [position?.pool_key.token_x, position?.pool_key.token_y];
       let {
@@ -540,7 +614,6 @@ export const convertPosition = ({
         const convertedPool = getConvertedPool(positions);
         const convertedPosition = getConvertedPosition(position);
         const res = calculateTokenAmounts(convertedPool, convertedPosition);
-        // console.log({ convertedPool });
         x = res.x;
         y = res.y;
       }
@@ -580,18 +653,23 @@ export const convertPosition = ({
         }
       };
 
-      const totalEarnIncentiveUsd = Object.values(totalEarn.earnIncentive).reduce((acc: number, cur) => {
-        const { amount = '0', token } = cur as {
-          amount: string;
-          token: TokenItemType;
-        };
+      let totalEarnIncentiveUsd = new BigDecimal(0);
 
-        const usd = toDisplay(amount) * (cachePrices[token?.coinGeckoId] || 0);
+      totalEarn.earnIncentive &&
+        Object.values(totalEarn.earnIncentive).forEach((incentive) => {
+          const { amount = 0, token } = incentive as {
+            amount: number;
+            token: TokenItemType;
+          };
+          totalEarnIncentiveUsd = totalEarnIncentiveUsd.add(
+            new BigDecimal(amount)
+              .mul(cachePrices[token.coinGeckoId])
+              .div(new BigDecimal(10).pow(token?.decimals || CW20_DECIMALS))
+          );
+        });
 
-        acc = new BigDecimal(acc || 0).add(usd).toNumber();
-
-        return acc;
-      }, 0);
+      const tokenYDecimal = tokenYinfo.decimals || CW20_DECIMALS;
+      const tokenXDecimal = tokenXinfo.decimals || CW20_DECIMALS;
 
       return {
         ...position,
@@ -605,6 +683,10 @@ export const convertPosition = ({
         tokenYName: tokenYinfo.name,
         tokenXIcon: tokenXIcon,
         tokenYIcon: tokenYIcon,
+        tokenYinfo,
+        tokenXinfo,
+        tokenYDecimal,
+        tokenXDecimal,
         fee: +printBigint(BigInt(position.pool_key.fee_tier.fee), PERCENTAGE_SCALE - 2),
         min,
         max,
@@ -623,8 +705,9 @@ export const convertPosition = ({
         principalAmountX,
         principalAmountY,
         totalEarn,
-        totalEarnIncentiveUsd
+        totalEarnIncentiveUsd: (totalEarnIncentiveUsd as BigDecimal).toNumber()
       };
     })
     .filter(Boolean);
+  return fmtData;
 };

@@ -1,10 +1,10 @@
 import { toAmount, toDisplay } from '@oraichain/oraidex-common';
 import { Cw20StakingClient } from '@oraichain/oraidex-contracts-sdk';
 import { LockInfoResponse } from '@oraichain/oraidex-contracts-sdk/build/Cw20Staking.types';
-import { ReactComponent as OraiXIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
-import { ReactComponent as ConfirmIcon } from 'assets/images/restake.svg';
-import { ReactComponent as ConfirmIconLight } from 'assets/images/restaking-light.svg';
+import OraiXIcon from 'assets/icons/oraix.svg?react';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
+import ConfirmIcon from 'assets/images/restake.svg?react';
+import ConfirmIconLight from 'assets/images/restaking-light.svg?react';
 import { Button } from 'components/Button';
 import ModalConfirm from 'components/ConfirmModal';
 import Loader from 'components/Loader';
@@ -15,13 +15,12 @@ import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
 import { getUsd } from 'libs/utils';
-import { TIMER } from 'pages/CoHarvest/constants';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
-import { ORAIX_TOKEN_INFO, STAKE_TAB, STAKING_PERIOD } from 'pages/Staking/constants';
+import { ORAIX_TOKEN_INFO, STAKE_TAB, STAKING_PERIOD, TIMER } from 'pages/Staking/constants';
 import { getDiffDay } from 'pages/Staking/helpers';
 import { useGetLockInfo, useGetMyStakeRewardInfo, useGetStakeInfo } from 'pages/Staking/hooks';
 import { useState } from 'react';
-import InputBalance from '../InputBalance';
+import InputBalance, { UN_STAKE_ENUM } from '../InputBalance';
 import styles from './index.module.scss';
 
 const UnStakeTab = () => {
@@ -32,6 +31,7 @@ const UnStakeTab = () => {
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
+  const [unstakeType, setUnstakeType] = useState<UN_STAKE_ENUM>();
   const [loadingWithdraw, setLoadingWithdraw] = useState<boolean>(false);
   const [loadingRestake, setLoadingRestake] = useState<boolean>(false);
 
@@ -62,7 +62,8 @@ const UnStakeTab = () => {
 
       const result = await cw20StakingClient.unbond({
         amount: toAmount(amount).toString(),
-        stakingToken: ORAIX_TOKEN_INFO.contractAddress
+        stakingToken: ORAIX_TOKEN_INFO.contractAddress,
+        unbondPeriod: unstakeType === UN_STAKE_ENUM.NORMAL ? undefined : TIMER.SECOND_OF_DAY
       });
 
       if (result) {
@@ -143,7 +144,10 @@ const UnStakeTab = () => {
   return (
     <div className={styles.unstakeTab}>
       <InputBalance
-        onSubmit={() => setOpen(true)}
+        onSubmit={(unstakeType) => {
+          setOpen(true);
+          setUnstakeType(unstakeType);
+        }}
         balance={stakedAmount}
         label="Staked amount"
         type={STAKE_TAB.UnStake}
@@ -155,8 +159,9 @@ const UnStakeTab = () => {
 
       <div className={styles.note}>
         To withdraw your stake, you will need to activate a{' '}
-        <span className={styles.noteHighlight}>30-day unbonding period</span>. You may withdraw at any time, but your
-        tokens will become available again only after this duration
+        <span className={styles.noteHighlight}>30-day unbonding period no fee</span> or{' '}
+        <span className={styles.noteHighlight}>only 24-hour unbonding period with a 10% fee</span>. You may withdraw at
+        any time, but your tokens will become available again only after this duration
       </div>
 
       <div className={styles.result}>
@@ -234,8 +239,13 @@ const UnStakeTab = () => {
           <div className={styles.contentConfirm}>
             <div className={styles.desc}>
               Unstaking <span className={styles.noteHighlight}>would stop the reward</span> and lock the token for a
-              <span className={styles.noteHighlight}> 30-day unbonding period</span>. You can also choose to cancel the
-              unstaking process during cooldown.
+              <span className={styles.noteHighlight}>
+                {' '}
+                {unstakeType === UN_STAKE_ENUM.NORMAL
+                  ? '30-day unbonding period with no fee'
+                  : 'only 24-hour unbonding period with a 10% fee'}
+              </span>
+              . You can also choose to cancel the unstaking process during cooldown.
             </div>
             <div>Are you sure you want to unstake?</div>
           </div>

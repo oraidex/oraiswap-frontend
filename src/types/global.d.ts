@@ -154,8 +154,8 @@ declare global {
   }
   namespace NodeJS {
     interface ProcessEnv {
-      REACT_APP_SITE_TITLE: string;
-      REACT_APP_SITE_DESC: string;
+      VITE_APP_SITE_TITLE: string;
+      VITE_APP_SITE_DESC: string;
     }
   }
 

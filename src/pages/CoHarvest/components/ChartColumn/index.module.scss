@@ -26,8 +26,9 @@
 
   .volume {
     @include theme {
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
+
     font-size: 13px;
     font-weight: 400;
     line-height: 100%;
@@ -35,10 +36,12 @@
     writing-mode: vertical-lr;
     transform-origin: center center;
     transform: rotate(-45deg);
+
     @include mobile {
       transform-origin: unset;
       transform: unset;
     }
+
     height: 60px;
   }
 
@@ -50,6 +53,7 @@
     gap: 8px;
     flex: 1 0 0;
     border-radius: 99px;
+
     @include theme {
       background: theme-get('neutral-6');
       color: theme-get('neutral-text-text-token-name');
@@ -59,6 +63,7 @@
       @include theme {
         background: theme-get('primary-highlight-section');
       }
+
       border-radius: 99px;
     }
   }
@@ -69,6 +74,7 @@
 
     .volume {
       font-weight: 600;
+
       @include theme {
         color: theme-get('sea-stone-900');
       }

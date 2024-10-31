@@ -1,0 +1,84 @@
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.container {
+  padding: 34px;
+  margin: 0 auto;
+  height: 100%;
+  max-width: 90%;
+
+  @include ultra_desktop_max() {
+    max-width: 100%;
+    padding: 0;
+    margin: 24px 0;
+  }
+
+  @include mobile() {
+    max-width: 100%;
+    padding: 0;
+    margin: 24px 0;
+  }
+
+  @include medium-desktop() {
+    max-width: 100%;
+  }
+
+  @include small-mobile {
+    margin-top: 85px;
+  }
+}
+
+.bitcoinToken {
+  &_create {
+    display: flex;
+    align-items: center;
+
+    @include mobile {
+      padding-top: 10px;
+    }
+
+    .create_item {
+      height: 48px;
+      padding: 8px 16px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-right: 15px;
+      background: #1e1e21;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background: #804af2 !important;
+      }
+    }
+  }
+}
+
+.symbols {
+  display: flex;
+  align-items: center;
+
+  &_logo {
+    margin-right: 12px;
+
+    &_right {
+      position: relative;
+      right: 10px;
+      width: 44px;
+      height: 44px;
+    }
+
+    &_left {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  &_name {
+    font-weight: 500;
+    font-size: 16px;
+  }
+}

@@ -16,7 +16,8 @@
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.2;
+    filter: grayscale(1);
     cursor: not-allowed;
   }
 }
@@ -123,4 +124,31 @@
   border: 1px;
   padding: 4px 16px;
   border-radius: 99px;
+}
+
+.newPosition {
+  display: flex;
+  height: 36px;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--Dimension-Corner-Radius-button, 99px);
+
+  @include theme {
+    border: 1px solid theme-get('colors-neutral-text-text-token-name');
+    color: theme-get('colors-neutral-text-text-token-name');
+  }
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 150%;
+  /* 21px */
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.7);
+  }
 }

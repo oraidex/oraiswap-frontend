@@ -6,10 +6,17 @@ import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
 import { numberWithCommas } from 'pages/Pools/helpers';
-import { getAverageRatio, getRemoteDenom, isAllowAlphaSmartRouter } from 'pages/UniversalSwap/helpers';
+import {
+  getAverageRatio,
+  getProtocolsSmartRoute,
+  getRemoteDenom,
+  isAllowAlphaIbcWasm,
+  isAllowIBCWasm
+} from 'pages/UniversalSwap/helpers';
 import { fetchTokenInfos } from 'rest/api';
 import { useSimulate } from './useSimulate';
 import { useSwapFee } from './useSwapFee';
+import { useEffect, useState } from 'react';
 
 export const SIMULATE_INIT_AMOUNT = 1;
 
@@ -25,14 +32,29 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
   const fromTokenFee = useTokenFee(remoteTokenDenomFrom, fromToken.chainId, toToken.chainId);
   const toTokenFee = useTokenFee(remoteTokenDenomTo, fromToken.chainId, toToken.chainId);
 
-  const [isAIRoute] = useConfigReducer('AIRoute');
-  const useAlphaSmartRouter = isAllowAlphaSmartRouter(originalFromToken, originalToToken) && isAIRoute;
+  const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
+  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
+
   const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, { useIbcWasm, useAlphaIbcWasm });
+  const simulateOption = {
+    useAlphaIbcWasm,
+    useIbcWasm,
+    protocols,
+    maxSplits: useAlphaIbcWasm ? 1 : 10,
+    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined
+  };
 
   const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } = useRelayerFeeToken(
     originalFromToken,
     originalToToken
   );
+
+  const [isAvgSimulate, setIsAvgSimulate] = useState({
+    tokenFrom: originalFromToken.coinGeckoId,
+    tokenTo: originalToToken.coinGeckoId,
+    status: false
+  });
 
   const {
     data: [fromTokenInfoData, toTokenInfoData]
@@ -47,13 +69,10 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
       originalToToken,
       routerClient,
       null,
-      {
-        useAlphaSmartRoute: useAlphaSmartRouter
-      },
-      isAIRoute
+      simulateOption
     );
 
-  const { simulateData: averageSimulateData } = useSimulate(
+  const { simulateData: averageSimulateData, isPreviousSimulate: isAveragePreviousSimulate } = useSimulate(
     'average-simulate-data',
     fromTokenInfoData,
     toTokenInfoData,
@@ -62,10 +81,34 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     routerClient,
     SIMULATE_INIT_AMOUNT,
     {
-      useAlphaSmartRoute: useAlphaSmartRouter
-    },
-    isAIRoute
+      ...simulateOption,
+      ignoreFee: true
+    }
   );
+
+  useEffect(() => {
+    const { tokenFrom: currentFrom, tokenTo: currentTo, status: currentStatus } = isAvgSimulate;
+    const { coinGeckoId: fromTokenId } = originalFromToken;
+    const { coinGeckoId: toTokenId } = originalToToken;
+
+    const shouldUpdate = currentFrom !== fromTokenId || currentTo !== toTokenId;
+
+    if (shouldUpdate) {
+      setIsAvgSimulate({
+        tokenFrom: fromTokenId,
+        tokenTo: toTokenId,
+        status: false
+      });
+    }
+
+    if (currentStatus || !averageSimulateData?.amount) return;
+
+    setIsAvgSimulate({
+      tokenFrom: fromTokenId,
+      tokenTo: toTokenId,
+      status: true
+    });
+  }, [averageSimulateData, originalFromToken, originalToToken]);
 
   const fromAmountTokenBalance =
     fromTokenInfoData &&
@@ -140,7 +183,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
 
     averageSimulateDatas: {
       averageRatio,
-      averageSimulateData
+      averageSimulateData,
+      isAveragePreviousSimulate
     },
 
     simulateDatas: {

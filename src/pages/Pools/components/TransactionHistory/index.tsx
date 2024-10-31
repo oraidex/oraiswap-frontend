@@ -1,9 +1,9 @@
 import { TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as LinkIcon } from 'assets/icons/link.svg';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
-import { ReactComponent as NoDataDark } from 'assets/images/nodata-bid-dark.svg';
-import { ReactComponent as NoData } from 'assets/images/nodata-bid.svg';
+import LinkIcon from 'assets/icons/link.svg?react';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
+import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
+import NoData from 'assets/images/nodata-bid.svg?react';
 import LoadingBox from 'components/LoadingBox';
 import { network } from 'config/networks';
 import { getTransactionUrl } from 'helper';
@@ -25,11 +25,11 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
   const baseDenom = baseToken && parseTokenInfoRawDenom(baseToken);
   const quoteDenom = quoteToken && parseTokenInfoRawDenom(quoteToken);
 
-  const { txHistories, isLoading } = useTransactionHistory(baseDenom, quoteDenom);
+  const { txHistories, isFetched } = useTransactionHistory(baseDenom, quoteDenom);
 
-  if (isLoading) {
+  if (!isFetched) {
     return (
-      <LoadingBox loading={false} className={styles.loadingDivWrapper}>
+      <LoadingBox loading={true} className={styles.loadingDivWrapper}>
         <div className={styles.loadingDiv}></div>
       </LoadingBox>
     );
@@ -152,12 +152,12 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
               <table>
                 <thead>
                   <tr>
-                    <th>TX HASH</th>
-                    <th>TIME</th>
-                    <th className={styles.alignRight}>PAY AMOUNT</th>
-                    <th className={styles.alignRight}>RECEIVE AMOUNT</th>
-                    <th className={styles.alignRight}>VALUE</th>
-                    <th className={styles.alignRight}>FEE</th>
+                    <th>Tx Hash</th>
+                    <th>Time</th>
+                    <th className={styles.alignRight}>Pay Amount</th>
+                    <th className={styles.alignRight}>Receive Amount</th>
+                    <th className={styles.alignRight}>Value</th>
+                    <th className={styles.alignRight}>Fee</th>
                     {/* <th>ADDRESS</th> */}
                   </tr>
                 </thead>

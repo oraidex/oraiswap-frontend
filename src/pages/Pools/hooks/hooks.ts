@@ -59,19 +59,31 @@ export const useFetchLpPoolsV3 = (lpAddresses: string[]) => {
   const setCachedLpPools = (payload: LpPoolDetails) => dispatch(updateLpPools(payload));
 
   const fetchLpPool = async () => {
-    const lpTokenData = await fetchLpPoolsFromContract(
-      lpAddresses,
-      address,
-      new MulticallQueryClient(window.client, network.multicall)
-    );
-    setCachedLpPools(lpTokenData);
+    if (!!lpAddresses.length && address) {
+      const lpTokenData = await fetchLpPoolsFromContract(
+        lpAddresses,
+        address,
+        new MulticallQueryClient(window.client, network.multicall)
+      );
+
+      // setCachedLpPools(lpTokenData);
+      return lpTokenData;
+    }
+    return {};
   };
 
+  const { data } = useQuery(['lpTokenData-queries', lpAddresses, address], () => fetchLpPool(), {
+    refetchOnWindowFocus: false,
+    placeholderData: [],
+    cacheTime: 5 * 60 * 1000
+  });
+
   useEffect(() => {
-    if (lpAddresses.length > 0 && address) {
-      fetchLpPool();
+    if (!data.length) {
+      // fetchLpPool();
+      setCachedLpPools(data);
     }
-  }, [lpAddresses, address]);
+  }, [data]);
 };
 
 export const getPools = async (): Promise<PoolInfoResponse[]> => {
@@ -116,7 +128,7 @@ export const useGetPriceChange = (params: { base_denom: string; quote_denom: str
 
 export const useGetPools = () => {
   const { data: pools } = useQuery(['pools'], getPools, {
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     placeholderData: [],
     staleTime: 5 * 60 * 1000
   });

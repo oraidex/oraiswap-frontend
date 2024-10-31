@@ -27,6 +27,8 @@ import Menu from './Menu';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
 import { useTonConnectUI } from '@tonconnect/ui-react';
+import SingletonOraiswapV3 from 'libs/contractSingleton';
+import { getCosmWasmClient } from 'libs/cosmjs';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
@@ -54,6 +56,19 @@ const App = () => {
     window.Ton = tonConnectUI;
   }, [tonConnectUI]);
 
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        const oraiAddr = await window.Keplr.getKeplrAddr();
+        if (oraiAddr && oraiAddr !== address) {
+          setOraiAddress(oraiAddr);
+        }
+      }
+    })();
+
+    return () => {};
+  }, []);
+
   // TODO: polyfill evm, tron, need refactor
   useEffect(() => {
     if (tron) {
@@ -65,6 +80,35 @@ const App = () => {
       window.ethereumDapp = ethOwallet;
     }
   }, [walletByNetworks, window.tronWeb, window.tronLink, ethOwallet]);
+
+  useEffect(() => {
+    const loadSingleton = async () => {
+      if (address) {
+        try {
+          const { client } = await getCosmWasmClient({ chainId: network.chainId });
+          SingletonOraiswapV3.load(client, address);
+        } catch (error) {
+          console.error('Error loading OraiswapV3 singleton:', error);
+        }
+      }
+    };
+
+    loadSingleton();
+  }, [address]);
+
+  useEffect(() => {
+    const win = window as any;
+    if (typeof win.Featurebase !== 'function') {
+      win.Featurebase = function () {
+        (win.Featurebase.q = win.Featurebase.q || []).push(arguments);
+      };
+    }
+    win.Featurebase('initialize_feedback_widget', {
+      organization: 'defi',
+      theme: 'light',
+      placement: 'right'
+    });
+  }, [theme]);
 
   //Public API that will echo messages sent to it back to the client
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(
@@ -180,7 +224,7 @@ const App = () => {
       if (window.ethereumDapp) {
         if (mobileMode) await window.Metamask.switchNetwork(Networks.bsc);
         metamaskAddress = await window.Metamask.getEthAddress();
-        if (metamaskAddress) setMetamaskAddress(metamaskAddress);
+        setMetamaskAddress(metamaskAddress);
       }
     }
     return metamaskAddress;
@@ -241,6 +285,7 @@ const App = () => {
   return (
     <ThemeProvider>
       <div className={`app ${theme}`}>
+        {/* <button data-featurebase-feedback>Open Widget</button> */}
         <Menu />
         <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
         {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}

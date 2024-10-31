@@ -19,8 +19,8 @@ import {
   getEvmAddress,
   tronToEthAddress
 } from '@oraichain/oraidex-common';
-import { isEvmNetworkNativeSwapSupported } from '@oraichain/oraidex-universal-swap';
 import { chainInfos, evmChains, TON_ZERO_ADDRESS, tonNetworkMainnet } from 'config/chainInfos';
+import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { network } from 'config/networks';
 import { ethers } from 'ethers';
 import axios from 'rest/request';
@@ -42,6 +42,7 @@ export type LoadTokenParams = {
 
 async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo: { chainId: string; rpc: string }) {
   if (!address) return;
+  if (!tokenInfo) return;
   try {
     const client = await StargateClient.connect(tokenInfo.rpc);
     const amountAll = await client.getAllBalances(address);
@@ -60,7 +61,7 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
 
     dispatch(updateAmounts(amountDetails));
   } catch (ex) {
-    console.trace('errror');
+    // console.trace('errror');
     console.log(ex);
   }
 }
@@ -253,9 +254,12 @@ async function loadEvmEntries(
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
-    const tokens = evmTokens.filter((t) => t.chainId === chain.chainId && t.contractAddress);
+    const tokens = evmTokens.filter((t) => t.chainId === chain?.chainId && t.contractAddress);
     const nativeEvmToken = evmTokens.find(
-      (t) => !t.contractAddress && isEvmNetworkNativeSwapSupported(chain.chainId) && chain.chainId === t.chainId
+      (t) =>
+        !t.contractAddress &&
+        UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId) &&
+        chain?.chainId === t.chainId
     );
     if (!tokens.length) return [];
     const multicall = new Multicall({
@@ -299,10 +303,10 @@ async function loadBtcEntries(
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
-    const nativeBtc = btcTokens.find((t) => chain.chainId === t.chainId);
+    const nativeBtcs = btcTokens.filter((t) => chain.chainId === t.chainId);
 
     const nativeBalance = await loadNativeBtcBalance(address, chain);
-    let entries: [string, string][] = [[nativeBtc.denom, nativeBalance.toString()]];
+    let entries: [string, string][] = nativeBtcs.map((item) => [item.denom, nativeBalance.toString()]);
     return entries;
   } catch (error) {
     console.log('error querying BTC balance: ', error);
@@ -443,7 +447,7 @@ export function useLoadOraichainTokens(): (oraiAddress: string, specificTokens: 
 }
 
 export const loadOraichainToken = async (dispatch: Dispatch, oraiAddress: string, specificTokens: string[]) => {
-  if (!oraiAddress || !specificTokens?.length) return;
+  if (!oraiAddress) return;
   clearTimeout(timer[oraiAddress]);
 
   timer[oraiAddress] = setTimeout(async () => {

@@ -1,22 +1,50 @@
 @import 'src/styles/themes';
 @import 'src/styles/mixins';
 
+.top {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+
+  .apr {
+    border-radius: 99px;
+    width: fit-content;
+
+    text-align: center;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+}
+
 .supply {
   display: flex;
+  padding: 16px;
   flex-direction: column;
-  padding: 12px 0px;
-  width: 100%;
+  align-items: flex-start;
+  align-self: stretch;
   border-radius: 16px;
 
-  &.has-path {
-    padding-left: 20px;
+  @include theme {
+    background: theme-get('neutral-6');
+  }
+
+  &:first-of-type {
+    margin-bottom: 8px;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    filter: blur(2px);
+    pointer-events: none;
   }
 
   .balance {
-    font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     font-size: 14px;
     margin-bottom: 8px;
+
     @include mobile {
       font-size: 12px;
     }
@@ -26,6 +54,7 @@
     justify-content: space-between;
     align-items: flex-end;
     width: 100%;
+    flex-wrap: wrap;
 
     .amount {
       &.light {
@@ -89,23 +118,6 @@
     .active {
       background: rgba(168, 113, 223, 0.3) !important;
     }
-
-    .apr {
-      padding: 4px 8px;
-      color: #163300;
-      background-color: #aee67f;
-      border-radius: 99px;
-      width: fit-content;
-
-      &.light {
-        color: #232521;
-      }
-
-      text-align: center;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 150%;
-    }
   }
 
   .input {
@@ -123,52 +135,30 @@
     color: #ffffff;
 
     .token {
-      cursor: pointer;
+      height: 40px;
       display: flex;
+      padding: 8px 12px 8px 8px;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      max-width: 8rem;
 
-      .logo {
-        width: 40px;
-        height: 40px;
+      border-radius: var(--Dimension-Corner-Radius-button, 99px);
+
+      @include theme {
+        border: 1px solid theme-get('neutral-border-border-xbold');
+        background: theme-get('colors-neutral-border-border-bold');
+        color: theme-get('colors-neutral-text-text-token-name');
       }
 
-      .title {
-        font-size: 18px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 100%;
-        color: #ffffff;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 150%; /* 24px */
 
-        &.light {
-          color: $light-text-color;
-        }
-
-        text-align: left;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 44px;
-
-        .des {
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 500;
-          line-height: 100%;
-          color: #777e90;
-        }
-
-        .highlight {
-          font-style: normal;
-          font-weight: 600;
-          font-size: 14px;
-          line-height: 100%;
-          text-align: center;
-          color: #ffffff;
-          background: rgba(97, 47, 202, 0.7);
-          border-radius: 2px;
-          padding: 2px 6px;
-        }
+      svg {
+        width: 28px;
+        height: 28px;
       }
     }
 
@@ -179,13 +169,12 @@
 
     .amount {
       width: 100%;
-      padding: 10px;
+      padding-top: 4px;
       flex-grow: 1;
       text-align: right;
       background: $raisin-black;
       border-radius: 8px;
       height: 100%;
-      padding-bottom: 30px;
       color: $neutral-surface-search;
 
       &.light {
@@ -197,8 +186,7 @@
     .amount-usd {
       text-align: right;
       color: $neutral-text-body-on-section;
-      padding: 10px;
-      position: absolute;
+      padding-top: 4px;
       right: 0;
       bottom: 0;
 
@@ -213,117 +201,37 @@
       letter-spacing: 0.013px;
     }
   }
-  .options {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    margin-top: 8px;
 
-    @include small-mobile {
-      gap: 6px;
-    }
+  .options {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
 
     .item {
       display: flex;
-      height: 40px;
+      width: 40px;
+      height: 22px;
+      padding: 8px 0px;
       justify-content: center;
       align-items: center;
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 150%;
-      text-align: center;
-      background-color: $raisin-black;
-      color: $neutral-surface-search;
-      border-radius: 99px;
-      padding: 0px 25px;
-      opacity: 0.5;
-      border: 1px solid transparent;
-      cursor: pointer;
-      flex: 1;
+      gap: 10px;
+      border-radius: var(--Dimension-Corner-Radius-button, 99px);
 
-      &:last-of-type {
-        padding: 0 34px 0 16px;
-        position: relative;
-
-        input {
-          width: 100%;
-        }
-
-        span {
-          position: absolute;
-          right: 18px;
-        }
+      @include theme {
+        background: theme-get('primary-highlight-section');
+        color: theme-get('colors-neutral-text-text-btn-default');
       }
+
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 150%; /* 18px */
+      letter-spacing: 0.012px;
+      cursor: pointer;
+      transition: all ease-in-out 0.3s;
 
       &:hover {
-        background-color: $neutral-surface-bg-dropdown-hover;
-        opacity: 1;
+        filter: brightness(1.25);
       }
-
-      &.light {
-        background-color: $neutral-surface-search;
-        color: $raisin-black;
-
-        &:hover {
-          background-color: $neutral-text-title;
-          opacity: 1;
-        }
-      }
-
-      @include small-mobile {
-        height: 35px;
-        font-size: 12px;
-        padding: 0px 8px;
-
-        &:last-of-type {
-          padding: 0 20px 0 8px;
-
-          input {
-            min-width: 23px;
-          }
-
-          span {
-            position: absolute;
-            right: 8px;
-          }
-        }
-      }
-    }
-
-    .isChosen {
-      border-color: $neutral-surface-search;
-      background-color: $outer-space;
-
-      &.light {
-        border-color: $raisin-black;
-        background-color: $neutral-text-title;
-      }
-
-      opacity: 1;
-      font-weight: 600;
-    }
-
-    .input {
-      padding: 0;
-      font-style: normal;
-      font-weight: 600;
-      font-size: 16px;
-      line-height: 100%;
-      text-align: center;
-      color: $neutral-surface-search;
-
-      &.light {
-        color: $raisin-black;
-      }
-
-      @include small-mobile {
-        font-size: 12px;
-      }
-    }
-
-    .manual-option {
-      border: 1px solid #3c404d;
     }
   }
 }

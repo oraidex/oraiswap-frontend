@@ -14,15 +14,10 @@
   @include mobile() {
     max-width: 100%;
     padding: 0;
-    margin: 24px 0;
   }
 
   @include medium-desktop() {
     max-width: 100%;
-  }
-
-  @include small-mobile {
-    margin-top: $menu-height;
   }
 }
 

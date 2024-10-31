@@ -1,6 +1,6 @@
-import { ReactComponent as AprIcon } from 'assets/icons/ic_apr.svg';
-import { ReactComponent as BoostIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BoostIconLight } from 'assets/icons/boost-icon.svg';
+import AprIcon from 'assets/icons/ic_apr.svg?react';
+import BoostIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BoostIconLight from 'assets/icons/boost-icon.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
@@ -20,6 +20,7 @@ import { Type, fetchTokenInfo, generateMiningMsgs } from 'rest/api';
 import styles from './Earning.module.scss';
 import { TokenItemType, ORAI, toDisplay, CW20_DECIMALS } from '@oraichain/oraidex-common';
 import { WithdrawLP } from 'types/pool';
+import classNames from 'classnames';
 
 type TokenItemTypeExtended = TokenItemType & {
   amount: bigint;
@@ -168,11 +169,6 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
 
   const totalEarned = myStakes[0]?.earnAmountInUsdt || 0;
 
-  const aprBoost = Number(poolDetailData.info?.aprBoost || 0).toFixed(2);
-  const isApproximatelyZero = Number(aprBoost) === 0;
-  const totalApr = poolDetailData.info?.apr ? poolDetailData.info.apr.toFixed(2) : 0;
-  const originalApr = Number(totalApr) - Number(aprBoost);
-
   const { liquidityAddr: stakingToken } = poolDetailData.info || {};
   const [cachedReward] = useConfigReducer('rewardPools');
   let poolReward = {
@@ -185,36 +181,20 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
 
   return (
     <div className={styles.earningWrapper}>
-      <div className={styles.apr}>
-        {/* <div className={styles.icon}>
-          <AprIcon />
-        </div> */}
-        <div className={styles.header}>
-          <div className={styles.title}>Total APR</div>
-          <div className={styles.volumeAmount}>{totalApr}%</div>
-        </div>
-        <div className={styles.aprDetail}>
-          <div className={styles.fee}>
-            <span>Earn swap fees</span>
-            <span>
-              <span>{isApproximatelyZero ? '≈ ' : ''}</span>
-              {aprBoost}%
-            </span>
-          </div>
-          <div className={styles.aprBoost}>
-            <div className={styles.text}>
-              <div>{theme === 'light' ? <BoostIconLight /> : <BoostIconDark />}</div>
-              <span>{poolReward?.reward?.join('+')}</span>
-              Boost
-            </div>
-
-            <span>{`${originalApr.toFixed(2)}%`}</span>
-          </div>
-        </div>
-      </div>
-
       <section className={styles.earning}>
         <div className={styles.earningLeft}>
+          <div className={`${styles.assetEarning}${' '}${pendingRewards.length === 1 ? styles.single : ''}`}>
+            <div className={styles.title}>
+              <span>Total Earned</span>
+            </div>
+            <div className={classNames(styles.amount, styles.total)}>
+              <TokenBalance
+                balance={toDisplay(BigInt(Math.trunc(totalEarned)), CW20_DECIMALS)}
+                prefix="$"
+                decimalScale={4}
+              />
+            </div>
+          </div>
           {pendingRewards.length > 0 &&
             pendingRewards
               .sort((a, b) => a.denom.localeCompare(b.denom))
@@ -252,18 +232,6 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
                   </div>
                 );
               })}
-          <div className={`${styles.assetEarning}${' '}${pendingRewards.length === 1 ? styles.single : ''}`}>
-            <div className={styles.title}>
-              <span>Total Earned</span>
-            </div>
-            <div className={styles.amount}>
-              <TokenBalance
-                balance={toDisplay(BigInt(Math.trunc(totalEarned)), CW20_DECIMALS)}
-                prefix="$"
-                decimalScale={4}
-              />
-            </div>
-          </div>
         </div>
 
         <div className={styles.claim}>

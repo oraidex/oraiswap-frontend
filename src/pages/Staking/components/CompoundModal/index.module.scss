@@ -69,6 +69,7 @@
       @include theme {
         color: theme-get('neutral-text-text-token-name');
       }
+
       font-size: 20px;
       font-weight: 600;
       line-height: 150%;
@@ -102,6 +103,7 @@
       @include theme {
         color: theme-get('neutral-text-text-token-name');
       }
+
       font-size: 16px;
       font-weight: 400;
       line-height: 150%;
@@ -142,18 +144,20 @@
           .label {
             font-size: 14px;
             font-weight: 400;
-            line-height: 150%; /* 21px */
+            line-height: 150%;
+            /* 21px */
             letter-spacing: 0.1px;
 
             @include theme {
-              color: theme-get('neutral-9');
+              color: theme-get('neutral-8');
             }
           }
 
           .value {
             font-size: 18px;
             font-weight: 500;
-            line-height: 150%; /* 27px */
+            line-height: 150%;
+            /* 27px */
 
             display: flex;
             align-items: center;
@@ -176,16 +180,27 @@
           }
         }
       }
+
       .desc {
         width: 100%;
         text-align: left;
 
         font-size: 14px;
         font-weight: 400;
-        line-height: 150%; /* 21px */
+        line-height: 150%;
+        /* 21px */
 
         @include theme {
           color: theme-get('neutral-text-title-2');
+        }
+      }
+
+      .noti {
+        font-size: 13px;
+        text-align: left;
+
+        @include theme {
+          color: theme-get('neutral-8');
         }
       }
     }

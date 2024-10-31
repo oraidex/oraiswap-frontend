@@ -1,11 +1,11 @@
 import { toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as BiddingIconLight } from 'assets/icons/bidding-icon-light.svg';
-import { ReactComponent as BiddingIcon } from 'assets/icons/bidding-icon.svg';
-import { ReactComponent as EndedIcon } from 'assets/icons/endIcon.svg';
-import { ReactComponent as EndedIconLight } from 'assets/icons/endIconLight.svg';
-import { ReactComponent as OraiXIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
+import BiddingIconLight from 'assets/icons/bidding-icon-light.svg?react';
+import BiddingIcon from 'assets/icons/bidding-icon.svg?react';
+import EndedIcon from 'assets/icons/endIcon.svg?react';
+import EndedIconLight from 'assets/icons/endIconLight.svg?react';
+import OraiXIcon from 'assets/icons/oraix.svg?react';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { BID_ROUND_STATUS, LIMIT_PAGE } from 'pages/CoHarvest/constants';
 import { useGetListBiddingRoundInfo } from 'pages/CoHarvest/hooks/useGetBidRound';

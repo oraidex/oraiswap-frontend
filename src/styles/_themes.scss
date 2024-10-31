@@ -13,7 +13,7 @@ $success-color: #00ad26;
 $error-color: #ff5947;
 $warning-color: #e01600;
 $warning-5-color: #c68e00;
-$warning-10-color: #ff5947;
+$warning-10-color: #ec7871;
 $primary-text-link: #78ca11;
 $yellow-brown-color: #ad9c00;
 $primary-surface-default-light: #e5f7d6;
@@ -33,7 +33,6 @@ $dropdown-bg-color-hover-dark: #232521;
 
 $dropdown-color-light: #979995;
 $dropdown-border-color-light: #dfe0de;
-$dropdown-bg-color-hover-light: #f7f7f7;
 
 $primary-surface-default-subtle: #111900;
 $primary-surface-default-subtle-light: #eef9e5;
@@ -49,13 +48,16 @@ $warning-surface-default-subtle: #383200;
 $primary-surface-default-subtle-2: #292f23;
 $primary-border-highlight: #89a571;
 $primary-text-highlight: #d7f5bf;
+$accent-1: #03a727;
+$warning-surface-1: #e01600;
+$colors-primary-surface-default: #aee67f;
+$neutral-4: #d1d0d0;
 
 $themes: (
   dark: (
     'warning-surface-default-subtle': #383200,
     'colors-neutral-text-text-token-name': #f7f7f7,
     'colors-neutral-text-body-on-section': #979995,
-    'colors-primary-surface-default': #aee67f,
     'colors-neutral-text-text-btn-default': #292f23,
     'colors-neutral-surface-bg-section-3': #494949,
     'colors-neutral-surface-bg-section-2': #31332e,
@@ -74,7 +76,6 @@ $themes: (
     'text-color-hover': black,
     'text-color-filter': #505665,
     'text-color-placeholder': #505665,
-    'text-color-menu': #ebebeb,
     'text-active': #ffffff,
     'bg-color': #191b21,
     'bg-hover-color': #2b2d3b,
@@ -82,28 +83,16 @@ $themes: (
     'bg-color-active': #1e1e21,
     'bg-chart': #111111,
     'bg-pair': linear-gradient(144.98deg, rgba(51, 51, 51, 0.8) 5.29%, rgba(7, 7, 7, 0.8) 95.51%),
-    'bg-btn-switch': #ffffff,
-    'bg-btn-time': #777e90,
-    'bg-btn-active': #2c2f34,
     'bg-btn-primary': #7e5cc5,
     'bg-swap-box': linear-gradient(144.98deg, rgba(51, 51, 51, 0.8) 5.29%, rgba(7, 7, 7, 0.8) 95.51%),
     'bg-color-arrow': 6px solid #ffffff,
     'bg-container': #17181c,
     'shadow-swap-box': -6px 6px 9px -10px rgba(0, 0, 0, 0.12),
     'shadow-swap-from-to': 0px 0px 30px rgba(23, 11, 70, 0.5),
-    'shadow-modal-token': 0px 0px 22.9083px rgba(23, 11, 70, 0.5),
-    'shadow-input': none,
     'shadow-btn': $shadow-btn,
-    'shadow-pair': none,
     'border-color': #484454,
-    'border-color-secondary': transparent,
-    'placeholder-color': #46484e,
     'svg-fill-color': #bdc3d3,
-    'hr-color': 1px solid #2d2938,
-    'accent-1': #03a727,
-    'neutral-9': #979995,
     'neutral-8': #979995,
-    'neutral-7': #fbfbfb,
     'neutral-6': #232521,
     'neutral-5': #494949,
     'neutral-4': #d1d0d0,
@@ -140,6 +129,7 @@ $themes: (
     'primary-surface-default-dark': #92e54c,
     'primary-surface-default-subtle': #292f23,
     'primary-surface-default-subtle-2': #152703,
+    'primary-surface-default-subtle-3': #152703,
     'primary-surface-default-light': #e5f7d6,
     'neutral-text-text-dropdown': #f7f7f7,
     'neutral-surface-bg-section-3': #31332e,
@@ -149,7 +139,6 @@ $themes: (
     'neutral-surface-bg-section-hover': #494949,
     'neutral-surface-bg-section-active': #494949,
     'warning-surface-default': #e6cf00,
-    'warning-surface-1': #e01600,
     'warning-text-default': #e6cf00,
     'warning-text-1': #ff5947,
     'basic-primary-surface-default': #ffffff,
@@ -164,10 +153,11 @@ $themes: (
     'bg-overlay-section': rgba(7, 10, 19, 0.4),
     'bg-linear-highlight': linear-gradient(180deg, #152703 0%, #181a17 298px),
     'bg-linear-section': linear-gradient(180deg, #232521 0%, #181a17 100%),
+    'bg-result-arrow': #222521,
+    'bg-result-arrow-stroke': none,
     'neutral-surface-btn-default': #152703,
     'neutral-text-btn-default': #152703,
     'neutral-surface-bg-3': #f7f7f7,
-    'neutral-surface-bg-swap-pair': #6d835d,
     'neutral-surface-bg-swap': #1b1d19,
     'neutral-surface-bg-strong': #131412
   ),
@@ -175,7 +165,6 @@ $themes: (
     'warning-surface-default-subtle': #fffdeb,
     'colors-neutral-text-text-token-name': #181a17,
     'colors-neutral-text-body-on-section': #686a66,
-    'colors-primary-surface-default': #aee67f,
     'colors-neutral-text-text-btn-default': #292f23,
     'colors-neutral-surface-bg-section-3': #dfe0de,
     'colors-neutral-surface-bg-section-2': #dfe0de,
@@ -194,7 +183,6 @@ $themes: (
     'text-color-hover': white,
     'text-color-filter': #b5b9c2,
     'text-color-placeholder': #cccdd0,
-    'text-color-menu': #6f767e,
     'text-active': #323537,
     'bg-color': #fcfcfc,
     'bg-hover-color': #7e5cc5,
@@ -202,28 +190,16 @@ $themes: (
     'bg-color-active': #efe7f8,
     'bg-chart': #ffffff,
     'bg-pair': #fcfcfc,
-    'bg-btn-switch': #47494b,
-    'bg-btn-time': #777e90,
-    'bg-btn-active': #dadbdd,
     'bg-btn-primary': #7e5cc5,
     'bg-swap-box': #ececec,
     'bg-color-arrow': 6px solid #272b30,
     'bg-container': #fcfcfc,
     'shadow-swap-box': none,
     'shadow-swap-from-to': none,
-    'shadow-modal-token': $shadow-modal,
-    'shadow-input': 0px 4px 4px rgba(0, 0, 0, 0.25),
     'shadow-btn': none,
-    'shadow-pair': 0px 4px 24px rgba(0, 0, 0, 0.05),
     'border-color': #d9dbdd,
-    'border-color-secondary': #e6e6e6,
-    'placeholder-color': #b9b9b9,
     'svg-fill-color': #777e90,
-    'hr-color': 1px solid #cccdd0,
-    'accent-1': #03a727,
-    'neutral-9': #686a66,
     'neutral-8': #686868,
-    'neutral-7': #fbfbfb,
     'neutral-6': #f7f7f7,
     'neutral-5': #efefef,
     'neutral-4': #d1d0d0,
@@ -260,6 +236,7 @@ $themes: (
     'primary-surface-default-dark': #2f5711,
     'primary-surface-default-subtle': #eef9e5,
     'primary-surface-default-subtle-2': #eef9e5,
+    'primary-surface-default-subtle-3': #2f5711,
     'primary-surface-default-light': #e5f7d6,
     'neutral-text-text-dropdown': #232521,
     'neutral-surface-bg-section-3': #efefef,
@@ -269,7 +246,6 @@ $themes: (
     'neutral-surface-bg-section-hover': #dfe0de,
     'neutral-surface-bg-section-active': #efefef,
     'warning-surface-default': #979995,
-    'warning-surface-1': #e01600,
     'warning-text-default': #ad9c00,
     'warning-text-1': #e01600,
     'basic-primary-surface-default': #000000,
@@ -283,11 +259,12 @@ $themes: (
     'bg-iframe-modal': #fff,
     'bg-linear-highlight': linear-gradient(180deg, #eaffd0 0%, #fff 298px),
     'bg-linear-section': linear-gradient(180deg, #f5f5f5 0%, rgba(251, 251, 251, 0) 100%),
+    'bg-result-arrow': #ffffff,
+    'bg-result-arrow-stroke': #ffffff,
     'neutral-surface-btn-default': #eef9e5,
     'neutral-text-btn-default': #232521,
     'bg-overlay-section': rgba(255, 255, 255, 0.5),
     'neutral-surface-bg-3': #181a17,
-    'neutral-surface-bg-swap-pair': #f2f4f0,
     'neutral-surface-bg-swap': #fff,
     'neutral-surface-bg-strong': #f2f4f0
   )

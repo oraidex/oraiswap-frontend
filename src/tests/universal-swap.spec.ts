@@ -16,7 +16,7 @@ import {
 } from 'pages/UniversalSwap/helpers';
 
 describe('universal-swap', () => {
-  xit.each<[string, CoinGeckoId, string, string, SwapDirection, number]>([
+  it.skip.each<[string, CoinGeckoId, string, string, SwapDirection, number]>([
     ['0x38', 'wbnb', 'bep20_bnb', '', SwapDirection.From, 5],
     ['Oraichain', 'tether', 'usdt', '', SwapDirection.From, 26],
     ['Oraichain', 'oraichain-token', 'orai', '', SwapDirection.To, 25],

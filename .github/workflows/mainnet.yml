@@ -34,19 +34,23 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: everpcpc/actions-cache@v2
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'us-east-2'
-        with:
-          bucket: ${{ secrets.AWS_BUCKET_NAME }} # required
-          path: |
-            node_modules
-            .cache
-          key: ${{ runner.os }}/yarn/${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}/yarn/
+      # - uses: everpcpc/actions-cache@v2
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_REGION: 'us-east-2'
+      #   with:
+      #     bucket: ${{ secrets.AWS_BUCKET_NAME }} # required
+      #     path: |
+      #       node_modules
+      #       .cache
+      #     key: ${{ runner.os }}/yarn/${{ hashFiles('**/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}/yarn/
+      # - name: remove @oraichain/oraidex-common
+      #   run: |
+      #     rm -rf node_modules/@oraichain/oraidex-universal-swap/node_modules/@oraichain/oraidex-common
+      #     rm -rf node_modules/@oraichain/oraiswap-v3/node_modules/@oraichain/oraidex-common
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         # run: yarn install --ignore-scripts
@@ -57,7 +61,7 @@ jobs:
         run: yarn build
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          REACT_APP_SENTRY_ENVIRONMENT: production
+          VITE_APP_SENTRY_ENVIRONMENT: production
           CI: false
       - name: Deploy to firebase
         run: yarn firebase deploy --only hosting:oraiswap --token ${{ secrets.FIREBASE_TOKEN }}

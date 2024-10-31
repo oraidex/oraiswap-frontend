@@ -12,21 +12,30 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { formatDisplayUsdt, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetMyStake } from 'pages/Pools/hooks';
-import { FC, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { FC, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
 import { AssetInfoResponse } from 'types/swap';
 import styles from './AssetsTab.module.scss';
+import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
+import { updateTotalLpv3 } from 'reducer/token';
 
 const cx = cn.bind(styles);
 
 export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   const { data: prices } = useCoinGeckoPrices();
+
+  const dispatch = useDispatch();
+
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const [address] = useConfigReducer('address');
   const [theme] = useConfigReducer('theme');
+  const totalLpv3 = useSelector((state: RootState) => state.token.totalLpv3);
+
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useState(true);
   const sizePadding = isMobile() ? '12px' : '24px';
+
+  const { totalLpV3Info } = useGetTotalLpV3(address, prices);
   const { totalStaked } = useGetMyStake({
     stakerAddress: address
   });
@@ -37,6 +46,10 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     );
     totalUsd = getTotalUsd(subAmounts, prices);
   }
+
+  useEffect(() => {
+    dispatch(updateTotalLpv3(totalLpV3Info || 0));
+  }, [totalLpV3Info]);
 
   let listAsset: {
     src?: CoinIcon;
@@ -56,7 +69,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
       {
         src: StakeIcon,
         label: 'Total LP',
-        balance: formatDisplayUsdt(toDisplay(BigInt(Math.trunc(totalStaked)), CW20_DECIMALS))
+        balance: formatDisplayUsdt(toDisplay(BigInt(Math.trunc(totalStaked)), CW20_DECIMALS) + Number(totalLpv3) || 0)
       }
     ];
   }

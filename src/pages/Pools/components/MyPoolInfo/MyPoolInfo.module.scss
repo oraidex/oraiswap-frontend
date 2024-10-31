@@ -3,173 +3,78 @@
 
 .myPoolInfo {
   display: flex;
-  margin-bottom: 40px;
-  width: 100%;
+  padding: var(--Dimensions-32, 32px);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  align-self: stretch;
 
-  @include small-mobile() {
-    flex-wrap: wrap;
-    margin-bottom: 16px;
+  border-radius: 24px;
+
+  @include theme {
+    border: 1px solid theme-get('neutral-border-border-default');
+    background: theme-get('neutral-surface-bg-swap');
+  }
+
+  @include mobile() {
+    padding: 16px;
   }
 
   .liquidity {
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
-    position: relative;
+    padding-bottom: 32px;
 
-    width: 34%;
-
-    @include medium-desktop {
-      width: 44%;
+    @include theme {
+      border-bottom: 1px solid theme-get('neutral-border-border-default');
     }
 
     @include mobile {
-      width: 50%;
-    }
-    @include small-mobile() {
-      width: 50%;
-      border-bottom-left-radius: 0;
-      border-top-right-radius: 16px;
-    }
-
-    @include theme() {
-      background-color: theme-get('neutral-surface-bg-section');
-    }
-
-    .dividerWrapper {
-      padding: 24px 0;
-      width: 1px;
-      height: 100%;
-
-      @include small-mobile() {
-        width: 100%;
-        height: 1px;
-        padding: 0 24px;
-      }
-
-      .divider {
-        width: 1px;
-        height: 100%;
-
-        @include theme() {
-          background-color: theme-get('neutral-surface-bg-section-3');
-        }
-
-        @include small-mobile() {
-          width: 100%;
-          height: 1px;
-        }
-      }
-      position: absolute;
-      right: 0;
-      bottom: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: translate(50%, 50%);
-      z-index: 1;
-
-      @include small-mobile() {
-        right: 50%;
-        bottom: 0;
-      }
-    }
-  }
-
-  .stake {
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
-    position: relative;
-
-    width: 66%;
-
-    @include medium-desktop {
-      width: 56%;
-    }
-
-    @include mobile {
-      width: 50%;
-    }
-
-    @include small-mobile() {
-      width: 50%;
-      border-top-right-radius: 0;
-      border-bottom-left-radius: 0;
-      border-end-start-radius: 16px;
-    }
-
-    @include theme() {
-      background-color: theme-get('neutral-surface-bg-section');
-    }
-
-    .bgCoin {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      display: flex;
-
-      @include small-mobile {
-        display: none;
-      }
-    }
-
-    .stakeContent {
-      width: 50%;
-
-      @include medium-desktop {
-        width: 85%;
-      }
-
-      @include mobile {
-        width: 85%;
-      }
-
-      @include small-mobile() {
-        width: 100%;
-        border-top-right-radius: 0;
-        border-bottom-left-radius: 0;
-      }
+      padding-bottom: 16px;
     }
   }
 
   .liquidity,
   .stake {
-    padding: 24px 40px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .title {
       @include theme() {
-        color: theme-get('neutral-text-title');
-      }
-
-      font-size: 18px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: 150%;
-      margin-bottom: 8px;
-    }
-
-    .description {
-      @include theme() {
-        color: theme-get('neutral-text-body');
+        color: theme-get('neutral-8');
       }
 
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
-      line-height: 150%;
+      line-height: 100%;
+
+      display: flex;
+      align-items: center;
+
+      svg {
+        margin-left: 6px;
+        vertical-align: middle;
+        width: 12px;
+        height: 12px;
+
+        path {
+          @include theme() {
+            fill: theme-get('neutral-8');
+          }
+        }
+      }
     }
 
     .amount {
-      margin: 24px 0;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      margin-top: 20px;
 
-      @include small-mobile {
-        flex-direction: row;
-        align-items: flex-end;
-        justify-content: space-between;
-
-        margin: 16px 0;
+      @include mobile {
+        gap: 12px;
+        margin-top: 18px;
       }
 
       .amountUsdt {
@@ -177,24 +82,24 @@
           color: theme-get('neutral-text-text-token-name');
         }
 
-        font-size: 32px;
+        font-size: 24px;
         font-style: normal;
         font-weight: 500;
-        line-height: 120%;
+        line-height: 100%;
 
         @include small-mobile {
-          font-size: 24px;
+          font-size: 18px;
         }
       }
 
       .amountLp {
         @include theme() {
-          color: theme-get('neutral-text-body');
+          color: theme-get('neutral-8');
         }
 
-        font-size: 16px;
+        font-size: 14px;
         font-style: normal;
-        font-weight: 500;
+        font-weight: 400;
         line-height: 150%;
       }
     }
@@ -204,21 +109,71 @@
       justify-content: space-between;
       align-items: center;
       position: relative;
+      gap: 8px;
+
+      @include mobile {
+        flex-direction: column;
+      }
 
       button {
-        width: 45%;
         white-space: nowrap;
+        padding: 12px;
+        min-width: 140px;
+
+        &:hover {
+          filter: brightness(1.25);
+        }
+
+        svg {
+          path {
+            @include theme() {
+              stroke: theme-get('neutral-text-text-token-name');
+            }
+          }
+        }
 
         @include small-mobile() {
           padding: 8px 0;
-          font-size: 14px;
+          font-size: 12px;
+          min-width: 110px;
         }
       }
     }
+  }
+}
 
-    @include small-mobile() {
-      width: 100%;
-      padding: 24px 16px;
-    }
+.descriptionTooltip {
+  border: 1px solid #494949;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+  text-align: left;
+
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+  gap: 12px;
+  border-radius: 8px;
+  background: var(--Colors-Trading-trade-bg-section, #232521);
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+  color: var(--Colors-Neutral-Text-body, #979995);
+
+  .titleApr {
+    font-size: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  &.light {
+    border-color: #f0f1ee;
+    background: #fff;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
+    color: var(--Colors-Neutral-Text-body, #686a66);
+  }
+
+  @include mobile {
+    font-size: 12px;
+    padding: 8px;
+    width: calc(100% - 20px);
   }
 }

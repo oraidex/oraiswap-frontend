@@ -8,12 +8,14 @@ export interface TokenState {
   lpPools: LpPoolDetails;
   bondLpPools: BondLpPoolDetails;
   feeConfigs: ConfigResponse;
+  totalLpv3: number;
 }
 
 const initialState: TokenState = {
   amounts: {},
   pairs: {},
   lpPools: {},
+  totalLpv3: 0,
   bondLpPools: {},
   feeConfigs: {
     default_timeout: 0,
@@ -31,6 +33,9 @@ export const tokenSlice = createSlice({
   name: 'token',
   initialState,
   reducers: {
+    updateTotalLpv3: (state, action: PayloadAction<number>) => {
+      state.totalLpv3 = action.payload;
+    },
     updateAmounts: (state, action: PayloadAction<AmountDetails>) => {
       state.amounts = {
         ...state.amounts,
@@ -48,6 +53,7 @@ export const tokenSlice = createSlice({
       state.pairs = {};
       state.lpPools = {};
       state.bondLpPools = {};
+      state.totalLpv3 = 0;
     },
     updateLpPools: (state, action: PayloadAction<LpPoolDetails>) => {
       state.lpPools = {
@@ -71,7 +77,14 @@ export const tokenSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { updateAmounts, updatePairs, removeToken, updateLpPools, updateBondLpPools, updateFeeConfig } =
-  tokenSlice.actions;
+export const {
+  updateAmounts,
+  updatePairs,
+  removeToken,
+  updateLpPools,
+  updateBondLpPools,
+  updateFeeConfig,
+  updateTotalLpv3
+} = tokenSlice.actions;
 
 export default tokenSlice.reducer;

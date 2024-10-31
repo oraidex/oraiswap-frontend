@@ -6,9 +6,9 @@ import {
   TokenItemType
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
-import { ReactComponent as ArrowDownIcon } from 'assets/icons/arrow.svg';
-import { ReactComponent as ArrowDownIconLight } from 'assets/icons/arrow_light.svg';
-import { ReactComponent as SuccessIcon } from 'assets/icons/toast_success.svg';
+import ArrowDownIcon from 'assets/icons/arrow.svg?react';
+import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import classNames from 'classnames';
 import Input from 'components/Input';
 import Loader from 'components/Loader';
@@ -27,8 +27,17 @@ import { reduceString } from 'libs/utils';
 import { AMOUNT_BALANCE_ENTRIES } from 'pages/UniversalSwap/helpers';
 import { FC, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
-import { calcMaxAmount, useDepositFeesBitcoin, useGetWithdrawlFeesBitcoin } from '../helpers';
+import {
+  calcMaxAmount,
+  useDepositFeesBitcoin,
+  useDepositFeesBitcoinV2,
+  useGetWithdrawlFeesBitcoin,
+  useGetWithdrawlFeesBitcoinV2
+} from '../helpers';
 import styles from './index.module.scss';
+import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
+import ToggleSwitch from 'components/ToggleSwitch';
+import { CWBitcoinFactoryDenom } from 'helper/constants';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -36,6 +45,8 @@ interface TransferConvertProps {
   convertKwt?: any;
   onClickTransfer: any;
   subAmounts?: object;
+  isFastMode?: boolean;
+  setIsFastMode?: Function;
 }
 
 const TransferConvertToken: FC<TransferConvertProps> = ({
@@ -43,7 +54,9 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   amountDetail,
   convertKwt,
   onClickTransfer,
-  subAmounts
+  subAmounts,
+  isFastMode,
+  setIsFastMode
 }) => {
   const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
@@ -56,6 +69,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const [addressTransfer, setAddressTransfer] = useState('');
   const { data: prices } = useCoinGeckoPrices();
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
+  const contractConfig = useGetContractConfig();
 
   useEffect(() => {
     if (chainInfo) setConvertAmount([undefined, 0]);
@@ -139,16 +153,37 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const toTokenFee = useTokenFee(remoteTokenDenomTo);
 
   // bridge fee & relayer fee
-  const bridgeFee = fromTokenFee + toTokenFee;
+  let bridgeFee = fromTokenFee + toTokenFee;
 
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
-  const { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
-  const depositFeeBtc = useDepositFeesBitcoin(isFromBitcoinToOraichain);
-  const withdrawalFeeBtc = useGetWithdrawlFeesBitcoin({
+  const isV2 = token.name === 'BTC';
+  let { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
+  const depositFeeBtcResult = useDepositFeesBitcoin(isFromBitcoinToOraichain);
+  const withdrawalFeeBtcResult = useGetWithdrawlFeesBitcoin({
     enabled: isFromOraichainToBitcoin,
     bitcoinAddress: addressTransfer
   });
+  const depositFeeBtcV2Result = useDepositFeesBitcoinV2(true);
+  const withdrawalFeeBtcV2Result = useGetWithdrawlFeesBitcoinV2({
+    enabled: isFromOraichainToBitcoin,
+    bitcoinAddress: addressTransfer
+  });
+  const depositFeeBtc = isV2 ? depositFeeBtcV2Result : depositFeeBtcResult;
+  const withdrawalFeeBtc = isV2
+    ? isFastMode
+      ? { withdrawal_fees: depositFeeBtcV2Result?.deposit_fees }
+      : withdrawalFeeBtcV2Result
+    : withdrawalFeeBtcResult;
+  if (isV2) {
+    if (contractConfig?.token_fee.denominator != 0) {
+      bridgeFee = (contractConfig?.token_fee.nominator * 100) / contractConfig?.token_fee.denominator;
+    } else {
+      bridgeFee = 0;
+    }
+    // not support relayer fee yet
+    relayerFeeTokenFee = 0;
+  }
 
   let toDisplayBTCFee = 0;
   if (depositFeeBtc && isFromBitcoinToOraichain) {
@@ -355,6 +390,19 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           </div>
         </div>
         {renderBridgeFee()}
+
+        {token.denom === CWBitcoinFactoryDenom && (
+          <div className={styles.fastMode}>
+            <span>Fast Mode</span>{' '}
+            <ToggleSwitch
+              customSwitchClass={styles.switch}
+              small
+              id={'fast-mode-id'}
+              checked={isFastMode}
+              onChange={() => setIsFastMode((fastMode) => !fastMode)}
+            />
+          </div>
+        )}
       </div>
       <div className={styles.transferTab}>
         {(() => {

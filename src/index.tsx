@@ -19,20 +19,13 @@ import { persistor, store } from 'store/configure';
 import './index.scss';
 import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
-import loadWasm from 'pages/Pool-V3/packages/wasm/oraiswap_v3_wasm';
-import { Client, cacheExchange, fetchExchange, Provider as UrqlProvider } from 'urql';
 import { TonProvider } from 'context/ton-provider';
-
-// const client = new Client({
-//   url: 'http://10.10.20.72:3000/',
-//   exchanges: [cacheExchange, fetchExchange]
-// });
 
 const queryClient = new QueryClient();
 
-if (process.env.REACT_APP_SENTRY_ENVIRONMENT === 'production') {
+if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
   Sentry.init({
-    environment: process.env.REACT_APP_SENTRY_ENVIRONMENT,
+    environment: import.meta.env.VITE_APP_SENTRY_ENVIRONMENT,
     dsn: 'https://763cf7889ff3440d86c7c1fbc72c8780@o1323226.ingest.sentry.io/6580749',
     denyUrls: [
       /extensions\//i,
@@ -58,7 +51,7 @@ if (process.env.REACT_APP_SENTRY_ENVIRONMENT === 'production') {
   });
 
   // init mixpanel track event
-  mixpanel.init(process.env.REACT_APP_MIX_PANEL_ENVIRONMENT);
+  mixpanel.init(import.meta.env.VITE_APP_MIX_PANEL_ENVIRONMENT);
 }
 
 // init queryClient
@@ -70,7 +63,6 @@ window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 const initApp = async () => {
   const root = createRoot(document.getElementById('oraiswap'));
   root.render(
-    // <UrqlProvider value={client}>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ToastProvider>
@@ -88,7 +80,6 @@ const initApp = async () => {
         </ToastProvider>
       </PersistGate>
     </Provider>
-    // </UrqlProvider>
   );
 
   // init cosmwasm client when user connected cosmos wallet
@@ -99,41 +90,4 @@ const initApp = async () => {
   }
 };
 
-export interface WasmInfo {
-  imports: {
-    from: string;
-    names: string[];
-  }[];
-  exports: string[];
-}
-
-export async function parseWasm(wasmFilePath: string): Promise<WasmInfo> {
-  try {
-    const wasmBinary = await fetch(wasmFilePath)
-      .then((res) => res.arrayBuffer())
-      .then((buf) => buf);
-
-    console.log('wasmBinary', wasmBinary);
-    // const wasmBinary = await fs.promises.readFile(wasmFilePath);
-    const wasmModule = await WebAssembly.compile(wasmBinary);
-    const imports = Object.entries(
-      WebAssembly.Module.imports(wasmModule).reduce(
-        (result, item) => ({
-          ...result,
-          [item.module]: [...(result[item.module] || []), item.name]
-        }),
-        {} as Record<string, string[]>
-      )
-    ).map(([from, names]) => ({ from, names }));
-
-    const exports = WebAssembly.Module.exports(wasmModule).map((item) => item.name);
-
-    return { imports, exports };
-  } catch (e) {
-    throw new Error(`Failed to parse WASM file: ${e.message}`);
-  }
-}
-
-loadWasm().then(() => {
-  initApp();
-});
+initApp();

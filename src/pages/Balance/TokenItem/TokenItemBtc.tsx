@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 
 import TokenItem, { TokenItemProps } from './index';
-import { ReactComponent as DepositBtcLight } from 'assets/images/deposit_btc.svg';
-import { ReactComponent as DepositBtcDark } from 'assets/images/btc-deposit-dark.svg';
+import DepositBtcLight from 'assets/images/deposit_btc.svg?react';
+import DepositBtcDark from 'assets/images/btc-deposit-dark.svg?react';
 import { Button } from 'components/Button';
 import { useContext } from 'react';
 import { ThemeContext } from 'context/theme-context';
@@ -23,7 +23,7 @@ export const TokenItemBtc: React.FC<TokenItemProps> = ({ onDepositBtc, isBtcOfOw
         <div className={styles.tokenItems}>
           <div>{isLightTheme ? <DepositBtcLight /> : <DepositBtcDark />}</div>
           <div className={styles.context}>
-            <p className={styles.transferBTC}>Transfer BTC to Oraichain</p>
+            <p className={styles.transferBTC}>Transfer BTC V2 to Oraichain</p>
             <p className={styles.depositFromCex}>Deposit from CEX (Binance, Coinbase, KuCoin,...)</p>
           </div>
         </div>

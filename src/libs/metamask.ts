@@ -53,6 +53,7 @@ export default class Metamask extends EvmWallet {
         method: 'eth_requestAccounts',
         params: []
       });
+      if (address === 'undefined') return '';
       return address;
     }
   }

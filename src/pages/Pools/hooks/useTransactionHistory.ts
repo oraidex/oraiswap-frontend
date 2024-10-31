@@ -5,14 +5,15 @@ export const useTransactionHistory = (offerDenom: string, askDenom: string) => {
   const {
     data: txHistories,
     isLoading,
+    isFetched,
     refetch: refetchTxHistories
-  } = useQuery(['tx-histotries-info', offerDenom, askDenom], () => getDataSwapHistorical(offerDenom, askDenom), {
+  } = useQuery(['tx-histories-info-v2', offerDenom, askDenom], () => getDataSwapHistorical(offerDenom, askDenom), {
     refetchOnWindowFocus: true,
     placeholderData: [],
     enabled: !!offerDenom && !!askDenom
   });
 
-  return { txHistories, isLoading, refetchTxHistories };
+  return { txHistories, isLoading, isFetched, refetchTxHistories };
 };
 
 export const LIMIT_TXS = 20;

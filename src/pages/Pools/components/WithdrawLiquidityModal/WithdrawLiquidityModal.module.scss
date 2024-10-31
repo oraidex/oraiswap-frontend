@@ -34,7 +34,7 @@
       justify-content: space-between;
       align-items: center;
       line-height: normal;
-      margin-bottom: 24px;
+      margin-bottom: 12px;
 
       .btn-group {
         display: flex;
@@ -167,6 +167,11 @@
         &.light {
           color: $primary-surface-default-light;
           background-color: $primary-surface-default-subtle-light;
+        }
+
+        @include theme() {
+          border: 1px solid theme-get('primary-text-text-link');
+          background-color: theme-get('neutral-surface-bg-swap');
         }
 
         .row-title {

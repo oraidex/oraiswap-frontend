@@ -1,11 +1,5 @@
 import { ExecuteInstruction } from '@cosmjs/cosmwasm-stargate';
 import { CW20_DECIMALS, ORAI, ORAI_INFO, USDT_CONTRACT, toDecimal, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as UpIcon } from 'assets/icons/up-arrow.svg';
-import { ReactComponent as DownIcon } from 'assets/icons/down-arrow-v2.svg';
-import { ReactComponent as OraiIcon } from 'assets/icons/oraichain.svg';
-import { ReactComponent as OraiLightIcon } from 'assets/icons/oraichain_light.svg';
-import bg_claim_btn from 'assets/images/bg_claim_btn.svg';
-import bg_claim_btn_light from 'assets/images/bg_claim_btn_light.svg';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
@@ -15,20 +9,11 @@ import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
 import CosmJs from 'libs/cosmjs';
-import {
-  getStatisticData,
-  useGetMyStake,
-  useGetPools,
-  useGetRewardInfo,
-  useGetTotalClaimable
-} from 'pages/Pools/hooks';
+import { useGetMyStake, useGetPools, useGetRewardInfo, useGetTotalClaimable } from 'pages/Pools/hooks';
 import { FC, useEffect, useState } from 'react';
-import { PoolInfoResponse } from 'types/pool';
-import LiquidityChart from '../LiquidityChart';
-import VolumeChart from '../VolumeChart';
-import styles from './Header.module.scss';
-import { isMobile } from '@walletconnect/browser-utils';
 import { FILTER_DAY } from 'reducer/type';
+import { PoolInfoResponse } from 'types/pool';
+import styles from './Header.module.scss';
 
 export const useGetOraiPrice = () => {
   const pools = useGetPools();
@@ -62,57 +47,56 @@ export const Header: FC<{ dataSource: PoolInfoResponse[] }> = ({ dataSource }) =
   const { totalStaked, totalEarned } = useGetMyStake({
     stakerAddress: address
   });
-  const oraiPrice = useGetOraiPrice();
   const { totalRewardInfoData, refetchRewardInfo } = useGetRewardInfo({ stakerAddr: address });
-  const isMobileMode = isMobile();
 
   const [claimLoading, setClaimLoading] = useState(false);
-  // const statisticData = getStatisticData(dataSource);
   const totalClaimable = useGetTotalClaimable({ poolTableData: dataSource, totalRewardInfoData });
 
-  const [openChart, setOpenChart] = useState(!isMobileMode);
-  const [filterDay, setFilterDay] = useState(FILTER_DAY.DAY);
-  const [liquidityDataChart, setLiquidityDataChart] = useState(0);
-  const [volumeDataChart, setVolumeDataChart] = useState(0);
+  // const isMobileMode = isMobile();
+  // const oraiPrice = useGetOraiPrice();
+  // const [openChart, setOpenChart] = useState(!isMobileMode);
+  // const [filterDay, setFilterDay] = useState(FILTER_DAY.DAY);
+  // const [liquidityDataChart, setLiquidityDataChart] = useState(0);
+  // const [volumeDataChart, setVolumeDataChart] = useState(0);
 
-  const ORAI_INFO = {
-    name: 'Orai Price',
-    Icon: theme === 'light' ? OraiLightIcon : OraiIcon,
-    suffix: -2.25,
-    value: oraiPrice,
-    isNegative: true,
-    decimal: 2
-  };
+  // const ORAI_INFO = {
+  //   name: 'Orai Price',
+  //   Icon: theme === 'light' ? OraiLightIcon : OraiIcon,
+  //   suffix: -2.25,
+  //   value: oraiPrice,
+  //   isNegative: true,
+  //   decimal: 2
+  // };
 
-  const liquidityData = [
-    {
-      name: 'Total Liquidity',
-      Icon: null,
-      suffix: 5.25,
-      value: liquidityDataChart, // || statisticData.totalLiquidity,
-      isNegative: false,
-      decimal: 2,
-      chart: <LiquidityChart filterDay={filterDay} onUpdateCurrentItem={setLiquidityDataChart} />,
-      openChart: openChart
-    },
-    {
-      name: 'Volume',
-      Icon: null,
-      suffix: 3.93,
-      value: volumeDataChart, // || statisticData.volume,
-      isNegative: false,
-      decimal: 2,
-      chart: <VolumeChart filterDay={filterDay} onUpdateCurrentItem={setVolumeDataChart} />,
-      openChart: openChart
-    }
-  ];
+  // const liquidityData = [
+  //   {
+  //     name: 'Total Liquidity',
+  //     Icon: null,
+  //     suffix: 5.25,
+  //     value: liquidityDataChart, // || statisticData.totalLiquidity,
+  //     isNegative: false,
+  //     decimal: 2,
+  //     chart: <LiquidityChart filterDay={filterDay} onUpdateCurrentItem={setLiquidityDataChart} />,
+  //     openChart: openChart
+  //   },
+  //   {
+  //     name: 'Volume',
+  //     Icon: null,
+  //     suffix: 3.93,
+  //     value: volumeDataChart, // || statisticData.volume,
+  //     isNegative: false,
+  //     decimal: 2,
+  //     chart: <VolumeChart filterDay={filterDay} onUpdateCurrentItem={setVolumeDataChart} />,
+  //     openChart: openChart
+  //   }
+  // ];
 
   const handleClaimAllRewards = async () => {
     setClaimLoading(true);
     displayToast(TToastType.TX_BROADCASTING);
     try {
       const msgs = totalRewardInfoData.reward_infos
-        .filter((rewardInfo) => rewardInfo.pending_reward !== '0')
+        .filter((rewardInfo) => rewardInfo.pending_reward !== '0' || rewardInfo.pending_withdraw?.length > 0)
         .map(
           (rewardInfo) =>
             ({
@@ -142,10 +126,10 @@ export const Header: FC<{ dataSource: PoolInfoResponse[] }> = ({ dataSource }) =
     }
   };
 
-  const disabledClaimBtn = !totalRewardInfoData?.reward_infos?.some((info) => +info.pending_reward > 0) || claimLoading;
+  const disabledClaimBtn = !totalClaimable || claimLoading;
   return (
     <div className={styles.header}>
-      <div className={styles.header_title}>
+      {/* <div className={styles.header_title}>
         <div className={styles.header_title_text}>
           <div>
             <ORAI_INFO.Icon />
@@ -198,7 +182,7 @@ export const Header: FC<{ dataSource: PoolInfoResponse[] }> = ({ dataSource }) =
             <div className={`${styles.chart} ${openChart ? styles.active : ''}`}>{e.chart}</div>
           </div>
         ))}
-      </div>
+      </div> */}
       <div className={styles.header_claimable}>
         <div className={styles.header_data}>
           <div className={styles.header_data_item}>

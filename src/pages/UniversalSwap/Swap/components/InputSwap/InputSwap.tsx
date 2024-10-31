@@ -7,14 +7,10 @@ import { TokenInfo } from 'types/token';
 import styles from './InputSwap.module.scss';
 import { chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
-import { numberWithCommas } from 'pages/Pools/helpers';
+import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
+import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP } from 'helper/constants';
 
 const cx = cn.bind(styles);
-
-export const AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP: [number, string, string][] = [
-  [0.5, '50%', 'half'],
-  [1, '100%', 'max']
-];
 
 interface InputSwapProps {
   setIsSelectToken: (value: boolean) => void;
@@ -34,9 +30,10 @@ interface InputSwapProps {
   onChangePercentAmount?: (coff: number) => void;
   theme: Themes;
   loadingSimulate?: boolean;
+  impactWarning?: number;
 }
 
-export default function InputSwapV4({
+export default function InputSwap({
   setIsSelectToken,
   setIsSelectChain,
   token,
@@ -53,7 +50,8 @@ export default function InputSwapV4({
   onChangePercentAmount,
   theme,
   coe,
-  loadingSimulate
+  loadingSimulate,
+  impactWarning
 }: InputSwapProps) {
   const chainInfo = chainInfosWithIcon.find((chain) => chain.chainId === selectChain);
   const tokenInfo = flattenTokensWithIcon.find((flattenToken) => flattenToken.coinGeckoId === token.coinGeckoId);
@@ -127,7 +125,8 @@ export default function InputSwapV4({
           </div>
         </div>
         <div className={cx('box-input')}>
-          <div className={cx('input')}>
+          <div className={styles.input}>
+            {loadingSimulate && <div className={styles.mask} />}
             <NumberFormat
               placeholder="0"
               thousandSeparator
@@ -153,7 +152,19 @@ export default function InputSwapV4({
             />
           </div>
           <div className={cx('usd')}>
-            ≈ ${amount ? numberWithCommas(Number(usdPrice) || 0, undefined, { maximumFractionDigits: 6 }) : 0}
+            <span>
+              ≈ ${amount ? numberWithCommas(Number(usdPrice) || 0, undefined, { maximumFractionDigits: 3 }) : 0}
+            </span>
+            {!!impactWarning && !isNegative(impactWarning) && (
+              <span
+                className={cx(
+                  'impact',
+                  `${impactWarning > 10 ? 'impact-ten' : impactWarning > 5 ? 'impact-five' : ''}`
+                )}
+              >
+                (-{numberWithCommas(impactWarning, undefined, { minimumFractionDigits: 1 })}%)
+              </span>
+            )}
           </div>
         </div>
       </div>

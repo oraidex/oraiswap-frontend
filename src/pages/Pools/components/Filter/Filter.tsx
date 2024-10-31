@@ -1,14 +1,13 @@
-import classNames from 'classnames';
 import SearchInput from 'components/SearchInput';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
-import { useGetPools, useGetRewardInfo } from 'pages/Pools/hooks';
+import { isEqual } from 'lodash';
+import { useGetRewardInfo } from 'pages/Pools/hooks';
 import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
 import styles from './style.module.scss';
-import { isEqual } from 'lodash';
 
 export enum KeyFilterPool {
   my_pool = 'my_pool',
@@ -61,29 +60,23 @@ export const Filter: FC<FilterProps> = ({ setFilteredPools, setIsOpenNewTokenMod
 
     let filteredPools: PoolInfoResponse[];
     // filter by type filter: my pool || all pool
-    if (typeFilter === KeyFilterPool.my_pool) {
-      filteredPools = pools.filter((pool) => isPoolWithLiquidity(pool) || findBondAmount(pool) > 0);
-    } else filteredPools = [...pools];
+    // if (typeFilter === KeyFilterPool.my_pool) {
+    //   filteredPools = pools.filter((pool) => isPoolWithLiquidity(pool) || findBondAmount(pool) > 0);
+    // } else filteredPools = [...pools];
 
     // filter by search value
-    filteredPools = filteredPools.filter((pool) => pool.symbols.toLowerCase().includes(searchValue.toLowerCase()));
+    // FIXME: change to only my pools // quangdz1704
+    filteredPools = pools.filter(
+      (pool) =>
+        (isPoolWithLiquidity(pool) || findBondAmount(pool) > 0) &&
+        pool.symbols.toLowerCase().includes(searchValue.toLowerCase())
+    );
     setFilteredPools(filteredPools);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeFilter, searchValue, pools.length, totalRewardInfoData]);
 
   return (
     <div className={styles.pool_filter}>
-      <div className={styles.pool_filter_list}>
-        {LIST_FILTER_POOL.map((item) => (
-          <div
-            key={item.key}
-            className={classNames(item.key === typeFilter ? styles.filter_active : null, styles.filter_item)}
-            onClick={() => setTypeFilter(item.key)}
-          >
-            {item.text}
-          </div>
-        ))}
-      </div>
       <div className={styles.pool_filter_right}>
         <div className={styles.pool_search}>
           <SearchInput

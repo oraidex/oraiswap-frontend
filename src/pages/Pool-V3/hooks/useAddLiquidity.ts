@@ -1,17 +1,15 @@
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import {
-  approveListToken,
-  approveToken,
-  calculateTokenAmountsWithSlippage,
-  createPoolTx,
-  createPositionTx,
-  createPositionWithNativeTx,
+  createPoolMsg,
+  createPositionMsg,
+  createPositionWithNativeMsg,
+  executeMultiple,
   genMsgAllowance,
   InitPositionData,
   isNativeToken
 } from '../helpers/helper';
 
-import { newPoolKey } from '../packages/wasm/oraiswap_v3_wasm';
+import { newPoolKey } from '@oraichain/oraiswap-v3';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { network } from 'config/networks';
 
@@ -22,32 +20,41 @@ const useAddLiquidity = () => {
     const { token_x, token_y, fee_tier } = poolKeyData;
 
     try {
-      const [xAmountWithSlippage, yAmountWithSlippage] = calculateTokenAmountsWithSlippage(
-        fee_tier.tick_spacing,
-        spotSqrtPrice,
-        liquidityDelta,
-        lowerTick,
-        upperTick,
-        Number(slippageTolerance),
-        true
-      );
+      // let [xAmountWithSlippage, yAmountWithSlippage] = calculateTokenAmountsWithSlippage(
+      //   fee_tier.tick_spacing,
+      //   spotSqrtPrice,
+      //   liquidityDelta,
+      //   lowerTick,
+      //   upperTick,
+      //   Number(slippageTolerance),
+      //   false
+      // );
 
-      let listTokenApprove = [];
-      if (!isNativeToken(token_x)) listTokenApprove.push(token_x);
-      if (!isNativeToken(token_y)) listTokenApprove.push(token_y);
+      const [xAmountWithSlippage, yAmountWithSlippage] = [data.tokenXAmount, data.tokenYAmount];
 
-      const msg = genMsgAllowance(listTokenApprove);
+      const msg = [];
 
-      await approveListToken(msg, walletAddress);
+      let listTokenApprove: {
+        token: string;
+        amount: bigint;
+      }[] = [];
+      if (!isNativeToken(token_x)) listTokenApprove.push({ token: token_x, amount: xAmountWithSlippage });
+      if (!isNativeToken(token_y)) listTokenApprove.push({ token: token_y, amount: yAmountWithSlippage });
+      if (listTokenApprove.length > 0) {
+        const allowMsg = genMsgAllowance(listTokenApprove);
+        // await executeMultiple(msg, walletAddress);
+        msg.push(...allowMsg);
+      }
 
       const poolKey = newPoolKey(token_x, token_y, fee_tier);
 
       if (initPool) {
-        await createPoolTx(poolKey, spotSqrtPrice.toString(), walletAddress);
+        const createPoolTx = createPoolMsg(poolKey, spotSqrtPrice.toString());
+        msg.push(createPoolTx);
       }
 
       // TODO:here
-      const tx = await createPositionWithNativeTx(
+      const createPosMsg = createPositionWithNativeMsg(
         poolKey,
         lowerTick,
         upperTick,
@@ -55,9 +62,13 @@ const useAddLiquidity = () => {
         spotSqrtPrice,
         slippageTolerance,
         xAmountWithSlippage,
-        yAmountWithSlippage,
-        walletAddress
+        yAmountWithSlippage
       );
+
+      msg.push(createPosMsg);
+
+      const tx = await executeMultiple(msg, walletAddress);
+
       if (tx) {
         onSuccess(tx);
       }
@@ -95,46 +106,57 @@ const useAddLiquidity = () => {
     }
 
     try {
+      const msg = [];
       const txs = [];
 
-      const [xAmountWithSlippage, yAmountWithSlippage] = calculateTokenAmountsWithSlippage(
-        fee_tier.tick_spacing,
-        spotSqrtPrice,
-        liquidityDelta,
-        lowerTick,
-        upperTick,
-        Number(slippageTolerance),
-        true
-      );
+      // const [xAmountWithSlippage, yAmountWithSlippage] = calculateTokenAmountsWithSlippage(
+      //   fee_tier.tick_spacing,
+      //   spotSqrtPrice,
+      //   liquidityDelta,
+      //   lowerTick,
+      //   upperTick,
+      //   Number(slippageTolerance),
+      //   true
+      // );
 
-      let listTokenApprove = [];
-      if (!isNativeToken(token_x)) listTokenApprove.push(token_x);
-      if (!isNativeToken(token_y)) listTokenApprove.push(token_y);
+      let listTokenApprove: {
+        token: string;
+        amount: bigint;
+      }[] = [];
+      if (!isNativeToken(token_x)) listTokenApprove.push({ token: token_x, amount: tokenXAmount });
+      if (!isNativeToken(token_y)) listTokenApprove.push({ token: token_y, amount: tokenYAmount });
 
-      const msg = genMsgAllowance(listTokenApprove);
+      const allowMsg = genMsgAllowance(listTokenApprove);
+      msg.push(...allowMsg);
 
-      await approveListToken(msg, walletAddress);
+      // await executeMultiple(msg, walletAddress);
 
       const poolKey = newPoolKey(token_x, token_y, fee_tier);
 
       if (initPool) {
-        const createTx = await createPoolTx(poolKey, spotSqrtPrice.toString(), walletAddress);
-        txs.push(createTx);
+        // const createTx = await createPoolTx(poolKey, spotSqrtPrice.toString(), walletAddress);
+        // txs.push(createTx);
+        const createTx = createPoolMsg(poolKey, spotSqrtPrice.toString());
+        msg.push(createTx);
       }
 
-      const tx = await createPositionTx(
+      const createPosTx = createPositionMsg(
         poolKey,
         lowerTick,
         upperTick,
         liquidityDelta,
         spotSqrtPrice,
-        slippageTolerance,
-        walletAddress
+        slippageTolerance
       );
+      msg.push(createPosTx);
+
+      const tx = await executeMultiple(msg, walletAddress);
+
       txs.push(tx);
       if (tx) {
         onSuccess(tx);
       }
+
       return tx;
     } catch (e: any) {
       console.log(e);

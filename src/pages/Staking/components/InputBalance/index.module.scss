@@ -9,13 +9,14 @@
   gap: 8px;
 
   border-radius: 12px;
+
   @include theme {
     background: theme-get('neutral-6');
   }
 
   .title {
     @include theme {
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
 
     font-size: 14px;
@@ -32,6 +33,7 @@
       @include theme {
         color: theme-get('neutral-text-text-dropdown');
       }
+
       font-size: 16px;
       font-weight: 500;
 
@@ -91,8 +93,9 @@
 
       .usd {
         @include theme {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
+
         font-size: 14px;
         font-weight: 400;
         letter-spacing: 0.1px;
@@ -123,6 +126,17 @@
         display: block;
       }
     }
+
+    &.unstakeMode {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+
+      button {
+        flex: 1;
+        padding: 12px 4px;
+      }
+    }
   }
 
   .coeff {
@@ -133,6 +147,7 @@
     @include theme() {
       color: theme-get('text-color');
     }
+
     text-align: center;
     font-size: 14px;
     font-weight: 400;

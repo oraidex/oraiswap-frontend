@@ -130,7 +130,7 @@ $padding-default: 16px;
       gap: 16px;
 
       @include theme {
-        color: theme-get('neutral-9');
+        color: theme-get('neutral-8');
       }
 
       font-size: 14px;
@@ -289,7 +289,7 @@ $padding-default: 16px;
         svg {
           @include theme {
             path {
-              stroke: theme-get('neutral-9');
+              stroke: theme-get('neutral-8');
             }
           }
         }

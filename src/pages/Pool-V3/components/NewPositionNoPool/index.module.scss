@@ -9,7 +9,8 @@
 
     font-size: 16px;
     font-weight: 600;
-    line-height: 150%; /* 24px */
+    line-height: 150%;
+    /* 24px */
   }
 
   .warning {
@@ -23,6 +24,11 @@
 
     border-radius: 8px;
 
+    &.warningOnCreatePool {
+      margin-top: 0;
+      display: none;
+    }
+
     @include theme {
       border: 1px solid theme-get('warning-text-default');
       background: theme-get('warning-surface-default-subtle');
@@ -31,8 +37,42 @@
 
     font-size: 12px;
     font-weight: 400;
-    line-height: 150%; /* 18px */
+    line-height: 150%;
+    /* 18px */
     letter-spacing: 0.012px;
+  }
+
+  .currentPriceOnCreatePool {
+    display: flex;
+    padding-bottom: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    align-self: stretch;
+
+    color: var(--Colors-Neutral-Text-text-token-name, #f7f7f7);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 150%;
+    /* 21px */
+
+    margin-bottom: 12px;
+
+    @include theme {
+      color: theme-get('colors-neutral-text-text-token-name');
+    }
+
+    .titlePrice {
+      @include theme {
+        color: theme-get('neutral-8');
+      }
+
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 150%;
+      letter-spacing: 0.013px;
+    }
   }
 
   .price {
@@ -45,14 +85,19 @@
 
     @include theme {
       background: theme-get('neutral-6');
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
 
     margin-bottom: 32px;
 
+    &.showOnCreatePool {
+      margin-bottom: 12px;
+    }
+
     font-size: 13px;
     font-weight: 400;
-    line-height: 150%; /* 19.5px */
+    line-height: 150%;
+    /* 19.5px */
     letter-spacing: 0.013px;
   }
 
@@ -86,9 +131,11 @@
       @include theme() {
         color: theme-get('colors-neutral-text-body');
       }
+
       font-size: 12px;
       font-weight: 400;
-      line-height: 150%; /* 18px */
+      line-height: 150%;
+      /* 18px */
       letter-spacing: 0.012px;
 
       display: flex;
@@ -106,24 +153,27 @@
 
     @include theme {
       background: theme-get('neutral-6');
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
 
     margin: 16px 0;
 
     font-size: 13px;
     font-weight: 400;
-    line-height: 150%; /* 19.5px */
+    line-height: 150%;
+    /* 19.5px */
     letter-spacing: 0.013px;
 
     h2 {
       @include theme {
         color: theme-get('colors-neutral-text-text-token-name');
       }
+
       text-align: right;
       font-size: 18px;
       font-weight: 600;
-      line-height: 150%; /* 27px */
+      line-height: 150%;
+      /* 27px */
     }
   }
 
@@ -154,12 +204,13 @@
 
         @include theme {
           background: theme-get('neutral-6');
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
 
         font-size: 13px;
         font-weight: 400;
-        line-height: 150%; /* 19.5px */
+        line-height: 150%;
+        /* 19.5px */
         letter-spacing: 0.013px;
 
         .label {
@@ -213,19 +264,21 @@
         gap: 4px;
 
         @include theme {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
 
         font-size: 13px;
         font-weight: 400;
-        line-height: 150%; /* 19.5px */
+        line-height: 150%;
+        /* 19.5px */
         letter-spacing: 0.013px;
 
         .value {
           color: var(--chart-bear, #ff4d52);
           font-size: 13px;
           font-weight: 400;
-          line-height: 150%; /* 19.5px */
+          line-height: 150%;
+          /* 19.5px */
           letter-spacing: 0.013px;
 
           &.positive {
@@ -247,6 +300,11 @@
     @include small-mobile {
       flex-direction: column;
       gap: 8px;
+    }
+
+    &.actionOnCreatePool {
+      margin-top: 12px;
+      margin-bottom: 8px;
     }
 
     button {
@@ -272,7 +330,8 @@
 
       font-size: 14px;
       font-weight: 500;
-      line-height: 150%; /* 21px */
+      line-height: 150%;
+      /* 21px */
     }
   }
 }

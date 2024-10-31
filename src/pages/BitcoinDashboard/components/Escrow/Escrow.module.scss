@@ -5,6 +5,7 @@
   &_title {
     font-weight: 500;
     font-size: 24px;
+
     @include theme() {
       color: theme-get('color');
     }
@@ -90,7 +91,7 @@
         gap: 4px;
 
         @include theme {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
 
         svg {

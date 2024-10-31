@@ -1,0 +1,19 @@
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+.chartLiquid {
+  display: flex;
+//   position: relative;
+  flex-direction: column;
+  flex: 1;
+  // background-color: red;
+
+  .chart {
+    display: flex;
+    // margin-top: 2rem;
+    height: 100%;
+    flex-direction: column;
+    flex: 1 1 0%;
+    // background-color: yellow;
+  }
+}

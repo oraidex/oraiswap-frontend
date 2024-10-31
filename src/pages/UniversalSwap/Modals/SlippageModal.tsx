@@ -1,7 +1,7 @@
 import { DEFAULT_SLIPPAGE, OPTIONS_SLIPPAGE } from '@oraichain/oraidex-common';
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as IconTooltip } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as WarningIcon } from 'assets/icons/warning_icon.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
+import IconTooltip from 'assets/icons/icon_tooltip.svg?react';
+import WarningIcon from 'assets/icons/warning_icon.svg?react';
 import cn from 'classnames/bind';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { FC, useState } from 'react';
@@ -39,14 +39,14 @@ export const SlippageModal: FC<ModalProps> = ({ setUserSlippage, setVisible, isB
         <div className={cx('ai-label')}>
           <div className={cx('label')}>Enable AI Smart Route</div>
           <div className={cx('btn-switch')}>
-            <ToggleSwitch
+            {/* <ToggleSwitch
               small={true}
               id="toggle-ai-mode"
               checked={isAIRoute}
               onChange={() => {
                 setIsAIRoute(!isAIRoute);
               }}
-            />
+            /> */}
           </div>
         </div>
         <div className={cx('ai-description')}>Use AI to find the best return route for your order</div>

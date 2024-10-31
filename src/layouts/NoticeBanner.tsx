@@ -1,4 +1,4 @@
-import { ReactComponent as CloseBannerIcon } from 'assets/icons/close.svg';
+import CloseBannerIcon from 'assets/icons/close.svg?react';
 import { ReactElement, useEffect, useState } from 'react';
 import axios from 'rest/request';
 import styles from './NoticeBanner.module.scss';
@@ -33,7 +33,7 @@ export const NoticeBanner = ({
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        const BASE_URL = process.env.REACT_APP_STRAPI_BASE_URL || 'https://nice-fireworks-d26703b63e.strapiapp.com';
+        const BASE_URL = import.meta.env.VITE_APP_STRAPI_BASE_URL || 'https://nice-fireworks-d26703b63e.strapiapp.com';
         const res = await axios.get('api/banners?populate=*', { baseURL: BASE_URL });
         return res.data.data;
       } catch (error) {

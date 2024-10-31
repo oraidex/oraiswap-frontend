@@ -1,0 +1,21 @@
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+.chartPrice {
+  display: flex;
+  // padding-top: 1.75rem;
+  // padding-bottom: 1.75rem;
+  flex-direction: column;
+  flex: 2;
+  //   margin-right: 6px;
+  // background-color: yellow;
+
+  // @media (min-width: 640px) {
+  //   padding-top: 1.75rem;
+  //   padding-bottom: 1.75rem;
+  // }
+
+  // background-color: red;
+
+  
+}

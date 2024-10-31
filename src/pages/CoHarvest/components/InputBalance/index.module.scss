@@ -9,13 +9,14 @@
   gap: 8px;
 
   border-radius: 12px;
+
   @include theme {
     background: theme-get('neutral-surface-bg');
   }
 
   .title {
     @include theme {
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
 
     font-size: 14px;
@@ -31,6 +32,7 @@
       @include theme {
         color: theme-get('neutral-text-text-dropdown');
       }
+
       font-size: 16px;
       font-weight: 500;
     }
@@ -76,9 +78,11 @@
       @include theme {
         color: theme-get('neutral-text-text-disabled');
       }
+
       font-size: 20px;
       font-weight: 500;
-      line-height: 150%; /* 30px */
+      line-height: 150%;
+      /* 30px */
     }
 
     @include small-mobile {
@@ -98,6 +102,7 @@
     @include theme() {
       color: theme-get('text-color');
     }
+
     text-align: center;
     font-size: 14px;
     font-weight: 400;

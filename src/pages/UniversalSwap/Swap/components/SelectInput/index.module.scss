@@ -41,6 +41,7 @@
     transition: visibility 0s linear 0s, opacity 300ms;
   }
 }
+
 .selectInput {
   cursor: pointer;
   display: flex;
@@ -53,7 +54,7 @@
 
   @include theme {
     background: theme-get('neutral-surface-bg-toast');
-    color: theme-get('neutral-9');
+    color: theme-get('neutral-8');
   }
 
   font-size: 12px;
@@ -68,20 +69,23 @@
     gap: 8px;
 
     @include theme {
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
 
     font-size: 14px;
     font-weight: 400;
-    line-height: 150%; /* 21px */
+    line-height: 150%;
+    /* 21px */
 
     .label {
       @include theme {
         color: theme-get('neutral-text-text-token-name-2');
       }
+
       font-size: 14px;
       font-weight: 500;
-      line-height: 150%; /* 21px */
+      line-height: 150%;
+      /* 21px */
     }
   }
 
@@ -127,6 +131,7 @@
 
     .title {
       width: 100%;
+
       @include theme {
         color: theme-get('neutral-text-title-2');
       }
@@ -134,7 +139,8 @@
       text-align: center;
       font-size: 18px;
       font-weight: 600;
-      line-height: 150%; /* 27px */
+      line-height: 150%;
+      /* 27px */
 
       padding: 4px 0;
     }
@@ -148,7 +154,7 @@
       svg {
         path {
           @include theme {
-            fill: theme-get('neutral-9');
+            fill: theme-get('neutral-8');
           }
         }
       }
@@ -163,7 +169,8 @@
 
       font-size: 14px;
       font-weight: 500;
-      line-height: 150%; /* 21px */
+      line-height: 150%;
+      /* 21px */
 
       span {
         color: $yellow-brown-color;
@@ -181,6 +188,7 @@
 
       &.dark {
         background: $warning-surface-default-subtle;
+
         span {
           color: $warning-surface-default;
         }
@@ -209,6 +217,7 @@
           @include theme {
             background: theme-get('neutral-surface-bg-section-5');
           }
+
           opacity: 0.7;
         }
 

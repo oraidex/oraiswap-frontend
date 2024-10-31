@@ -58,8 +58,9 @@
     gap: 16px;
 
     @include theme {
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
+
     font-size: 14px;
     font-weight: 400;
     line-height: 120%;
@@ -76,8 +77,8 @@
     svg {
       path {
         @include theme {
-          fill: theme-get('neutral-9');
-          stroke: theme-get('neutral-9');
+          fill: theme-get('neutral-8');
+          stroke: theme-get('neutral-8');
         }
       }
     }

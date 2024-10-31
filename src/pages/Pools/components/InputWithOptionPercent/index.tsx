@@ -25,7 +25,7 @@ const InputWithOptionPercent: FC<{
   isFocus?: boolean;
   prefixText?: string;
   amountInUsdt?: number;
-  slippage?: ReactNode
+  slippage?: ReactNode;
 }> = ({
   setAmountFromPercent,
   onValueChange,
@@ -34,7 +34,7 @@ const InputWithOptionPercent: FC<{
   TokenIcon,
   token,
   totalAmount,
-  percentList = [25, 50, 75, 100],
+  percentList = [50, 100],
   apr,
   showIcon = false,
   hasPath = false,
@@ -43,17 +43,21 @@ const InputWithOptionPercent: FC<{
   amountInUsdt = 0,
   slippage
 }) => {
-    const { data: prices } = useCoinGeckoPrices();
-    const [chosenOption, setChosenOption] = useState(-1);
-    const [theme] = useConfigReducer('theme');
-    const [inputValue, setInputValue] = useState<number | string>('');
+  const { data: prices } = useCoinGeckoPrices();
+  const [chosenOption, setChosenOption] = useState(-1);
+  const [theme] = useConfigReducer('theme');
+  const [inputValue, setInputValue] = useState<number | string>('');
 
-    const onChangePercent = (percent: number) => {
-      const HUNDRED_PERCENT_IN_CW20_DECIMALS = 100000000;
-      setAmountFromPercent((toAmount(percent, CW20_DECIMALS) * totalAmount) / BigInt(HUNDRED_PERCENT_IN_CW20_DECIMALS));
-    };
+  const onChangePercent = (percent: number) => {
+    const HUNDRED_PERCENT_IN_CW20_DECIMALS = 100000000;
+    setAmountFromPercent((toAmount(percent, CW20_DECIMALS) * totalAmount) / BigInt(HUNDRED_PERCENT_IN_CW20_DECIMALS));
+  };
 
-    return (
+  return (
+    <>
+      <div className={cx('top')}>
+        {slippage ? slippage : !!apr && <div className={cx('apr')}>Current APR: {apr}%</div>}
+      </div>
       <div className={cx('supply', theme, { 'has-path': hasPath })} key={token?.denom}>
         <div className={cx('balance')}>
           <div className={cx('amount', theme)}>
@@ -67,16 +71,33 @@ const InputWithOptionPercent: FC<{
               decimalScale={6}
             />
           </div>
-          {slippage ? slippage : !!apr && <div className={cx('apr')}>Current APR: {apr}%</div>}
+          {
+            <div className={cx('options')}>
+              {percentList.map((option, idx) => (
+                <div
+                  className={cx('item', theme, {
+                    isChosen: isFocus && chosenOption === idx
+                  })}
+                  key={idx}
+                  onClick={() => {
+                    setAmountFromPercent((BigInt(option) * totalAmount) / BigInt(100));
+                    setChosenOption(idx);
+                    setInputValue('');
+                  }}
+                >
+                  {option}%
+                </div>
+              ))}
+            </div>
+          }
         </div>
 
         <div className={cx('input')}>
           {showIcon && (
             <div className={cx('token')}>
-              {TokenIcon && <TokenIcon className={cx('logo')} />}
+              {TokenIcon}
               <div className={cx('title', theme)}>
                 <div>{token?.name}</div>
-                <div className={cx('des')}>Oraichain</div>
               </div>
             </div>
           )}
@@ -107,9 +128,9 @@ const InputWithOptionPercent: FC<{
                 balance={
                   amountInUsdt
                     ? {
-                      amount: BigInt(Math.trunc(amountInUsdt)),
-                      decimals: CW20_DECIMALS
-                    }
+                        amount: BigInt(Math.trunc(amountInUsdt)),
+                        decimals: CW20_DECIMALS
+                      }
                     : getUsd(value, token, prices)
                 }
                 decimalScale={2}
@@ -118,43 +139,9 @@ const InputWithOptionPercent: FC<{
             </div>
           </div>
         </div>
-        <div className={cx('options')}>
-          {percentList.map((option, idx) => (
-            <div
-              className={cx('item', theme, {
-                isChosen: isFocus && chosenOption === idx
-              })}
-              key={idx}
-              onClick={() => {
-                setAmountFromPercent((BigInt(option) * totalAmount) / BigInt(100));
-                setChosenOption(idx);
-                setInputValue('');
-              }}
-            >
-              {option}%
-            </div>
-          ))}
-          <div
-            className={cx('item', theme, 'border', {
-              isChosen: isFocus && chosenOption === 4
-            })}
-            onClick={() => setChosenOption(4)}
-          >
-            <input
-              placeholder="0.00"
-              type={'number'}
-              value={inputValue}
-              className={cx('input', theme)}
-              onChange={(event) => {
-                onChangePercent(+event.target.value);
-                setInputValue(event.target.value);
-              }}
-            />
-            <span>%</span>
-          </div>
-        </div>
       </div>
-    );
-  };
+    </>
+  );
+};
 
 export default memo(InputWithOptionPercent);

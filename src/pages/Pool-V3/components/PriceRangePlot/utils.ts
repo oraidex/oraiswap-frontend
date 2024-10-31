@@ -9,24 +9,51 @@ import {
   LiquidityTick,
   Tick,
   Liquidity,
-//   getPriceScale
-} from 'pages/Pool-V3/packages/wasm/oraiswap_v3_wasm.js';
+  getPriceScale
+} from '@oraichain/oraiswap-v3';
 import { TokenItemType } from '@oraichain/oraidex-common';
-import SingletonOraiswapV3, {Token} from 'libs/contractSingleton';
-import { PlotTickData } from './PriceRangePlot';
+import SingletonOraiswapV3, { Token } from 'libs/contractSingleton';
+import { ActiveLiquidityPerTickRange } from 'reducer/poolDetailV3';
 
-export const PRICE_SCALE = 24;
+export interface PlotTickData {
+  x: number;
+  y: number;
+  index: number;
+}
+
+export type TickPlotPositionData = Omit<PlotTickData, 'y'>;
+
+export interface IPriceRangePlot {
+  data: PlotTickData[];
+  midPrice?: TickPlotPositionData;
+  leftRange: TickPlotPositionData;
+  rightRange: TickPlotPositionData;
+  onChangeRange?: (left: number, right: number) => void;
+  style?: React.CSSProperties;
+  className?: string;
+  disabled?: boolean;
+  plotMin: number;
+  plotMax: number;
+  zoomMinus: () => void;
+  zoomPlus: () => void;
+  loading?: boolean;
+  isXtoY: boolean;
+  xDecimal: number;
+  yDecimal: number;
+  tickSpacing: number;
+  isDiscrete?: boolean;
+  coverOnLoading?: boolean;
+  hasError?: boolean;
+  reloadHandler: () => void;
+  showOnCreatePool?: boolean;
+}
+
+export const PRICE_SCALE = getPriceScale();
 export const CONCENTRATION_FACTOR = 1.00001526069123;
 
-export const getTickAtSqrtPriceDelta = (
-  tickSpacing: number,
-  minimumRange: number,
-  concentration: number
-) => {
+export const getTickAtSqrtPriceDelta = (tickSpacing: number, minimumRange: number, concentration: number) => {
   const base = Math.pow(1.0001, -(tickSpacing / 4));
-  const logArg =
-    (1 - 1 / (concentration * CONCENTRATION_FACTOR)) /
-    Math.pow(1.0001, (-tickSpacing * minimumRange) / 4);
+  const logArg = (1 - 1 / (concentration * CONCENTRATION_FACTOR)) / Math.pow(1.0001, (-tickSpacing * minimumRange) / 4);
 
   return Math.ceil(Math.log(logArg) / Math.log(base) / 2);
 };
@@ -136,7 +163,7 @@ export const calcPrice = (amountTickIndex: number, isXtoY: boolean, xDecimal: nu
 };
 
 export const calcYPerXPriceByTickIndex = (tickIndex: number, xDecimal: number, yDecimal: number): number => {
-  const sqrt = +printBigint(calculateSqrtPrice(tickIndex), PRICE_SCALE);
+  const sqrt = +printBigint(calculateSqrtPrice(tickIndex), Number(PRICE_SCALE));
 
   const proportion = sqrt * sqrt;
 
@@ -244,7 +271,7 @@ export const trimLeadingZeros = (amount: string): string => {
   }
 
   const reversedDec = Array.from(amountParts[1]).reverse();
-  const firstNonZero = reversedDec.findIndex(char => char !== '0');
+  const firstNonZero = reversedDec.findIndex((char) => char !== '0');
 
   if (firstNonZero === -1) {
     return amountParts[0];
@@ -257,11 +284,7 @@ export const trimLeadingZeros = (amount: string): string => {
 
 export const extractDenom = (tokenInfo: TokenItemType) => {
   return tokenInfo.contractAddress ? tokenInfo.contractAddress : tokenInfo.denom;
-}
-
-export const extractAddress = (tokenInfo: TokenItemType) => {
-  return tokenInfo.contractAddress ? tokenInfo.contractAddress : tokenInfo.denom;
-}
+};
 
 export enum PositionTokenBlock {
   None,
@@ -338,12 +361,10 @@ export interface LiquidityBreakpoint {
   index: bigint;
 }
 
-export const calculateLiquidityBreakpoints = (
-  ticks: (Tick | LiquidityTick)[]
-): LiquidityBreakpoint[] => {
+export const calculateLiquidityBreakpoints = (ticks: (Tick | LiquidityTick)[]): LiquidityBreakpoint[] => {
   let currentLiquidity = 0n;
 
-  return ticks.map(tick => {
+  return ticks.map((tick) => {
     currentLiquidity = currentLiquidity + BigInt(tick.liquidity_change) * (tick.sign ? 1n : -1n);
     return {
       liquidity: currentLiquidity,
@@ -359,6 +380,7 @@ export const createLiquidityPlot = (
   tokenXDecimal: number,
   tokenYDecimal: number
 ): PlotTickData[] => {
+  // sort tick
   const sortedTicks = rawTicks.sort((a, b) => Number(a.index - b.index));
   const parsedTicks = rawTicks.length ? calculateLiquidityBreakpoints(sortedTicks) : [];
 
@@ -446,14 +468,11 @@ export type TokenDataOnChain = {
   balance: bigint;
 };
 
-export const getTokenDataByAddresses = async (
-  tokens: string[],
-  address?: string
-): Promise<Record<string, Token>> => {
+export const getTokenDataByAddresses = async (tokens: string[], address?: string): Promise<Record<string, Token>> => {
   const tokenInfos: TokenDataOnChain[] = await SingletonOraiswapV3.getTokensInfo(tokens, address);
 
   const newTokens: Record<string, Token> = {};
-  tokenInfos.forEach(token => {
+  tokenInfos.forEach((token) => {
     newTokens[token.address] = {
       symbol: token.symbol ? (token.symbol as string) : 'UNKNOWN',
       address: token.address,
@@ -468,39 +487,49 @@ export const getTokenDataByAddresses = async (
 
 export async function handleGetCurrentPlotTicks({ poolKey, isXtoY, xDecimal, yDecimal }): Promise<PlotTickData[]> {
   try {
-    console.log('poolKey', poolKey);
     const allTickmaps = await SingletonOraiswapV3.getFullTickmap(poolKey);
 
     const rawTicks = await SingletonOraiswapV3.getAllLiquidityTicks(poolKey, allTickmaps);
-    console.log('rawTicks', rawTicks);
+
     if (rawTicks.length === 0) {
-      const data = createPlaceholderLiquidityPlot(
-        isXtoY,
-        0,
-        poolKey.fee_tier.tick_spacing,
-        xDecimal,
-        yDecimal
-      );
+      const data = createPlaceholderLiquidityPlot(isXtoY, 0, poolKey.fee_tier.tick_spacing, xDecimal, yDecimal);
       return data;
     }
 
-    const ticksData = createLiquidityPlot(
-      rawTicks,
-      poolKey.fee_tier.tick_spacing,
-      isXtoY,
-      xDecimal,
-      yDecimal
-    );
+    const ticksData = createLiquidityPlot(rawTicks, poolKey.fee_tier.tick_spacing, isXtoY, xDecimal, yDecimal);
     return ticksData;
   } catch (error) {
     console.log(error);
-    const data = createPlaceholderLiquidityPlot(
-      isXtoY,
-      10,
-      poolKey.fee_tier.tick_spacing,
-      xDecimal,
-      yDecimal
-    );
+    const data = createPlaceholderLiquidityPlot(isXtoY, 10, poolKey.fee_tier.tick_spacing, xDecimal, yDecimal);
     return data;
   }
+}
+
+export async function convertPlotTicks({
+  poolKey,
+  isXToY,
+  xDecimal,
+  yDecimal
+}): Promise<ActiveLiquidityPerTickRange[]> {
+  const plotTicks = await handleGetCurrentPlotTicks({ poolKey, isXtoY: isXToY, xDecimal, yDecimal });
+  const activeLiquidity: ActiveLiquidityPerTickRange[] = [] as any;
+  const maxTick = getMaxTick(poolKey.fee_tier.tick_spacing);
+  plotTicks.forEach((plotTick, index) => {
+    const { y, index: tickIndex } = plotTick;
+    activeLiquidity.push({
+      lowerTick: tickIndex,
+      upperTick: plotTicks[index + 1] ? plotTicks[index + 1].index : maxTick,
+      liquidityAmount: y
+    });
+  });
+  // for (const plotTick of plotTicks) {
+  //   const { y, index } = plotTick;
+  //   activeLiquidity.push({
+  //     lowerTick: index,
+  //     upperTick: index + poolKey.fee_tier.tick_spacing,
+  //     liquidityAmount: y
+  //   });
+  // }
+
+  return activeLiquidity;
 }

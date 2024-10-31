@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Loader.module.scss';
-// import { ReactComponent as BroadcastingIcon } from 'assets/icons/toast_broadcasting.svg';
+// import BroadcastingIcon from 'assets/icons/toast_broadcasting.svg?react';
 import BroadcastingIcon from 'assets/icons/ic_loading.png';
 
 const Loader: React.FC<{

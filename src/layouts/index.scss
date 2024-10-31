@@ -8,6 +8,13 @@ html {
   background-color: $primary-background-other;
 }
 
+.fb-feedback-widget-feedback-button-container {
+  display: none !important;
+  // @include mobile {
+  //   display: none !important;
+  // }
+}
+
 .app {
   font-size: $font-size;
   min-height: 100vh;

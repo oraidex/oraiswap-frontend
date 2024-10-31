@@ -57,6 +57,7 @@
       @include theme {
         color: theme-get('neutral-text-text-token-name');
       }
+
       font-size: 20px;
       font-weight: 600;
       line-height: 150%;
@@ -116,7 +117,7 @@
           }
 
           @include theme {
-            color: theme-get('neutral-9');
+            color: theme-get('neutral-8');
           }
 
           font-size: 14px;
@@ -167,6 +168,7 @@
               display: flex;
               align-items: center;
               gap: 10px;
+
               @include theme {
                 color: theme-get('neutral-text-text-dropdown');
               }
@@ -205,7 +207,8 @@
 
         font-size: 14px;
         font-weight: 500;
-        line-height: 150%; /* 21px */
+        line-height: 150%;
+        /* 21px */
       }
 
       .summaryWrapper {
@@ -222,6 +225,7 @@
         align-items: flex-start;
         gap: 16px;
         border-radius: 12px;
+
         @include theme {
           background: theme-get('bg-section-05');
           color: theme-get('neutral-text-text-token-name');
@@ -229,13 +233,15 @@
 
         font-size: 14px;
         font-weight: 400;
-        line-height: 150%; /* 21px */
+        line-height: 150%;
+        /* 21px */
         letter-spacing: 0.1px;
 
         &Title {
           font-size: 14px;
           font-weight: 600;
-          line-height: 150%; /* 21px */
+          line-height: 150%;
+          /* 21px */
         }
       }
 
@@ -246,6 +252,7 @@
         padding: 12px;
 
         border-radius: 12px;
+
         @include theme {
           background: theme-get('bg-section-05');
         }
@@ -276,7 +283,8 @@
 
           font-size: 14px;
           font-weight: 600;
-          line-height: 150%; /* 21px */
+          line-height: 150%;
+          /* 21px */
 
           @include theme {
             color: theme-get('neutral-text-text-token-name');
@@ -284,8 +292,9 @@
 
           .note {
             @include theme {
-              color: theme-get('neutral-9');
+              color: theme-get('neutral-8');
             }
+
             font-weight: 400;
             margin-left: 8px;
           }
@@ -295,9 +304,11 @@
           @include theme {
             color: theme-get('neutral-text-text-token-name');
           }
+
           font-size: 14px;
           font-weight: 400;
-          line-height: 150%; /* 21px */
+          line-height: 150%;
+          /* 21px */
           letter-spacing: 0.1px;
         }
       }

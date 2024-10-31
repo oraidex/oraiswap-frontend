@@ -56,7 +56,7 @@ export const deployIcs20Token = async (
 ): Promise<CwIcs20LatestClient> => {
   const { codeId } = await client.upload(
     senderAddress,
-    readFileSync(process.env.ICS20_LATEST || commonArtifacts.getContractDir('cw-ics20-latest')),
+    readFileSync(import.meta.env.ICS20_LATEST || commonArtifacts.getContractDir('cw-ics20-latest')),
     'auto'
   );
   const { contractAddress } = await client.instantiate(

@@ -4,7 +4,7 @@ import cn from 'classnames/bind';
 import useTheme from 'hooks/useTheme';
 
 const cx = cn.bind(styles);
-type ButtonType =
+export type ButtonType =
   | 'primary'
   | 'secondary'
   | 'primary-sm'
@@ -21,12 +21,18 @@ interface Props {
   disabled?: boolean;
   icon?: React.ReactElement | React.ReactNode;
   style?: React.CSSProperties;
+  className?: string;
 }
 
-export const Button: React.FC<Props> = ({ children, onClick, type, icon, style, ...rest }) => {
+export const Button: React.FC<Props> = ({ className, children, onClick, type, icon, style, ...rest }) => {
   const theme = useTheme();
   return (
-    <button onClick={(event) => onClick(event)} className={cx('button', type, theme)} style={style} {...rest}>
+    <button
+      onClick={(event) => onClick(event)}
+      className={cx('button', type, theme, className)}
+      style={style}
+      {...rest}
+    >
       {icon && <span className={styles.icon}>{icon}</span>}
       {children}
     </button>

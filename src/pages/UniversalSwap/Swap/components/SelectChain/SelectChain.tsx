@@ -1,20 +1,15 @@
-import { CoinIcon, TokenItemType, CustomChainInfo } from '@oraichain/oraidex-common';
-import { TokenInfo } from 'types/token';
-import styles from './SelectChain.module.scss';
-import SearchInput from 'components/SearchInput';
-import cn from 'classnames/bind';
-import { chainIcons } from 'config/chainInfos';
-import { ReactComponent as OraiIcon } from 'assets/icons/oraichain.svg';
-import { ReactComponent as IconoirCancel } from 'assets/icons/iconoir_cancel.svg';
-import { networks } from 'helper';
+import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NetworkImg from 'assets/icons/network.svg';
-import CheckImg from 'assets/icons/check.svg';
-import { getTotalUsd } from 'libs/utils';
+import cn from 'classnames/bind';
 import { tokenMap } from 'config/bridgeTokens';
-import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { chainIcons } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
-import { formatDisplayUsdt } from 'pages/Pools/helpers';
+import { networks } from 'helper';
+import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
+import { formatDisplayUsdt } from 'pages/Pools/helpers';
+import styles from './SelectChain.module.scss';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {
@@ -77,7 +72,9 @@ export default function SelectChain({
               .filter(
                 (net) => !isAllowChainId(net.chainId) && (!filterChainId.length || filterChainId.includes(net.chainId))
               )
-              .filter((n) => !isMaintainBridge || (isMaintainBridge && n.chainId === 'Oraichain'))
+              .filter(
+                (n) => !isMaintainBridge || (isMaintainBridge && n.networkType === 'cosmos' && n.chainId !== 'noble-1')
+              )
               .map((n) => {
                 const subAmounts = Object.fromEntries(
                   Object.entries(amounts).filter(([denom]) => tokenMap[denom] && tokenMap[denom].chainId === n.chainId)

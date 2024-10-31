@@ -3,12 +3,20 @@ import axios from 'rest/request';
 import { getInclude } from '../helpers';
 import { MINIMUM_YEAR_STATISTIC } from './useLiquidityEventChart';
 import { FILTER_DAY } from 'reducer/type';
+import { getChartPoolsV3ByDay, MILIS_PER_DAY } from 'rest/graphClient';
+import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
+import { useGetPoolLiquidityVolume } from 'pages/Pool-V3/hooks/useGetPoolLiquidityVolume';
+import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 
 export const useVolumeEventChart = (
   type: FILTER_DAY,
   onUpdateCurrentItem?: React.Dispatch<React.SetStateAction<number>>,
   pair?: string
 ) => {
+  const { data: price } = useCoinGeckoPrices();
+  const { poolPrice } = useGetPoolList(price);
+  const { poolVolume } = useGetPoolLiquidityVolume(poolPrice); // volumeV2, liquidityV2
+
   const [currentDataVolume, setCurrentDataVolume] = useState([]);
 
   const [currentItem, setCurrentItem] = useState<{
@@ -52,18 +60,46 @@ export const useVolumeEventChart = (
 
   const onChangeRangeVolume = async (value: FILTER_DAY = FILTER_DAY.DAY) => {
     try {
-      let data = [];
+      let dataV2 = [];
 
       if (pair) {
-        data = await getDataVolumeHistoricalByPair(pair, value);
+        dataV2 = await getDataVolumeHistoricalByPair(pair, value);
       } else {
-        data = await getDataVolumeHistoricalAll(value);
+        dataV2 = await getDataVolumeHistoricalAll(value);
+        dataV2 = dataV2.slice(-90); // just get latest 90 days data of volume
       }
 
-      setCurrentDataVolume(data);
-      if (data.length > 0) {
-        setCurrentItem({ ...data[data.length - 1] });
-        onUpdateCurrentItem && onUpdateCurrentItem(data[data.length - 1]?.value || 0);
+      const poolsV3VData = await getChartPoolsV3ByDay();
+      const dataVolumeV3 = poolsV3VData.map((poolV3) => {
+        const dayIndex = poolV3.keys[0];
+        const currentDayIndex = Math.round(new Date().getTime() / MILIS_PER_DAY);
+        if (Number(dayIndex) === currentDayIndex) {
+          const latest24hVolume = Object.values(poolVolume).reduce((acc, cur) => acc + cur, 0);
+
+          return {
+            time: new Date(dayIndex * MILIS_PER_DAY).toJSON(),
+            value: latest24hVolume
+          };
+        }
+        return {
+          time: new Date(dayIndex * MILIS_PER_DAY).toJSON(),
+          value: poolV3.sum.volumeInUSD
+        };
+      });
+
+      const combinedData = dataV2.map((dataV2ByDay) => {
+        const dataV3ByDay = dataVolumeV3.find((item) => item.time === dataV2ByDay.time);
+
+        return {
+          time: dataV2ByDay.time,
+          value: dataV2ByDay.value + (dataV3ByDay?.value ?? 0)
+        };
+      });
+
+      setCurrentDataVolume(combinedData);
+      if (combinedData.length > 0) {
+        setCurrentItem({ ...combinedData[combinedData.length - 1] });
+        onUpdateCurrentItem && onUpdateCurrentItem(combinedData[combinedData.length - 1]?.value || 0);
       }
     } catch (e) {
       console.log('Volume ERROR: e', e);
@@ -71,8 +107,9 @@ export const useVolumeEventChart = (
   };
 
   useEffect(() => {
+    if (!Object.keys(poolVolume).length) return;
     onChangeRangeVolume(type);
-  }, [type]);
+  }, [type, poolVolume]);
 
   return {
     currentDataVolume,

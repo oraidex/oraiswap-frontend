@@ -1,6 +1,5 @@
-import { buildMultipleExecuteMessages, ORAI, toAmount, DEFAULT_SLIPPAGE } from '@oraichain/oraidex-common';
-import { ReactComponent as CloseIcon } from 'assets/icons/ic_close_modal.svg';
-import ImgPairPath from 'assets/images/pair_path.svg';
+import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
+import { buildMultipleExecuteMessages, DEFAULT_SLIPPAGE, ORAI, toAmount } from '@oraichain/oraidex-common';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
@@ -8,15 +7,16 @@ import Modal from 'components/Modal';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { network } from 'config/networks';
-import { handleCheckAddress, handleErrorTransaction } from 'helper';
+import { getIcon, getIconToken, handleCheckAddress, handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import CosmJs from 'libs/cosmjs';
 import { getUsd, toSumDisplay } from 'libs/utils';
 import { estimateShare } from 'pages/Pools/helpers';
+import { useGetPoolDetail } from 'pages/Pools/hooks';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useTokenAllowance } from 'pages/Pools/hooks/useTokenAllowance';
-import { useGetPoolDetail } from 'pages/Pools/hooks';
+import { TooltipIcon } from 'pages/UniversalSwap/Modals';
 import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -28,11 +28,10 @@ import {
   Type
 } from 'rest/api';
 import { RootState } from 'store/configure';
-import { ModalProps } from '../MyPoolInfo/type';
-import styles from './AddLiquidityModal.module.scss';
 import InputWithOptionPercent from '../InputWithOptionPercent';
-import { TooltipIcon } from 'pages/UniversalSwap/Modals';
+import { ModalProps } from '../MyPoolInfo/type';
 import { SlippageModal } from '../SlippageModal/SlippageModal';
+import styles from './AddLiquidityModal.module.scss';
 
 const cx = cn.bind(styles);
 
@@ -272,8 +271,10 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
     }
   };
 
-  const Token1Icon = theme === 'light' ? token1?.IconLight || token1?.Icon : token1?.Icon;
-  const Token2Icon = theme === 'light' ? token2?.IconLight || token2?.Icon : token2?.Icon;
+  const isLightTheme = theme === 'light';
+
+  const Token1Icon = token1 && getIconToken({ denom: token1.denom, isLightTheme });
+  const Token2Icon = token2 && getIconToken({ denom: token2.denom, isLightTheme });
 
   return (
     <Modal isOpen={isOpen} close={close} isCloseBtn={false} className={cx('modal')}>
@@ -285,9 +286,6 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
               <CloseIcon />
             </div>
           </div>
-        </div>
-        <div className={cx('pair-path')}>
-          <img src={ImgPairPath} alt="pair_path" width={'100%'} height={'100%'} />
         </div>
 
         <InputWithOptionPercent

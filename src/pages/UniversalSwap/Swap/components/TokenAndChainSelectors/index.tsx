@@ -58,7 +58,7 @@ const TokenAndChainSelectors = ({
         isSelectToken={isSelectTokenFrom}
       />
       <SelectChain
-        filterChainId={unSupportSimulateToken.includes(originalFromToken?.denom) ? supportedChain : []}
+        filterChainId={supportedChain}
         setIsSelectToken={setIsSelectChainTo}
         amounts={amounts}
         theme={theme}

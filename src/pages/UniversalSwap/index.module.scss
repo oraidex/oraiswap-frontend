@@ -1,5 +1,46 @@
 @import 'src/styles/mixins';
 
+.wrapperEvent {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+
+  .top {
+    position: sticky;
+    top: 68px;
+    left: 0;
+
+    width: 100px;
+    height: 119px;
+    z-index: 30;
+
+    @include medium-desktop {
+      width: 70px;
+      height: 89px;
+    }
+
+    @include mobile {
+      width: 70px;
+      height: 89px;
+    }
+  }
+
+  .bottom {
+    z-index: 30;
+    position: fixed;
+    right: -50px;
+    bottom: -50px;
+
+    width: 136.764px;
+    height: 193px;
+    transform: rotate(-12deg);
+
+    @include mobile {
+      display: none;
+    }
+  }
+}
+
 .swap-container {
   display: flex;
   flex-wrap: wrap;
@@ -22,6 +63,7 @@
 
   .swap-col {
     &.w60 {
+      z-index: 1;
       width: 100%;
       max-width: 1000px;
     }
@@ -29,6 +71,33 @@
     &.w40 {
       width: 100%;
       max-width: 500px;
+
+      .wrapperTop {
+        position: sticky;
+        top: 80px;
+        margin-bottom: -155px;
+        width: 100%;
+        padding: 0 10px;
+
+        @include mobile {
+          margin-top: -40px;
+          margin-bottom: -158px;
+        }
+
+        .swapTop {
+          width: 100%;
+        }
+      }
+
+      .swapBottom {
+        position: sticky;
+        top: 800px;
+        margin-top: 32px;
+
+        @include mobile {
+          margin-bottom: -100px;
+        }
+      }
 
       @include medium-desktop {
         max-width: 400px;
@@ -58,6 +127,7 @@
     @include mobile {
       height: 430px;
     }
+
     height: 500px;
   }
 }
@@ -75,7 +145,6 @@
     height: 0%;
     overflow: hidden;
   }
-
 
   &.activeChart {
     display: block;
@@ -103,7 +172,7 @@
     svg {
       @include theme {
         path {
-          fill: theme-get('neutral-9');
+          fill: theme-get('neutral-8');
         }
       }
     }
@@ -121,7 +190,7 @@
       line-height: 150%;
 
       @include theme() {
-        color: theme-get('neutral-9');
+        color: theme-get('neutral-8');
       }
 
       .nodata-title {

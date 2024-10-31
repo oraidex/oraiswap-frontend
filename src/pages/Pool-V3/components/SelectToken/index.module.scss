@@ -23,7 +23,8 @@
 
     font-size: 14px;
     font-weight: 500;
-    line-height: 150%; /* 21px */
+    line-height: 150%;
+    /* 21px */
 
     &:hover {
       filter: brightness(1.25);
@@ -113,9 +114,11 @@
           @include theme {
             color: theme-get('colors-neutral-text-text-token-name');
           }
+
           font-size: 20px;
           font-weight: 600;
-          line-height: 150%; /* 30px */
+          line-height: 150%;
+          /* 30px */
         }
 
         svg {
@@ -147,7 +150,7 @@
 
           &::placeholder {
             @include theme() {
-              color: theme-get('neutral-9');
+              color: theme-get('neutral-8');
             }
           }
         }
@@ -164,6 +167,7 @@
           @include theme() {
             color: theme-get('colors-neutral-text-title');
           }
+
           font-size: 14px;
           line-height: 150%;
         }
@@ -184,6 +188,7 @@
 
           &:hover {
             border-radius: 8px;
+
             @include theme() {
               background-color: theme-get('colors-neutral-surface-bg-dropdown-hover');
             }
@@ -224,6 +229,7 @@
                   @include theme() {
                     background-color: theme-get('colors-neutral-surface-bg-dropdown-hover');
                   }
+
                   border-radius: 50%;
                 }
               }
@@ -259,6 +265,7 @@
               }
             }
           }
+
           .selectTokenItemRight {
             text-align: right;
 
@@ -274,6 +281,7 @@
             .selectTokenItemTokenUsd {
               font-size: 12px;
               font-weight: 500;
+
               @include theme() {
                 color: theme-get('colors-neutral-text-body');
               }

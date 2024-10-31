@@ -1,0 +1,196 @@
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.transaction_mobiles {
+  width: 100%;
+
+  &_all {
+    display: flex;
+    justify-content: space-between;
+
+    @media (max-width: 930px) {
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+
+  .no_data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 16px;
+    padding: 60px 20px;
+
+    @include theme() {
+      color: theme-get('bg-color');
+    }
+
+    span {
+      color: #505665;
+      font-size: 20px;
+      font-weight: 400;
+      margin-top: -20px;
+    }
+  }
+
+  &_header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  &_filter {
+    display: flex;
+    align-items: center;
+
+    .filter_item {
+      height: 48px;
+      padding: 8px 16px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-right: 15px;
+
+      @include theme() {
+        background-color: theme-get('bg-color');
+        color: theme-get('text-color-filter');
+      }
+
+      &:hover {
+        @include theme() {
+          background-color: theme-get('bg-hover-color');
+          color: $white-color;
+        }
+      }
+
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .filter_active {
+      color: $blue-color !important;
+
+      &:hover {
+        color: $white-color !important;
+      }
+    }
+  }
+
+  &_item {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid;
+    width: 100%;
+    position: relative;
+
+    @include mobile {
+      margin-top: 6px;
+      margin-bottom: 12px;
+    }
+
+    @include theme() {
+      border-color: theme-get('neutral-border-border-default');
+      background-color: theme-get('neutral-surface-bg-section');
+    }
+
+    .title {
+      @include theme() {
+        color: theme-get('neutral-text-body');
+      }
+
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 150%;
+    }
+
+    .value {
+      @include theme() {
+        color: theme-get('neutral-text-title');
+      }
+
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 150%;
+    }
+
+    .poolHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid;
+      margin-bottom: 10px;
+
+      @include theme() {
+        border-color: theme-get('neutral-border-border-default');
+      }
+
+      .symbols {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 50%;
+
+        .symbols_name {
+          @include theme() {
+            color: theme-get('neutral-text-title');
+          }
+
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 150%;
+        }
+      }
+    }
+
+    .poolInfo {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+
+      & > div {
+        width: 50%;
+      }
+
+      & > div:nth-child(1),
+      & > div:nth-child(2) {
+        margin-bottom: 16px;
+      }
+    }
+
+    .btnAddLp {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+    }
+  }
+
+  &_search {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media (max-width: 575px) {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+
+  &_create {
+    padding: 16px 76px;
+  }
+
+  &_list {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+}

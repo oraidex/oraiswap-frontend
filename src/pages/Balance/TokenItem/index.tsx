@@ -20,6 +20,8 @@ export interface TokenItemProps {
   onDepositBtc?: Function;
   isBtcOfOwallet?: boolean;
   isBtcToken?: boolean;
+  isFastMode?: boolean;
+  setIsFastMode?: Function;
 }
 
 const TokenItem: React.FC<TokenItemProps> = ({
@@ -33,7 +35,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
   subAmounts,
   theme,
   isBtcOfOwallet,
-  isBtcToken
+  isBtcToken,
+  isFastMode,
+  setIsFastMode
 }) => {
   const tokenIcon = tokensIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
@@ -79,6 +83,8 @@ const TokenItem: React.FC<TokenItemProps> = ({
             amountDetail={amountDetail}
             onClickTransfer={onClickTransfer}
             convertKwt={convertKwt}
+            isFastMode={isFastMode}
+            setIsFastMode={setIsFastMode}
           />
         )}
       </div>

@@ -1,0 +1,184 @@
+@import 'src/styles/mixins';
+@import 'src/styles/variables';
+@import 'src/styles/themes';
+
+.modalConfirm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  position: fixed;
+  inset: 0;
+
+  z-index: 30;
+
+  @include small_mobile {
+    align-items: flex-end;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(7, 10, 19, 0.4);
+    width: 100%;
+    height: 100%;
+  }
+
+  .modalContent {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.1);
+
+    @include theme {
+      background: theme-get('neutral-surface-bg-2');
+    }
+
+    @include small-mobile {
+      max-width: 576px;
+
+      padding: 10px;
+      border-end-end-radius: 0px;
+      border-end-start-radius: 0px;
+      max-width: unset;
+
+      gap: 16px;
+    }
+
+    .closeIcon {
+      cursor: pointer;
+      position: absolute;
+      top: 24px;
+      right: 24px;
+
+      @include mobile {
+        top: 10px;
+        right: 10px;
+      }
+    }
+
+    .title {
+      @include theme {
+        color: theme-get('neutral-text-text-token-name');
+      }
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 150%;
+
+      width: 100%;
+      text-align: left;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .logo {
+      margin: auto;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+
+      overflow-y: auto;
+      height: 100%;
+      max-height: calc(100vh - 250px);
+
+      @include mobile {
+        padding: 0px 5px;
+      }
+
+      @include theme {
+        color: theme-get('neutral-text-text-token-name');
+      }
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 150%;
+      text-align: center;
+
+      .desc {
+        width: 100%;
+        text-align: left;
+
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 150%;
+
+        @include mobile {
+          font-size: 12px;
+        }
+
+        .impact {
+          font-weight: 600;
+          color: $warning-10-color;
+        }
+
+        @include theme {
+          color: theme-get('neutral-text-title-2');
+        }
+      }
+    }
+
+    .button {
+      width: 100%;
+      display: flex;
+      gap: 16px;
+
+      @include small-mobile {
+        gap: 8px;
+        flex-direction: column-reverse;
+      }
+
+      button {
+        height: 44px;
+        padding: 6px 10px;
+
+        @include mobile {
+          font-size: 12px;
+          height: 30px;
+        }
+        width: 100%;
+      }
+    }
+  }
+}
+
+.tooltip {
+  color: #efefef;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+  text-align: left;
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid;
+  border-color: #494949;
+  background: #121511;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
+
+  &.light {
+    color: #494949;
+    border-color: #dfe0de;
+    background: #fff;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
+  }
+
+  @include mobile {
+    font-size: 12px;
+    padding: 8px;
+    width: calc(100% - 20px);
+  }
+}

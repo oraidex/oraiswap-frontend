@@ -1,23 +1,23 @@
-import { ReactComponent as OraidexBetaIcon } from 'assets/icons/ic_beta.svg';
-import { ReactComponent as BridgeIcon } from 'assets/icons/ic_bridge.svg';
-import { ReactComponent as BtcDashboardIcon } from 'assets/icons/ic_btc_dashboard.svg';
-import { ReactComponent as CohavestIcon } from 'assets/icons/ic_cohavest.svg';
-import { ReactComponent as PoolIcon } from 'assets/icons/ic_pools.svg';
-import { ReactComponent as StakingIcon } from 'assets/icons/ic_staking.svg';
-import { ReactComponent as UniversalSwapIcon } from 'assets/icons/ic_universalswap.svg';
-import { ReactComponent as LogoDownloadOwalletIcon } from 'assets/icons/logo_download.svg';
-import { ReactComponent as DownloadOwalletIcon } from 'assets/icons/logo_owallet_gateway.svg';
-import { ReactComponent as DownloadOwalletIconDark } from 'assets/icons/logo_owallet_gateway_dark.svg';
-import { ReactComponent as PoolV3Icon } from 'assets/icons/pool-v3.svg';
+import OraidexBetaIcon from 'assets/icons/ic_beta.svg?react';
+import BridgeIcon from 'assets/icons/ic_bridge.svg?react';
+import BtcDashboardIcon from 'assets/icons/ic_btc_dashboard.svg?react';
+import CohavestIcon from 'assets/icons/ic_cohavest.svg?react';
+import StakingIcon from 'assets/icons/ic_staking.svg?react';
+import UniversalSwapIcon from 'assets/icons/ic_universalswap.svg?react';
+import LogoDownloadOwalletIcon from 'assets/icons/logo_download.svg?react';
+import DownloadOwalletIcon from 'assets/icons/logo_owallet_gateway.svg?react';
+import DownloadOwalletIconDark from 'assets/icons/logo_owallet_gateway_dark.svg?react';
+import PoolV3Icon from 'assets/icons/pool-v3.svg?react';
 import PoolV3Lottie from 'assets/lottie/poolv3-beta.json';
 import classNames from 'classnames';
 import ModalDownloadOwallet from 'components/Modals/ModalDownloadOwallet/ModalDownloadOwallet';
+import { EVENT_CONFIG_THEME } from 'config/eventConfig';
+import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import useTheme from 'hooks/useTheme';
-import Lottie from 'lottie-react';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.scss';
-import { PoolV3PageType } from 'pages/Pool-V3';
+import Lottie from 'lottie-react';
 
 const Sidebar: React.FC<{}> = React.memo(() => {
   const location = useLocation();
@@ -25,6 +25,9 @@ const Sidebar: React.FC<{}> = React.memo(() => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [isOpenQrCodeOwallet, setIsOpenQrCodeOwallet] = useState(false);
+
+  const [event] = useTemporaryConfigReducer('event');
+  const configTheme = EVENT_CONFIG_THEME[theme][event];
 
   useEffect(() => {
     setLink(location.pathname);
@@ -43,6 +46,14 @@ const Sidebar: React.FC<{}> = React.memo(() => {
           }}
           rel="noreferrer"
         >
+          <div className={styles.eventItem}>
+            {configTheme.sideBar.leftLinkImg && (
+              <img className={styles.left} src={configTheme.sideBar.leftLinkImg} alt="" />
+            )}
+            {configTheme.sideBar.rightLinkImg && (
+              <img className={styles.right} src={configTheme.sideBar.rightLinkImg} alt="" />
+            )}
+          </div>
           {icon}
           <span className={classNames(styles[theme], styles.menu_item_text)}>{title}</span>
         </a>
@@ -63,10 +74,19 @@ const Sidebar: React.FC<{}> = React.memo(() => {
           styles[theme]
         )}
       >
+        <div className={styles.eventItem}>
+          {configTheme.sideBar.leftLinkImg && (
+            <img className={styles.left} src={configTheme.sideBar.leftLinkImg} alt="" />
+          )}
+          {configTheme.sideBar.rightLinkImg && (
+            <img className={styles.right} src={configTheme.sideBar.rightLinkImg} alt="" />
+          )}
+        </div>
+
         {icon}
         <span className={classNames(styles.menu_item_text, { [styles.active]: link === to }, styles[theme])}>
           {title}
-          {to === `/pools-v3` && (
+          {to === `/bitcoin-dashboard-v2` && (
             <span className={classNames(styles.suffix)}>
               <Lottie animationData={PoolV3Lottie} autoPlay={open} loop />
             </span>
@@ -85,11 +105,12 @@ const Sidebar: React.FC<{}> = React.memo(() => {
           <div className={classNames(styles.menu_items)}>
             {renderLink('/universalswap', 'Swap', setLink, <UniversalSwapIcon />)}
             {renderLink('/bridge', 'Bridge', setLink, <BridgeIcon />)}
-            {renderLink('/pools', 'Pools', setLink, <PoolIcon />)}
-            {renderLink(`/pools-v3`, 'Pools V3', setLink, <PoolV3Icon />)}
+            {/* {renderLink('/pools', 'Pools', setLink, <PoolIcon />)} */}
+            {renderLink(`/pools`, 'Pools', setLink, <PoolV3Icon />)}
             {renderLink('/staking', 'Staking', setLink, <StakingIcon />)}
             {renderLink('/co-harvest', 'Co-Harvest', setLink, <CohavestIcon />)}
             {renderLink('/bitcoin-dashboard', 'BTC Dashboard', setLink, <BtcDashboardIcon />)}
+            {renderLink('/bitcoin-dashboard-v2', 'BTC V2', setLink, <BtcDashboardIcon />)}
             {!isBeta && renderLink('https://beta.oraidex.io', 'OraiDEX Beta', setLink, <OraidexBetaIcon />, true)}
           </div>
         </div>
@@ -98,6 +119,9 @@ const Sidebar: React.FC<{}> = React.memo(() => {
           {/* <div className={styles.luckyDraw}>
             <LuckyDraw />
           </div> */}
+          <div className={styles.wrapperEvent}>
+            {configTheme.sideBar.bottomImg && <img className={styles.top} src={configTheme.sideBar.bottomImg} alt="" />}
+          </div>
           <div className={styles.menu_footer} onClick={() => setIsOpenQrCodeOwallet(true)}>
             {theme === 'light' ? <DownloadOwalletIcon /> : <DownloadOwalletIconDark />}
             <div className={styles.download}>

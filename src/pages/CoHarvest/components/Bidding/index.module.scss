@@ -86,7 +86,7 @@
           font-weight: 400;
 
           @include theme {
-            color: theme-get('neutral-9');
+            color: theme-get('neutral-8');
           }
         }
       }
@@ -281,7 +281,7 @@
           align-items: center;
 
           @include theme {
-            color: theme-get('neutral-9');
+            color: theme-get('neutral-8');
           }
 
           font-size: 14px;

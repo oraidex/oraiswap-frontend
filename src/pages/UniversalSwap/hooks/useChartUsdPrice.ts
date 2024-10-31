@@ -80,7 +80,7 @@ export const useChartUsdPrice = (
       const fmtData = (data || []).map((item) => {
         return {
           time: Number(item.time) * 1000,
-          value: item.close || 0,
+          value: item.price || 0,
           volume: toFixedIfNecessary(toDisplay(Number(item.volume || 0).toString()).toString(), 2)
         };
       });
@@ -150,7 +150,7 @@ export const FILTER_DAYS = {
 export const getDataPriceMarket = async (tokenDenom: string, type: FILTER_TIME_CHART = FILTER_TIME_CHART.DAY) => {
   try {
     const now = Math.floor(Date.now() / 1000);
-    const res = await axios.get(`v2/candles`, {
+    const res = await axios.get(`v1/price-usd-chart`, {
       params: {
         denom: tokenDenom,
         tf: FILTER_DAYS[type].tf,

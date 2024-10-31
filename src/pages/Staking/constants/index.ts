@@ -8,6 +8,7 @@ export const TIMER = {
   MINUTE: 60,
   HOUR: 24,
 
+  SECOND_OF_DAY: 60 * 60 * 24,
   MILLISECOND_OF_DAY: 1000 * 60 * 60 * 24
 };
 

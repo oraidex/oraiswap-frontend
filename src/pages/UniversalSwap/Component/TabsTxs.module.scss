@@ -6,29 +6,37 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 40px;
+
   @include theme() {
     border-bottom: 1px solid theme-get('neutral-5');
   }
+
   .left {
     display: flex;
+
     .label {
       width: 120px;
+
       @include mobile() {
         width: 100px;
       }
+
       text-align: center;
       padding: 12px;
       text-transform: capitalize;
       cursor: pointer;
       font-size: 16px;
       font-weight: 600;
+
       @include theme() {
         color: theme-get('neutral-text-body');
       }
+
       border-bottom-width: 2px;
       border-bottom-style: solid;
       border-bottom-color: transparent;
       transition: all 300ms ease-in-out;
+
       &.active {
         @include theme() {
           color: theme-get('sea-stone-800');
@@ -48,21 +56,26 @@
       width: 30px;
       height: 30px;
     }
+
     .all-network {
       display: flex;
       flex-direction: column;
+
       .detail {
         text-align: center;
         font-size: 16px;
         font-weight: 600;
+
         @include theme() {
           color: theme-get('neutral-text-text-token-name');
         }
       }
+
       .balance {
         @include theme() {
           color: theme-get('neutral-3');
         }
+
         font-size: 13px;
         font-weight: 400;
       }
@@ -74,6 +87,7 @@
       background-color: theme-get('neutral-surface-bg');
       border: 1px solid theme-get('neutral-border-border-bold');
     }
+
     min-width: 300px;
     max-height: 500px;
     border: 1px solid;
@@ -83,23 +97,26 @@
     z-index: 2;
     font-weight: 600;
     padding: 16px 12px;
+
     @include mobile() {
       right: 10px;
     }
+
     .options {
       display: flex;
       flex-direction: column;
       padding-top: 10px;
+
       &.border {
-        @include theme() {
-          border-bottom: 0.5px solid theme-get('neutral-4');
-        }
+        border-bottom: 0.5px solid $neutral-4;
       }
+
       .item {
         @include theme() {
           background-color: theme-get('neutral-surface-bg');
           color: theme-get('text-color');
         }
+
         border-radius: 8px;
         display: flex;
         gap: 8px;
@@ -122,6 +139,7 @@
 
         &.all:hover {
           background-color: inherit !important;
+
           @include theme() {
             color: theme-get('sea-stone-500') !important;
           }
@@ -134,9 +152,11 @@
 
         .grow {
           flex-grow: 1;
+
           @include theme() {
             color: theme-get('neutral-text-text-token-name');
           }
+
           display: flex;
           flex-direction: column;
           gap: 5px;

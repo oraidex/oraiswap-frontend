@@ -13,7 +13,7 @@ import { WalletItem } from '../WalletItem';
 import styles from './WalletByNetwork.module.scss';
 import { useInactiveConnect } from 'hooks/useMetamask';
 import Metamask from 'libs/metamask';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { ChainEnableByNetwork, triggerUnlockOwalletInEvmNetwork } from 'components/WalletManagement/wallet-helper';
 import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react';
 import useTonConnectAddress from 'hooks/useTonConnectAddress';

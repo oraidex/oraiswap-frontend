@@ -1,6 +1,6 @@
 import { TokenItemType, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as BoostIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BoostIconLight } from 'assets/icons/boost-icon.svg';
+import BoostIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BoostIconLight from 'assets/icons/boost-icon.svg?react';
 import { Button } from 'components/Button';
 import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { Table, TableHeaderProps } from 'components/Table';
@@ -102,7 +102,8 @@ export const ListPools: React.FC<ListPoolProps> = ({ poolTableData, generateIcon
             {formatDisplayUsdt(toDisplay(parseInt(data.totalLiquidity.toString()).toString()))}
           </span>
           <Button
-            type="primary-sm"
+            type="third-sm"
+            className={styles.add}
             onClick={(event) => {
               event.stopPropagation();
               setPairDenomsDeposit(
@@ -112,7 +113,7 @@ export const ListPools: React.FC<ListPoolProps> = ({ poolTableData, generateIcon
               );
             }}
           >
-            Add
+            Add LP
           </Button>
         </div>
       )
@@ -124,7 +125,7 @@ export const ListPools: React.FC<ListPoolProps> = ({ poolTableData, generateIcon
     const [firstAssetInfo, secondAssetInfo] = [JSON.parse(pool.firstAssetInfo), JSON.parse(pool.secondAssetInfo)];
 
     navigate(
-      `/pools/${encodeURIComponent(parseAssetOnlyDenom(firstAssetInfo))}_${encodeURIComponent(
+      `/pools/v2/${encodeURIComponent(parseAssetOnlyDenom(firstAssetInfo))}_${encodeURIComponent(
         parseAssetOnlyDenom(secondAssetInfo)
       )}`
     );

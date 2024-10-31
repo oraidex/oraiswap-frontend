@@ -13,7 +13,6 @@
     flex-wrap: wrap;
     margin-bottom: 16px;
 
-
     &_text {
       display: flex;
       align-items: flex-end;
@@ -28,7 +27,7 @@
 
       .priceOrai {
         @include theme() {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
 
         font-size: 24px;
@@ -118,7 +117,6 @@
       padding: 16px;
       flex-direction: column;
       flex: 1 0 0;
-
 
       color: $neutron-text-body-light;
       font-size: 16px;
@@ -219,17 +217,26 @@
     border-radius: 12px;
     margin-bottom: 32px;
     padding: 24px;
-    gap: 8px;
+    gap: 34px;
+
+    flex-wrap: wrap;
 
     @include theme() {
       border: 1px solid theme-get('primary-text-text-link');
-      background-color: theme-get('primary-surface-default-subtle');
+      background-color: theme-get('neutral-surface-bg-swap');
     }
 
     @include mobile() {
+      padding: 16px;
+      margin-bottom: 0px;
+      gap: 12px;
+    }
+
+    @include small-mobile() {
       flex-direction: column;
       padding: 16px;
       margin-bottom: 0px;
+      gap: 8px;
     }
   }
 
@@ -289,8 +296,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 30px;
-    margin-right: 24px;
     position: relative;
 
     @include small-mobile() {

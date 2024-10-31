@@ -1,69 +1,15 @@
-import { useState } from 'react';
-import styles from './index.module.scss';
-import PositionItem from '../PositionItem';
-import { ReactComponent as NoDataDark } from 'assets/images/NoDataPool.svg';
-import { ReactComponent as NoData } from 'assets/images/NoDataPoolLight.svg';
-import useTheme from 'hooks/useTheme';
-import { useEffect } from 'react';
-import useConfigReducer from 'hooks/useConfigReducer';
-import { convertPosition } from 'pages/Pool-V3/helpers/helper';
-import SingletonOraiswapV3 from 'libs/contractSingleton';
+import NoDataDark from 'assets/images/NoDataPool.svg?react';
+import NoData from 'assets/images/NoDataPoolLight.svg?react';
 import LoadingBox from 'components/LoadingBox';
-import { gql, request, GraphQLClient } from 'graphql-request';
-
-export const getFeeClaimData = async (address: string) => {
-  try {
-    return [];
-    // https://subql-staging.orai.io/
-    const endpoint = `http://10.10.20.72:3000/`;
-    const client = new GraphQLClient(endpoint);
-
-    const document = gql`
-        {
-          query {
-            positions(filter: { ownerId: { equalTo: "${address}" } }) {
-              nodes {
-                id
-                poolId
-                principalAmountX
-                principalAmountY
-                fees {
-                  nodes {
-                    amountUSD
-                    amountX
-                    amountY
-                    claimFeeIncentiveTokens {
-                      nodes {
-                        id
-                        tokenId
-                        token {
-                          id
-                          denom
-                          name
-                          logo
-                        }
-                        rewardAmount
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      `;
-
-    const result = await client.request<any>(document);
-
-    console.log('result', result);
-
-    const data = result.query.positions.nodes;
-    return data || [];
-  } catch (error) {
-    console.log('error', error);
-    return [];
-  }
-};
+import useConfigReducer from 'hooks/useConfigReducer';
+import useTheme from 'hooks/useTheme';
+import { convertPosition } from 'pages/Pool-V3/helpers/helper';
+import { useEffect, useState } from 'react';
+import { getFeeClaimData } from 'rest/graphClient';
+import PositionItem from '../PositionItem';
+import styles from './index.module.scss';
+import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
+import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
 
 const PositionList = () => {
   const theme = useTheme();
@@ -73,27 +19,29 @@ const PositionList = () => {
   const [cachePrices] = useConfigReducer('coingecko');
   const [address] = useConfigReducer('address');
 
-  const [dataPosition, setDataPosition] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [feeClaimData, setFeeClaimData] = useState([]);
-  const [statusRemove, setStatusRemove] = useState<boolean>(undefined);
+  const [dataPosition, setDataPosition] = useState<any[]>([]);
+  const { positions, isFetchingPositions } = useGetPositions(address);
+  const { poolList, poolPrice } = useGetPoolList(cachePrices);
 
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
-        if (!address) return setDataPosition([]);
+        // setLoading(true);
+        if (!address) {
+          setDataPosition([]);
+          return;
+        }
 
-        const [positions, poolsData, feeClaimData] = await Promise.all([
-          SingletonOraiswapV3.getAllPosition(address),
-          SingletonOraiswapV3.getPools(),
-          getFeeClaimData(address)
-        ]);
+        if (!positions.length || !poolList.length || isFetchingPositions) {
+          return;
+        }
 
+        const feeClaimData = await getFeeClaimData(address);
         const positionsMap = convertPosition({
           positions: positions.map((po, ind) => ({ ...po, ind })),
-          poolsData,
-          cachePrices,
+          poolsData: poolList,
+          cachePrices: poolPrice,
           address,
           isLight,
           feeClaimData
@@ -101,33 +49,32 @@ const PositionList = () => {
 
         setDataPosition(positionsMap);
       } catch (error) {
-        console.log({ error });
+        console.error('Failed to fetch data:', error);
       } finally {
-        setLoading(false);
-        setStatusRemove(false);
+        // setLoading(false);
       }
     })();
 
     return () => {};
-  }, [address, statusRemove]);
+  }, [address, poolList, positions, isLight, isFetchingPositions, poolPrice]);
 
   return (
     <div className={styles.positionList}>
       <LoadingBox loading={loading} styles={{ minHeight: '60vh', height: 'fit-content' }}>
-        {dataPosition.length
-          ? dataPosition.map((position, key) => {
-              return (
-                <div className={styles.item} key={`position-list-item-${key}`}>
-                  <PositionItem position={position} setStatusRemove={setStatusRemove} />
-                </div>
-              );
-            })
-          : !loading && (
-              <div className={styles.nodata}>
-                {theme === 'light' ? <NoData /> : <NoDataDark />}
-                <span>No Positions!</span>
+        {dataPosition.length ? (
+          dataPosition.map((position, key) => {
+            return (
+              <div className={styles.item} key={`position-list-item-${key}`}>
+                <PositionItem position={position} />
               </div>
-            )}
+            );
+          })
+        ) : (
+          <div className={styles.nodata}>
+            {theme === 'light' ? <NoData /> : <NoDataDark />}
+            <span>No Positions!</span>
+          </div>
+        )}
       </LoadingBox>
     </div>
   );

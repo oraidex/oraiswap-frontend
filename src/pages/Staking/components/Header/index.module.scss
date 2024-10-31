@@ -48,8 +48,9 @@
 
       .desc {
         @include theme {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
+
         font-size: 14px;
         font-weight: 400;
         line-height: 150%;

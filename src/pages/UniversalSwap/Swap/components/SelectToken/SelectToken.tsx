@@ -1,7 +1,7 @@
-import { CustomChainInfo, TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
-import { ReactComponent as IconoirCancel } from 'assets/icons/iconoir_cancel.svg';
-import { ReactComponent as NoResultDark } from 'assets/images/no-result-dark.svg';
-import { ReactComponent as NoResultLight } from 'assets/images/no-result.svg';
+import { CustomChainInfo, TokenItemType, truncDecimals, HMSTR_ORAICHAIN_DENOM } from '@oraichain/oraidex-common';
+import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
+import NoResultDark from 'assets/images/no-result-dark.svg?react';
+import NoResultLight from 'assets/images/no-result.svg?react';
 import cn from 'classnames/bind';
 import SearchInput from 'components/SearchInput';
 import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
@@ -12,6 +12,7 @@ import { toSumDisplay } from 'libs/utils';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
 import { getSubAmountDetails } from 'rest/api';
+import useConfigReducer from 'hooks/useConfigReducer';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {
@@ -65,6 +66,8 @@ export default function SelectToken({
   const [textChain, setTextChain] = useState('');
   const [textSearch, setTextSearch] = useState('');
   const isLightTheme = theme === 'light';
+  const [tokenRank = {}] = useConfigReducer('tokenRank');
+
   useEffect(() => {
     if (selectChain && selectChain !== textChain) setTextChain(selectChain);
   }, [selectChain]);
@@ -146,7 +149,19 @@ export default function SelectToken({
                 };
               })
               .sort((a, b) => {
-                return Number(b.usd) - Number(a.usd);
+                const balanceDelta = Number(b.usd) - Number(a.usd);
+
+                if (!balanceDelta) {
+                  if (a.denom === HMSTR_ORAICHAIN_DENOM && b.denom !== HMSTR_ORAICHAIN_DENOM) {
+                    return -1; // Push PepePoolKey elements to the top
+                  }
+                  if (a.denom !== HMSTR_ORAICHAIN_DENOM && b.denom === HMSTR_ORAICHAIN_DENOM) {
+                    return 1; // Keep non-'a' elements below 'a'
+                  }
+
+                  return (tokenRank[b.coinGeckoId] || 0) - (tokenRank[a.coinGeckoId] || 0);
+                }
+                return balanceDelta;
               })
               .map(({ key, tokenIcon, networkIcon, balance, usd, ...token }) => {
                 return (

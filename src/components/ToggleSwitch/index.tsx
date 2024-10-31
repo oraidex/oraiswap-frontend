@@ -12,9 +12,10 @@ interface ToggleSwitchInterface {
   optionLabels?: string[];
   small?: boolean;
   disabled?: boolean;
+  customSwitchClass?: string;
 }
 
-const ToggleSwitch = ({ id, name, checked, onChange, small, disabled }: ToggleSwitchInterface) => {
+const ToggleSwitch = ({ id, name, checked, onChange, small, disabled, customSwitchClass }: ToggleSwitchInterface) => {
   const theme = useTheme();
 
   function handleKeyPress(e) {
@@ -43,7 +44,10 @@ const ToggleSwitch = ({ id, name, checked, onChange, small, disabled }: ToggleSw
           htmlFor={id}
         >
           <span
-            className={cx(disabled ? 'toggle-switch-inner toggle-switch-disabled' : 'toggle-switch-inner')}
+            className={cx(
+              disabled ? 'toggle-switch-inner toggle-switch-disabled' : 'toggle-switch-inner',
+              customSwitchClass || ''
+            )}
             // data-yes={optionLabels[0]}
             // data-no={optionLabels[1]}
             tabIndex={-1}

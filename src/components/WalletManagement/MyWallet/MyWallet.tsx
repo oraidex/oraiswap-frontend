@@ -1,8 +1,8 @@
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as AddIcon } from 'assets/icons/Add-icon-black-only.svg';
-import { ReactComponent as CopyIcon } from 'assets/icons/copy.svg';
-import { ReactComponent as DisconnectIcon } from 'assets/icons/ic_logout.svg';
-import { ReactComponent as SuccessIcon } from 'assets/icons/toast_success.svg';
+import AddIcon from 'assets/icons/Add-icon-black-only.svg?react';
+import CopyIcon from 'assets/icons/copy.svg?react';
+import DisconnectIcon from 'assets/icons/ic_logout.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import { Button } from 'components/Button';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { ThemeContext } from 'context/theme-context';
@@ -35,7 +35,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from 'store/configure';
 import { ModalDisconnect } from '../ModalDisconnect';
 import styles from './MyWallet.module.scss';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { DisconnectButton } from '../DiconnectButton';
 
 export const MyWallet: React.FC<{

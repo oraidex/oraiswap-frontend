@@ -1,0 +1,28 @@
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+.parentSize {
+  flex: 1 1 0%;
+  overflow: hidden;
+
+  svg {
+    overflow: visible;
+  }
+
+  .toolTipWrapper {
+    display: flex;
+    position: relative;
+    padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.25rem;
+    border-radius: 0.75rem;
+
+    h6 {
+      font-weight: 600; 
+    }
+
+    p {
+      font-weight: 500; 
+    }
+  }
+}

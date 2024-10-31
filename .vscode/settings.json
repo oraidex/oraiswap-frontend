@@ -12,5 +12,8 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "[xml]": {
     "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
   }
 }

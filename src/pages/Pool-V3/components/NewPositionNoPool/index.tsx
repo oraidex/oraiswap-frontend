@@ -1,21 +1,20 @@
 import NumberFormat from 'react-number-format';
 import styles from './index.module.scss';
-import { TokenItemType, toDisplay, BigDecimal } from '@oraichain/oraidex-common';
-import { PriceInfo } from '../CreatePosition';
+import { TokenItemType, BigDecimal } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { numberWithCommas } from 'helper/format';
-import { ReactComponent as PlusIcon } from 'assets/icons/plus.svg';
-import { ReactComponent as MinusIcon } from 'assets/icons/minus.svg';
-import { ReactComponent as WarningIcon } from 'assets/icons/warning-fill-ic.svg';
+import PlusIcon from 'assets/icons/plus.svg?react';
+import MinusIcon from 'assets/icons/minus.svg?react';
+import WarningIcon from 'assets/icons/warning-fill-ic.svg?react';
 import classNames from 'classnames';
-import { getMaxTick, getMinTick, Price } from 'pages/Pool-V3/packages/wasm/oraiswap_v3_wasm';
+import { getMaxTick, getMinTick, Price } from '@oraichain/oraiswap-v3';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   calcPrice,
-  getTickAtSqrtPriceFromBalance,
   nearestTickIndex,
   toMaxNumericPlaces
 } from '../PriceRangePlot/utils';
+import { PriceInfo } from '../CreatePoolForm';
 
 const NewPositionNoPool = ({
   fromToken,
@@ -26,7 +25,8 @@ const NewPositionNoPool = ({
   tickSpacing,
   isXtoY,
   onChangeRange,
-  midPrice
+  midPrice,
+  showOnCreatePool
 }: {
   fromToken: TokenItemType;
   toToken: TokenItemType;
@@ -37,6 +37,7 @@ const NewPositionNoPool = ({
   isXtoY: boolean;
   onChangeRange: (left: number, right: number) => void;
   midPrice: number;
+  showOnCreatePool?: boolean;
 }) => {
   const { data: prices } = useCoinGeckoPrices();
   const currentPrice = new BigDecimal(prices[fromToken?.coinGeckoId] || 0)
@@ -49,6 +50,7 @@ const NewPositionNoPool = ({
   const [leftInput, setLeftInput] = useState(
     calcPrice(leftRange, isXtoY, fromToken.decimals, toToken.decimals).toString()
   );
+
   const [rightInput, setRightInput] = useState(
     calcPrice(rightRange, isXtoY, fromToken.decimals, toToken.decimals).toString()
   );
@@ -56,34 +58,26 @@ const NewPositionNoPool = ({
   const [leftInputRounded, setLeftInputRounded] = useState((+leftInput).toFixed(12));
   const [rightInputRounded, setRightInputRounded] = useState((+rightInput).toFixed(12));
 
-  const [midPriceInput, setMidPriceInput] = useState(
-    calcPrice(Number(priceInfo.startPrice), isXtoY, fromToken.decimals, toToken.decimals).toString()
-  );
-
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [midPriceInput, setMidPriceInput] = useState(priceInfo.startPrice.toString());
 
   useEffect(() => {
-    const tickIndex = getTickAtSqrtPriceFromBalance(
+    const tickIndex = nearestTickIndex(
       +midPriceInput,
       tickSpacing,
       isXtoY,
-      fromToken.decimals,
-      toToken.decimals
+      isXtoY ? fromToken.decimals : toToken.decimals,
+      isXtoY ? toToken.decimals : fromToken.decimals
     );
-
-    console.log('tickIndex', tickIndex);
 
     onChangeMidPrice(BigInt(tickIndex));
   }, [midPriceInput]);
 
   const setLeftInputValues = (val: string) => {
-    // setLeftInput(toMaxNumericPlaces(+val, 5));
     setLeftInput(val);
     setLeftInputRounded(toMaxNumericPlaces(+val, 5));
   };
 
   const setRightInputValues = (val: string) => {
-    // setRightInput(toMaxNumericPlaces(+val, 5));
     setRightInput(val);
     setRightInputRounded(toMaxNumericPlaces(+val, 5));
   };
@@ -102,8 +96,11 @@ const NewPositionNoPool = ({
     setLeftRange(left);
     setRightRange(right);
 
-    const leftInput = calcPrice(left, isXtoY, fromToken.decimals, toToken.decimals).toString();
-    const rightInput = calcPrice(right, isXtoY, fromToken.decimals, toToken.decimals).toString();
+    const tokenX = isXtoY ? fromToken : toToken;
+    const tokenY = isXtoY ? toToken : fromToken;
+
+    const leftInput = calcPrice(left, isXtoY, tokenX?.decimals ?? 6, tokenY?.decimals ?? 6).toString();
+    const rightInput = calcPrice(right, isXtoY, tokenX?.decimals ?? 6, tokenY?.decimals ?? 6).toString();
 
     setLeftInputValues(leftInput);
     setRightInputValues(rightInput);
@@ -112,14 +109,22 @@ const NewPositionNoPool = ({
   };
 
   const resetRange = () => {
-    changeRangeHandler(tickSpacing * 10 * (isXtoY ? -1 : 1), tickSpacing * 10 * (isXtoY ? 1 : -1));
+    changeRangeHandler(
+      midPrice + tickSpacing * 30 * (isXtoY ? -1 : 1),
+      midPrice + tickSpacing * 30 * (isXtoY ? 1 : -1)
+    );
   };
 
   useEffect(() => {
-    changeRangeHandler(leftRange, rightRange);
+    resetRange();
   }, [midPrice]);
 
+  const trimCommas = (val: string) => {
+    return val.replace(/,/g, '');
+  };
+
   const validateMidPriceInput = (midPriceInput: string) => {
+    const value = trimCommas(midPriceInput);
     const minTick = getMinTick(tickSpacing);
     const maxTick = getMaxTick(tickSpacing);
     const minPrice = isXtoY
@@ -128,28 +133,21 @@ const NewPositionNoPool = ({
     const maxPrice = isXtoY
       ? calcPrice(maxTick, isXtoY, fromToken.decimals, toToken.decimals)
       : calcPrice(minTick, isXtoY, fromToken.decimals, toToken.decimals);
-    const numericMidPriceInput = parseFloat(midPriceInput);
+    const numericMidPriceInput = parseFloat(value);
     const validatedMidPrice = Math.min(Math.max(numericMidPriceInput, minPrice), maxPrice);
     return toMaxNumericPlaces(validatedMidPrice, 5);
   };
 
-  // useEffect(() => {
-  //   if (currentPairReversed !== null) {
-  //     const validatedMidPrice = validateMidPriceInput((1 / +midPriceInput).toString());
-
-  //     setMidPriceInput(validatedMidPrice);
-  //     changeRangeHandler(rightRange, leftRange);
-  //   }
-  // }, [currentPairReversed]);
-
   const price = useMemo(() => {
-    return calcPrice(midPrice, isXtoY, fromToken.decimals, toToken.decimals);
+    const tokenXDecimals = isXtoY ? fromToken.decimals : toToken.decimals;
+    const tokenYDecimals = isXtoY ? toToken.decimals : fromToken.decimals;
+    return calcPrice(midPrice, isXtoY, tokenXDecimals, tokenYDecimals);
   }, [midPrice, isXtoY, fromToken.decimals, toToken.decimals]);
 
   return (
     <div className={styles.newPositionNoPool}>
-      <h1>Starting price</h1>
-      <div className={styles.warning}>
+      {!showOnCreatePool && <h1>Starting price</h1>}
+      <div className={classNames(styles.warning, { [styles.warningOnCreatePool]: showOnCreatePool })}>
         <div>
           <WarningIcon />
         </div>
@@ -158,7 +156,18 @@ const NewPositionNoPool = ({
           tokens.
         </span>
       </div>
-      <div className={styles.price}>
+
+      {showOnCreatePool && (
+        <div className={styles.currentPriceOnCreatePool}>
+          <p className={styles.titlePrice}>Current price</p>
+          <p>
+            1 {fromToken.name} = {numberWithCommas(currentPrice, undefined, { maximumFractionDigits: 6 })}{' '}
+            {toToken.name}
+          </p>
+        </div>
+      )}
+
+      <div className={classNames(styles.price, { [styles.showOnCreatePool]: showOnCreatePool })}>
         <span>{fromToken.name} starting price</span>
 
         <div className={styles.input}>
@@ -166,7 +175,7 @@ const NewPositionNoPool = ({
             placeholder="0.0"
             thousandSeparator
             className={styles.amount}
-            decimalScale={6}
+            decimalScale={toToken?.decimals || 6}
             disabled={false}
             type="text"
             value={midPriceInput}
@@ -174,7 +183,17 @@ const NewPositionNoPool = ({
             isAllowed={(values) => {
               const { floatValue } = values;
               // allow !floatValue to let user can clear their input
-              return !floatValue || (floatValue >= 0 && floatValue <= 1e14);
+              return (
+                !floatValue ||
+                (floatValue >= 0 &&
+                  floatValue <=
+                    calcPrice(
+                      isXtoY ? getMaxTick(tickSpacing) : getMinTick(tickSpacing),
+                      isXtoY,
+                      fromToken.decimals,
+                      toToken.decimals
+                    ))
+              );
             }}
             // onValueChange={({ floatValue }) => {
             //   setMidPriceInput(validateMidPriceInput((floatValue || 0).toString() || '0'));
@@ -188,17 +207,19 @@ const NewPositionNoPool = ({
         </div>
       </div>
 
-      <h1>Set Price Range</h1>
+      {!showOnCreatePool && <h1>Set Price Range</h1>}
 
-      <div className={styles.currentPrice}>
-        <span>Current Price</span>
-        <div className={styles.value}>
-          <h2>{numberWithCommas(currentPrice, undefined, { maximumFractionDigits: 6 })}</h2>
-          <span>
-            {toToken.name.toUpperCase()} / {fromToken.name.toUpperCase()}
-          </span>
+      {!showOnCreatePool && (
+        <div className={styles.currentPrice}>
+          <span>Current Price</span>
+          <div className={styles.value}>
+            <h2>{numberWithCommas(currentPrice, undefined, { maximumFractionDigits: 6 })}</h2>
+            <span>
+              {toToken.name.toUpperCase()} / {fromToken.name.toUpperCase()}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className={styles.range}>
         <div className={styles.item}>
@@ -210,35 +231,39 @@ const NewPositionNoPool = ({
                 placeholder="0"
                 thousandSeparator
                 className={styles.amount}
-                decimalScale={fromToken.decimals}
+                decimalScale={6}
                 disabled={false}
                 type="text"
-                value={leftInputRounded}
+                value={Number(leftInputRounded) <= 0 ? '0' : leftInputRounded}
                 // value={leftInput}
                 onChange={() => {}}
                 isAllowed={(values) => {
                   const { floatValue } = values;
-                  // allow !floatValue to let user can clear their input
                   return !floatValue || (floatValue >= 0 && floatValue <= 1e14);
                 }}
                 onValueChange={({ floatValue }) => {
-                  // setPriceInfo && setPriceInfo({ ...priceInfo, minPrice: floatValue });
                   onLeftInputChange((floatValue || 0).toString());
                 }}
                 onBlur={() => {
+                  const tokenXDecimals = isXtoY ? fromToken.decimals : toToken.decimals;
+                  const tokenYDecimals = isXtoY ? toToken.decimals : fromToken.decimals;
+
                   const newLeft = isXtoY
                     ? Math.min(
                         Number(rightRange - tickSpacing),
-                        Number(nearestTickIndex(+leftInput, tickSpacing, isXtoY, fromToken.decimals, toToken.decimals))
+                        Number(nearestTickIndex(+leftInput, tickSpacing, isXtoY, tokenXDecimals, tokenYDecimals))
                       )
                     : Math.max(
                         Number(rightRange + tickSpacing),
-                        Number(nearestTickIndex(+leftInput, tickSpacing, isXtoY, fromToken.decimals, toToken.decimals))
+                        Number(nearestTickIndex(+leftInput, tickSpacing, isXtoY, tokenXDecimals, tokenYDecimals))
                       );
+
                   changeRangeHandler(newLeft, rightRange);
                 }}
               />
-              <div className={styles.symbol}>{fromToken.name.toUpperCase()}</div>
+              <div className={styles.symbol}>
+                {toToken.name.toUpperCase()} / {fromToken.name.toUpperCase()}
+              </div>
             </div>
             <div className={styles.btnGroup}>
               <div
@@ -284,33 +309,35 @@ const NewPositionNoPool = ({
                 decimalScale={6}
                 disabled={false}
                 type="text"
-                value={rightInputRounded}
-                // value={rightInput}
+                value={Number(rightInputRounded) <= 0 ? '0' : rightInputRounded}
                 onChange={() => {}}
                 isAllowed={(values) => {
                   const { floatValue } = values;
-                  // allow !floatValue to let user can clear their input
                   return !floatValue || (floatValue >= 0 && floatValue <= 1e14);
                 }}
                 onValueChange={({ floatValue }) => {
-                  // setPriceInfo && setPriceInfo({ ...priceInfo, maxPrice: floatValue });
                   onRightInputChange((floatValue || 0).toString());
                 }}
                 onBlur={() => {
+                  const tokenXDecimals = isXtoY ? fromToken.decimals : toToken.decimals;
+                  const tokenYDecimals = isXtoY ? toToken.decimals : fromToken.decimals;
+
                   const newRight = isXtoY
                     ? Math.max(
                         Number(leftRange + tickSpacing),
-                        Number(nearestTickIndex(+rightInput, tickSpacing, isXtoY, fromToken.decimals, toToken.decimals))
+                        Number(nearestTickIndex(+rightInput, tickSpacing, isXtoY, tokenXDecimals, tokenYDecimals))
                       )
                     : Math.min(
                         Number(leftRange - tickSpacing),
-                        Number(nearestTickIndex(+rightInput, tickSpacing, isXtoY, fromToken.decimals, toToken.decimals))
+                        Number(nearestTickIndex(+rightInput, tickSpacing, isXtoY, tokenXDecimals, tokenYDecimals))
                       );
 
                   changeRangeHandler(leftRange, newRight);
                 }}
               />
-              <div className={styles.symbol}>{toToken.name.toUpperCase()}</div>
+              <div className={styles.symbol}>
+                {toToken.name.toUpperCase()} / {fromToken.name.toUpperCase()}
+              </div>
             </div>
             <div className={styles.btnGroup}>
               <div
@@ -346,7 +373,7 @@ const NewPositionNoPool = ({
         </div>
       </div>
 
-      <div className={styles.actions}>
+      <div className={classNames(styles.actions, { [styles.actionOnCreatePool]: showOnCreatePool })}>
         <button onClick={resetRange}>Reset range</button>
         <button
           onClick={() => {

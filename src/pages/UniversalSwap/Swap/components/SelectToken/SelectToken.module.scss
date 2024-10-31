@@ -11,6 +11,7 @@
 
   transition: all 0.5s;
   transform: translateY(100%);
+
   &.active {
     transform: translateY(0);
   }
@@ -44,16 +45,19 @@
 
   transition: all 0.5s;
   transform: translateY(100%);
+
   &.active {
     transform: translateY(0);
   }
 
   gap: 24px;
+
   @include theme() {
     background-color: theme-get('colors-neutral-surface-bg');
     color: theme-get('colors-neutral-text-text-token-name');
     border: 1px solid theme-get('colors-neutral-border-border-bold');
   }
+
   @include theme() {
     color: theme-get('colors-neutral-text-title');
   }
@@ -91,7 +95,7 @@
 
       &::placeholder {
         @include theme() {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
       }
     }
@@ -118,19 +122,23 @@
         padding: 8px;
         height: 40px;
         text-align: center;
+
         @include theme() {
           background-color: theme-get('colors-neutral-surface-bg-section-2');
           color: theme-get('colors-neutral-text-text-token-name');
         }
+
         border-radius: 99px;
         background: #31332e;
         width: calc(100% / 7);
         border: 1px solid inherit;
+
         &.active {
           @include theme() {
             border: 1px solid theme-get('colors-neutral-border-border-btn-default');
           }
         }
+
         &:hover {
           @include theme() {
             border: 1px solid theme-get('colors-neutral-border-border-btn-default');
@@ -152,6 +160,7 @@
         @include theme() {
           color: theme-get('colors-neutral-text-title');
         }
+
         font-size: 14px;
         line-height: 150%;
       }
@@ -172,6 +181,7 @@
 
         &:hover {
           border-radius: 8px;
+
           @include theme() {
             background-color: theme-get('colors-neutral-surface-bg-dropdown-hover');
           }
@@ -213,6 +223,7 @@
                 @include theme() {
                   background-color: theme-get('colors-neutral-surface-bg-dropdown-hover');
                 }
+
                 border-radius: 50%;
               }
             }
@@ -248,6 +259,7 @@
             }
           }
         }
+
         .selectTokenItemRight {
           text-align: right;
 
@@ -263,6 +275,7 @@
           .selectTokenItemTokenUsd {
             font-size: 12px;
             font-weight: 500;
+
             @include theme() {
               color: theme-get('colors-neutral-text-body');
             }

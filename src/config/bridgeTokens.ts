@@ -9,8 +9,6 @@ import {
   TokenItemType,
   KWT_BSC_CONTRACT,
   MILKY_BSC_CONTRACT
-  // chainInfos,
-  // oraichainNetwork
 } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 

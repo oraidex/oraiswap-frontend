@@ -9,137 +9,31 @@
   justify-content: space-between;
   gap: 16px;
 
-  .apr {
-    width: 34%;
-
-    @include medium-desktop {
-      width: 44%;
-    }
-
-    @include mobile {
-      width: 100%;
-    }
-  }
-
   .earning {
-    width: calc(66% - 16px);
-
-    @include medium-desktop {
-      width: 54%;
-    }
-
-    @include mobile {
-      width: 100%;
-    }
-  }
-}
-
-.apr {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 40px;
-  min-height: 250px;
-  flex: 1;
-
-  padding: 24px;
-  border-radius: 12px;
-
-  @include small-mobile {
-    min-height: unset;
-    gap: 16px;
-    padding: 16px;
-  }
-
-  @include theme {
-    background: theme-get('neutral-surface-bg-section');
-  }
-
-  .header {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 100%;
-    @include theme {
-      color: theme-get('neutral-9');
-    }
-
-    .volumeAmount {
-      @include theme {
-        color: theme-get('neutral-text-text-token-name');
-      }
-      font-size: 24px;
-      font-weight: 500;
-      line-height: 120%;
-    }
-  }
-
-  .aprDetail {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 150%;
-    @include theme {
-      color: theme-get('neutral-9');
-    }
-
-    .fee {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      @include theme {
-        color: theme-get('neutral-9');
-      }
-    }
-
-    .aprBoost {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      font-weight: 600;
-      @include theme {
-        color: theme-get('primary-surface-default-dark-3');
-      }
-
-      .text {
-        display: flex;
-        gap: 4px;
-
-        @include mobile {
-          font-size: 12px;
-        }
-      }
-    }
+    width: 100%;
   }
 }
 
 .earning {
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
-  border-radius: 12px;
+  align-items: center;
+  border-radius: 24px;
   border: 1px solid;
-  padding: 24px 40px;
+  padding: 32px;
 
   gap: 32px;
 
   @include theme() {
-    background-color: theme-get('primary-surface-default-subtle');
+    background-color: theme-get('neutral-surface-bg-swap');
     border-color: theme-get('primary-text-text-link');
   }
 
   @include small-mobile() {
-    padding: 24px 16px;
+    padding: 16px;
     gap: 24px;
+
+    flex-direction: column;
   }
 
   .earningLeft {
@@ -167,21 +61,21 @@
       @include small-mobile() {
         margin-right: 0px;
       }
+
       .title {
         @include theme() {
-          color: theme-get('neutral-text-body');
+          color: theme-get('neutral-8');
         }
 
-        height: 24px;
         display: flex;
         align-items: center;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 400;
         line-height: 100%;
         white-space: nowrap;
 
         @include small-mobile() {
-          font-size: 14px;
+          font-size: 12px;
         }
       }
 
@@ -202,26 +96,36 @@
 
       .amount {
         @include theme() {
-          color: theme-get('primary-surface-default');
+          color: theme-get('colors-neutral-text-title');
         }
 
-        font-size: 32px;
+        font-size: 20px;
         font-weight: 500;
         line-height: 120%;
 
         @include small-mobile() {
-          font-size: 24px;
+          font-size: 16px;
+        }
+
+        &.total {
+          @include theme() {
+            color: theme-get('primary-surface-default-dark-3');
+          }
         }
       }
 
       .amountOrai {
         @include theme() {
-          color: theme-get('neutral-text-body');
+          color: theme-get('neutral-8');
         }
 
-        font-size: 16px;
-        font-weight: 500;
+        font-size: 14px;
+        font-weight: 400;
         line-height: 100%;
+
+        @include small-mobile() {
+          font-size: 12px;
+        }
       }
     }
 

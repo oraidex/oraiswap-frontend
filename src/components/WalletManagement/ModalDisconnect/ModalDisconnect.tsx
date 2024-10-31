@@ -1,5 +1,5 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/close-icon.svg';
-import { ReactComponent as CopyIcon } from 'assets/icons/copy.svg';
+import CloseIcon from 'assets/icons/close-icon.svg?react';
+import CopyIcon from 'assets/icons/copy.svg?react';
 import cn from 'classnames/bind';
 import Modal from 'components/Modal';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -8,8 +8,8 @@ import styles from './ModalDisconnect.module.scss';
 import useWalletReducer from 'hooks/useWalletReducer';
 import { reduceString } from 'libs/utils';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
-import { ReactComponent as SuccessIcon } from 'assets/icons/toast_success.svg';
 import useTonConnectAddress from 'hooks/useTonConnectAddress';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 
 const cx = cn.bind(styles);
 

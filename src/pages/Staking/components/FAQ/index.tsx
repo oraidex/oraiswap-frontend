@@ -42,8 +42,16 @@ export const LIST_FAQ = [
   },
   {
     question: 'Can I unstake my ORAIX tokens at any time?',
-    answer:
-      'While participants have the flexibility to unstake their tokens, there is a 30-day unbonding period before the tokens are released. This period allows for orderly management of liquidity and upholds fairness to other participants.'
+    answer: (
+      <div>
+        {' '}
+        While participants have the flexibility to unstake their tokens,{' '}
+        <span style={{ fontWeight: 600, color: '#e6cf00' }}>
+          there is a 30-day unbonding period before the tokens are released
+        </span>
+        . This period allows for orderly management of liquidity and upholds fairness to other participants.
+      </div>
+    )
   },
   {
     question: 'How are rewards calculated?',

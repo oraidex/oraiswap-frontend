@@ -22,7 +22,7 @@
 
   .note {
     @include theme {
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
 
     font-size: 14px;
@@ -32,6 +32,8 @@
   }
 
   .noteHighlight {
+    font-weight: 600;
+
     @include theme {
       color: theme-get('warning-text-default');
     }
@@ -39,7 +41,7 @@
 
   .contentConfirm {
     @include theme {
-      color: theme-get('neutral-9');
+      color: theme-get('neutral-8');
     }
 
     font-size: 16px;
@@ -117,6 +119,7 @@
       gap: 16px;
 
       overflow-x: auto;
+
       &::-webkit-scrollbar {
         height: 8px;
       }
@@ -144,12 +147,13 @@
           gap: 8px;
 
           @include theme {
-            color: theme-get('neutral-9');
+            color: theme-get('neutral-8');
           }
 
           font-size: 14px;
           font-weight: 400;
-          line-height: 150%; /* 21px */
+          line-height: 150%;
+          /* 21px */
           letter-spacing: 0.1px;
 
           white-space: nowrap;
@@ -182,6 +186,7 @@
           @include theme {
             color: theme-get('neutral-text-text-dropdown');
           }
+
           font-size: 20px;
           font-weight: 600;
           line-height: 100%;
