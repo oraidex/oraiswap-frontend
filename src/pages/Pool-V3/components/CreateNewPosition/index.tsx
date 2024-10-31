@@ -14,7 +14,7 @@ import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { useDispatch } from 'react-redux';
 import { setToDefault } from 'reducer/poolDetailV3';
 import CreatePositionForm from '../CreatePositionForm';
-import RefreshImg from 'assets/images/refresh.svg?react';
+
 
 const cx = cn.bind(styles);
 export const openInNewTab = (url: string): void => {

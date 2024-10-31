@@ -20,7 +20,7 @@ import {
   setZoom,
   TimeDuration
 } from 'reducer/poolDetailV3';
-import { BigDecimal, OPTIONS_SLIPPAGE } from '@oraichain/oraidex-common';
+import { BigDecimal } from '@oraichain/oraidex-common';
 import { PoolFeeAndLiquidityDaily, PRICE_SCALE } from 'libs/contractSingleton';
 import { getMaxTick, getMinTick, getTickAtSqrtPrice } from '@oraichain/oraiswap-v3';
 import { calcPrice } from '../components/PriceRangePlot/utils';
@@ -30,10 +30,10 @@ import { CoinGeckoPrices } from 'hooks/useCoingecko';
 const ZOOM_STEP = 0.05;
 
 export enum OptionType {
-  CUSTOM = "Set your own price range for liquidity. Balance fee potential and risk based on market conditions.",
-  WIDE = "Adds liquidity to a wider range, balancing fees and risk. Stays active longer than narrow ranges but may earn lower fees.",
-  NARROW = "Adds liquidity to a specific price range. Earns the most fees when the price stays in range but stops earning if the price moves out",
-  FULL_RANGE = "Adds liquidity for the full price range. Stays active regardless of price changes, but may earn lower fees."
+  CUSTOM = 'Set your own price range for liquidity. Balance fee potential and risk based on market conditions.',
+  WIDE = 'Adds liquidity to a wider range, balancing fees and risk. Stays active longer than narrow ranges but may earn lower fees.',
+  NARROW = 'Adds liquidity to a specific price range. Earns the most fees when the price stays in range but stops earning if the price moves out',
+  FULL_RANGE = 'Adds liquidity for the full price range. Stays active regardless of price changes, but may earn lower fees.'
 }
 
 const TICK_SPACING_TO_RANGE = {
@@ -56,7 +56,7 @@ const useCreatePositionForm = (
   const [lowerTick, setLowerTick] = useState<number>(0);
   const [higherTick, setHigherTick] = useState<number>(0);
   const [optionType, setOptionType] = useState<OptionType>(OptionType.CUSTOM);
-  const [isFullRange, setIsFullRange] = useState<boolean>(false); 
+  const [isFullRange, setIsFullRange] = useState<boolean>(false);
 
   const poolId = usePoolDetailV3Reducer('poolId');
   const poolKey = usePoolDetailV3Reducer('poolKey');
@@ -254,7 +254,6 @@ const useCreatePositionForm = (
   useEffect(() => {
     if (!tokenX && !tokenY) return;
     if (minPrice !== 0 || maxPrice !== 0) {
-      console.log("minPrice", minPrice, "maxPrice", maxPrice);
       const minPriceTrue = isXToY ? minPrice : 1 / maxPrice;
       const maxPriceTrue = isXToY ? maxPrice : 1 / minPrice;
       getCorrespondingTickRange(minPriceTrue, maxPriceTrue);
@@ -453,26 +452,6 @@ const useCreatePositionForm = (
       setZapApr(0);
     }
   }, [isXBlocked, isYBlocked]);
-
-  // useEffect(() => {
-  //   if (!pool || !tokenX || !tokenY) return;
-  //   switch (optionType) {
-  //     case OptionType.CUSTOM:
-  //       handleOptionCustom();
-  //       break;
-  //     case OptionType.WIDE:
-  //       handleOptionWide();
-  //       break;
-  //     case OptionType.NARROW:
-  //       handleOptionNarrow();
-  //       break;
-  //     case OptionType.FULL_RANGE:
-  //       handleOptionFullRange();
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }, [optionType]);
 
   return {
     poolId,
