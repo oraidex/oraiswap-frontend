@@ -20,7 +20,7 @@ import {
   setZoom,
   TimeDuration
 } from 'reducer/poolDetailV3';
-import { BigDecimal } from '@oraichain/oraidex-common';
+import { BigDecimal, OPTIONS_SLIPPAGE } from '@oraichain/oraidex-common';
 import { PoolFeeAndLiquidityDaily, PRICE_SCALE } from 'libs/contractSingleton';
 import { getMaxTick, getMinTick, getTickAtSqrtPrice } from '@oraichain/oraiswap-v3';
 import { calcPrice } from '../components/PriceRangePlot/utils';
@@ -56,6 +56,7 @@ const useCreatePositionForm = (
   const [lowerTick, setLowerTick] = useState<number>(0);
   const [higherTick, setHigherTick] = useState<number>(0);
   const [optionType, setOptionType] = useState<OptionType>(OptionType.CUSTOM);
+  const [isFullRange, setIsFullRange] = useState<boolean>(false); 
 
   const poolId = usePoolDetailV3Reducer('poolId');
   const poolKey = usePoolDetailV3Reducer('poolKey');
@@ -253,11 +254,20 @@ const useCreatePositionForm = (
   useEffect(() => {
     if (!tokenX && !tokenY) return;
     if (minPrice !== 0 || maxPrice !== 0) {
+      console.log("minPrice", minPrice, "maxPrice", maxPrice);
       const minPriceTrue = isXToY ? minPrice : 1 / maxPrice;
       const maxPriceTrue = isXToY ? maxPrice : 1 / minPrice;
       getCorrespondingTickRange(minPriceTrue, maxPriceTrue);
     }
   }, [minPrice, maxPrice, tokenX, tokenY]);
+
+  useEffect(() => {
+    if (optionType === OptionType.CUSTOM) {
+      if (minPrice === 0) {
+        resetRange();
+      }
+    }
+  }, [optionType]);
 
   const changeHistoricalRange = (range: TimeDuration) => {
     dispatch(setHistoricalRange(range));
@@ -297,6 +307,8 @@ const useCreatePositionForm = (
   };
 
   const resetPlot = () => {
+    if (!pool) return;
+    if (!poolKey) return;
     changeHistoricalRange('7d');
     const higherTick = Math.max(
       Number(getMinTick(Number(poolKey.fee_tier.tick_spacing))),
@@ -387,11 +399,12 @@ const useCreatePositionForm = (
       setMinPrice(maxPrice);
       setMaxPrice(0);
     }
+    setIsFullRange(true);
   };
 
   const getCorrespondingTickRange = (priceMin: number, priceMax: number) => {
     try {
-      if (minPrice === 0 || maxPrice === 0) {
+      if (isFullRange) {
         setLowerTick(getMinTick(Number(poolKey.fee_tier.tick_spacing)));
         setHigherTick(getMaxTick(Number(poolKey.fee_tier.tick_spacing)));
         return;
@@ -513,6 +526,7 @@ const useCreatePositionForm = (
     zapYUsd,
     zapUsd,
     zapApr,
+    setIsFullRange,
     setApr,
     setZapApr,
     handleOptionCustom,

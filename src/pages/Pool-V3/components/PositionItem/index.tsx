@@ -229,7 +229,6 @@ const PositionItem = ({ position }) => {
     if (position?.poolData && openCollapse && tick.lowerTick && tick.lowerTick && incentives) {
       const convertedPool = getConvertedPool(position);
       const convertedPosition = getConvertedPosition(position);
-
       const res = calculateFee(convertedPool, convertedPosition, tick.lowerTick, tick.upperTick);
 
       const bnX = res.x;

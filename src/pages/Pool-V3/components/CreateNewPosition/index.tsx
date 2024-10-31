@@ -14,6 +14,7 @@ import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { useDispatch } from 'react-redux';
 import { setToDefault } from 'reducer/poolDetailV3';
 import CreatePositionForm from '../CreatePositionForm';
+import RefreshImg from 'assets/images/refresh.svg?react';
 
 const cx = cn.bind(styles);
 export const openInNewTab = (url: string): void => {
@@ -117,11 +118,7 @@ const CreateNewPosition = ({
               <div className={styles.fee}>Fee: {Number(pool.pool_key.fee_tier.fee) / 10 ** 10}%</div>
             </div>
             <div className={styles.headerActions}>
-              <div className={styles.setting}>
-                {/* <SettingIcon onClick={() => setIsOpen(true)} /> */}
-                {/* <SlippageSetting isOpen={isOpen} setIsOpen={setIsOpen} setSlippage={setSlippage} slippage={slippage} /> */}
-              </div>
-              <div onClick={() => onCloseModal()}>
+              <div className={styles.btn} onClick={() => onCloseModal()}>
                 <CloseIcon />
               </div>
             </div>
