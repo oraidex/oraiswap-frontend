@@ -395,6 +395,8 @@ export const isAllowAlphaIbcWasm = (fromToken: TokenItemType, toToken: TokenItem
   if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)) return true;
   // cosmos -> cosmos
   if (toToken?.cosmosBased && fromToken?.cosmosBased) return true;
+  // TODO: hardcode case bridge bitcoin
+  if (toToken?.coinGeckoId === 'bitcoin' && fromToken?.coinGeckoId === 'bitcoin') return true;
   return false;
 };
 
@@ -439,6 +441,9 @@ export const isAllowIBCWasm = (fromToken: TokenItemType, toToken: TokenItemType)
   // cosmos -> cosmos
   if (fromTokenIsCosmos && toTokenIsCosmos) return false;
   // -----------------------------------
+
+  // TODO: hardcode case bridge bitcoin
+  if (toToken?.coinGeckoId === 'bitcoin' && fromToken?.coinGeckoId === 'bitcoin') return false;
 
   // Oraichain -> Oraichain or Cosmos
   if (fromTokenIsOraichain) {
