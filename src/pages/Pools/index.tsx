@@ -43,7 +43,6 @@ const Pools: React.FC<{}> = () => {
 
   const pools = useGetPools();
   const lpAddresses = pools.map((pool) => pool.liquidityAddr);
-
   useFetchCacheRewardAssetForAllPools(lpAddresses);
   useFetchLpPoolsV3(lpAddresses);
 
