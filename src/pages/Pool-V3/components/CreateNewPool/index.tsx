@@ -1,4 +1,4 @@
-import { toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { oraichainTokens, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { FeeTier, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import OpenBlankTabIcon from 'assets/icons/arrow_right_ic.svg?react';
 import BackIcon from 'assets/icons/back.svg?react';
@@ -36,6 +36,8 @@ const CreateNewPool = ({ pools }: { pools: PoolWithPoolKey[] }) => {
   const [slippage, setSlippage] = useState(1);
   const [moveToAddLiquidity, setMoveToAddLiquidity] = useState(false);
   const refContent = useRef();
+
+  console.log(oraichainTokens);
 
   // useOnClickOutside(refContent, () => {
   //   setShowModal(false);

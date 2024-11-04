@@ -20,6 +20,7 @@ export const tokensIcon = tokensIconInfos;
 export const chainIcons = chainIconsInfos;
 
 const [otherChainTokens, oraichainTokens] = tokens;
+console.log('tokens', tokens)
 const OraiBTCToken: BridgeAppCurrency = {
   coinDenom: 'ORAIBTC',
   coinMinimalDenom: 'uoraibtc',
@@ -123,6 +124,8 @@ export const bitcoinMainnet: CustomChainInfo = {
 
 export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
+console.log('oraichainTokensWithIcon', oraichainTokensWithIcon)
+console.log('oraichainTokens', oraichainTokens)
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
 
 export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];

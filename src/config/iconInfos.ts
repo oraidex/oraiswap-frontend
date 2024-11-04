@@ -248,7 +248,7 @@ export const mapListWithIcon = (list: any[], listIcon: ChainIcon[] | TokenIcon[]
     if (findedItem) {
       Icon = findedItem.Icon;
       IconLight = findedItem.IconLight;
-    }
+    } 
 
     return {
       ...item,

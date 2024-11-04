@@ -19,6 +19,7 @@ import { persistor, store } from 'store/configure';
 import './index.scss';
 import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
+import { loadOraichainTokens } from '@oraichain/oraidex-common';
 
 // const client = new Client({
 //   url: 'http://10.10.20.72:3000/',
@@ -90,6 +91,7 @@ const initApp = async () => {
     const cosmWasmClient = await getCosmWasmClient({ chainId: network.chainId });
     if (cosmWasmClient?.client) window.client = cosmWasmClient.client;
   }
+  await loadOraichainTokens();
 };
 
 initApp();
