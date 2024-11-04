@@ -53,7 +53,7 @@ import useGetStateData from './useGetStateData';
 const FWD_AMOUNT = toNano(0.15);
 const TON_MESSAGE_VALID_UNTIL = 100000;
 const BRIDGE_TON_TO_ORAI_MINIMUM_GAS = toNano(1);
-const EXTERNAL_MESSAGE_FEE = toNano(0.01);
+const EXTERNAL_MESSAGE_FEE = 0.01;
 const MINIMUM_BRIDGE_PER_USD = 1; // 10; // TODO: update for product is 10
 
 export {
@@ -155,7 +155,6 @@ const useTonBridgeHandler = ({
       const jettonWallet = JettonWallet.createFromAddress(Address.parse(walletsTon[token.denom]));
       const jettonWalletContract = client.open(jettonWallet);
       const balance = await jettonWalletContract.getBalance();
-      console.log({ bridgeAdapter, jettonWallet, balance });
       return {
         balance: balance.amount
       };
@@ -169,6 +168,7 @@ const useTonBridgeHandler = ({
       if (token) {
         if (!token.contractAddress) {
           const data = await window.client.getBalance(network.CW_TON_BRIDGE, token.denom);
+
           return {
             balance: data.amount
           };
@@ -302,13 +302,14 @@ const useTonBridgeHandler = ({
       const tokenInOrai = oraichainTokensWithIcon.find((tk) => tk.coinGeckoId === token.coinGeckoId);
       const balanceMax = await checkBalanceBridgeByNetwork(TonChainId, tokenInOrai);
 
-      if (!tokenInOrai?.mintBurn && Number(balanceMax) < Number(amount)) {
+      const isMintBurn = ['hamster-kombat', 'the-open-network'].includes(tokenInOrai?.coinGeckoId);
+
+      if (!isMintBurn && Number(balanceMax) < Number(amount)) {
         // setLoading(false);
         throw `The bridge contract does not have enough balance to process this bridge transaction. Wanted ${amount} ${
           token['coinDenom'] || token.name
         }, have ${balanceMax} ${token['coinDenom'] || token.name}`;
       }
-
       const bridgeAdapterAddress = Address.parse(TonInteractionContract[TonNetwork.Mainnet].bridgeAdapter);
       const fmtAmount = new BigDecimal(10).pow(token.decimals || token['coinDecimals']).mul(amount);
       const isNativeTon: boolean = token.contractAddress === TON_ZERO_ADDRESS;
@@ -386,7 +387,6 @@ const useTonBridgeHandler = ({
         memo = beginCell().storeStringRefTail(buildMemoSwap).endCell();
       }
 
-      console.log('contractAddress:', token.contractAddress);
       const getNativeBridgePayload = () =>
         BridgeAdapter.buildBridgeTonBody(
           {
@@ -401,6 +401,20 @@ const useTonBridgeHandler = ({
             value: toNano(0) // don't care this
           }
         ).toBoc();
+
+      console.log('first', {
+        data: {
+          amount: BigInt(fmtAmount.toString()),
+          memo,
+          remoteReceiver: oraiAddress,
+          timeout
+        },
+        oraiAddressBech32,
+        ops: {
+          queryId: 0,
+          value: toNano(0) // don't care this
+        }
+      });
 
       const getOtherBridgeTokenPayload = () =>
         JettonWallet.buildSendTransferPacket(
@@ -418,6 +432,12 @@ const useTonBridgeHandler = ({
         ).toBoc();
 
       const boc = isNativeTon ? getNativeBridgePayload() : getOtherBridgeTokenPayload();
+
+      console.log('Debug', {
+        address: toAddress, // dia chi token
+        amount: gasAmount, // gas
+        payload: Base64.encode(boc)
+      });
 
       const tx = await tonConnectUI.sendTransaction({
         validUntil: TON_MESSAGE_VALID_UNTIL,
@@ -468,6 +488,7 @@ const useTonBridgeHandler = ({
       // Osmosis -> Ton
       if (isFromOsmosisToOraichain || isFromOraichainToOsmosis || isFromOsmosisToTon) {
         if (isFromOsmosisToTon) {
+          console.log('470', token, amount, bridgeFee, token, fromNetwork, toNetwork);
           validatePrice(token, Number(amount));
         }
         const timeout = Math.floor(new Date().getTime() / 1000) + 3600;

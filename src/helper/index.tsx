@@ -11,7 +11,8 @@ import {
   MULTIPLIER,
   TRON_SCAN,
   EVM_CHAIN_ID_COMMON,
-  WalletType as WalletCosmosType
+  WalletType as WalletCosmosType,
+  oraichainNetwork
 } from '@oraichain/oraidex-common';
 import { network } from 'config/networks';
 import { serializeError } from 'serialize-error';
@@ -78,6 +79,10 @@ export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId ==
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
   return tokenCanBridgeTo.includes(item.chainId);
+};
+
+export const findChainByChainId = (chainId: string) => {
+  return networks.find((n) => n.chainId === chainId) || oraichainNetwork;
 };
 
 export const getDenomEvm = (): EvmDenom => {

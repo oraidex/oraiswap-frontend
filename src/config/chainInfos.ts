@@ -290,8 +290,11 @@ export const OraiToken: BridgeAppCurrency = {
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
   currencies: [...customOraichainNetwork.currencies].map((tk) => {
-    if (tk.coinGeckoId === 'the-open-network') {
-      const bridgeToken = { ...tk, bridgeTo: [...new Set([TonChainId, 'osmosis-1', ...(tk.bridgeTo || [])])] };
+    if (['tether', 'usd-coin', 'the-open-network', 'hamster-kombat'].includes(tk.coinGeckoId)) {
+      const bridgeToken = { ...tk, bridgeTo: [...new Set([TonChainId, ...(tk.bridgeTo || [])])] };
+      if (tk.coinGeckoId === 'the-open-network') {
+        bridgeToken.bridgeTo.push('osmosis-1');
+      }
       return bridgeToken;
     }
 
@@ -360,7 +363,7 @@ export const chainInfosWithSdk = [
         ...net.currencies,
         {
           chainId: 'osmosis-1',
-          bridgeTo: [TonChainId],
+          bridgeTo: ['Oraichain', TonChainId],
           coinDenom: 'TON.orai',
           name: 'TON',
           symbol: 'TON.orai',
@@ -374,7 +377,7 @@ export const chainInfosWithSdk = [
         },
         {
           chainId: 'osmosis-1',
-          bridgeTo: [TonChainId],
+          bridgeTo: ['Oraichain', TonChainId],
           coinDenom: 'TON',
           name: 'TON',
           symbol: 'TON',
@@ -396,17 +399,6 @@ export const chainInfosWithSdk = [
 
       return fmtOsmoChain;
     } else if (net.chainId === 'Oraichain') {
-      console.log('net', net, {
-        ...net,
-        currencies: [...net.currencies].map((tk) => {
-          if (['tether', 'usd-coin', 'the-open-network', 'hamster-kombat'].includes(tk.coinGeckoId)) {
-            const bridgeToken = { ...tk, bridgeTo: [...new Set([TonChainId, ...(tk.bridgeTo || [])])] };
-            return bridgeToken;
-          }
-
-          return tk;
-        })
-      });
       return {
         ...net,
         currencies: [...net.currencies].map((tk) => {
@@ -427,8 +419,6 @@ export const chainInfosWithSdk = [
   tonNetworkMainnet
 ];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
-
-console.log('chainInfos', chainInfos);
 
 // exclude kawaiverse subnet and other special evm that has different cointype
 export const evmChains = chainInfos.filter(

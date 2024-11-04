@@ -112,6 +112,7 @@ const Balance: React.FC<BalanceProps> = () => {
   const [isDepositBtcModal, setIsDepositBtcModal] = useState(false);
   const [, setTxHash] = useState('');
   const [[from, to], setTokenBridge] = useState<TokenItemType[]>([]);
+  const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>();
   const [[otherChainTokens, oraichainTokens], setTokens] = useState<TokenItemType[][]>([[], []]);
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
 
@@ -127,7 +128,7 @@ const Balance: React.FC<BalanceProps> = () => {
   const { handleBridgeFromCosmos, handleBridgeFromTon } = useTonBridgeHandler({
     token: from,
     fromNetwork: from?.chainId,
-    toNetwork: to?.chainId
+    toNetwork: toNetworkChainId
   });
   const [isFastMode, setIsFastMode] = useState(true);
   const depositV2Fee = useDepositFeesBitcoinV2(true);
@@ -162,6 +163,7 @@ const Balance: React.FC<BalanceProps> = () => {
       getAddress();
     }
   }, [oraiAddress, isOwallet]);
+
   useOnClickOutside(ref, () => {
     setTokenBridge([undefined, undefined]);
   });
@@ -434,23 +436,30 @@ const Balance: React.FC<BalanceProps> = () => {
     }
   };
 
-  const checkTransferTon = async (fromAmount: number) => {
-    const isTontoOraichain = from.chainId === (TonChainId as any) && to.chainId === 'Oraichain';
-    const isOraichainToTON = from.chainId === 'Oraichain' && to.chainId === TonChainId;
-    if (isTontoOraichain || isOraichainToTON) {
-      handleTransferTon({
-        isTonToOraichain: isTontoOraichain,
-        transferAmount: fromAmount
-      });
+  const checkTransferTon = async () => {
+    const isFromTon = from.chainId === (TonChainId as any) && !!to.chainId;
+    const isFromCosmosToTON = !!from.chainId && to.chainId === TonChainId;
+    const isBridgeWithOraiAndOsmo =
+      [from.chainId, to.chainId].includes('Oraichain') && [from.chainId, to.chainId].includes('osmosis-1');
 
-      return true;
+    const isFromCosmos = isFromCosmosToTON || isBridgeWithOraiAndOsmo;
+
+    if (isFromCosmos || isFromTon) {
+      return {
+        isTonBridge: true,
+        isFromTon
+      };
     }
+    return {
+      isTonBridge: false,
+      isFromTon
+    };
   };
 
-  const handleTransferTon = async ({ isTonToOraichain, transferAmount }) => {
+  const handleTransferTon = async ({ isTonToCosmos, transferAmount }) => {
     const tonAddress = window.Ton.account?.address;
     if (!tonAddress) throw Error('Not found your ton address!');
-    if (isTonToOraichain) {
+    if (isTonToCosmos) {
       return await handleBridgeFromTon(transferAmount);
     }
     return await handleBridgeFromCosmos(transferAmount);
@@ -507,7 +516,6 @@ const Balance: React.FC<BalanceProps> = () => {
     try {
       await handleCheckWallet();
 
-      console.log(from, to);
       assert(from && to, 'Please choose both from and to tokens');
 
       // get & check balance
@@ -525,8 +533,14 @@ const Balance: React.FC<BalanceProps> = () => {
       let result: DeliverTxResponse | string | any;
 
       // check transfer TON <=> ORAICHAIN
-      const isTonBridge = await checkTransferTon(fromAmount);
+      const { isTonBridge, isFromTon } = await checkTransferTon();
+
       if (isTonBridge) {
+        await handleTransferTon({
+          isTonToCosmos: isFromTon,
+          transferAmount: fromAmount
+        });
+
         return;
       }
 
@@ -562,10 +576,6 @@ const Balance: React.FC<BalanceProps> = () => {
 
       // hardcode case Neutaro-1 & Noble-1
       if (from.chainId === 'Neutaro-1') return await handleTransferIBC(from, newToToken, fromAmount);
-
-      console.log('from', from, to);
-      if (to.chainId === TonChainId) {
-      }
 
       // remaining tokens, we override from & to of onClickTransfer on index.tsx of Balance based on the user's token destination choice
       // to is Oraibridge tokens
@@ -809,6 +819,7 @@ const Balance: React.FC<BalanceProps> = () => {
                       }}
                       isFastMode={isFastMode}
                       setIsFastMode={setIsFastMode}
+                      setToNetworkChainId={setToNetworkChainId}
                     />
                   </div>
                 );

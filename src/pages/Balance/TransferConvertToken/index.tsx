@@ -19,7 +19,7 @@ import TokenBalance from 'components/TokenBalance';
 import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
 import { btcChains, evmChains, OsmosisTokenList, tonNetworkMainnet } from 'config/chainInfos';
 import copy from 'copy-to-clipboard';
-import { filterChainBridge, getAddressTransfer, networks } from 'helper';
+import { filterChainBridge, findChainByChainId, getAddressTransfer, networks } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
@@ -40,7 +40,7 @@ import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
 import useGetFee from '../hooks/useGetFee';
-import useTonBridgeHandler from '../hooks/useTonBridgeHandler';
+import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
 import { TonChainId } from 'context/ton-provider';
 
 interface TransferConvertProps {
@@ -51,6 +51,7 @@ interface TransferConvertProps {
   subAmounts?: object;
   isFastMode?: boolean;
   setIsFastMode?: Function;
+  setToNetwork: Function;
 }
 
 const TransferConvertToken: FC<TransferConvertProps> = ({
@@ -60,9 +61,14 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   onClickTransfer,
   subAmounts,
   isFastMode,
-  setIsFastMode
+  setIsFastMode,
+  setToNetwork
 }) => {
-  const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
+  // const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
+  const bridgeNetworks = [...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
+    const net = findChainByChainId(chainId);
+    return net;
+  });
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
   const [transferLoading, setTransferLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -87,6 +93,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         const address = await getAddressTransfer(findNetwork, walletByNetworks);
         setAddressTransfer(address);
         setToNetworkChainId(defaultToChainId);
+        setToNetwork(defaultToChainId);
       }
     })();
   }, [token.chainId]);
@@ -277,7 +284,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         )}
         {toNetworkChainId === TonChainId && (
           <p>
-            Max Bridge Balances:{' '}
+            Available amount:{' '}
             <span>
               {balanceMax.toFixed(6)} {token.name}
             </span>
@@ -372,31 +379,31 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {isOpen && (
                 <div>
                   <ul className={classNames(styles.items, styles[theme])}>
-                    {networks
-                      .filter((item) => filterChainBridge(token, item))
-                      .map((net) => {
-                        return (
-                          <li
-                            key={net.chainId}
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              const address = await getAddressTransfer(net, walletByNetworks);
-                              setAddressTransfer(address);
-                              setToNetworkChainId(net.chainId);
-                              setIsOpen(false);
-                            }}
-                          >
-                            {net && (
-                              <div className={classNames(styles.items_chain)}>
-                                <div>
-                                  <net.Icon width={44} height={44} />
-                                </div>
-                                <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
+                    {[...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
+                      const net = findChainByChainId(chainId);
+                      return (
+                        <li
+                          key={net.chainId}
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            const address = await getAddressTransfer(net, walletByNetworks);
+                            setAddressTransfer(address);
+                            setToNetworkChainId(net.chainId);
+                            setToNetwork(net.chainId);
+                            setIsOpen(false);
+                          }}
+                        >
+                          {net && (
+                            <div className={classNames(styles.items_chain)}>
+                              <div>
+                                <net.Icon width={44} height={44} />
                               </div>
-                            )}
-                          </li>
-                        );
-                      })}
+                              <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
+                            </div>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
@@ -438,6 +445,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                     if (token.chainId === TonChainId && token.coinGeckoId === 'the-open-network') {
                       const finalAmount = new BigDecimal(maxAmount)
                         .sub(toDisplay(deductNativeAmount || 0n, token.decimals))
+                        .sub(deductNativeAmount > 0n ? EXTERNAL_MESSAGE_FEE : 0)
                         .toNumber();
 
                       setConvertAmount([finalAmount * coeff, amountDetail.usd * coeff]);
@@ -459,19 +467,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           </div>
         </div>
         {renderBridgeFee()}
-
-        {token.denom === CWBitcoinFactoryDenom && (
-          <div className={styles.fastMode}>
-            <span>Fast Mode</span>{' '}
-            <ToggleSwitch
-              customSwitchClass={styles.switch}
-              small
-              id={'fast-mode-id'}
-              checked={isFastMode}
-              onChange={() => setIsFastMode((fastMode) => !fastMode)}
-            />
-          </div>
-        )}
 
         {token.denom === CWBitcoinFactoryDenom && (
           <div className={styles.fastMode}>
