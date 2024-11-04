@@ -336,7 +336,6 @@
     }
 
     table {
-
       /* required css to make the rows rounded */
       thead {
         white-space: nowrap;
@@ -518,6 +517,26 @@
         padding: 12px;
         border-radius: 6px;
         border: 1px solid #494949;
+
+        @include theme {
+          color: theme-get('colors-neutral-text-body-on-row');
+        }
+
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 150%;
+        /* 18px */
+        letter-spacing: 0.012px;
+        white-space: nowrap;
+      }
+
+      .inactive {
+        display: flex;
+        align-items: center;
+        height: 24px;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #faad14;
 
         @include theme {
           color: theme-get('colors-neutral-text-body-on-row');

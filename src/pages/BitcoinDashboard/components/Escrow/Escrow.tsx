@@ -102,7 +102,7 @@ const Escrow = () => {
         </div>
 
         <div className={styles.itemBtn}>
-          <Button type="primary" onClick={() => handleClaim()} disabled={loading}>
+          <Button type="primary" onClick={() => handleClaim()} disabled={loading || !(data?.escrow_balance > 0)}>
             {loading && <Loader width={22} height={22} />}&nbsp;
             <span>Claim</span>
           </Button>

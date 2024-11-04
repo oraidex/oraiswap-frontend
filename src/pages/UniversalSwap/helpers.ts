@@ -379,10 +379,11 @@ export const getProtocolsSmartRoute = (
 ) => {
   const protocols = ['Oraidex', 'OraidexV3'];
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
+  if (fromToken.chainId === 'noble-1' || toToken.chainId === 'noble-1') return protocols;
 
   const allowOsmosisProtocols = ['injective-1', 'Neutaro-1', 'noble-1', 'osmosis-1', 'cosmoshub-4', 'celestia'];
   const isAllowOsmosisProtocol =
-    allowOsmosisProtocols.includes(fromToken.chainId) || allowOsmosisProtocols.includes(toToken.chainId);
+    allowOsmosisProtocols.includes(fromToken?.chainId) || allowOsmosisProtocols.includes(toToken?.chainId);
 
   if (isAllowOsmosisProtocol) return [...protocols, 'Osmosis'];
   return protocols;
@@ -427,43 +428,46 @@ const listAllowSmartRoute = {
 export const isAllowIBCWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
   return false;
 
-  const fromTokenIsOraichain = fromToken?.chainId === 'Oraichain';
-  const fromTokenIsCosmos = fromToken?.cosmosBased;
+  // const fromTokenIsOraichain = fromToken?.chainId === 'Oraichain';
+  // const fromTokenIsCosmos = fromToken?.cosmosBased;
 
-  const toTokenIsOraichain = toToken?.chainId === 'Oraichain';
-  const toTokenIsCosmos = toToken?.cosmosBased;
+  // const toTokenIsOraichain = toToken?.chainId === 'Oraichain';
+  // const toTokenIsCosmos = toToken?.cosmosBased;
 
-  // ----------------------------------- new msg
-  // from chainId and to chainId is CELESTIA_CHAIN_ID or INJECTVE_CHAIN_ID
-  if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)) return false;
-  if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID)) return false;
-  // cosmos -> cosmos
-  if (fromTokenIsCosmos && toTokenIsCosmos) return false;
-  // -----------------------------------
+  // // ----------------------------------- new msg
+  // // from chainId and to chainId is CELESTIA_CHAIN_ID or INJECTVE_CHAIN_ID
+  // if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)) return false;
+  // if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID)) return false;
+  // // cosmos -> cosmos
+  // if (fromTokenIsCosmos && toTokenIsCosmos) return false;
+  // // -----------------------------------
 
-  // Oraichain -> Oraichain or Cosmos
-  if (fromTokenIsOraichain) {
-    if (toToken?.chainId == 'Neutaro-1') return true;
-    if (toTokenIsOraichain || toTokenIsCosmos) return false;
-  }
-  // Oraichain or Cosmos -> Evm
-  if ((fromTokenIsOraichain || fromTokenIsCosmos) && !toTokenIsCosmos) return true;
-  // Evm -> EVM
-  if (!fromTokenIsCosmos && !toTokenIsCosmos && toToken?.chainId === fromToken?.chainId) return false;
-  // Evm -> Oraichain or Cosmos
-  if (!fromTokenIsCosmos) return true;
+  // // TODO: hardcode case bridge bitcoin
+  // if (toToken?.coinGeckoId === 'bitcoin' && fromToken?.coinGeckoId === 'bitcoin') return false;
 
-  // Cosmos -> Cosmos or Oraichain
-  if (fromTokenIsCosmos && toTokenIsCosmos) {
-    const key = [fromToken, toToken].map((e) => e.chainId).join('-');
-    const hasTokenUsingSmartRoute =
-      listAllowSmartRoute[key]?.fromCoinGeckoIds.includes(fromToken?.coinGeckoId) &&
-      listAllowSmartRoute[key]?.toCoinGeckoIds.includes(toToken?.coinGeckoId);
-    if (hasTokenUsingSmartRoute) return false;
-    return true;
-  }
+  // // Oraichain -> Oraichain or Cosmos
+  // if (fromTokenIsOraichain) {
+  //   if (toToken?.chainId == 'Neutaro-1') return true;
+  //   if (toTokenIsOraichain || toTokenIsCosmos) return false;
+  // }
+  // // Oraichain or Cosmos -> Evm
+  // if ((fromTokenIsOraichain || fromTokenIsCosmos) && !toTokenIsCosmos) return true;
+  // // Evm -> EVM
+  // if (!fromTokenIsCosmos && !toTokenIsCosmos && toToken?.chainId === fromToken?.chainId) return false;
+  // // Evm -> Oraichain or Cosmos
+  // if (!fromTokenIsCosmos) return true;
 
-  return false;
+  // // Cosmos -> Cosmos or Oraichain
+  // if (fromTokenIsCosmos && toTokenIsCosmos) {
+  //   const key = [fromToken, toToken].map((e) => e.chainId).join('-');
+  //   const hasTokenUsingSmartRoute =
+  //     listAllowSmartRoute[key]?.fromCoinGeckoIds.includes(fromToken?.coinGeckoId) &&
+  //     listAllowSmartRoute[key]?.toCoinGeckoIds.includes(toToken?.coinGeckoId);
+  //   if (hasTokenUsingSmartRoute) return false;
+  //   return true;
+  // }
+
+  // return false;
 };
 
 export const getAverageRatio = (

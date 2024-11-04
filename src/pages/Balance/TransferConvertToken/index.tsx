@@ -3,7 +3,8 @@ import {
   // flattenTokens
   NetworkChainId,
   toDisplay,
-  TokenItemType
+  TokenItemType,
+  BTC_CONTRACT
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -62,7 +63,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
   const [transferLoading, setTransferLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>();
+  const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>(bridgeNetworks[0]?.chainId);
   const [isOpen, setIsOpen] = useState(false);
   const [chainInfo] = useConfigReducer('chainInfo');
   const [theme] = useConfigReducer('theme');
@@ -232,6 +233,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     if (receivedAmount < 0) buttonName = 'Not enought amount to pay fee';
     return buttonName;
   };
+
+  const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
 
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
@@ -413,7 +416,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           ) {
             return (
               <button
-                disabled={transferLoading || !addressTransfer || receivedAmount < 0}
+                disabled={transferLoading || !addressTransfer || receivedAmount < 0 || isBTCLegacy || convertAmount < 0}
                 className={classNames(styles.tfBtn, styles[theme])}
                 onClick={onTransferConvert}
               >

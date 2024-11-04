@@ -239,7 +239,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
       <div className={styles.listMobile}>
         <div className={styles.header}>
           <span>List Pools</span>
-
           <div className={styles.sortMobileWrapper}>
             <div
               className={styles.sortBtn}

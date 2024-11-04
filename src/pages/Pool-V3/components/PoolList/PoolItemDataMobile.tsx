@@ -40,6 +40,8 @@ const PoolItemDataMobile = ({
     secondAssetInfo
   } = item;
 
+  const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
+
   return (
     <div className={styles.mobilePoolItem}>
       <div className={classNames(styles.itemMobile, styles.flexStart)}>
@@ -60,6 +62,12 @@ const PoolItemDataMobile = ({
           {type === POOL_TYPE.V3 && (
             <div>
               <span className={styles.fee}>Fee: {toDisplay(BigInt(feeTier), 10)}%</span>
+            </div>
+          )}
+
+          {isInactive && (
+            <div>
+              <span className={styles.inactive}>Inactive</span>
             </div>
           )}
         </div>
