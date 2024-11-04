@@ -43,7 +43,6 @@ const useGetFee = ({
           const tokenFeeConfig = await tonBridgeClient.tokenFee({
             remoteTokenDenom: walletTon
           });
-          console.log('tonBridgeClient', tonBridgeClient, walletTon, tokenFeeConfig);
 
           if (tokenFeeConfig) {
             const { nominator, denominator } = tokenFeeConfig;
@@ -81,7 +80,6 @@ const useGetFee = ({
 
         const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, network.CW_TON_BRIDGE);
 
-        console.log('conf', tonBridgeClient, walletTon);
         const config = await tonBridgeClient.pairMapping({
           key: walletTon
         });

@@ -1,5 +1,6 @@
 import {
   BigDecimal,
+  getTokensFromNetwork,
   // flattenTokens
   NetworkChainId,
   toDisplay,
@@ -16,7 +17,7 @@ import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
-import { btcChains, evmChains } from 'config/chainInfos';
+import { btcChains, evmChains, OsmosisTokenList, tonNetworkMainnet } from 'config/chainInfos';
 import copy from 'copy-to-clipboard';
 import { filterChainBridge, getAddressTransfer, networks } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -39,6 +40,8 @@ import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
 import useGetFee from '../hooks/useGetFee';
+import useTonBridgeHandler from '../hooks/useTonBridgeHandler';
+import { TonChainId } from 'context/ton-provider';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -159,6 +162,12 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toNetwork: toNetworkChainId
   });
 
+  const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
+    token,
+    fromNetwork: token.chainId,
+    toNetwork: toNetworkChainId
+  });
+
   // bridge fee & relayer fee
   let bridgeFee = fromTokenFee + toTokenFee;
 
@@ -203,9 +212,26 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toDisplayBTCFee = new BigDecimal(withdrawalFeeBtc.withdrawal_fees ?? 0).div(1e14).toNumber();
   }
 
-  let receivedAmount = convertAmount ? convertAmount * (1 - bridgeFee / 100) - relayerFeeTokenFee - toDisplayBTCFee : 0;
+  let receivedAmount = convertAmount
+    ? convertAmount * (1 - bridgeFee / 100) - relayerFeeTokenFee - toDisplayBTCFee - (bridgeFeeTon || 0)
+    : 0;
 
   const renderBridgeFee = () => {
+    const [balanceMax, setBalanceMax] = useState(0);
+
+    useEffect(() => {
+      (async () => {
+        if (toNetworkChainId === TonChainId) {
+          const tokenOnTon = [...getTokensFromNetwork(tonNetworkMainnet)].find(
+            (tk) => tk.chainId === toNetworkChainId && tk.coinGeckoId === token.coinGeckoId
+          );
+
+          const maxBalance = await checkBalanceBridgeByNetwork(token.chainId, tokenOnTon);
+          setBalanceMax(maxBalance || 0);
+        }
+      })();
+    }, [token, toNetworkChainId]);
+
     return (
       <div className={styles.bridgeFee}>
         {bridgeFeeTon ? (
@@ -241,13 +267,21 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         - Received amount:
         <span>
           {' '}
-          {receivedAmount.toFixed(6)} {token.name}
+          {(receivedAmount > 0 ? receivedAmount : 0).toFixed(6)} {token.name}
         </span>
         {!!toDisplayBTCFee && (
           <>
             {' '}
             - BTC fee: <span>{toDisplayBTCFee} BTC </span>
           </>
+        )}
+        {toNetworkChainId === TonChainId && (
+          <p>
+            Max Bridge Balances:{' '}
+            <span>
+              {balanceMax.toFixed(6)} {token.name}
+            </span>
+          </p>
         )}
       </div>
     );
@@ -401,13 +435,21 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                   className={classNames(styles.balanceBtn, styles[theme])}
                   onClick={(event) => {
                     event.stopPropagation();
-                    const finalAmount = calcMaxAmount({
-                      maxAmount,
-                      token,
-                      coeff
-                    });
+                    if (token.chainId === TonChainId && token.coinGeckoId === 'the-open-network') {
+                      const finalAmount = new BigDecimal(maxAmount)
+                        .sub(toDisplay(deductNativeAmount || 0n, token.decimals))
+                        .toNumber();
 
-                    setConvertAmount([finalAmount * coeff, amountDetail.usd * coeff]);
+                      setConvertAmount([finalAmount * coeff, amountDetail.usd * coeff]);
+                    } else {
+                      const finalAmount = calcMaxAmount({
+                        maxAmount,
+                        token,
+                        coeff
+                      });
+
+                      setConvertAmount([finalAmount * coeff, amountDetail.usd * coeff]);
+                    }
                   }}
                 >
                   {text}
@@ -417,6 +459,19 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           </div>
         </div>
         {renderBridgeFee()}
+
+        {token.denom === CWBitcoinFactoryDenom && (
+          <div className={styles.fastMode}>
+            <span>Fast Mode</span>{' '}
+            <ToggleSwitch
+              customSwitchClass={styles.switch}
+              small
+              id={'fast-mode-id'}
+              checked={isFastMode}
+              onChange={() => setIsFastMode((fastMode) => !fastMode)}
+            />
+          </div>
+        )}
 
         {token.denom === CWBitcoinFactoryDenom && (
           <div className={styles.fastMode}>

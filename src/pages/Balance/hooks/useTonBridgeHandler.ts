@@ -710,6 +710,8 @@ const useTonBridgeHandler = ({
   };
 
   return {
+    deductNativeAmount,
+    checkBalanceBridgeByNetwork,
     handleBridgeFromCosmos,
     handleBridgeFromTon
   };

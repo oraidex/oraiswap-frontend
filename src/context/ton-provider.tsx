@@ -9,14 +9,14 @@ export enum TonNetwork {
 
 export const TonInteractionContract = {
   [TonNetwork.Mainnet]: {
-    lightClient: 'EQDt5RAUICxUeHaNicwspH8obI__z3X0UHy6vv1xhpi3AbfT',
+    lightClient: 'EQDzy_POlimFDyzrHd3OQsb9sZCngyG3O7Za4GRFzM-rrO93',
     whitelist: 'EQATDM6mfPZjPDMD9TVa6D9dlbmAKY5w6xOJiTXJ9Nqj_dsu',
-    bridgeAdapter: 'EQArWlaBgdGClwJrAkQjQP_8zxIK_bdgbH-6qdl4f5JEfo3r'
+    bridgeAdapter: 'EQC-aFP0rJXwTgKZQJPbPfTSpBFc8wxOgKHWD9cPvOl_DnaY'
   },
   [TonNetwork.Testnet]: {
-    lightClient: '',
-    whitelist: 'EQD2xPIqdeggqtP3q852Y-7yD-RRHi12Zy7M4iUx4-7q0E1',
-    bridgeAdapter: 'EQDZfQX89gMo3HAiW1tSK9visb2gouUvDCt6PODo3qkXKeox'
+    lightClient: 'EQDzy_POlimFDyzrHd3OQsb9sZCngyG3O7Za4GRFzM-rrO93',
+    whitelist: 'EQAbJI3NZKGcVu-ec_z_LcmXca9ZOtzkgCW5H9glnWBDpaFg',
+    bridgeAdapter: 'EQA3ISho4fpW3wmCkKEwsyXulIw7vLf-2jxso40ul3QQJ_O7'
   }
 };
 
