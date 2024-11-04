@@ -29,6 +29,8 @@ import Sidebar from './Sidebar';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
+import { useLoadWalletsTon } from 'pages/Balance/hooks/useLoadWalletsTon';
+import { TonNetwork } from 'context/ton-provider';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
@@ -55,6 +57,10 @@ const App = () => {
   useEffect(() => {
     window.Ton = tonConnectUI;
   }, [tonConnectUI]);
+
+  useLoadWalletsTon({
+    tonNetwork: TonNetwork.Mainnet
+  });
 
   useEffect(() => {
     (async () => {

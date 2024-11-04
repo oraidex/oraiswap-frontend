@@ -38,6 +38,7 @@ import styles from './index.module.scss';
 import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
+import useGetFee from '../hooks/useGetFee';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -149,8 +150,14 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const remoteTokenDenomTo = getRemoteTokenDenom(to);
 
   // token fee
-  const fromTokenFee = useTokenFee(remoteTokenDenomFrom);
-  const toTokenFee = useTokenFee(remoteTokenDenomTo);
+  const fromTokenFee = useTokenFee(remoteTokenDenomFrom) || 0;
+  const toTokenFee = useTokenFee(remoteTokenDenomTo) || 0;
+
+  const { bridgeFee: bridgeFeeTon, tokenFee: tonTokenFee } = useGetFee({
+    token,
+    fromNetwork: token.chainId,
+    toNetwork: toNetworkChainId
+  });
 
   // bridge fee & relayer fee
   let bridgeFee = fromTokenFee + toTokenFee;
@@ -201,7 +208,27 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const renderBridgeFee = () => {
     return (
       <div className={styles.bridgeFee}>
-        Bridge fee: <span>{bridgeFee}% </span>
+        {bridgeFeeTon ? (
+          <>
+            Bridge fee:{' '}
+            <span>
+              {bridgeFeeTon} {token.name}{' '}
+            </span>
+          </>
+        ) : (
+          <>
+            Bridge fee: <span>{bridgeFee}% </span>
+          </>
+        )}
+        {tonTokenFee > 0 ? (
+          <div className={styles.relayerFee}>
+            - Token fee:{' '}
+            <span>
+              {' '}
+              {tonTokenFee} {token.name}{' '}
+            </span>
+          </div>
+        ) : null}{' '}
         {relayerFeeTokenFee > 0 ? (
           <div className={styles.relayerFee}>
             - Relayer fee:{' '}

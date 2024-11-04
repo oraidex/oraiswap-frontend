@@ -2,28 +2,48 @@ import { BigDecimal, toDisplay, TokenItemType } from '@oraichain/oraidex-common'
 import { TonbridgeBridgeClient } from '@oraichain/tonbridge-contracts-sdk';
 import { tonNetworkMainnet } from 'config/chainInfos';
 import { network } from 'config/networks';
+import { TonChainId } from 'context/ton-provider';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useEffect, useState } from 'react';
 
-const useGetFee = ({ token }: { token: TokenItemType }) => {
+const useGetFee = ({
+  token,
+  fromNetwork,
+  toNetwork
+}: {
+  token: TokenItemType;
+  fromNetwork: string;
+  toNetwork: string;
+}) => {
   const [oraiAddress] = useConfigReducer('address');
   const [bridgeFee, setBridgeFee] = useState(0);
   const [tokenFee, setTokenFee] = useState(0);
+  const [walletsTon] = useConfigReducer('walletsTon');
 
   useEffect(() => {
     (async () => {
       try {
-        if (token) {
+        if (![fromNetwork, toNetwork].includes(TonChainId)) {
+          return setTokenFee(0);
+        }
+
+        if (token && fromNetwork && toNetwork) {
           const tokenInTon = tonNetworkMainnet.currencies.find((tk) => tk.coinGeckoId === token.coinGeckoId);
           if (!tokenInTon) {
+            return;
+          }
+          const walletTon = walletsTon[tokenInTon.coinMinimalDenom];
+
+          if (!walletTon) {
             return;
           }
 
           const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, network.CW_TON_BRIDGE);
 
           const tokenFeeConfig = await tonBridgeClient.tokenFee({
-            remoteTokenDenom: tokenInTon?.contractAddress
+            remoteTokenDenom: walletTon
           });
+          console.log('tonBridgeClient', tonBridgeClient, walletTon, tokenFeeConfig);
 
           if (tokenFeeConfig) {
             const { nominator, denominator } = tokenFeeConfig;
@@ -40,20 +60,37 @@ const useGetFee = ({ token }: { token: TokenItemType }) => {
         }
       }
     })();
-  }, [token, oraiAddress]);
+  }, [token, oraiAddress, walletsTon, fromNetwork, toNetwork]);
 
   useEffect(() => {
     (async () => {
-      const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, network.CW_TON_BRIDGE);
+      if (![fromNetwork, toNetwork].includes(TonChainId)) {
+        return setBridgeFee(0);
+      }
 
-      const config = await tonBridgeClient.config();
-      if (config) {
-        const { relayer_fee } = config;
+      if (token && fromNetwork && toNetwork) {
+        const tokenInTon = tonNetworkMainnet.currencies.find((tk) => tk.coinGeckoId === token.coinGeckoId);
+        if (!tokenInTon) {
+          return;
+        }
 
-        setBridgeFee(toDisplay(relayer_fee));
+        const walletTon = walletsTon[tokenInTon.coinMinimalDenom];
+        if (!walletTon) {
+          return;
+        }
+
+        const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, network.CW_TON_BRIDGE);
+
+        console.log('conf', tonBridgeClient, walletTon);
+        const config = await tonBridgeClient.pairMapping({
+          key: walletTon
+        });
+        const pairMapping = config.pair_mapping;
+
+        setBridgeFee(parseInt(pairMapping.relayer_fee) / 10 ** pairMapping.remote_decimals);
       }
     })();
-  }, []);
+  }, [token, oraiAddress, walletsTon, fromNetwork, toNetwork]);
 
   return {
     bridgeFee,

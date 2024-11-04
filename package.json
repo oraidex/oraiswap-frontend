@@ -25,7 +25,7 @@
     "@oraichain/orai-bitcoin": "2.0.0",
     "@oraichain/oraidex-common-ui": "1.0.11",
     "@oraichain/ton-bridge-contracts": "^0.15.8",
-    "@oraichain/tonbridge-contracts-sdk": "^1.3.0",
+    "@oraichain/tonbridge-contracts-sdk": "^1.3.1",
     "@orbs-network/ton-access": "^2.3.3",
     "@oraichain/oraidex-contracts-sdk": "1.0.51-beta.3",
     "@oraichain/oraidex-universal-swap": "1.1.16",

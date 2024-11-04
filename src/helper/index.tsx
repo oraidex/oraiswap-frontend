@@ -33,6 +33,8 @@ import { TonChainId } from 'context/ton-provider';
 import { toUserFriendlyAddress } from '@tonconnect/ui-react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { TonClient } from '@ton/ton';
 
 export interface Tokens {
   denom?: string;
@@ -665,4 +667,38 @@ export const getIconToken = ({ isLightTheme, denom, width = 18, height = 18 }) =
   }
 
   return <DefaultIcon />;
+};
+
+export const retryOrbs = async (fn, retryTimes = 30, delay = 2000) => {
+  try {
+    return await fn();
+  } catch (error) {
+    let response = error?.response;
+    let message = response?.data?.error;
+    if (message?.includes('No working liteservers')) {
+      await sleep(delay * 2);
+      return await retryOrbs(fn, retryTimes, delay);
+    }
+    if (retryTimes > 0) {
+      await sleep(delay * 5);
+      return await retryOrbs(fn, retryTimes - 1, delay);
+    }
+  }
+};
+
+export const getTonClient = async () => {
+  try {
+    const endpoint = await getHttpEndpoint({
+      network: 'mainnet'
+    });
+    const client = new TonClient({
+      endpoint
+    });
+    return client;
+  } catch (err) {
+    return new TonClient({
+      endpoint:
+        'https://ton.access.orbs.network/55013c0ff5Bd3F8B62C092Ab4D238bEE463E5501/1/mainnet/toncenter-api-v2/jsonRPC'
+    });
+  }
 };

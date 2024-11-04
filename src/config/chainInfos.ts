@@ -5,7 +5,8 @@ import {
   ChainIdEnum,
   BridgeAppCurrency,
   CustomChainInfo,
-  defaultBech32Config
+  defaultBech32Config,
+  getTokensFromNetwork
 } from '@oraichain/oraidex-common';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import OraiIcon from 'assets/icons/oraichain.svg?react';
@@ -14,7 +15,7 @@ import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
 import UsdtIcon from 'assets/icons/tether.svg';
 import TonIcon from 'assets/icons/ton.svg';
 import flatten from 'lodash/flatten';
-import { TON_SCAN, TonChainId } from 'context/ton-provider';
+import { TON_SCAN, TonChainId, TonNetwork } from 'context/ton-provider';
 
 import { chainIconsInfos, tokensIconInfos, mapListWithIcon } from './iconInfos';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
@@ -41,7 +42,7 @@ export const tonNetworkMainnet: CustomChainInfo = {
   rest: 'https://toncenter.com/api/v2/jsonRPC',
   rpc: 'https://toncenter.com/api/v2/jsonRPC',
   chainId: TonChainId,
-  chainName: 'Ton' as any,
+  chainName: 'TON' as any,
   bip44: {
     coinType: 607 as any
   },
@@ -187,9 +188,9 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
-export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
+export const tonNetworkTokens = getTokensFromNetwork(tonNetworkMainnet);
 
 export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];
 export const flattenTokensWithIcon = flatten(tokensWithIcon);
@@ -283,4 +284,51 @@ export const evmChains = chainInfos.filter(
   (c) => c.networkType === 'evm' && c.bip44.coinType === 60 && c.chainId !== '0x1ae6'
 );
 
+export const chainInfosWithIcon = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
+
 export const btcChains = chainInfos.filter((c) => c.networkType === ('bitcoin' as any));
+
+export type AlloyedPool = {
+  poolId: string;
+  alloyedToken: string;
+  sourceToken: string;
+};
+
+export const OsmosisAlloyedPools: AlloyedPool[] = [
+  {
+    poolId: '2161',
+    alloyedToken: 'factory/osmo12lnwf54yd30p6amzaged2atln8k0l32n7ncxf04ctg7u7ymnsy7qkqgsw4/alloyed/allTON',
+    sourceToken: 'ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98'
+  }
+];
+
+export const OsmosisTokenDenom = {
+  ton: 'ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98',
+  allTon: 'factory/osmo12lnwf54yd30p6amzaged2atln8k0l32n7ncxf04ctg7u7ymnsy7qkqgsw4/alloyed/allTON'
+};
+
+export const OsmosisTokenList = [
+  {
+    chainId: 'osmosis-1',
+    name: 'TON',
+    symbol: 'TON.orai',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.ton,
+    coinMinimalDenom: OsmosisTokenDenom.ton,
+    coinGeckoId: 'the-open-network',
+    decimal: 9
+  },
+  {
+    chainId: 'osmosis-1',
+    name: 'TON',
+    symbol: 'TON',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.allTon,
+    coinMinimalDenom: OsmosisTokenDenom.allTon,
+    coinGeckoId: 'the-open-network',
+    decimal: 9,
+    alloyedToken: true
+  }
+];

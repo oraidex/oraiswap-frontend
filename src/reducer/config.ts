@@ -20,12 +20,15 @@ export type RewardPoolType = {
   liquidity_token: string;
 };
 
+type WalletTonDetails = { [denom: string]: string };
+
 export interface ConfigState {
   address: string;
   metamaskAddress: string | null;
   tronAddress: string | null;
   btcAddress: string | null;
   tonAddress: string | null;
+  walletsTon: WalletTonDetails; // ton wallets for bridge adapter
   cosmosAddress: { [key: string]: string };
   allPendingDeposits: { [key: string]: DepositInfo[] };
   chainId: string;
@@ -73,6 +76,7 @@ const initialState: ConfigState = {
   btcAddress: '',
   tonAddress: '',
   tronAddress: '',
+  walletsTon: {},
   walletTypeStore: 'owallet',
   cosmosAddress: {},
   allPendingDeposits: {},

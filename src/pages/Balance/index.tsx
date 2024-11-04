@@ -124,7 +124,11 @@ const Balance: React.FC<BalanceProps> = () => {
   const [tonAddress] = useConfigReducer('tonAddress');
   const [btcAddress] = useConfigReducer('btcAddress');
   const [addressRecovery, setAddressRecovery] = useState('');
-  const { handleBridgeFromOraichain, handleBridgeFromTon } = useTonBridgeHandler({ token: from });
+  const { handleBridgeFromCosmos, handleBridgeFromTon } = useTonBridgeHandler({
+    token: from,
+    fromNetwork: from?.chainId,
+    toNetwork: to?.chainId
+  });
   const [isFastMode, setIsFastMode] = useState(true);
   const depositV2Fee = useDepositFeesBitcoinV2(true);
   const withdrawV2Fee = useGetWithdrawlFeesBitcoinV2({
@@ -449,7 +453,7 @@ const Balance: React.FC<BalanceProps> = () => {
     if (isTonToOraichain) {
       return await handleBridgeFromTon(transferAmount);
     }
-    return await handleBridgeFromOraichain(transferAmount);
+    return await handleBridgeFromCosmos(transferAmount);
   };
 
   const checkTransferBtc = () => {
