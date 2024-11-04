@@ -6,7 +6,9 @@ import {
   BridgeAppCurrency,
   CustomChainInfo,
   defaultBech32Config,
-  getTokensFromNetwork
+  getTokensFromNetwork,
+  TON_ORAICHAIN_DENOM,
+  HMSTR_ORAICHAIN_DENOM
 } from '@oraichain/oraidex-common';
 import HamsterIcon from 'assets/icons/hmstr.svg?react';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
@@ -42,6 +44,57 @@ const OraiBTCToken: BridgeAppCurrency = {
   }
 };
 
+export type AlloyedPool = {
+  poolId: string;
+  alloyedToken: string;
+  sourceToken: string;
+};
+
+export const OsmosisAlloyedPools: AlloyedPool[] = [
+  {
+    poolId: '2161',
+    alloyedToken: 'factory/osmo12lnwf54yd30p6amzaged2atln8k0l32n7ncxf04ctg7u7ymnsy7qkqgsw4/alloyed/allTON',
+    sourceToken: 'ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98'
+  }
+];
+
+export const OsmosisTokenDenom = {
+  ton: 'ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98',
+  allTon: 'factory/osmo12lnwf54yd30p6amzaged2atln8k0l32n7ncxf04ctg7u7ymnsy7qkqgsw4/alloyed/allTON'
+};
+
+export const OsmosisTokenList = [
+  {
+    chainId: 'osmosis-1',
+    bridgeTo: [TonChainId],
+    coinDenom: 'TON.orai',
+    name: 'TON',
+    symbol: 'TON.orai',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.ton,
+    coinMinimalDenom: OsmosisTokenDenom.ton,
+    coinGeckoId: 'the-open-network',
+    decimal: 9,
+    coinDecimals: 9
+  },
+  {
+    chainId: 'osmosis-1',
+    bridgeTo: [TonChainId],
+    coinDenom: 'TON',
+    name: 'TON',
+    symbol: 'TON',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.allTon,
+    coinMinimalDenom: OsmosisTokenDenom.allTon,
+    coinGeckoId: 'the-open-network',
+    decimal: 9,
+    coinDecimals: 9,
+    alloyedToken: true
+  }
+];
+
 export const tonNetworkMainnet: CustomChainInfo = {
   rest: 'https://toncenter.com/api/v2/jsonRPC',
   rpc: 'https://toncenter.com/api/v2/jsonRPC',
@@ -67,7 +120,7 @@ export const tonNetworkMainnet: CustomChainInfo = {
       coinDenom: 'TON',
       coinMinimalDenom: 'ton',
       coinDecimals: 9,
-      bridgeTo: ['Oraichain'],
+      bridgeTo: ['Oraichain', 'osmosis-1'],
       prefixToken: 'ton20_',
       contractAddress: TON_ZERO_ADDRESS,
       Icon: TonIcon,
@@ -238,7 +291,7 @@ export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
   currencies: [...customOraichainNetwork.currencies].map((tk) => {
     if (tk.coinGeckoId === 'the-open-network') {
-      const bridgeToken = { ...tk, bridgeTo: [TonChainId, 'osmosis-1'] };
+      const bridgeToken = { ...tk, bridgeTo: [...new Set([TonChainId, 'osmosis-1', ...(tk.bridgeTo || [])])] };
       return bridgeToken;
     }
 
@@ -300,8 +353,82 @@ export const OraiBTCBridgeNetwork = {
   }
 };
 
-export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork, tonNetworkMainnet];
+export const chainInfosWithSdk = [
+  ...customChainInfos.map((net) => {
+    if (net.chainId === 'osmosis-1') {
+      const newCurrencies = [
+        ...net.currencies,
+        {
+          chainId: 'osmosis-1',
+          bridgeTo: [TonChainId],
+          coinDenom: 'TON.orai',
+          name: 'TON',
+          symbol: 'TON.orai',
+          Icon: TonIcon,
+          contractAddress: null,
+          denom: OsmosisTokenDenom.ton,
+          coinMinimalDenom: OsmosisTokenDenom.ton,
+          coinGeckoId: 'the-open-network',
+          decimal: 9,
+          coinDecimals: 9
+        },
+        {
+          chainId: 'osmosis-1',
+          bridgeTo: [TonChainId],
+          coinDenom: 'TON',
+          name: 'TON',
+          symbol: 'TON',
+          Icon: TonIcon,
+          contractAddress: null,
+          denom: OsmosisTokenDenom.allTon,
+          coinMinimalDenom: OsmosisTokenDenom.allTon,
+          coinGeckoId: 'the-open-network',
+          decimal: 9,
+          coinDecimals: 9,
+          alloyedToken: true
+        }
+      ];
+
+      const fmtOsmoChain = {
+        ...net,
+        currencies: newCurrencies
+      };
+
+      return fmtOsmoChain;
+    } else if (net.chainId === 'Oraichain') {
+      console.log('net', net, {
+        ...net,
+        currencies: [...net.currencies].map((tk) => {
+          if (['tether', 'usd-coin', 'the-open-network', 'hamster-kombat'].includes(tk.coinGeckoId)) {
+            const bridgeToken = { ...tk, bridgeTo: [...new Set([TonChainId, ...(tk.bridgeTo || [])])] };
+            return bridgeToken;
+          }
+
+          return tk;
+        })
+      });
+      return {
+        ...net,
+        currencies: [...net.currencies].map((tk) => {
+          if (['tether', 'usd-coin', 'the-open-network', 'hamster-kombat'].includes(tk.coinGeckoId)) {
+            const bridgeToken = { ...tk, bridgeTo: [...new Set([TonChainId, ...(tk.bridgeTo || [])])] };
+            return bridgeToken;
+          }
+
+          return tk;
+        })
+      };
+    }
+
+    return net;
+  }),
+  bitcoinMainnet,
+  oraibtcNetwork,
+  tonNetworkMainnet
+];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
+
+console.log('chainInfos', chainInfos);
 
 // exclude kawaiverse subnet and other special evm that has different cointype
 export const evmChains = chainInfos.filter(
@@ -311,48 +438,3 @@ export const evmChains = chainInfos.filter(
 export const chainInfosWithIcon = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 
 export const btcChains = chainInfos.filter((c) => c.networkType === ('bitcoin' as any));
-
-export type AlloyedPool = {
-  poolId: string;
-  alloyedToken: string;
-  sourceToken: string;
-};
-
-export const OsmosisAlloyedPools: AlloyedPool[] = [
-  {
-    poolId: '2161',
-    alloyedToken: 'factory/osmo12lnwf54yd30p6amzaged2atln8k0l32n7ncxf04ctg7u7ymnsy7qkqgsw4/alloyed/allTON',
-    sourceToken: 'ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98'
-  }
-];
-
-export const OsmosisTokenDenom = {
-  ton: 'ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98',
-  allTon: 'factory/osmo12lnwf54yd30p6amzaged2atln8k0l32n7ncxf04ctg7u7ymnsy7qkqgsw4/alloyed/allTON'
-};
-
-export const OsmosisTokenList = [
-  {
-    chainId: 'osmosis-1',
-    name: 'TON',
-    symbol: 'TON.orai',
-    Icon: TonIcon,
-    contractAddress: null,
-    denom: OsmosisTokenDenom.ton,
-    coinMinimalDenom: OsmosisTokenDenom.ton,
-    coinGeckoId: 'the-open-network',
-    decimal: 9
-  },
-  {
-    chainId: 'osmosis-1',
-    name: 'TON',
-    symbol: 'TON',
-    Icon: TonIcon,
-    contractAddress: null,
-    denom: OsmosisTokenDenom.allTon,
-    coinMinimalDenom: OsmosisTokenDenom.allTon,
-    coinGeckoId: 'the-open-network',
-    decimal: 9,
-    alloyedToken: true
-  }
-];

@@ -203,6 +203,7 @@ const useTonBridgeHandler = ({
             }
           );
           const data = await client.getBalance(network.CW_TON_BRIDGE, token.denom);
+
           return {
             balance: data.amount
           };
@@ -217,10 +218,10 @@ const useTonBridgeHandler = ({
     const handler = {
       ['Oraichain']: handleCheckBalanceBridgeOfTonNetwork,
       [TonChainId]: handleCheckBalanceBridgeOfOraichain,
-      ['osmosis-1']: handleCheckBalanceBridgeOfOsmosis
+      ['osmosis-1']: handleCheckBalanceBridgeOfTonNetwork
     };
 
-    const { balance } = handler[networkFrom] ? await handler[networkFrom](token) : { balance: 0 };
+    const { balance } = handler[networkFrom] ? (await handler[networkFrom](token)) || { balance: 0 } : { balance: 0 };
 
     return toDisplay(balance || 0, token.decimals || token.decimals || CW20_DECIMALS);
   };
