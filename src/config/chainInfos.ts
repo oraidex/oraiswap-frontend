@@ -124,8 +124,6 @@ export const bitcoinMainnet: CustomChainInfo = {
 
 export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
-console.log('oraichainTokensWithIcon', oraichainTokensWithIcon)
-console.log('oraichainTokens', oraichainTokens)
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
 
 export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];

@@ -5,17 +5,18 @@ import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import classNames from 'classnames';
 import SearchInput from 'components/SearchInput';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { tokensIcon } from 'config/chainInfos';
 import { getIcon } from 'helper';
 import { formatDisplayUsdt } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useTheme from 'hooks/useTheme';
 import { toSumDisplay } from 'libs/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './index.module.scss';
+import { mapListWithIcon } from 'config/iconInfos';
 
 const SelectToken = ({
   token,
@@ -34,6 +35,16 @@ const SelectToken = ({
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
   const isLightTheme = theme === 'light';
+
+  const [oraichainTokensWithIcon, setOraichainTokensWithIcon] = useState<TokenItemType[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const oraichainTokens = (await import('@oraichain/oraidex-common')).oraichainTokens;
+      const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
+      setOraichainTokensWithIcon(oraichainTokensWithIcon);
+    })();
+  }, []);
 
   const listItems = oraichainTokensWithIcon.filter(
     (item) =>

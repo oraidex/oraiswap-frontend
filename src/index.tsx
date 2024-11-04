@@ -66,6 +66,7 @@ const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(ne
 window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 
 const initApp = async () => {
+  await loadOraichainTokens();
   const root = createRoot(document.getElementById('oraiswap'));
   root.render(
     <Provider store={store}>
@@ -91,7 +92,6 @@ const initApp = async () => {
     const cosmWasmClient = await getCosmWasmClient({ chainId: network.chainId });
     if (cosmWasmClient?.client) window.client = cosmWasmClient.client;
   }
-  await loadOraichainTokens();
 };
 
 initApp();

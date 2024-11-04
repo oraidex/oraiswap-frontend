@@ -4,7 +4,7 @@ import {
   TokenItemType,
   getSubAmountDetails,
   toAmount,
-  toDisplay
+  toDisplay,
 } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import WalletConnectProvider from '@walletconnect/ethereum-provider';
@@ -75,7 +75,7 @@ export const toSumDisplay = (amounts: AmountDetails): number => {
     // update later
     const balance = amounts[denom];
     if (!balance) continue;
-    amount += toDisplay(balance, tokenMap[denom].decimals);
+    amount += toDisplay(balance, tokenMap[denom]?.decimals);
   }
   return amount;
 };
