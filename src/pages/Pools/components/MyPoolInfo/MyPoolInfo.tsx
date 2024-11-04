@@ -23,9 +23,9 @@ import styles from './MyPoolInfo.module.scss';
 import IconInfo from 'assets/icons/infomationIcon.svg?react';
 
 type ModalPool = 'deposit' | 'withdraw' | 'stake' | 'unstake';
-type Props = { myLpBalance: bigint; onLiquidityChange: () => void };
+type Props = { myLpBalance: bigint; onLiquidityChange: () => void; isInactive?: boolean };
 
-export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange }) => {
+export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInactive }) => {
   const [openTooltipLiq, setOpenTooltipLiq] = useState(false);
   const [openTooltipStake, setOpenTooltipStake] = useState(false);
   const theme = useTheme();
@@ -96,7 +96,7 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange }) => {
           >
             Withdraw LP
           </Button>
-          <Button type={thirdType} onClick={() => setModal('deposit')} icon={<DepositIcon />}>
+          <Button type={thirdType} onClick={() => setModal('deposit')} icon={<DepositIcon />} disabled={isInactive}>
             Deposit
           </Button>
         </div>
@@ -148,7 +148,7 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange }) => {
           >
             Unstake LP
           </Button>
-          <Button type={thirdType} onClick={() => setModal('stake')} icon={<StakingIcon />}>
+          <Button type={thirdType} onClick={() => setModal('stake')} icon={<StakingIcon />} disabled={isInactive}>
             Stake LP
           </Button>
         </div>
