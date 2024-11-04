@@ -2,6 +2,14 @@ import CloseBannerIcon from 'assets/icons/close.svg?react';
 import { ReactElement, useEffect, useState } from 'react';
 import axios from 'rest/request';
 import styles from './NoticeBanner.module.scss';
+import useConfigReducer from 'hooks/useConfigReducer';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/configure';
+import { useGetPools, useGetRewardInfo } from 'pages/Pools/hooks';
+import { PoolInfoResponse } from 'types/pool';
+import { isEqual } from 'lodash';
+import { BTC_CONTRACT } from '@oraichain/oraidex-common';
+import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 
 const INTERVAL_TIME = 5000;
 
@@ -27,6 +35,64 @@ export const NoticeBanner = ({
   openBanner: boolean;
   setOpenBanner: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  // Start: Fetch pool v2 & v3
+  // Fetch pool v2
+  const lpPools = useSelector((state: RootState) => state.token.lpPools);
+  const [address] = useConfigReducer('address');
+  const { totalRewardInfoData } = useGetRewardInfo({
+    stakerAddr: address
+  });
+  const isPoolWithLiquidity = (pool: PoolInfoResponse) => {
+    const liquidityAddress = pool?.liquidityAddr;
+    return parseInt(lpPools[liquidityAddress]?.balance) > 0;
+  };
+
+  const findBondAmount = (pool: PoolInfoResponse) => {
+    if (!totalRewardInfoData) return 0;
+    const rewardInfo = totalRewardInfoData.reward_infos.find(({ staking_token }) =>
+      isEqual(staking_token, pool.liquidityAddr)
+    );
+    return rewardInfo ? parseInt(rewardInfo.bond_amount) : 0;
+  };
+  const pools = useGetPools();
+  const filteredPools = pools.filter((pool) => isPoolWithLiquidity(pool) || findBondAmount(pool) > 0);
+  const existPoolLegacyBTCV2 =
+    filteredPools.filter(
+      (item) => item.secondAssetInfo.includes(BTC_CONTRACT) || item.firstAssetInfo.includes(BTC_CONTRACT)
+    ).length > 0;
+
+  // Fetch pool v3
+  const { positions } = useGetPositions(address);
+  const existPoolLegacyBTCV3 =
+    positions.filter(
+      (item) => item.pool_key.token_x.includes(BTC_CONTRACT) || item.pool_key.token_y.includes(BTC_CONTRACT)
+    ).length > 0;
+
+  const existPoolLegacyBTC = existPoolLegacyBTCV2 || existPoolLegacyBTCV3;
+
+  useEffect(() => {
+    if (existPoolLegacyBTC) {
+      setBanners([
+        {
+          attributes: {
+            body_message: 'Legacy BTC pool will be removed soon. Please withdraw your lp.',
+            updatedAt: new Date().getTime().toString(),
+            createdAt: new Date().getTime().toString(),
+            headline: 'Notice:',
+            media: '',
+            publishedAt: new Date().getTime().toString(),
+            slider_time: 5
+          },
+          id: 1
+        }
+      ]);
+    } else {
+      setBanners([]);
+    }
+  }, [existPoolLegacyBTC, address]);
+
+  // End: Fetch pool v2 & v3
+
   const [bannerIdx, setBannersIdx] = useState(0);
   const [banners, setBanners] = useState<Banner[]>([]);
 

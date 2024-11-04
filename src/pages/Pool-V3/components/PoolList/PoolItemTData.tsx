@@ -41,6 +41,7 @@ const PoolItemTData = ({
     firstAssetInfo,
     secondAssetInfo
   } = item;
+  const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
 
   return (
     <>
@@ -56,10 +57,14 @@ const PoolItemTData = ({
               {type === POOL_TYPE.V3 ? 'V3' : 'V2'}
             </span>
           </span>
-
           {type === POOL_TYPE.V3 && (
             <div>
               <span className={styles.fee}>Fee: {toDisplay(BigInt(feeTier), 10)}%</span>
+            </div>
+          )}
+          {isInactive && (
+            <div>
+              <span className={styles.inactive}>Inactive</span>
             </div>
           )}
         </div>
@@ -137,6 +142,7 @@ const PoolItemTData = ({
         <Button
           className="newPosition"
           type="third-sm"
+          disabled={isInactive}
           onClick={(event) => {
             if (type === POOL_TYPE.V3) {
               setIsOpenCreatePosition(true);

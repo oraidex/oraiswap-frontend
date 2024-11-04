@@ -3,7 +3,8 @@ import {
   // flattenTokens
   NetworkChainId,
   toDisplay,
-  TokenItemType
+  TokenItemType,
+  BTC_CONTRACT
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -233,6 +234,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     return buttonName;
   };
 
+  const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
+
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
       <div className={styles.tokenSubAmouts}>
@@ -413,7 +416,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           ) {
             return (
               <button
-                disabled={transferLoading || !addressTransfer || receivedAmount < 0}
+                disabled={transferLoading || !addressTransfer || receivedAmount < 0 || isBTCLegacy || convertAmount < 0}
                 className={classNames(styles.tfBtn, styles[theme])}
                 onClick={onTransferConvert}
               >
