@@ -20,7 +20,6 @@ export const tokensIcon = tokensIconInfos;
 export const chainIcons = chainIconsInfos;
 
 const [otherChainTokens, oraichainTokens] = tokens;
-console.log('tokens', tokens)
 const OraiBTCToken: BridgeAppCurrency = {
   coinDenom: 'ORAIBTC',
   coinMinimalDenom: 'uoraibtc',

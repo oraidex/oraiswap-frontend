@@ -2,13 +2,13 @@ import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
-import { btcTokens, cosmosTokens, evmTokens, oraichainTokens, tokenMap } from 'config/bridgeTokens';
+import { btcTokens, evmTokens, oraichainTokens } from 'config/bridgeTokens';
 import { genAddressCosmos, getAddress, handleCheckWallet, getWalletByNetworkCosmosFromStorage } from 'helper';
 import flatten from 'lodash/flatten';
 import { updateAmounts } from 'reducer/token';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
 import { generateError } from '../libs/utils';
-import { COSMOS_CHAIN_ID_COMMON } from '@oraichain/oraidex-common';
+import { COSMOS_CHAIN_ID_COMMON, getTokensFromNetwork } from '@oraichain/oraidex-common';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 
@@ -24,7 +24,7 @@ import { chainInfos, evmChains } from 'config/chainInfos';
 import { network } from 'config/networks';
 import { ethers } from 'ethers';
 import axios from 'rest/request';
-import { reduce } from 'lodash';
+import { reduce, uniqBy } from 'lodash';
 import { getUtxos } from 'pages/Balance/helpers';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -46,11 +46,27 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
     let amountDetails: AmountDetails = {};
 
     // reset native balances
+    const otherChainTokens = flatten(
+      chainInfos.filter((chainInfo) => chainInfo.chainId !== 'Oraichain').map(getTokensFromNetwork)
+    );
+    const { oraichainTokens } = await import('@oraichain/oraidex-common');
+    const tokens = [otherChainTokens, oraichainTokens];
+    const flattenTokens = flatten(tokens);
+    const cosmosTokens = uniqBy(
+      flattenTokens.filter(
+        (token) =>
+          // !token.contractAddress &&
+          token.denom && token.cosmosBased && token.coinGeckoId
+      ),
+      (c) => c.denom
+    );
     cosmosTokens
       .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
       .forEach((t) => {
         amountDetails[t.denom] = '0';
       });
+
+    const tokenMap = Object.fromEntries(flattenTokens.map((c) => [c.denom, c]));
 
     const tokensAmount = amountAll.filter((coin) => tokenMap[coin.denom]).map((coin) => [coin.denom, coin.amount]);
     Object.assign(amountDetails, Object.fromEntries(tokensAmount));

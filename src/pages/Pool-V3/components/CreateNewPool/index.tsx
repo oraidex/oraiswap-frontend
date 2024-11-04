@@ -37,8 +37,6 @@ const CreateNewPool = ({ pools }: { pools: PoolWithPoolKey[] }) => {
   const [moveToAddLiquidity, setMoveToAddLiquidity] = useState(false);
   const refContent = useRef();
 
-  console.log(oraichainTokens);
-
   // useOnClickOutside(refContent, () => {
   //   setShowModal(false);
   // });
