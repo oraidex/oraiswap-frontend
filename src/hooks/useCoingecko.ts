@@ -28,6 +28,8 @@ export const useCoinGeckoPrices = <T extends CoinGeckoId>(
   options: Omit<UseQueryOptions<CoinGeckoPrices<T>, unknown, CoinGeckoPrices<T>, string[]>, 'queryKey' | 'queryFn'> = {}
 ): UseQueryResult<CoinGeckoPrices<T>, unknown> => {
   const tokens = [...new Set([...cosmosTokens, ...evmTokens].map((t) => t.coinGeckoId))];
+  tokens.push('simon-s-cat')
+  // TODO: harcode cat token coingecko id for test. fix later
   tokens.sort();
 
   // use cached first then update by query, if is limited then return cached version
