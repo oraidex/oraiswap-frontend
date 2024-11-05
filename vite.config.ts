@@ -37,5 +37,10 @@ export default defineConfig({
     commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
     rollupOptions: {}
+  },
+  esbuild: {
+    supported: {
+      'top-level-await': true //browsers can handle top-level-await features
+    }
   }
 });
