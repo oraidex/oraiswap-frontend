@@ -602,7 +602,7 @@ const SwapComponent: React.FC<{
     !isAveragePreviousSimulate &&
     (!averageSimulateData?.displayAmount ||
       (averageSimulateData?.displayAmount &&
-        !averageSimulateData?.routes.routes.length &&
+        !averageSimulateData?.routes?.routes.length &&
         originalToToken.coinGeckoId !== originalFromToken.coinGeckoId));
 
   const hasRoutesData =

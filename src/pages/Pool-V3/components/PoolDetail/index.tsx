@@ -53,6 +53,7 @@ const PoolV3Detail = () => {
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
 
   const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(tokenX, tokenY, isLight);
+  const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
   const totalLiquidity = poolLiquidities?.[poolId] ?? 0;
   const volumn24h = poolVolume?.[poolId] ?? 0;
 
@@ -200,7 +201,7 @@ const PoolV3Detail = () => {
 
         <div className={styles.addPosition}>
           <Button
-            disabled={!poolDetail}
+            disabled={!poolDetail || isInactive}
             onClick={() => {
               setIsOpenCreatePosition(true);
             }}

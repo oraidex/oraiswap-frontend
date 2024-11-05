@@ -116,6 +116,8 @@ const PoolDetail: React.FC = () => {
   if (QuoteTokenInOraichain)
     QuoteTokenIcon = theme === 'light' ? QuoteTokenInOraichain.IconLight : QuoteTokenInOraichain.Icon;
 
+  const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
+
   return (
     <Content nonBackground otherBackground>
       <div className={styles.pool_detail}>
@@ -149,7 +151,7 @@ const PoolDetail: React.FC = () => {
           </div>
           <div className={styles.addPosition}>
             <Button
-              disabled={!baseToken || !quoteToken}
+              disabled={!baseToken || !quoteToken || isInactive}
               onClick={(event) => {
                 event.stopPropagation();
                 setPairDenomsDeposit(
@@ -192,7 +194,11 @@ const PoolDetail: React.FC = () => {
               content: (
                 <>
                   <Earning onLiquidityChange={onLiquidityChange} />
-                  <MyPoolInfo myLpBalance={lpTokenBalance} onLiquidityChange={onLiquidityChange} />
+                  <MyPoolInfo
+                    myLpBalance={lpTokenBalance}
+                    onLiquidityChange={onLiquidityChange}
+                    isInactive={isInactive}
+                  />
                 </>
               )
             },

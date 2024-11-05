@@ -6,7 +6,7 @@ import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import useTheme from 'hooks/useTheme';
 import Content from 'layouts/Content';
 import { DuckDb } from 'libs/duckdb';
-import { useGetPriceChange } from 'pages/Pools/hooks';
+// import { useGetPriceChange } from 'pages/Pools/hooks';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
@@ -58,11 +58,11 @@ const Swap: React.FC = () => {
     setInitPercentChangeUsd
   );
 
-  const { priceChange } = useGetPriceChange({
-    base_denom: currentPair.info.split('-')[0],
-    quote_denom: currentPair.info.split('-')[1],
-    tf
-  });
+  // const { priceChange } = useGetPriceChange({
+  //   base_denom: currentPair.info.split('-')[0],
+  //   quote_denom: currentPair.info.split('-')[1],
+  //   tf
+  // });
 
   const initDuckdb = async () => {
     window.duckDb = await DuckDb.create();
@@ -117,7 +117,7 @@ const Swap: React.FC = () => {
               <HeaderTop
                 hideChart
                 priceUsd={initPriceUsd}
-                priceChange={priceChange}
+                // priceChange={priceChange}
                 percentChangeUsd={initPercentChangeUsd}
                 chartTokenType={ChartTokenType.Price}
                 onClickAction={() => setOpenModal(true)}
@@ -179,11 +179,11 @@ const Chart = ({
   const tabChart = useSelector(selectCurrentSwapTabChart);
   const tf = useSelector(selectChartTimeFrame);
 
-  const { priceChange } = useGetPriceChange({
-    base_denom: currentPair.info.split('-')[0],
-    quote_denom: currentPair.info.split('-')[1],
-    tf
-  });
+  // const { priceChange } = useGetPriceChange({
+  //   base_denom: currentPair.info.split('-')[0],
+  //   quote_denom: currentPair.info.split('-')[1],
+  //   tf
+  // });
 
   const handleChangeChartTimeFrame = (resolution: number) => {
     dispatch(setChartTimeFrame(resolution));
@@ -198,7 +198,7 @@ const Chart = ({
         hideChart={hideChart}
         toTokenDenom={toTokenDenom}
         priceUsd={priceUsd}
-        priceChange={priceChange}
+        // priceChange={priceChange}
         percentChangeUsd={percentChangeUsd}
         showTokenInfo={showTokenInfo}
       />
