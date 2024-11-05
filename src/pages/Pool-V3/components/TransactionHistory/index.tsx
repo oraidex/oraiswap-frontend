@@ -1,19 +1,19 @@
 import { TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as LinkIcon } from 'assets/icons/link.svg';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
-import { ReactComponent as NoDataDark } from 'assets/images/nodata-bid-dark.svg';
-import { ReactComponent as NoData } from 'assets/images/nodata-bid.svg';
+import LinkIcon from 'assets/icons/link.svg?react';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
+import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
+import NoData from 'assets/images/nodata-bid.svg?react';
 import LoadingBox from 'components/LoadingBox';
 import { network } from 'config/networks';
 import { getTransactionUrl } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { getUsd, reduceString } from 'libs/utils';
+import { reduceString } from 'libs/utils';
 import { formatDateV2, formatTime } from 'pages/CoHarvest/helpers';
+import { useTransactionHistory } from 'pages/Pool-V3/hooks/useTransactionHistory';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import styles from './index.module.scss';
-import { useTransactionHistory } from 'pages/Pool-V3/hooks/useTransactionHistory';
 
 const TransactionHistory = ({
   baseToken,
@@ -97,8 +97,8 @@ const TransactionHistory = ({
                           </div> */}
                           <div className={styles.time}>
                             <div>
-                              <span>{formatDateV2(item.timestamp * 1000)}</span>
-                              <span>{formatTime(item.timestamp * 1000)}</span>
+                              <span>{formatDateV2(new Date(item.timestamp))}</span>
+                              <span>{formatTime(new Date(item.timestamp))}</span>
                             </div>
                           </div>
                         </div>
@@ -199,8 +199,8 @@ const TransactionHistory = ({
                           </td>
                           <td className={styles.time}>
                             <div>
-                              <span>{formatDateV2(item.timestamp * 1000)}</span>
-                              <span>{formatTime(item.timestamp * 1000)}</span>
+                              <span>{formatDateV2(new Date(item.timestamp))}</span>
+                              <span>{formatTime(new Date(item.timestamp))}</span>
                             </div>
                           </td>
                           <td className={`${styles.pay}`}>

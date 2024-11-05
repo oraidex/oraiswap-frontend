@@ -11,7 +11,7 @@ const onRevCurrency = 'ORAI';
 const offPayCurrency = 'USDC'; // 'USDC_NOBLE_ORAI';
 const cryptoList = ['ORAI', 'USDC'].join(',');
 const offRevCurrency = 'USD';
-const apiKey = process.env.REACT_APP_KADO_API_KEY;
+const apiKey = import.meta.env.VITE_APP_KADO_API_KEY;
 
 const BuyOraiModal = ({
   open,

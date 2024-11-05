@@ -17,10 +17,10 @@ import {
 } from '@oraichain/oraidex-common';
 import { isSupportedNoPoolSwapEvm, UniversalSwapHandler } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as ArrowDownIcon } from 'assets/icons/arrow.svg';
-import { ReactComponent as ArrowDownIconLight } from 'assets/icons/arrow_light.svg';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as RefreshIcon } from 'assets/icons/reload.svg';
+import ArrowDownIcon from 'assets/icons/arrow.svg?react';
+import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
+import RefreshIcon from 'assets/icons/reload.svg?react';
 import { BitcoinUnit } from 'bitcoin-units';
 import classNames from 'classnames';
 import CheckBox from 'components/CheckBox';
@@ -268,7 +268,7 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const handleTransferBTCToOraichain = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
-    const isV2 = fromToken.name === 'BTC V2';
+    const isV2 = fromToken.name === 'BTC';
     const utxos = await getUtxos(btcAddr, fromToken.rpc);
     const feeRate = await getFeeRate({
       url: from.rpc
@@ -341,7 +341,7 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const handleTransferOraichainToBTC = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
-    if (fromToken.name === 'BTC V2') {
+    if (fromToken.name === 'BTC') {
       try {
         if (!withdrawV2Fee?.withdrawal_fees) {
           throw Error('Withdrawal fees are not found!');
@@ -436,7 +436,7 @@ const Balance: React.FC<BalanceProps> = () => {
     const btcAddr = await window.Bitcoin.getAddress();
     if (!btcAddr) throw Error('Not found your bitcoin address!');
     if (isBTCToOraichain) {
-      if (fromToken.name !== 'BTC V2') {
+      if (fromToken.name !== 'BTC') {
         await handleRecoveryAddress();
       }
       return handleTransferBTCToOraichain(fromToken, transferAmount, btcAddr);

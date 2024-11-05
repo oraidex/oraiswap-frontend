@@ -1,7 +1,7 @@
 import styles from './index.module.scss';
 
-import { ReactComponent as DownIcon } from 'assets/icons/arrow_down.svg';
-import { ReactComponent as CloseBannerIcon } from 'assets/icons/close.svg';
+import DownIcon from 'assets/icons/arrow_down.svg?react';
+import CloseBannerIcon from 'assets/icons/close.svg?react';
 
 const BannerHistory = ({
   openBanner,

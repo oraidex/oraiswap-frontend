@@ -27,7 +27,7 @@ import { flattenTokensWithIcon, oraichainTokensWithIcon, tokensWithIcon } from '
 import { PAIRS_CHART } from 'config/pools';
 import { networks } from 'helper';
 import { generateError } from 'libs/utils';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { TIMER } from 'pages/CoHarvest/constants';
 import { formatDate, formatTimeWithPeriod } from 'pages/CoHarvest/helpers';
 import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
@@ -379,10 +379,11 @@ export const getProtocolsSmartRoute = (
 ) => {
   const protocols = ['Oraidex', 'OraidexV3'];
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
+  if (fromToken.chainId === 'noble-1' || toToken.chainId === 'noble-1') return protocols;
 
   const allowOsmosisProtocols = ['injective-1', 'Neutaro-1', 'noble-1', 'osmosis-1', 'cosmoshub-4', 'celestia'];
   const isAllowOsmosisProtocol =
-    allowOsmosisProtocols.includes(fromToken.chainId) || allowOsmosisProtocols.includes(toToken.chainId);
+    allowOsmosisProtocols.includes(fromToken?.chainId) || allowOsmosisProtocols.includes(toToken?.chainId);
 
   if (isAllowOsmosisProtocol) return [...protocols, 'Osmosis'];
   return protocols;
@@ -394,6 +395,8 @@ export const isAllowAlphaIbcWasm = (fromToken: TokenItemType, toToken: TokenItem
   if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)) return true;
   // cosmos -> cosmos
   if (toToken?.cosmosBased && fromToken?.cosmosBased) return true;
+  // TODO: hardcode case bridge bitcoin
+  if (toToken?.coinGeckoId === 'bitcoin' && fromToken?.coinGeckoId === 'bitcoin') return true;
   return false;
 };
 
@@ -438,6 +441,9 @@ export const isAllowIBCWasm = (fromToken: TokenItemType, toToken: TokenItemType)
   // cosmos -> cosmos
   if (fromTokenIsCosmos && toTokenIsCosmos) return false;
   // -----------------------------------
+
+  // TODO: hardcode case bridge bitcoin
+  if (toToken?.coinGeckoId === 'bitcoin' && fromToken?.coinGeckoId === 'bitcoin') return false;
 
   // Oraichain -> Oraichain or Cosmos
   if (fromTokenIsOraichain) {

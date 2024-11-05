@@ -1,7 +1,6 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as SettingIcon } from 'assets/icons/setting.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
+import SettingIcon from 'assets/icons/setting.svg?react';
 import classNames from 'classnames';
-import { Button } from 'components/Button';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 import { useRef, useState } from 'react';

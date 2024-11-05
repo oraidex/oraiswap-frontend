@@ -6,8 +6,9 @@ import { chainInfos } from 'config/chainInfos';
 import { getWalletByNetworkFromStorage } from 'helper';
 import Keplr from 'libs/keplr';
 import Metamask from 'libs/metamask';
-
+import TronWeb from 'tronweb';
 import Bitcoin from 'libs/bitcoin';
+import { Networks } from '@oraichain/ethereum-multicall';
 
 // polyfill
 Tendermint37Client.detectVersion = () => {};
@@ -22,8 +23,8 @@ Tendermint37Client.prototype.status = function () {
 };
 
 // inject global
-window.TronWeb = require('tronweb');
-window.Networks = require('@oraichain/ethereum-multicall').Networks;
+window.TronWeb = TronWeb;
+window.Networks = Networks;
 // enable Keplr
 const walletType = getWalletByNetworkFromStorage();
 window.Keplr = new Keplr(walletType?.cosmos);
@@ -33,8 +34,6 @@ window.ethereumDapp = window.ethereum;
 window.Bitcoin = new Bitcoin();
 window.Metamask = new Metamask(window.tronWeb);
 
-window.React = require('react');
-window.Buffer = require('buffer').Buffer;
 // window.process = require('process/browser');
 
 // extend formatToJson

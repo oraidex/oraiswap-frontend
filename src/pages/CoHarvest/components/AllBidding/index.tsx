@@ -1,6 +1,6 @@
 import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as NoDataDark } from 'assets/images/nodata-bid-dark.svg';
-import { ReactComponent as NoData } from 'assets/images/nodata-bid.svg';
+import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
+import NoData from 'assets/images/nodata-bid.svg?react';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { getUsd, reduceString } from 'libs/utils';
 import { TIMER } from 'pages/CoHarvest/constants';

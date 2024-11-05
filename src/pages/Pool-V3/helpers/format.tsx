@@ -1,11 +1,11 @@
-import { TokenItemType } from '@oraichain/oraidex-common';
 import { PoolKey, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
 import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { poolKeyToString } from 'libs/contractSingleton';
+import { TokenItemType } from '@oraichain/oraidex-common';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { PoolInfoResponse } from 'types/pool';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
-import { POOL_TYPE } from '..';
+import { POOL_TYPE } from '../index';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {
   FromTokenIcon: React.FunctionComponent<

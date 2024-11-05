@@ -32,8 +32,7 @@ const BitcoinDashboard: React.FC<{}> = () => {
   const tabComponents = {
     [KeysFilter.pending_deposits]: PendingDeposits,
     [KeysFilter.checkpoint]: Checkpoint,
-    [KeysFilter.pending_withdraws]: PendingWithdraws,
-    [KeysFilter.convert_bitcoin_v2]: ConvertBitcoinV2
+    [KeysFilter.pending_withdraws]: PendingWithdraws
   };
 
   const renderTabs = () => {

@@ -1,5 +1,5 @@
 import Tippy, { TippyProps } from '@tippyjs/react';
-import { ReactComponent as SettingImg } from 'assets/images/setting-icon.svg';
+import SettingImg from 'assets/images/setting-icon.svg?react';
 import classNames from 'classnames';
 import React, { FC, ReactElement } from 'react';
 

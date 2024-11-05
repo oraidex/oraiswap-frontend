@@ -1,10 +1,10 @@
 import { BridgeAppCurrency } from '@oraichain/oraidex-common';
-import { ReactComponent as CelestiaIcon } from 'assets/icons/celestia.svg';
-import { ReactComponent as InjIcon } from 'assets/icons/inj.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
-import { ReactComponent as OraiIcon } from 'assets/icons/oraichain.svg';
-import { ReactComponent as AtomIcon } from 'assets/icons/atom_cosmos.svg';
-import { ReactComponent as OraiLightIcon } from 'assets/icons/oraichain_light.svg';
+import CelestiaIcon from 'assets/icons/celestia.svg?react';
+import InjIcon from 'assets/icons/inj.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
+import OraiIcon from 'assets/icons/oraichain.svg?react';
+import AtomIcon from 'assets/icons/atom_cosmos.svg?react';
+import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
 
 export const AtomOsmosisToken: BridgeAppCurrency = {
   coinDenom: 'ATOM',

@@ -72,7 +72,7 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
       simulateOption
     );
 
-  const { simulateData: averageSimulateData } = useSimulate(
+  const { simulateData: averageSimulateData, isPreviousSimulate: isAveragePreviousSimulate } = useSimulate(
     'average-simulate-data',
     fromTokenInfoData,
     toTokenInfoData,
@@ -145,7 +145,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
   const minimumReceiveDisplay = isSimulateDataDisplay
     ? new BigDecimal(simulateDisplayAmount)
         .sub(new BigDecimal(simulateDisplayAmount).mul(userSlippage).div(100).toString())
-        .sub(relayerFee)
+        // TODO:  Fee has been deducted from simulated price
+        // .sub(relayerFee)
         .sub(bridgeTokenFee)
         .toNumber()
     : 0;
@@ -183,7 +184,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
 
     averageSimulateDatas: {
       averageRatio,
-      averageSimulateData
+      averageSimulateData,
+      isAveragePreviousSimulate
     },
 
     simulateDatas: {

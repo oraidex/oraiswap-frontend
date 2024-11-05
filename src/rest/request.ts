@@ -11,7 +11,7 @@ const axios = Axios.create({
       threshold: AXIOS_THROTTLE_THRESHOLD
     })
   ),
-  baseURL: process.env.REACT_APP_BASE_API_URL
+  baseURL: import.meta.env.VITE_APP_BASE_API_URL
 });
 
 export default axios;

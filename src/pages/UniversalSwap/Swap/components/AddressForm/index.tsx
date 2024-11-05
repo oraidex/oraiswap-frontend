@@ -4,10 +4,10 @@ import {
   flattenTokens,
   checkValidateAddressWithNetwork
 } from '@oraichain/oraidex-common';
-import { ReactComponent as BackIcon } from 'assets/icons/back.svg';
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
-import { ReactComponent as SelectTokenIcon } from 'assets/icons/select_token.svg';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import BackIcon from 'assets/icons/back.svg?react';
+import CloseIcon from 'assets/icons/close.svg?react';
+import SelectTokenIcon from 'assets/icons/select_token.svg?react';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { Button } from 'components/Button';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { networks } from 'helper';

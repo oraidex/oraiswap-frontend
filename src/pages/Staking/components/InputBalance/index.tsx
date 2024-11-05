@@ -3,8 +3,8 @@ import NumberFormat from 'react-number-format';
 import styles from './index.module.scss';
 
 import { toAmount, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as OraiXIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
+import OraiXIcon from 'assets/icons/oraix.svg?react';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';

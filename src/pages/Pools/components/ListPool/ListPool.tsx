@@ -1,6 +1,6 @@
 import { TokenItemType, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as BoostIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BoostIconLight } from 'assets/icons/boost-icon.svg';
+import BoostIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BoostIconLight from 'assets/icons/boost-icon.svg?react';
 import { Button } from 'components/Button';
 import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { Table, TableHeaderProps } from 'components/Table';

@@ -1,10 +1,10 @@
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
 import { BigDecimal, ORAIX_CONTRACT, oraichainTokens, toAmount, toDisplay, tokenMap } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
-import { ReactComponent as OraiXIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
+import OraiXIcon from 'assets/icons/oraix.svg?react';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';

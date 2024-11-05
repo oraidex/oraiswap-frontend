@@ -1,13 +1,13 @@
 import { CW20_DECIMALS, toDisplay } from '@oraichain/oraidex-common';
 import { extractAddress, poolKeyToString } from '@oraichain/oraiswap-v3';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as CustomIcon } from 'assets/icons/custom.svg';
-import { ReactComponent as FullRangeIcon } from 'assets/icons/full-range.svg';
-import { ReactComponent as NarrowIcon } from 'assets/icons/narrow.svg';
-import { ReactComponent as RefreshIcon } from 'assets/icons/refresh-ccw.svg';
-import { ReactComponent as WideIcon } from 'assets/icons/wide.svg';
-import { ReactComponent as ZoomInIcon } from 'assets/icons/zoom-in.svg';
-import { ReactComponent as ZoomOutIcon } from 'assets/icons/zoom-out.svg';
+import CustomIcon from 'assets/icons/custom.svg?react';
+import FullRangeIcon from 'assets/icons/passive.svg?react';
+import NarrowIcon from 'assets/icons/active.svg?react';
+import RefreshIcon from 'assets/icons/refresh-ccw.svg?react';
+import WideIcon from 'assets/icons/balanced.svg?react';
+import ZoomInIcon from 'assets/icons/zoom-in.svg?react';
+import ZoomOutIcon from 'assets/icons/zoom-out.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
@@ -47,7 +47,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
   const { poolPrice: extendPrices } = useGetPoolList(prices);
 
   const [walletAddress] = useConfigReducer('address');
-  
+
   const loadOraichainToken = useLoadOraichainTokens();
   const navigate = useNavigate();
   const { feeDailyData } = useGetFeeDailyData();
@@ -96,6 +96,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
     zapApr,
     cache3Month,
     cache7Day,
+    setIsFullRange,
     setApr,
     setZapApr,
     setTokenZap,
@@ -209,7 +210,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
             <p className={styles.title}>Current pool price</p>
             {tokenX && tokenY && currentPrice && (
               <p className={styles.content}>
-                {numberWithCommas(currentPrice, undefined, { maximumFractionDigits: 2 })}{' '}
+                {numberWithCommas(currentPrice, undefined, { maximumFractionDigits: currentPrice >= 0.01 ? 2 : 9 })}{' '}
                 {isXToY ? `${tokenY.name} per ${tokenX.name}` : `${tokenX.name} per ${tokenY.name}`}
               </p>
             )}
@@ -239,18 +240,6 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
           <p className={styles.title}>Select Volatility Strategy</p>
           {historicalChartData && (
             <div className={styles.strategyBtnList}>
-              <div
-                onClick={() => {
-                  if (!cache7Day) return;
-                  setOptionType(OptionType.CUSTOM);
-                  handleOptionCustom();
-                }}
-                className={classNames(styles.btn, { [styles.chosen]: optionType === OptionType.CUSTOM })}
-              >
-                <CustomIcon />
-                <br />
-                <span>Custom</span>
-              </div>
               <div
                 onClick={() => {
                   if (!cache3Month) return;
@@ -286,13 +275,22 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                 <br />
                 <span>Full range</span>
               </div>
+              <div
+                onClick={() => {
+                  if (!cache7Day) return;
+                  setOptionType(OptionType.CUSTOM);
+                  handleOptionCustom();
+                }}
+                className={classNames(styles.btn, { [styles.chosen]: optionType === OptionType.CUSTOM })}
+              >
+                <CustomIcon />
+                <br />
+                <span>Custom</span>
+              </div>
             </div>
           )}
           <div className={styles.explain}>
-            <p>
-              Add liquidity to a specific price range. Earns the most fees when the price stays in range but stops
-              earning if the price moves out
-            </p>
+            <p>{optionType}</p>
           </div>
         </div>
 
@@ -361,8 +359,18 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                     liquidityChartData={liquidityChartData}
                     currentPrice={currentPrice}
                     fullRange={fullRange}
-                    setMaxPrice={setMaxPrice}
-                    setMinPrice={setMinPrice}
+                    setMaxPrice={(value: number) => {
+                      setMaxPrice(value);
+                      if (optionType === OptionType.FULL_RANGE) {
+                        setIsFullRange(false);
+                      }
+                    }}
+                    setMinPrice={(value: number) => {
+                      setMinPrice(value);
+                      if (optionType === OptionType.FULL_RANGE) {
+                        setIsFullRange(false);
+                      }
+                    }}
                     zoomIn={zoomIn}
                     zoomOut={zoomOut}
                     resetRange={resetRange}

@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 
 import TokenItem, { TokenItemProps } from './index';
-import { ReactComponent as DepositBtcLight } from 'assets/images/deposit_btc.svg';
-import { ReactComponent as DepositBtcDark } from 'assets/images/btc-deposit-dark.svg';
+import DepositBtcLight from 'assets/images/deposit_btc.svg?react';
+import DepositBtcDark from 'assets/images/btc-deposit-dark.svg?react';
 import { Button } from 'components/Button';
 import { useContext } from 'react';
 import { ThemeContext } from 'context/theme-context';

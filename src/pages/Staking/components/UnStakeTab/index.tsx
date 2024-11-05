@@ -1,10 +1,10 @@
 import { toAmount, toDisplay } from '@oraichain/oraidex-common';
 import { Cw20StakingClient } from '@oraichain/oraidex-contracts-sdk';
 import { LockInfoResponse } from '@oraichain/oraidex-contracts-sdk/build/Cw20Staking.types';
-import { ReactComponent as OraiXIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraiXLightIcon } from 'assets/icons/oraix_light.svg';
-import { ReactComponent as ConfirmIcon } from 'assets/images/restake.svg';
-import { ReactComponent as ConfirmIconLight } from 'assets/images/restaking-light.svg';
+import OraiXIcon from 'assets/icons/oraix.svg?react';
+import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
+import ConfirmIcon from 'assets/images/restake.svg?react';
+import ConfirmIconLight from 'assets/images/restaking-light.svg?react';
 import { Button } from 'components/Button';
 import ModalConfirm from 'components/ConfirmModal';
 import Loader from 'components/Loader';

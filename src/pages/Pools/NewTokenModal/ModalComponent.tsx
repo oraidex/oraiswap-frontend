@@ -1,10 +1,10 @@
 import cn from 'classnames/bind';
 import { useState } from 'react';
 import styles from './NewTokenModal.module.scss';
-import { ReactComponent as PlusIcon } from 'assets/icons/plus.svg';
+import PlusIcon from 'assets/icons/plus.svg?react';
 import Input from 'components/Input';
-import { ReactComponent as SuccessIcon } from 'assets/icons/success.svg';
-import { ReactComponent as TokensIcon } from 'assets/icons/tokens.svg';
+import SuccessIcon from 'assets/icons/success.svg?react';
+import TokensIcon from 'assets/icons/tokens.svg?react';
 import { OraiswapTokenQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import CheckBox from 'components/CheckBox';
 import { getPoolTokens } from 'config/pools';

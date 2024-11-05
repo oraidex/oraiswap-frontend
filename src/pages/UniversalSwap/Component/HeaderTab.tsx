@@ -1,30 +1,15 @@
 import { isMobile } from '@walletconnect/browser-utils';
-import ChartImg from 'assets/icons/chart.svg';
-import HideImg from 'assets/icons/show.svg';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import cn from 'classnames/bind';
 import { flattenTokensWithIcon } from 'config/chainInfos';
-import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import { minimize } from 'helper';
 import useTheme from 'hooks/useTheme';
-import { numberWithCommas, reverseSymbolArr } from 'pages/Pools/helpers';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectCurrentSwapFilterTime,
-  selectCurrentSwapTabChart,
-  setFilterTimeSwap,
-  setTabChartSwap
-} from 'reducer/chartSlice';
-import {
-  selectCurrentFromToken,
-  selectCurrentToChain,
-  selectCurrentToToken,
-  selectCurrentToken
-} from 'reducer/tradingSlice';
+import { selectCurrentSwapFilterTime, selectCurrentSwapTabChart, setFilterTimeSwap } from 'reducer/chartSlice';
+import { selectCurrentFromToken, selectCurrentToChain, selectCurrentToToken } from 'reducer/tradingSlice';
 import { FILTER_TIME_CHART, TAB_CHART_SWAP } from 'reducer/type';
-import { calculateFinalPriceChange } from '../helpers';
 import { ChartTokenType } from '../hooks/useChartUsdPrice';
 import styles from './HeaderTab.module.scss';
-import { minimize } from 'helper';
 
 const cx = cn.bind(styles);
 
@@ -33,7 +18,7 @@ export type HeaderTabPropsType = {
   setHideChart: (isHideChart: boolean) => void;
   toTokenDenom: string;
   priceUsd: number;
-  priceChange: {
+  priceChange?: {
     price_change: number;
     price: number;
     isError?: boolean;
@@ -49,7 +34,7 @@ export const HeaderTab: React.FC<HeaderTabPropsType> = ({
   setHideChart,
   hideChart,
   priceUsd,
-  priceChange,
+  // priceChange,
   percentChangeUsd,
   chartTokenType,
   setChartTokenType,
@@ -67,7 +52,7 @@ export const HeaderTab: React.FC<HeaderTabPropsType> = ({
         hideChart={hideChart}
         onClickAction={() => setHideChart(!hideChart)}
         priceUsd={priceUsd}
-        priceChange={priceChange}
+        // priceChange={priceChange}
         percentChangeUsd={percentChangeUsd}
         chartTokenType={chartTokenType}
         showTokenInfo={showTokenInfo}
@@ -132,11 +117,10 @@ export const HeaderTop = ({
   hideChart,
   onClickAction,
   priceUsd,
-  priceChange,
   percentChangeUsd,
   chartTokenType,
   showTokenInfo = true
-}: Pick<HeaderTabPropsType, 'priceChange' | 'percentChangeUsd' | 'priceUsd' | 'chartTokenType'> & {
+}: Pick<HeaderTabPropsType, 'percentChangeUsd' | 'priceUsd' | 'chartTokenType'> & {
   showHideChart?: boolean;
   hideChart?: boolean;
   onClickAction: () => void;

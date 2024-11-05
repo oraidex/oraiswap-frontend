@@ -41,6 +41,7 @@ export const ConcentratedLiquidityDepthChart: FC<{
   horizontal?: boolean;
   fullRange?: boolean;
   rangeAnnotation?: DepthData[];
+  theme?: 'light' | 'dark';
 }> = ({
   data,
   min,
@@ -55,7 +56,8 @@ export const ConcentratedLiquidityDepthChart: FC<{
   onSubmitMax,
   offset,
   horizontal = true,
-  fullRange = false
+  fullRange = false,
+  theme = 'dark'
 }) => {
   const xMax = xRange[1];
   const showMinDragHandler = min !== undefined && Boolean(onMoveMin) && Boolean(onSubmitMin);
@@ -106,15 +108,15 @@ export const ConcentratedLiquidityDepthChart: FC<{
             theme={buildChartTheme({
               backgroundColor: 'transparent',
               colors: ['white'],
-              gridColor: theme.colors.osmoverse['600'],
-              gridColorDark: theme.colors.osmoverse['300'],
+              gridColor: 'red',
+              gridColorDark: 'green',
               svgLabelSmall: {
-                fill: theme.colors.osmoverse['300'],
+                fill: 'blue',
                 fontSize: 12,
                 fontWeight: 500
               },
               svgLabelBig: {
-                fill: theme.colors.osmoverse['300'],
+                fill: 'grey',
                 fontSize: 12,
                 fontWeight: 500
               },
@@ -139,7 +141,7 @@ export const ConcentratedLiquidityDepthChart: FC<{
               data={data}
               xAccessor={(d: DepthData) => d?.depth}
               yAccessor={(d: DepthData) => d?.price}
-              colorAccessor={() => theme.colors.barFill}
+              colorAccessor={() => (theme === 'dark' ? '#373F31' : '#D7F5BF')}
             />
             {annotationDatum && (
               <Annotation
@@ -150,14 +152,14 @@ export const ConcentratedLiquidityDepthChart: FC<{
               >
                 <AnnotationConnector />
                 <AnnotationCircleSubject
-                  stroke={'#A6BE93'}
+                  stroke={theme === 'dark' ? '#A6BE93' : '#5EA402'}
                   // @ts-ignore
                   strokeWidth={4}
                   radius={2}
                 />
                 <AnnotationLineSubject
                   orientation="horizontal"
-                  stroke={'#A6BE93'}
+                  stroke={theme === 'dark' ? '#A6BE93' : '#5EA402'}
                   strokeWidth={2.2}
                 />
               </Annotation>
@@ -174,7 +176,7 @@ export const ConcentratedLiquidityDepthChart: FC<{
                   <AnnotationConnector />
                   <AnnotationLineSubject
                     orientation="horizontal"
-                    stroke={theme.colors.wosmongton['200']}
+                    stroke={'black'}
                     strokeWidth={2}
                     strokeDasharray={4}
                   />
@@ -186,7 +188,7 @@ export const ConcentratedLiquidityDepthChart: FC<{
                 defaultValue={fullRange ? yRange[1] * 0.95 : max}
                 length={xMax}
                 scale={yScale}
-                stroke={'#FFF27A'}
+                stroke={theme === 'dark' ? '#FFF27A' : '#C68E00'}
                 onMove={onMoveMaxBoundary}
                 onSubmit={onSubmitMax}
               />
@@ -197,14 +199,14 @@ export const ConcentratedLiquidityDepthChart: FC<{
                 defaultValue={fullRange ? yRange[0] * 1.05 : min}
                 length={xMax}
                 scale={yScale}
-                stroke={'#0ECB81'}
+                stroke={theme === 'dark' ? '#0ECB81' : '#03A66D'}
                 onMove={onMoveMinBoundary}
                 onSubmit={onSubmitMin}
               />
             )}
             <style>{`
                 .visx-bar {
-                  stroke: ${theme.colors.barFill};
+                  stroke: ${theme === 'dark' ? '#373F31' : '#D7F5BF'};
                   stroke-width: 3px;
                 }
               `}</style>
@@ -231,16 +233,16 @@ const DragContainer: FC<{
     canEditSubject
     canEditLabel={false}
     onDragMove={({ event, ...nextPos }) => {
-      event.preventDefault()
-      event.stopPropagation()
+      event.preventDefault();
+      event.stopPropagation();
       if (props.onMove) {
         const val = props.scale.invert(nextPos.y);
         props.onMove(+Math.max(0, val));
       }
     }}
     onDragEnd={({ event, ...nextPos }) => {
-      event.preventDefault()
-      event.stopPropagation()
+      event.preventDefault();
+      event.stopPropagation();
       if (props.onSubmit) {
         const val = props.scale.invert(nextPos.y);
         props.onSubmit(+Math.max(0, val));

@@ -1,15 +1,14 @@
 import { CW20_DECIMALS, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
-import { ReactComponent as DepositIcon } from 'assets/icons/ic_deposit.svg';
-import { ReactComponent as StakingIcon } from 'assets/icons/ic_stake.svg';
-import { ReactComponent as UnstakeIcon } from 'assets/icons/ic_unstake.svg';
-import { ReactComponent as UnstakeLightIcon } from 'assets/icons/ic_unstake_light.svg';
-import { ReactComponent as WithdrawIcon } from 'assets/icons/ic_withdraw.svg';
-import { ReactComponent as WithdrawLightIcon } from 'assets/icons/ic_withdraw_light.svg';
-import img_coin from 'assets/images/img_staked.svg';
+import DepositIcon from 'assets/icons/ic_deposit.svg?react';
+import StakingIcon from 'assets/icons/ic_stake.svg?react';
+import UnstakeIcon from 'assets/icons/ic_unstake.svg?react';
+import UnstakeLightIcon from 'assets/icons/ic_unstake_light.svg?react';
+import WithdrawIcon from 'assets/icons/ic_withdraw.svg?react';
+import WithdrawLightIcon from 'assets/icons/ic_withdraw_light.svg?react';
 import { Button } from 'components/Button';
 import TokenBalance from 'components/TokenBalance';
+import { TooltipIcon } from 'components/Tooltip';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
 import { useGetPoolDetail, useGetRewardInfoDetail } from 'pages/Pools/hooks';
@@ -21,13 +20,12 @@ import { StakeLPModal } from '../StakeLPModal';
 import { UnstakeLPModal } from '../UnstakeLPModal';
 import { WithdrawLiquidityModal } from '../WithdrawLiquidityModal';
 import styles from './MyPoolInfo.module.scss';
-import { TooltipIcon } from 'components/Tooltip';
-import classNames from 'classnames';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
 
 type ModalPool = 'deposit' | 'withdraw' | 'stake' | 'unstake';
-type Props = { myLpBalance: bigint; onLiquidityChange: () => void };
+type Props = { myLpBalance: bigint; onLiquidityChange: () => void; isInactive?: boolean };
 
-export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange }) => {
+export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInactive }) => {
   const [openTooltipLiq, setOpenTooltipLiq] = useState(false);
   const [openTooltipStake, setOpenTooltipStake] = useState(false);
   const theme = useTheme();
@@ -98,7 +96,7 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange }) => {
           >
             Withdraw LP
           </Button>
-          <Button type={thirdType} onClick={() => setModal('deposit')} icon={<DepositIcon />}>
+          <Button type={thirdType} onClick={() => setModal('deposit')} icon={<DepositIcon />} disabled={isInactive}>
             Deposit
           </Button>
         </div>
@@ -150,7 +148,7 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange }) => {
           >
             Unstake LP
           </Button>
-          <Button type={thirdType} onClick={() => setModal('stake')} icon={<StakingIcon />}>
+          <Button type={thirdType} onClick={() => setModal('stake')} icon={<StakingIcon />} disabled={isInactive}>
             Stake LP
           </Button>
         </div>

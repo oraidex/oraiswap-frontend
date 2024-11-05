@@ -142,11 +142,9 @@ export const poolDetailV3Slice = createSlice({
 
       const [min, max] = state.yRange;
 
-      console.log('state.liquidityTicks', min, max);
       if (min === max) state.liquidityChartData = [];
       else {
         if (state.liquidityTicks.length === 0) {
-          console.log('go here');
           const depths: { price: number; depth: number }[] = [];
 
           for (let price = min; price <= max; price += (max - min) / 20) {
@@ -338,7 +336,7 @@ export const fetchHistoricalPriceData7D = createAsyncThunk(
 export const fetchHistoricalPriceData1M = createAsyncThunk(
   'poolDetailV3/fetchHistoricalPriceData1M',
   async (poolId: string) => {
-    return await getHistoricalPriceDataInHour(poolId, '1mo');
+    return await getHistoricalPriceDataInDay(poolId, '1mo');
   }
 );
 

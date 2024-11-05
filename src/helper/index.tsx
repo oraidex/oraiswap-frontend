@@ -29,7 +29,7 @@ import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
 import { evmChainInfos } from 'config/evmChainInfos';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
 
 export interface Tokens {

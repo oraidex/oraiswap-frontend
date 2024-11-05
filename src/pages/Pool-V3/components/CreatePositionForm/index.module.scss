@@ -5,7 +5,7 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
-  max-height: calc(100vh - 200px);
+  max-height: calc(110vh - 200px);
   overflow-y: auto;
   flex: 1 1 auto;
 
@@ -34,7 +34,7 @@
       flex-direction: row;
       justify-content: space-between;
       padding-bottom: 28px;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
 
       @include theme {
         border-bottom: 1px solid theme-get('colors-neutral-surface-bg-section');
@@ -70,7 +70,7 @@
         flex-direction: row;
         justify-content: space-between;
         // gap: 5px;
-        padding: 4px;
+        padding: 6px;
         border-radius: 32px;
         height: fit-content;
         font-size: 12px;
@@ -151,13 +151,19 @@
           // gap: 12px;
           // align-items: center;
           // justify-content: center;
-          height: 88px;
+          height: 132px;
           border-radius: 15px;
           cursor: pointer;
 
           @media only screen and (max-width: 600px) {
             padding: 8px 8px 8px 8px;
             font-size: 10px;
+
+            svg {
+              margin-top: 10px;
+            }
+
+            width: 100px;
           }
 
           // svg {
@@ -266,6 +272,7 @@
     .menuWrapper {
       width: 100%;
       display: flex;
+      flex-direction: row;
       align-items: center;
       gap: 10px;
       align-self: stretch;
@@ -285,7 +292,7 @@
         display: flex;
         height: 48px;
         padding: 4px;
-        // flex-direction: column;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         gap: 5px;
@@ -396,10 +403,10 @@
         align-self: stretch;
         margin-bottom: 24px;
 
-        @include small-mobile {
-          flex-direction: column;
-          gap: 8px;
-        }
+        // @include small-mobile {
+        //   flex-direction: column;
+        //   gap: 8px;
+        // }
 
         @include theme {
           border-bottom: 1px solid theme-get('neutral-border-border-bold');

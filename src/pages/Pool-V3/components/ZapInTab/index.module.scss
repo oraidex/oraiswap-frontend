@@ -49,10 +49,10 @@
 
 .itemInput {
   display: flex;
-  padding: 14px;
+  padding: 16px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 12px;
   align-self: stretch;
   border-radius: 16px;
   margin-bottom: 2px;
@@ -71,15 +71,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    align-self: stretch;
-    gap: 12px;
+    // align-self: stretch;
+    width: 100%;
+    height: 44px;
 
     .name {
-      height: 40px;
       display: flex;
-      padding: 8px 12px 8px 8px;
+      padding: 12px 12px 12px 12px;
       align-items: center;
       gap: 8px;
+      height: 44px;
       flex-wrap: nowrap;
       white-space: nowrap;
       max-width: 8rem;
@@ -93,7 +94,7 @@
       }
 
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 400;
       line-height: 150%;
 
       svg {
@@ -110,12 +111,12 @@
 
       .amount {
         flex-grow: 1;
-        max-width: 100%;
         opacity: 1;
         width: inherit;
         text-align: right;
-        font-size: 20px;
-        font-weight: 500;
+        font-size: 30px;
+        font-weight: 400;
+        max-width: 243px;
         line-height: 127%;
 
         @include theme() {
@@ -167,6 +168,21 @@
           color: theme-get('colors-neutral-text-text-token-name');
         }
       }
+
+      .value {
+        @include theme {
+          color: theme-get('neutral-text-title');
+        }
+      }
+
+      .max {
+        margin-left: 8px;
+        cursor: pointer;
+
+        @include theme {
+          color: theme-get('primary-1');
+        }
+      }
     }
 
     .btnGroup {
@@ -212,11 +228,21 @@
 
   .bar {
     flex: 1;
-    border-top: 1px solid #232521;
+
+    @include theme {
+      border-top: 1px solid theme-get('neutral-surface-bg-modal');
+    }
   }
 
   svg {
     vertical-align: middle;
+
+    rect {
+      @include theme {
+        stroke: theme-get('bg-result-arrow-stroke');
+        fill: theme-get('bg-result-arrow');
+      }
+    }
   }
 }
 
@@ -245,14 +271,19 @@
     flex: 1;
 
     border-radius: 16px;
-    background: var(--Colors-Neutral-Surface-bg-swap-pair, #232521);
+
+    @include theme {
+      background: theme-get('neutral-surface-bg-modal');
+    }
 
     .info {
       display: flex;
       align-items: center;
       gap: 8px;
 
-      color: var(--Colors-Neutral-Text-title, #efefef);
+      @include theme {
+        color: theme-get('sea-stone-200');
+      }
       font-size: 18px;
       font-weight: 400;
       line-height: 150%;
@@ -276,7 +307,9 @@
 
       width: 60%;
       position: relative;
-      color: var(--Colors-Neutral-Text-title, #efefef);
+      @include theme {
+        color: theme-get('sea-stone-200');
+      }
       font-size: 18px;
       font-weight: 400;
       line-height: 120%;
@@ -323,7 +356,6 @@
     border: 1px solid theme-get('neutral-border-border-default');
   }
 
-
   .title {
     font-size: 14px;
     font-weight: 500;
@@ -346,7 +378,7 @@
     .amount {
       font-size: 20px;
       font-weight: 600;
-      
+
       @include theme {
         color: theme-get('primary-1');
       }
@@ -460,5 +492,15 @@
         color: theme-get('neutral-2');
       }
     }
+  }
+}
+
+.simulating {
+  font-style: italic;
+  font-size: small;
+  
+
+  @include theme {
+    color: theme-get('basic-primary-surface-default');
   }
 }

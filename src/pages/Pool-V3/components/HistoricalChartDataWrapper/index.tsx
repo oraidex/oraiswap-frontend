@@ -5,6 +5,7 @@ import { TokenItemType } from '@oraichain/oraidex-common';
 import { TimeDuration, TokenPairHistoricalPrice } from 'reducer/poolDetailV3';
 import { Dec } from '@keplr-wallet/unit';
 import { isMobile } from '@walletconnect/browser-utils';
+import useTheme from 'hooks/useTheme';
 
 
 interface HistoricalChartDataWrapperProps {
@@ -40,6 +41,7 @@ const HistoricalChartDataWrapper: FC<HistoricalChartDataWrapperProps> = ({
   //     maxDecimals: 8,
   //     notation: 'standard'
   //   }) || '';
+  const theme = useTheme();
 
   const chartDataToNow = [...historicalChartData];
   // if (historicalChartData.length > 0) {
@@ -61,6 +63,7 @@ const HistoricalChartDataWrapper: FC<HistoricalChartDataWrapperProps> = ({
         }}
         extendLeft={historicalChartData[0]?.close <= 0.001 ? 30 : 10}
         xNumTicks={2}
+        theme={theme}
       />
     </div>
   );

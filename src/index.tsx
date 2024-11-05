@@ -27,9 +27,9 @@ import ScrollToTop from './layouts/ScrollToTop';
 
 const queryClient = new QueryClient();
 
-if (process.env.REACT_APP_SENTRY_ENVIRONMENT === 'production') {
+if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
   Sentry.init({
-    environment: process.env.REACT_APP_SENTRY_ENVIRONMENT || 'production',
+    environment: import.meta.env.VITE_APP_SENTRY_ENVIRONMENT,
     dsn: 'https://763cf7889ff3440d86c7c1fbc72c8780@o1323226.ingest.sentry.io/6580749',
     denyUrls: [
       /extensions\//i,
@@ -55,7 +55,7 @@ if (process.env.REACT_APP_SENTRY_ENVIRONMENT === 'production') {
   });
 
   // init mixpanel track event
-  mixpanel.init(process.env.REACT_APP_MIX_PANEL_ENVIRONMENT);
+  mixpanel.init(import.meta.env.VITE_APP_MIX_PANEL_ENVIRONMENT);
 }
 
 // init queryClient

@@ -1,5 +1,5 @@
-import { ReactComponent as NoDataDark } from 'assets/images/NoDataPool.svg';
-import { ReactComponent as NoData } from 'assets/images/NoDataPoolLight.svg';
+import NoDataDark from 'assets/images/NoDataPool.svg?react';
+import NoData from 'assets/images/NoDataPoolLight.svg?react';
 import LoadingBox from 'components/LoadingBox';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';

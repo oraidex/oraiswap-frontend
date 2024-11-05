@@ -1,6 +1,6 @@
 import { CW20_DECIMALS, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { oraichainTokensWithIcon } from 'config/chainInfos';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
@@ -43,7 +43,6 @@ const Pools: React.FC<{}> = () => {
 
   const pools = useGetPools();
   const lpAddresses = pools.map((pool) => pool.liquidityAddr);
-
   useFetchCacheRewardAssetForAllPools(lpAddresses);
   useFetchLpPoolsV3(lpAddresses);
 

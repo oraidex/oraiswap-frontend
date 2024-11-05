@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styles from './index.module.scss';
 import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
 import { calculateTimeoutTimestamp, toAmount, toDisplay } from '@oraichain/oraidex-common';
-import { ReactComponent as BitcoinIcon } from 'assets/icons/bitcoin.svg';
+import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import { getUsd } from 'libs/utils';
 import Loader from 'components/Loader';
 import { Button } from 'components/Button';
@@ -28,8 +28,8 @@ export const BTC_TOKEN = oraichainTokens.find((e) => e.coinGeckoId === 'bitcoin'
 const ConvertBitcoinV2: React.FC<{}> = ({}) => {
   const cwBitcoinContext = useContext(CwBitcoinContext);
   const { relayerFee } = useRelayerFeeToken(
-    btcTokens.find((item) => item.name === 'BTC V2'),
-    oraichainTokens.find((item) => item.name === 'BTC V2')
+    btcTokens.find((item) => item.name === 'BTC'),
+    oraichainTokens.find((item) => item.name === 'BTC')
   );
   const withdrawFeeBtc = useGetWithdrawlFeesBitcoin({
     enabled: true,
@@ -215,7 +215,7 @@ const ConvertBitcoinV2: React.FC<{}> = ({}) => {
               <span className={styles.usd}>{formatDisplayUsdt(amountUSD)}</span>
             </div>
 
-            <div className={`${styles.stakeBtn} ${styles.inDesktop}`}>
+            <div className={`${styles.stakeBtn}`}>
               <Button
                 type="primary"
                 disabled={loading || withdrawFeeBtc?.withdrawal_fees === undefined}

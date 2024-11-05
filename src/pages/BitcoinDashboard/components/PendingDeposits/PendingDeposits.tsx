@@ -3,11 +3,11 @@ import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { Table, TableHeaderProps } from 'components/Table';
 import useConfigReducer from 'hooks/useConfigReducer';
 import styles from './PendingDeposits.module.scss';
-import { ReactComponent as DefaultIcon } from 'assets/icons/tokens.svg';
-import { ReactComponent as BitcoinIcon } from 'assets/icons/bitcoin.svg';
-import { ReactComponent as OraiDarkIcon } from 'assets/icons/oraichain.svg';
-import { ReactComponent as OraiLightIcon } from 'assets/icons/oraichain_light.svg';
-import { ReactComponent as TooltipIcon } from 'assets/icons/icon_tooltip.svg';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
+import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
+import OraiDarkIcon from 'assets/icons/oraichain.svg?react';
+import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import { useGetPendingDeposits } from '../../hooks/relayer.hook';
 import { CheckpointStatus, DepositInfo, TransactionParsedInput } from '../../@types';
 import { useEffect } from 'react';
@@ -39,8 +39,8 @@ export const PendingDeposits: React.FC<{}> = ({}) => {
   const mobile = isMobile();
   const [oraichainAddress] = useConfigReducer('address');
   const fee = useRelayerFeeToken(
-    btcTokens.find((item) => item.name === 'BTC V2'),
-    oraichainTokens.find((item) => item.name === 'BTC V2')
+    btcTokens.find((item) => item.name === 'BTC'),
+    oraichainTokens.find((item) => item.name === 'BTC')
   );
   const depositFee = useGetDepositFee();
   const fetchedPendingDeposits = useGetPendingDeposits(oraichainAddress);

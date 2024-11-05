@@ -1,16 +1,9 @@
-import { oraichainTokens } from 'config/bridgeTokens';
+import { MILKYBSC_ORAICHAIN_DENOM } from '@oraichain/oraidex-common';
+import { getSpecialCoingecko, isEmptyObject } from 'helper';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { formateNumberDecimalsAuto, timeSince, toSumDisplay } from 'libs/utils';
-import { getTotalUsd, reduceString } from './../libs/utils';
-import { PairToken } from 'reducer/type';
 import { calculateFinalPriceChange } from 'pages/UniversalSwap/helpers';
-import {
-  MILKYBSC_ORAICHAIN_DENOM,
-  USDT_CONTRACT,
-  AIRI_CONTRACT,
-  OSMOSIS_ORAICHAIN_DENOM
-} from '@oraichain/oraidex-common';
-import { getSpecialCoingecko, isEmptyObject } from 'helper';
+import { getTotalUsd, reduceString } from './../libs/utils';
 
 describe('should utils functions in libs/utils run exactly', () => {
   const amounts: AmountDetails = {

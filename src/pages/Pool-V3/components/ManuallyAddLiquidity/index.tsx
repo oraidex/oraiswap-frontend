@@ -4,7 +4,7 @@ import { FC } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
 import NumberFormat from 'react-number-format';
-import { ReactComponent as LeafIcon } from 'assets/icons/leaf.svg';
+import LeafIcon from 'assets/icons/leaf.svg?react';
 
 interface ManuallyAddLiquidityProps {
   apr: number;
@@ -44,46 +44,13 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
   return (
     <>
       <div className={classNames(styles.itemInput, { [styles.disabled]: isFromBlocked })}>
-        <div className={styles.balance}>
-          <p className={styles.bal}>
-            <span>Balance:</span> {numberWithCommas(toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals))}{' '}
-            {tokenFrom?.name}
-          </p>
-          <div className={styles.btnGroup}>
-            <button
-              className=""
-              disabled={!tokenFrom}
-              onClick={() => {
-                const val = toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals);
-                const haftValue = new BigDecimal(val).div(2).toNumber();
-                setAmountFrom(haftValue);
-                setFocusId('x');
-              }}
-            >
-              50%
-            </button>
-            <button
-              className=""
-              disabled={!tokenFrom}
-              onClick={() => {
-                const val = toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals);
-                setAmountFrom(val);
-                setFocusId('x');
-              }}
-            >
-              100%
-            </button>
-          </div>
-        </div>
         <div className={styles.tokenInfo}>
           <div className={styles.name}>
-            {TokenFromIcon ? (
+            {TokenFromIcon && (
               <>
                 {TokenFromIcon}
                 &nbsp;{tokenFrom.name}
               </>
-            ) : (
-              'Select Token'
             )}
           </div>
           <div className={styles.input}>
@@ -107,53 +74,38 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
                 setAmountFrom(floatValue);
               }}
             />
-            <div className={styles.usd}>
-              ≈ ${amountFrom ? numberWithCommas(Number(fromUsd) || 0, undefined, { maximumFractionDigits: 6 }) : 0}
-            </div>
+          </div>
+        </div>
+        <div className={styles.balance}>
+          <p className={styles.bal}>
+            <span>Balance:</span>{' '}
+            <span className={styles.value}>
+              {numberWithCommas(toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals))} {tokenFrom?.name}
+            </span>
+            <span
+              className={styles.max}
+              onClick={() => {
+                const val = toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals);
+                setAmountFrom(val);
+                setFocusId('x');
+              }}
+            >
+              Max
+            </span>
+          </p>
+          <div className={styles.usd}>
+            ≈ ${amountFrom ? numberWithCommas(Number(fromUsd) || 0, undefined, { maximumFractionDigits: 6 }) : 0}
           </div>
         </div>
       </div>
       <div className={classNames(styles.itemInput, { [styles.disabled]: isToBlocked })}>
-        <div className={styles.balance}>
-          <p className={styles.bal}>
-            <span>Balance:</span> {numberWithCommas(toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals))}{' '}
-            {tokenTo?.name}
-          </p>
-          <div className={styles.btnGroup}>
-            <button
-              className=""
-              disabled={!tokenTo}
-              onClick={() => {
-                const val = toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals);
-                const haftValue = new BigDecimal(val).div(2).toNumber();
-                setAmountTo(haftValue);
-                setFocusId('y');
-              }}
-            >
-              50%
-            </button>
-            <button
-              className=""
-              disabled={!tokenTo}
-              onClick={() => {
-                const val = toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals);
-                setAmountTo(val);
-                setFocusId('y');
-              }}
-            >
-              100%
-            </button>
-          </div>
-        </div>
         <div className={styles.tokenInfo}>
           <div className={styles.name}>
-            {TokenToIcon ? (
+            {TokenToIcon && (
               <>
                 {TokenToIcon}
                 &nbsp;{tokenTo.name}
               </>
-            ) : (
-              'Select Token'
             )}
           </div>
           <div className={styles.input}>
@@ -177,9 +129,27 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
                 setAmountTo(floatValue);
               }}
             />
-            <div className={styles.usd}>
-              ≈ ${amountTo ? numberWithCommas(Number(toUsd) || 0, undefined, { maximumFractionDigits: 6 }) : 0}
-            </div>
+          </div>
+        </div>
+        <div className={styles.balance}>
+          <p className={styles.bal}>
+            <span>Balance:</span>{' '}
+            <span className={styles.value}>
+              {numberWithCommas(toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals))} {tokenTo?.name}
+            </span>
+            <span
+              className={styles.max}
+              onClick={() => {
+                const val = toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals);
+                setAmountTo(val);
+                setFocusId('y');
+              }}
+            >
+              Max
+            </span>
+          </p>
+          <div className={styles.usd}>
+            ≈ ${amountTo ? numberWithCommas(Number(toUsd) || 0, undefined, { maximumFractionDigits: 6 }) : 0}
           </div>
         </div>
       </div>

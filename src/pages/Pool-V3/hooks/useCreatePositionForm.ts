@@ -30,10 +30,10 @@ import { CoinGeckoPrices } from 'hooks/useCoingecko';
 const ZOOM_STEP = 0.05;
 
 export enum OptionType {
-  CUSTOM,
-  WIDE,
-  NARROW,
-  FULL_RANGE
+  CUSTOM = 'Set your own price range for liquidity. Balance fee potential and risk based on market conditions.',
+  WIDE = 'Adds liquidity to a wider range, balancing fees and risk. Stays active longer than narrow ranges but may earn lower fees.',
+  NARROW = 'Adds liquidity to a specific price range. Earns the most fees when the price stays in range but stops earning if the price moves out',
+  FULL_RANGE = 'Adds liquidity for the full price range. Stays active regardless of price changes, but may earn lower fees.'
 }
 
 const TICK_SPACING_TO_RANGE = {
@@ -56,6 +56,7 @@ const useCreatePositionForm = (
   const [lowerTick, setLowerTick] = useState<number>(0);
   const [higherTick, setHigherTick] = useState<number>(0);
   const [optionType, setOptionType] = useState<OptionType>(OptionType.CUSTOM);
+  const [isFullRange, setIsFullRange] = useState<boolean>(false);
 
   const poolId = usePoolDetailV3Reducer('poolId');
   const poolKey = usePoolDetailV3Reducer('poolKey');
@@ -259,6 +260,14 @@ const useCreatePositionForm = (
     }
   }, [minPrice, maxPrice, tokenX, tokenY]);
 
+  useEffect(() => {
+    if (optionType === OptionType.CUSTOM) {
+      if (minPrice === 0) {
+        resetRange();
+      }
+    }
+  }, [optionType]);
+
   const changeHistoricalRange = (range: TimeDuration) => {
     dispatch(setHistoricalRange(range));
   };
@@ -297,6 +306,8 @@ const useCreatePositionForm = (
   };
 
   const resetPlot = () => {
+    if (!pool) return;
+    if (!poolKey) return;
     changeHistoricalRange('7d');
     const higherTick = Math.max(
       Number(getMinTick(Number(poolKey.fee_tier.tick_spacing))),
@@ -387,11 +398,12 @@ const useCreatePositionForm = (
       setMinPrice(maxPrice);
       setMaxPrice(0);
     }
+    setIsFullRange(true);
   };
 
   const getCorrespondingTickRange = (priceMin: number, priceMax: number) => {
     try {
-      if (minPrice === 0 || maxPrice === 0) {
+      if (isFullRange) {
         setLowerTick(getMinTick(Number(poolKey.fee_tier.tick_spacing)));
         setHigherTick(getMaxTick(Number(poolKey.fee_tier.tick_spacing)));
         return;
@@ -440,26 +452,6 @@ const useCreatePositionForm = (
       setZapApr(0);
     }
   }, [isXBlocked, isYBlocked]);
-
-  // useEffect(() => {
-  //   if (!pool || !tokenX || !tokenY) return;
-  //   switch (optionType) {
-  //     case OptionType.CUSTOM:
-  //       handleOptionCustom();
-  //       break;
-  //     case OptionType.WIDE:
-  //       handleOptionWide();
-  //       break;
-  //     case OptionType.NARROW:
-  //       handleOptionNarrow();
-  //       break;
-  //     case OptionType.FULL_RANGE:
-  //       handleOptionFullRange();
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }, [optionType]);
 
   return {
     poolId,
@@ -513,6 +505,7 @@ const useCreatePositionForm = (
     zapYUsd,
     zapUsd,
     zapApr,
+    setIsFullRange,
     setApr,
     setZapApr,
     handleOptionCustom,

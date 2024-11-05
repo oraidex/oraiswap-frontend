@@ -66,6 +66,7 @@ export const useVolumeEventChart = (
         dataV2 = await getDataVolumeHistoricalByPair(pair, value);
       } else {
         dataV2 = await getDataVolumeHistoricalAll(value);
+        dataV2 = dataV2.slice(-90); // just get latest 90 days data of volume
       }
 
       const poolsV3VData = await getChartPoolsV3ByDay();

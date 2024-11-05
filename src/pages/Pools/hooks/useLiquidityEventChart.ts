@@ -40,6 +40,7 @@ export const useLiquidityEventChart = (
         dataV2 = await getDataLiquidityHistoricalByPair(pair, value);
       } else {
         dataV2 = await getDataLiquidityHistoricalAll(value);
+        dataV2 = dataV2.slice(-90); // just get latest 90 days data of liquidity
       }
 
       const poolsV3VData = await getChartPoolsV3ByDay();

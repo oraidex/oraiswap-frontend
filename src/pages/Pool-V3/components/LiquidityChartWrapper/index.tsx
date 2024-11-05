@@ -3,6 +3,7 @@ import styles from './index.module.scss';
 import { ConcentratedLiquidityDepthChart } from '../ConcentratedLiquidityDepthChart';
 import { LiquidityChartData } from 'reducer/poolDetailV3';
 import { OptionType } from 'pages/Pool-V3/hooks/useCreatePositionForm';
+import useTheme from 'hooks/useTheme';
 
 interface LiquidityChartWrapperProps {
   minPrice: number;
@@ -35,6 +36,8 @@ const LiquidityChartWrapper: FC<LiquidityChartWrapperProps> = ({
   resetRange,
   setOptionType
 }) => {
+  const theme = useTheme();
+
   return (
     <div className={styles.chartLiquid}>
       <div className={styles.chart}>
@@ -75,6 +78,7 @@ const LiquidityChartWrapper: FC<LiquidityChartWrapperProps> = ({
           offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
           horizontal
           fullRange={fullRange}
+          theme={theme}
         />
       </div>
     </div>

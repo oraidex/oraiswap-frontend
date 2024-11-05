@@ -1,8 +1,8 @@
 import { toDisplay } from '@oraichain/oraidex-common';
 import Loading from 'assets/gif/loading.gif';
-import { ReactComponent as BootsIconDark } from 'assets/icons/boost-icon-dark.svg';
-import { ReactComponent as BootsIcon } from 'assets/icons/boost-icon.svg';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import { TooltipIcon } from 'components/Tooltip';
@@ -41,6 +41,7 @@ const PoolItemTData = ({
     firstAssetInfo,
     secondAssetInfo
   } = item;
+  const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
 
   return (
     <>
@@ -56,10 +57,14 @@ const PoolItemTData = ({
               {type === POOL_TYPE.V3 ? 'V3' : 'V2'}
             </span>
           </span>
-
           {type === POOL_TYPE.V3 && (
             <div>
               <span className={styles.fee}>Fee: {toDisplay(BigInt(feeTier), 10)}%</span>
+            </div>
+          )}
+          {isInactive && (
+            <div>
+              <span className={styles.inactive}>Inactive</span>
             </div>
           )}
         </div>
@@ -137,6 +142,7 @@ const PoolItemTData = ({
         <Button
           className="newPosition"
           type="third-sm"
+          disabled={isInactive}
           onClick={(event) => {
             if (type === POOL_TYPE.V3) {
               setIsOpenCreatePosition(true);

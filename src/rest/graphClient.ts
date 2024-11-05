@@ -578,8 +578,7 @@ export const getHistoricalPriceDataInHour = async (
     // create array of chunkOffset: [hourIndex, hourIndex + CHUNK_QUERY, ...] to current Index
     const length = Math.ceil((currentIndex - hourIndex) / CHUNK_QUERY);
     const chunkOffset = Array.from({ length }, (_, i) => hourIndex + i * CHUNK_QUERY);
-    if (currentIndex > chunkOffset[length - 1]) chunkOffset.push(currentIndex);
-
+    // if (currentIndex > chunkOffset[length - 1]) chunkOffset.push(currentIndex);
     let finalResult = [];
 
     // const before = performance.now();
@@ -616,8 +615,6 @@ export const getHistoricalPriceDataInHour = async (
         return graphqlClient.request<any>(document);
       })
     );
-    // const after = performance.now();
-
     finalResult = historicalData.flatMap((item) => item.query.poolHourData.nodes);
 
     // if (timeRange === '1y') console.log('getHistoricalPriceData', after - before);
@@ -639,8 +636,6 @@ export const getHistoricalPriceDataInHour = async (
         .sort((a, b) => a.time - b.time), // sort by time
       poolId
     };
-
-    console.log({ res });
 
     return res;
   } catch (error) {
@@ -693,7 +688,7 @@ export const getHistoricalPriceDataInDay = async (
     // create array of chunkOffset: [dayIndex, dayIndex + CHUNK_QUERY, ...] to current Index
     const length = Math.ceil((currentIndex - dayIndex) / CHUNK_QUERY);
     const chunkOffset = Array.from({ length }, (_, i) => dayIndex + i * CHUNK_QUERY);
-    if (currentIndex > chunkOffset[length - 1]) chunkOffset.push(currentIndex);
+    // if (currentIndex > chunkOffset[length - 1]) chunkOffset.push(currentIndex);
 
     let finalResult = [];
 

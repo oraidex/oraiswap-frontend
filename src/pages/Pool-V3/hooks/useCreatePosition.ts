@@ -68,6 +68,10 @@ const useCreatePosition = (
 
   useEffect(() => {
     (async () => {
+      if (amountX === 0 && amountY === 0) {
+        setApr(0);
+        return;
+      }
       if (pool && poolKey && tokenX && tokenY) {
         const apr = await fetchPositionAprInfo(
           {
@@ -89,7 +93,7 @@ const useCreatePosition = (
         }
       }
     })();
-  }, [pool, poolKey, tokenX, tokenY, xUsd, yUsd]);
+  }, [pool, poolKey, tokenX, tokenY, xUsd, yUsd, amountX, amountY]);
 
   useEffect(() => {
     if (!(pool && minTick && maxTick)) return;

@@ -19,7 +19,6 @@ import { oraib2oraichain } from '@oraichain/oraidex-common';
 import { ORAI } from '@oraichain/oraidex-common';
 import { AssetInfo, TransferBackMsg } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { toDisplay } from '@oraichain/oraidex-common';
-import { Attribute } from '@cosmjs/tendermint-rpc/build/tendermint37';
 
 let cosmosChain: CWSimulateApp;
 // oraichain support cosmwasm
@@ -74,7 +73,7 @@ describe.only('IBCModule', () => {
     oraiClient = new SimulateCosmWasmClient({
       chainId: 'Oraichain',
       bech32Prefix: ORAI,
-      metering: process.env.METERING === 'true'
+      metering: import.meta.env.METERING === 'true'
     });
 
     ics20Contract = await deployIcs20Token(oraiClient, { swap_router_contract: routerContractAddress });
@@ -155,7 +154,7 @@ describe.only('IBCModule', () => {
     const oraiClient = new SimulateCosmWasmClient({
       chainId: 'Oraichain',
       bech32Prefix: ORAI,
-      metering: process.env.METERING === 'true'
+      metering: import.meta.env.METERING === 'true'
     });
 
     const ics20Contract = await deployIcs20Token(oraiClient, { swap_router_contract: routerContractAddress });

@@ -1,4 +1,4 @@
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg';
+import CloseIcon from 'assets/icons/close.svg?react';
 import cn from 'classnames/bind';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { FC } from 'react';

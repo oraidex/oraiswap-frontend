@@ -3,9 +3,9 @@ import { BigDecimal, CoinGeckoPrices, toDisplay, TokenItemType } from '@oraichai
 import { FC, useState } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
-import { ReactComponent as IconInfo } from 'assets/icons/infomationIcon.svg';
-import { ReactComponent as ErrorIcon } from 'assets/icons/error-fill-icon.svg';
-import { ReactComponent as OutputIcon } from 'assets/icons/zapOutput-ic.svg';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
+import ErrorIcon from 'assets/icons/error-fill-icon.svg?react';
+import OutputIcon from 'assets/icons/zapOutput-ic.svg?react';
 import TooltipHover from 'components/TooltipHover';
 import NumberFormat from 'react-number-format';
 import SelectToken from '../SelectToken';
@@ -15,7 +15,7 @@ import ZappingText from 'components/Zapping';
 import { ZapInLiquidityResponse } from '@oraichain/oraiswap-v3';
 import { getIcon } from 'helper';
 import cn from 'classnames/bind';
-import { ReactComponent as LeafIcon } from 'assets/icons/leaf.svg';
+import LeafIcon from 'assets/icons/leaf.svg?react';
 
 interface ZapInTabProps {
   tokenZap: TokenItemType;
@@ -82,37 +82,6 @@ const ZapInTab: FC<ZapInTabProps> = ({
     // </div>
     <>
       <div className={classNames(styles.itemInput, { [styles.disabled]: false })}>
-        <div className={styles.balance}>
-          <p className={styles.bal}>
-            <span>Balance:</span> {numberWithCommas(toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals))}{' '}
-            {tokenZap?.name}
-          </p>
-          <div className={styles.btnGroup}>
-            <button
-              className=""
-              disabled={!tokenZap}
-              onClick={() => {
-                const val = toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals);
-                const haftValue = new BigDecimal(val).div(2).toNumber();
-                setZapAmount(haftValue);
-                setFocusId('zap');
-              }}
-            >
-              50%
-            </button>
-            <button
-              className=""
-              disabled={!tokenZap}
-              onClick={() => {
-                const val = toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals);
-                setZapAmount(val);
-                setFocusId('zap');
-              }}
-            >
-              100%
-            </button>
-          </div>
-        </div>
         <div className={styles.tokenInfo}>
           {/* <div className={styles.name}> */}
           <SelectToken
@@ -146,18 +115,36 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 setZapAmount(floatValue);
               }}
             />
-            <div className={styles.usd}>
-              ≈ $
-              {zapAmount
-                ? numberWithCommas(Number(zapUsd) || 0, undefined, { maximumFractionDigits: tokenZap.decimals })
-                : 0}
-            </div>
+          </div>
+        </div>
+        <div className={styles.balance}>
+          <p className={styles.bal}>
+            <span>Balance:</span>{' '}
+            <span className={styles.value}>
+              {numberWithCommas(toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals))} {tokenZap?.name}
+            </span>
+            <span
+              className={styles.max}
+              onClick={() => {
+                const val = toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals);
+                setZapAmount(val);
+                setFocusId('zap');
+              }}
+            >
+              Max
+            </span>
+          </p>
+          <div className={styles.usd}>
+            ≈ $
+            {zapAmount
+              ? numberWithCommas(Number(zapUsd) || 0, undefined, { maximumFractionDigits: tokenZap.decimals })
+              : 0}
           </div>
         </div>
       </div>
       {simulating && (
         <div>
-          <span style={{ fontStyle: 'italic', fontSize: 'small', color: 'white' }}>
+          <span className={styles.simulating}>
             <ZappingText text={'Finding best option to zap'} dot={5} />
           </span>
         </div>
@@ -188,9 +175,9 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 {simulating && <div className={styles.mask} />}
                 <span>
                   {zapInResponse
-                    ? numberWithCommas(Number(zapInResponse.amountX) / 10 ** tokenFrom.decimals, undefined, {
+                    ? (tokenFrom && numberWithCommas(Number(zapInResponse.amountX) / 10 ** tokenFrom.decimals, undefined, {
                         maximumFractionDigits: 3
-                      })
+                      }))
                     : 0}
                 </span>
                 <span className={styles.usd}>
@@ -209,12 +196,12 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 <span>{tokenTo?.name}</span>
               </div>
               <div className={styles.value}>
-                {simulating && <div className={styles.mask} />}
+                {simulating && tokenTo && <div className={styles.mask} />}
                 <span>
                   {zapInResponse
-                    ? numberWithCommas(Number(zapInResponse.amountY) / 10 ** tokenTo.decimals, undefined, {
+                    ? (tokenTo && numberWithCommas(Number(zapInResponse.amountY) / 10 ** tokenTo.decimals, undefined, {
                         maximumFractionDigits: 3
-                      })
+                      }))
                     : 0}
                 </span>
                 <span className={styles.usd}>
@@ -234,19 +221,19 @@ const ZapInTab: FC<ZapInTabProps> = ({
 
           <div className={styles.feeInfoWrapper}>
             <div className={styles.priceToken}>
-              <p className={styles.ratio}>
+              {tokenFrom && <p className={styles.ratio}>
                 1 {tokenFrom.name} ≈ $
                 {extendedPrice?.[tokenFrom?.coinGeckoId]
                   ? numberWithCommas(extendedPrice[tokenFrom.coinGeckoId], undefined, { maximumFractionDigits: 2 })
                   : '0'}
-              </p>
+              </p>}
               <p className={styles.divide}>/</p>
-              <p className={styles.ratio}>
+              {tokenTo && <p className={styles.ratio}>
                 1 {tokenTo.name} ≈ $
                 {extendedPrice?.[tokenTo?.coinGeckoId]
                   ? numberWithCommas(extendedPrice[tokenTo.coinGeckoId], undefined, { maximumFractionDigits: 2 })
                   : '0'}
-              </p>
+              </p>}
             </div>
             <div className={styles.item}>
               <div className={styles.info}>

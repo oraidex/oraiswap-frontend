@@ -3,12 +3,13 @@ import {
   // flattenTokens
   NetworkChainId,
   toDisplay,
-  TokenItemType
+  TokenItemType,
+  BTC_CONTRACT
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
-import { ReactComponent as ArrowDownIcon } from 'assets/icons/arrow.svg';
-import { ReactComponent as ArrowDownIconLight } from 'assets/icons/arrow_light.svg';
-import { ReactComponent as SuccessIcon } from 'assets/icons/toast_success.svg';
+import ArrowDownIcon from 'assets/icons/arrow.svg?react';
+import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import classNames from 'classnames';
 import Input from 'components/Input';
 import Loader from 'components/Loader';
@@ -62,7 +63,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
   const [transferLoading, setTransferLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>();
+  const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>(bridgeNetworks[0]?.chainId);
   const [isOpen, setIsOpen] = useState(false);
   const [chainInfo] = useConfigReducer('chainInfo');
   const [theme] = useConfigReducer('theme');
@@ -157,7 +158,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
-  const isV2 = token.name === 'BTC V2';
+  const isV2 = token.name === 'BTC';
   let { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
   const depositFeeBtcResult = useDepositFeesBitcoin(isFromBitcoinToOraichain);
   const withdrawalFeeBtcResult = useGetWithdrawlFeesBitcoin({
@@ -232,6 +233,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     if (receivedAmount < 0) buttonName = 'Not enought amount to pay fee';
     return buttonName;
   };
+
+  const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
 
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
@@ -413,7 +416,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           ) {
             return (
               <button
-                disabled={transferLoading || !addressTransfer || receivedAmount < 0}
+                disabled={transferLoading || !addressTransfer || receivedAmount < 0 || isBTCLegacy || convertAmount < 0}
                 className={classNames(styles.tfBtn, styles[theme])}
                 onClick={onTransferConvert}
               >

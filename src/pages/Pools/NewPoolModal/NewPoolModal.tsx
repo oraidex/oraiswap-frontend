@@ -331,10 +331,10 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               thousandSeparator
               decimalScale={6}
               type="text"
-            // value={supplyToken2 ? supplyToken2 : ''}
-            // onValueChange={({ floatValue }) => {
-            //   setSupplyToken2(floatValue);
-            // }}
+              // value={supplyToken2 ? supplyToken2 : ''}
+              // onValueChange={({ floatValue }) => {
+              //   setSupplyToken2(floatValue);
+              // }}
             />
             <span>%</span>
           </div>
@@ -353,7 +353,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         <div className={cx('back-btn')} onClick={() => setStep(2)}>
           Back
         </div>
-        <div className={cx('swap-btn')} onClick={() => { }}>
+        <div className={cx('swap-btn')} onClick={() => {}}>
           Create
         </div>
       </div>
