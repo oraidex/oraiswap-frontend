@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { TokenInfo } from 'types/token';
 import { useDebounce } from 'hooks/useDebounce';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
+import { handleErrorRateLimit } from 'helper';
 
 export const getRouterConfig = (options?: {
   path?: string;
@@ -15,7 +16,8 @@ export const getRouterConfig = (options?: {
   ignoreFee?: boolean;
 }) => {
   return {
-    url: 'https://osor.oraidex.io',
+    // url: 'https://osor.oraidex.io',
+    url: 'https://osor-staging.oraidex.io',
     path: options?.path ?? '/smart-router/alpha-router',
     protocols: options?.protocols ?? ['Oraidex', 'OraidexV3'],
     dontAllowSwapAfter: options?.dontAllowSwapAfter ?? ['Oraidex', 'OraidexV3'],
@@ -76,15 +78,7 @@ export const useSimulate = (
           const error = res.routes?.error || {};
           const errorMsg = error.message || '';
 
-          if (
-            errorMsg.toLowerCase().includes('with status code 429') ||
-            errorMsg.toLowerCase().includes('network error')
-          ) {
-            displayToast(TToastType.TX_INFO, {
-              message:
-                'You are reached limit call to rpc. Please wait a few minutes or change your network to continue!'
-            });
-          }
+          handleErrorRateLimit(errorMsg);
         }
 
         return res;
