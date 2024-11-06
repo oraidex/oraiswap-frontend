@@ -5,12 +5,10 @@ import svgr from 'vite-plugin-svgr';
 import wasm from 'vite-plugin-wasm';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import path from 'path';
-import vitePluginRequire from 'vite-plugin-require';
-import commonjs from 'vite-plugin-commonjs';
 
 export default defineConfig({
   base: '',
-  plugins: [react(), commonjs(), wasm(), viteTsconfigPaths(), svgr(), nodePolyfills()],
+  plugins: [react(), wasm(), viteTsconfigPaths(), svgr(), nodePolyfills()],
   server: {
     open: true,
     port: 3000
@@ -36,14 +34,13 @@ export default defineConfig({
     }
   },
   build: {
-    minify: false,
     commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
     rollupOptions: {}
+  },
+  esbuild: {
+    supported: {
+      'top-level-await': true //browsers can handle top-level-await features
+    }
   }
-  // esbuild: {
-  //   supported: {
-  //     'top-level-await': true //browsers can handle top-level-await features
-  //   }
-  // }
 });
