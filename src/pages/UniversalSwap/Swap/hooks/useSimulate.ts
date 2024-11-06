@@ -89,7 +89,7 @@ export const useSimulate = (
 
         return res;
       } catch (error) {
-        console.log('error123r', error);
+        console.log('error simulate FE', error);
       }
     },
     {
