@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { TokenInfo } from 'types/token';
 import { useDebounce } from 'hooks/useDebounce';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 
 export const getRouterConfig = (options?: {
   path?: string;
@@ -57,18 +58,39 @@ export const useSimulate = (
   if (simulateOption?.isAvgSimulate) enabled = false;
   const { data: simulateData, isPreviousData: isPreviousSimulate } = useQuery(
     [queryKey, fromTokenInfoData, toTokenInfoData, debouncedFromAmount],
-    () => {
-      return UniversalSwapHelper.handleSimulateSwap({
-        originalFromInfo: originalFromTokenInfo,
-        originalToInfo: originalToTokenInfo,
-        originalAmount: debouncedFromAmount,
-        routerClient,
-        routerOption: {
-          useAlphaIbcWasm: simulateOption?.useAlphaIbcWasm,
-          useIbcWasm: simulateOption?.useIbcWasm
-        },
-        routerConfig: getRouterConfig(simulateOption)
-      });
+    async () => {
+      try {
+        const res = await UniversalSwapHelper.handleSimulateSwap({
+          originalFromInfo: originalFromTokenInfo,
+          originalToInfo: originalToTokenInfo,
+          originalAmount: debouncedFromAmount,
+          routerClient,
+          routerOption: {
+            useAlphaIbcWasm: simulateOption?.useAlphaIbcWasm,
+            useIbcWasm: simulateOption?.useIbcWasm
+          },
+          routerConfig: getRouterConfig(simulateOption)
+        });
+
+        if (res.routes?.error) {
+          const error = res.routes?.error || {};
+          const errorMsg = error.message || '';
+
+          if (
+            errorMsg.toLowerCase().includes('with status code 429') ||
+            errorMsg.toLowerCase().includes('network error')
+          ) {
+            displayToast(TToastType.TX_INFO, {
+              message:
+                'You are reached limit call to rpc. Please wait a few minutes or change your network to continue!'
+            });
+          }
+        }
+
+        return res;
+      } catch (error) {
+        console.log('error123r', error);
+      }
     },
     {
       keepPreviousData: true,
