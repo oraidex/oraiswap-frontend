@@ -19,7 +19,8 @@ import { persistor, store } from 'store/configure';
 import './index.scss';
 import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
-import { loadOraichainTokens } from '@oraichain/oraidex-common';
+const { oraichainTokens } = await import('@oraichain/oraidex-common');
+console.log({ oraichainTokens });
 
 // const client = new Client({
 //   url: 'http://10.10.20.72:3000/',
@@ -66,7 +67,6 @@ const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(ne
 window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 
 const initApp = async () => {
-  await loadOraichainTokens();
   const root = createRoot(document.getElementById('oraiswap'));
   root.render(
     <Provider store={store}>
