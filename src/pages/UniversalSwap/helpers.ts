@@ -390,14 +390,7 @@ export const getProtocolsSmartRoute = (
 };
 
 export const isAllowAlphaIbcWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
-  // from chainId and to chainId is CELESTIA_CHAIN_ID & INJECTVE_CHAIN_ID
-  if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID)) return true;
-  if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)) return true;
-  // cosmos -> cosmos
-  if (toToken?.cosmosBased && fromToken?.cosmosBased) return true;
-  // TODO: hardcode case bridge bitcoin
-  if (toToken?.coinGeckoId === 'bitcoin' && fromToken?.coinGeckoId === 'bitcoin') return true;
-  return false;
+  return true;
 };
 
 const toCoinGeckoIds = ['osmosis', 'cosmos', 'oraichain-token', 'usd-coin'];
@@ -428,45 +421,6 @@ const listAllowSmartRoute = {
  * @returns boolean
  */
 export const isAllowIBCWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
-  const fromTokenIsOraichain = fromToken?.chainId === 'Oraichain';
-  const fromTokenIsCosmos = fromToken?.cosmosBased;
-
-  const toTokenIsOraichain = toToken?.chainId === 'Oraichain';
-  const toTokenIsCosmos = toToken?.cosmosBased;
-
-  // ----------------------------------- new msg
-  // from chainId and to chainId is CELESTIA_CHAIN_ID or INJECTVE_CHAIN_ID
-  if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)) return false;
-  if ([toToken?.chainId, fromToken?.chainId].includes(COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID)) return false;
-  // cosmos -> cosmos
-  if (fromTokenIsCosmos && toTokenIsCosmos) return false;
-  // -----------------------------------
-
-  // TODO: hardcode case bridge bitcoin
-  if (toToken?.coinGeckoId === 'bitcoin' && fromToken?.coinGeckoId === 'bitcoin') return false;
-
-  // Oraichain -> Oraichain or Cosmos
-  if (fromTokenIsOraichain) {
-    if (toToken?.chainId == 'Neutaro-1') return true;
-    if (toTokenIsOraichain || toTokenIsCosmos) return false;
-  }
-  // Oraichain or Cosmos -> Evm
-  if ((fromTokenIsOraichain || fromTokenIsCosmos) && !toTokenIsCosmos) return true;
-  // Evm -> EVM
-  if (!fromTokenIsCosmos && !toTokenIsCosmos && toToken?.chainId === fromToken?.chainId) return false;
-  // Evm -> Oraichain or Cosmos
-  if (!fromTokenIsCosmos) return true;
-
-  // Cosmos -> Cosmos or Oraichain
-  if (fromTokenIsCosmos && toTokenIsCosmos) {
-    const key = [fromToken, toToken].map((e) => e.chainId).join('-');
-    const hasTokenUsingSmartRoute =
-      listAllowSmartRoute[key]?.fromCoinGeckoIds.includes(fromToken?.coinGeckoId) &&
-      listAllowSmartRoute[key]?.toCoinGeckoIds.includes(toToken?.coinGeckoId);
-    if (hasTokenUsingSmartRoute) return false;
-    return true;
-  }
-
   return false;
 };
 
