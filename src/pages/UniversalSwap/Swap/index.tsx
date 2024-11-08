@@ -694,14 +694,14 @@ const SwapComponent: React.FC<{
                 usdPrice={usdPriceShowFrom}
               />
               {/* !fromToken && !toTokenFee mean that this is internal swap operation */}
-              {!fromTokenFee && !toTokenFee && isWarningSlippage && (
+              {/* {!fromTokenFee && !toTokenFee && isWarningSlippage && (
                 <div className={cx('impact-warning')}>
                   <WarningIcon />
                   <div className={cx('title')}>
                     <span>&nbsp;Current slippage exceed configuration!</span>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
           <div className={cx('swap-center')}>
