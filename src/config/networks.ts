@@ -35,6 +35,6 @@ export const network: CustomChainInfo & NetworkConfig & { pool_v3: string; index
   multicall: MULTICALL_CONTRACT,
   explorer: 'https://scan.orai.io',
   pool_v3: AMM_V3_CONTRACT,
+  // FIXME: use staging to test permissonless listing. use prod later.
   indexer_v3: 'https://staging-ammv3-indexer.oraidex.io/'
 };
-  
