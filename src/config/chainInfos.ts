@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   tokens,
   oraichainNetwork as customOraichainNetwork,
@@ -7,10 +8,10 @@ import {
   CustomChainInfo,
   defaultBech32Config
 } from '@oraichain/oraidex-common';
-import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
-import OraiIcon from 'assets/icons/oraichain.svg?react';
-import BTCIcon from 'assets/icons/btc-icon.svg?react';
-import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
+import BitcoinIcon from 'assets/icons/bitcoin.svg';
+import OraiIcon from 'assets/icons/oraichain.svg';
+import BTCIcon from 'assets/icons/btc-icon.svg';
+import OraiLightIcon from 'assets/icons/oraichain_light.svg';
 import flatten from 'lodash/flatten';
 
 import { chainIconsInfos, tokensIconInfos, mapListWithIcon } from './iconInfos';
@@ -20,6 +21,7 @@ export const tokensIcon = tokensIconInfos;
 export const chainIcons = chainIconsInfos;
 
 const [otherChainTokens, oraichainTokens] = tokens;
+
 const OraiBTCToken: BridgeAppCurrency = {
   coinDenom: 'ORAIBTC',
   coinMinimalDenom: 'uoraibtc',

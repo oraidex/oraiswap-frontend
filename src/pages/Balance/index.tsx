@@ -8,7 +8,7 @@ import {
   flattenTokens,
   getTokenOnOraichain,
   KWT_SCAN,
-  NetworkChainId,
+  string,
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
   toAmount,
   TokenItemType,
@@ -452,7 +452,7 @@ const Balance: React.FC<BalanceProps> = () => {
     processTxResult(from.rpc, result, `${KWT_SCAN}/tx/${result.transactionHash}`);
   };
 
-  const getLatestEvmAddress = async (toNetworkChainId: NetworkChainId) => {
+  const getLatestEvmAddress = async (toNetworkChainId: string) => {
     const isFromEvmNotTron = from.chainId !== '0x2b6653dc' && EVM_CHAIN_ID.includes(from.chainId);
     const isToNetworkEvmNotTron = toNetworkChainId !== '0x2b6653dc' && EVM_CHAIN_ID.includes(toNetworkChainId);
     // switch network for metamask, exclude TRON
@@ -472,7 +472,7 @@ const Balance: React.FC<BalanceProps> = () => {
     fromAmount: number,
     from: TokenItemType,
     to: TokenItemType,
-    toNetworkChainId?: NetworkChainId
+    toNetworkChainId?: string
   ) => {
     try {
       await handleCheckWallet();
@@ -753,7 +753,7 @@ const Balance: React.FC<BalanceProps> = () => {
                           onClickToken(t);
                         }
                       }}
-                      onClickTransfer={async (fromAmount: number, filterNetwork?: NetworkChainId) => {
+                      onClickTransfer={async (fromAmount: number, filterNetwork?: string) => {
                         await onClickTransfer(fromAmount, from, to, filterNetwork);
                       }}
                       convertKwt={async (transferAmount: number, fromToken: TokenItemType) => {

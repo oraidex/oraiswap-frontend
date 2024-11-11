@@ -21,10 +21,12 @@ export const initPairSwap = (): [string, string] => {
   const toDenom = originalToToken?.denom;
 
   if (!fromDenom || !toDenom || fromDenom === toDenom) {
-    return ['usdt', 'orai'];
+    // return ['usdt', 'orai'];
+    return ['cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh', 'orai'];
   }
 
-  return [fromDenom || 'usdt', toDenom || 'orai'];
+  // return [fromDenom || 'usdt', toDenom || 'orai'];
+  return [fromDenom || 'cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh', toDenom || 'orai'];
 };
 
 // URL: /universalswap?from=orai&to=usdt

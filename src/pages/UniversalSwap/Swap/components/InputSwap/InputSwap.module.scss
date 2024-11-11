@@ -202,6 +202,7 @@
           text-overflow: ellipsis;
           font-size: 14px;
           font-weight: 500;
+          text-transform: capitalize;
 
           @include theme() {
             color: theme-get('colors-neutral-text-text-token-name');
@@ -274,7 +275,7 @@
       }
     }
 
-    &>span {
+    & > span {
       text-align: right;
     }
 

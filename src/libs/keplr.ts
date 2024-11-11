@@ -3,7 +3,6 @@ import { ChainInfo, FeeCurrency, Keplr as keplr, Key } from '@keplr-wallet/types
 import {
   CosmosChainId,
   CosmosWallet,
-  NetworkChainId,
   TokenItemType,
   WalletType,
   checkValidateAddressWithNetwork
@@ -121,7 +120,7 @@ export default class Keplr extends CosmosWallet {
         if (!['oraibtc-mainnet-1', 'bitcoin'].includes(chainId)) {
           const keplrKey = await keplr.getKey(chainId);
           if (!keplrKey?.bech32Address) return undefined;
-          const { isValid } = checkValidateAddressWithNetwork(keplrKey?.bech32Address, chainId as NetworkChainId);
+          const { isValid } = checkValidateAddressWithNetwork(keplrKey?.bech32Address, chainId as any);
           if (!isValid) return undefined;
         }
 
@@ -132,7 +131,7 @@ export default class Keplr extends CosmosWallet {
     }
   }
 
-  async getKeplrAddr(chainId?: NetworkChainId): Promise<string | undefined> {
+  async getKeplrAddr(chainId?: string): Promise<string | undefined> {
     // not support network.chainId (Oraichain)
     chainId = chainId ?? network.chainId;
     try {

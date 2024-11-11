@@ -11,7 +11,7 @@ import {
 } from '@oraichain/oraidex-common';
 import { getSourceReceiver } from '@oraichain/oraidex-universal-swap';
 import { cosmosTokens, flattenTokens, oraichainTokens } from 'config/bridgeTokens';
-import { CoinGeckoId, NetworkChainId } from '@oraichain/oraidex-common';
+import { CoinGeckoId, string } from '@oraichain/oraidex-common';
 import {
   BSC_SCAN,
   ETHEREUM_SCAN,
@@ -130,7 +130,7 @@ describe('bridge', () => {
     expect(assetInfo).toMatchObject(ORAI_INFO);
   });
 
-  it.each<[TokenItemType, NetworkChainId, string, CoinGeckoId]>([
+  it.each<[TokenItemType, string, string, CoinGeckoId]>([
     [
       flattenTokens.find((item) => item.name === 'MILKY' && item.chainId === 'Oraichain'),
       '0x38',
@@ -177,14 +177,14 @@ describe('bridge', () => {
     }
   );
 
-  it.each<[NetworkChainId, string, string]>([
+  it.each<[string, string, string]>([
     ['0x38', '0x', `${BSC_SCAN}/tx/0x`],
     ['0x01', '0x', `${ETHEREUM_SCAN}/tx/0x`],
     ['0x2b6653dc', '0x1234', `${TRON_SCAN}/#/transaction/1234`],
     ['Oraichain', '0x', `${network.explorer}/txs/0x`]
   ])(
     'bridge-test-get-transaciton-url given chainId %s should give expected URL %s',
-    (chainId: NetworkChainId, transactionHash: any, expectedUrl: string) => {
+    (chainId: string, transactionHash: any, expectedUrl: string) => {
       const url = getTransactionUrl(chainId, transactionHash);
       expect(url).toBe(expectedUrl);
     }
@@ -248,13 +248,13 @@ describe('bridge', () => {
   });
 
   // describe('helper function', () => {
-  //   it.each<[Tokens, NetworkChainId[]]>([
+  //   it.each<[Tokens, string[]]>([
   //     [
   //       flattenTokens.find((i) => i.coinGeckoId === 'oraichain-token' && i.chainId === 'Oraichain'),
   //       ['injective-1', '0x01', '0x38']
   //     ],
   //     [flattenTokens.find((i) => i.name === 'MILKY' && i.chainId === 'Oraichain'), ['kawaii_6886-1', '0x38']]
-  //   ])('should filter chain bridge run exactly', async (token: Tokens, expectedBridgeNetwork: NetworkChainId[]) => {
+  //   ])('should filter chain bridge run exactly', async (token: Tokens, expectedBridgeNetwork: string[]) => {
   //     const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
   //     expect(bridgeNetworks.map((network) => network.chainId)).toEqual(expectedBridgeNetwork);
   //   });

@@ -79,7 +79,7 @@
       background-color: #f7f7f7;
       border-radius: 8px;
 
-      &>div:last-child {
+      & > div:last-child {
         border-bottom: none;
       }
 
@@ -118,6 +118,7 @@
                 font-style: normal;
                 font-weight: 500;
                 line-height: 150%;
+                text-transform: capitalize;
 
                 @include theme() {
                   color: theme-get('neutral-text-text-token-name');

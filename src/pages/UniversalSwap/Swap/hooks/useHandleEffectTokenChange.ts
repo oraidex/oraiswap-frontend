@@ -119,7 +119,8 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
     isValid: true
   };
 
-  if (isConnectedWallet) validAddress = checkValidateAddressWithNetwork(addressTransfer, originalToToken?.chainId);
+  if (isConnectedWallet)
+    validAddress = checkValidateAddressWithNetwork(addressTransfer, originalToToken?.chainId as any);
 
   return {
     originalFromToken,

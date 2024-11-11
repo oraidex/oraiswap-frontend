@@ -1,7 +1,7 @@
 import {
   BigDecimal,
   // flattenTokens
-  NetworkChainId,
+  string,
   toDisplay,
   TokenItemType,
   BTC_CONTRACT
@@ -63,7 +63,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
   const [transferLoading, setTransferLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>(bridgeNetworks[0]?.chainId);
+  const [toNetworkChainId, setToNetworkChainId] = useState<string>(bridgeNetworks[0]?.chainId);
   const [isOpen, setIsOpen] = useState(false);
   const [chainInfo] = useConfigReducer('chainInfo');
   const [theme] = useConfigReducer('theme');

@@ -133,6 +133,10 @@
       display: flex;
       margin-bottom: 10px;
       gap: 6px;
+
+      .selectChainItemTitle {
+        text-transform: capitalize;
+      }
     }
   }
 
@@ -191,6 +195,10 @@
           .selectChainItemLogo {
             width: 38px;
             height: 38px;
+          }
+
+          .selectChainItemTitle {
+            text-transform: capitalize;
           }
         }
       }

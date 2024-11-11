@@ -87,46 +87,56 @@ export const MyWallet: React.FC<{
   ) => {
     return (
       <div className={styles.addressByNetworkItem}>
-        {networkWithIcons.map((network, index) => {
-          const chainAddress = getChainAddress(network);
-          let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
-          if (!NetworkIcon) NetworkIcon = DefaultIcon;
+        {networkWithIcons
+          .sort((a, b) => {
+            if (a.chainId === 'Oraichain' && b.chainId !== 'Oraichain') {
+              return -1;
+            }
+            if (a.chainId !== 'Oraichain' && b.chainId == 'Oraichain') {
+              return 1;
+            }
+            return String(b.chainName).localeCompare(a.chainName);
+          })
+          .map((network, index) => {
+            const chainAddress = getChainAddress(network);
+            let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
+            if (!NetworkIcon) NetworkIcon = DefaultIcon;
 
-          return !chainAddress ? null : (
-            <div className={styles.addressByChainInNetwork} key={network.chainId}>
-              <div className={styles.left}>
-                <div className={styles.icon}>
-                  <div className={styles.iconChain}>
-                    <NetworkIcon width={30} height={30} />
-                  </div>
+            return !chainAddress ? null : (
+              <div className={styles.addressByChainInNetwork} key={network.chainId}>
+                <div className={styles.left}>
+                  <div className={styles.icon}>
+                    <div className={styles.iconChain}>
+                      <NetworkIcon width={30} height={30} />
+                    </div>
 
-                  <div className={styles.iconWalletByChain}>
-                    <walletNetwork.icon width={18} height={18} />
+                    <div className={styles.iconWalletByChain}>
+                      <walletNetwork.icon width={18} height={18} />
+                    </div>
                   </div>
-                </div>
-                <div className={styles.info}>
-                  <div className={styles.chainName}>{network.chainName}</div>
-                  <div className={styles.chainAddress}>
-                    <span>{reduceString(chainAddress, 6, 6)}</span>
-                    <div className={styles.copyBtn} onClick={(e) => handleCopy(chainAddress)}>
-                      {isCopied && copiedValue === chainAddress ? (
-                        <SuccessIcon width={15} height={15} />
-                      ) : (
-                        <CopyIcon width={15} height={15} />
-                      )}
+                  <div className={styles.info}>
+                    <div className={styles.chainName}>{network.chainName}</div>
+                    <div className={styles.chainAddress}>
+                      <span>{reduceString(chainAddress, 6, 6)}</span>
+                      <div className={styles.copyBtn} onClick={(e) => handleCopy(chainAddress)}>
+                        {isCopied && copiedValue === chainAddress ? (
+                          <SuccessIcon width={15} height={15} />
+                        ) : (
+                          <CopyIcon width={15} height={15} />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+                {index === 0 && (
+                  <DisconnectButton
+                    setIsShowDisconnect={setIsShowDisconnect}
+                    onSetCurrentDisconnectingNetwork={() => setCurrentDisconnectingNetwork(network.typeChain)}
+                  />
+                )}
               </div>
-              {index === 0 && (
-                <DisconnectButton
-                  setIsShowDisconnect={setIsShowDisconnect}
-                  onSetCurrentDisconnectingNetwork={() => setCurrentDisconnectingNetwork(network.typeChain)}
-                />
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     );
   };

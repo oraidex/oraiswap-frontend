@@ -4,7 +4,6 @@ import {
   CoinGeckoId,
   CoinIcon,
   IBC_WASM_CONTRACT,
-  NetworkChainId,
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
@@ -101,7 +100,7 @@ export function filterNonPoolEvmTokens(
     filteredToTokens = filteredTokens;
   }
   // special case filter. Tokens on networks other than supported evm cannot swap to tokens, so we need to remove them
-  if (!UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chainId as NetworkChainId)) {
+  if (!UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chainId as any)) {
     return filteredToTokens.filter((t) => {
       // one-directional swap. non-pool tokens of evm network can swap be swapped with tokens on Oraichain, but not vice versa
       const isSupported = UniversalSwapHelper.isSupportedNoPoolSwapEvm(t.coinGeckoId);
@@ -109,7 +108,7 @@ export function filterNonPoolEvmTokens(
       if (direction === SwapDirection.To) return !isSupported;
       if (isSupported) {
         // if we cannot find any matched token then we dont include it in the list since it cannot be swapped
-        const sameChainId = getTokenOnSpecificChainId(coingeckoId, t.chainId as NetworkChainId);
+        const sameChainId = getTokenOnSpecificChainId(coingeckoId, t.chainId as any);
         if (!sameChainId) return false;
         return true;
       }
@@ -124,7 +123,7 @@ export function filterNonPoolEvmTokens(
   });
 }
 
-export const checkEvmAddress = (chainId: NetworkChainId, metamaskAddress?: string, tronAddress?: string | boolean) => {
+export const checkEvmAddress = (chainId: string, metamaskAddress?: string, tronAddress?: string | boolean) => {
   switch (chainId) {
     case '0x01':
     case '0x38':
@@ -159,8 +158,8 @@ export const getSwapType = ({
   fromCoingeckoId,
   toCoingeckoId
 }: {
-  fromChainId: NetworkChainId;
-  toChainId: NetworkChainId;
+  fromChainId: string;
+  toChainId: string;
   fromCoingeckoId: CoinGeckoId;
   toCoingeckoId: CoinGeckoId;
 }): SwapType => {
@@ -171,7 +170,7 @@ export const getSwapType = ({
   return 'Universal Swap';
 };
 
-export const getExplorerScan = (chainId: NetworkChainId) => {
+export const getExplorerScan = (chainId: string) => {
   switch (chainId) {
     case '0x01':
       return 'https://etherscan.io/tx';
@@ -318,7 +317,7 @@ export const getFromToToken = (
 };
 
 export const getRemoteDenom = (originalToken: TokenItemType) => {
-  return originalToken.contractAddress ? originalToken.prefix + originalToken.contractAddress : originalToken.denom;
+  return originalToken?.contractAddress ? originalToken.prefix + originalToken.contractAddress : originalToken?.denom;
 };
 
 export const getTokenBalance = (originalToken: TokenItemType, amounts: AmountDetails, subAmount: bigint) => {

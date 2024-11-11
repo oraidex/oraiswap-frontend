@@ -20,7 +20,7 @@ import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { bitcoinChainId, leapSnapId } from './constants';
 import { getSnap } from '@leapwallet/cosmos-snap-provider';
 import { Bech32Config } from '@keplr-wallet/types';
-import { CustomChainInfo, EvmDenom, NetworkChainId, TokenItemType } from '@oraichain/oraidex-common';
+import { CustomChainInfo, EvmDenom, TokenItemType } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { WalletType } from 'components/WalletManagement/walletConfig';
@@ -34,8 +34,8 @@ import { numberWithCommas } from './format';
 
 export interface Tokens {
   denom?: string;
-  chainId?: NetworkChainId;
-  bridgeTo?: Array<NetworkChainId>;
+  chainId?: string;
+  bridgeTo?: Array<string>;
 }
 
 export interface InfoError {
@@ -45,7 +45,7 @@ export interface InfoError {
 
 export type DecimalLike = string | number | bigint | BigDecimal;
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-export const EVM_CHAIN_ID: NetworkChainId[] = evmChains.map((c) => c.chainId);
+export const EVM_CHAIN_ID: string[] = evmChains.map((c) => c.chainId);
 export const networks = chainInfos.filter(
   (c) => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
 );
@@ -97,7 +97,7 @@ export const getSpecialCoingecko = (fromCoingecko: string, toCoingecko: string) 
   };
 };
 
-export const getTransactionUrl = (chainId: NetworkChainId, transactionHash: string) => {
+export const getTransactionUrl = (chainId: string, transactionHash: string) => {
   switch (Number(chainId)) {
     case Networks.bsc:
       return `${BSC_SCAN}/tx/${transactionHash}`;
@@ -134,6 +134,9 @@ export const getNetworkGasPrice = async (chainId): Promise<number> => {
 
 //hardcode fee
 export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
+  console.log({
+    tokenInfo
+  });
   if (!tokenInfo) return 0;
   const MULTIPLIER_ESTIMATE_OSMOSIS = 3.8;
   const MULTIPLIER_FIX = tokenInfo.chainId === 'osmosis-1' ? MULTIPLIER_ESTIMATE_OSMOSIS : MULTIPLIER;

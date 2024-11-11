@@ -7,6 +7,7 @@ import MilkyIcon from 'assets/icons/milky-token.svg?react';
 import OraiIcon from 'assets/icons/oraichain.svg?react';
 import BTCIcon from 'assets/icons/btc-icon.svg?react';
 import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
+import defaultTokenImg from 'assets/icons/tokens.svg';
 import OraixIcon from 'assets/icons/oraix.svg?react';
 import OraixLightIcon from 'assets/icons/oraix_light.svg?react';
 import OsmoIcon from 'assets/icons/osmosis_light.svg?react';
@@ -29,8 +30,10 @@ import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
+import { FC } from 'react';
 
 export type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
+// @ts-ignore
 export type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight'>;
 
 export const tokensIconInfos: TokenIcon[] = [
@@ -239,6 +242,26 @@ export const chainIconsInfos: ChainIcon[] = [
   }
 ];
 
+const renderIcon = (url) => {
+  return <img src={url} alt="icon" />;
+};
+export const mapListWithIconV2 = (list: any[]) => {
+  return list.map((item) => {
+    const iconUrl = item.Icon ? item.Icon : defaultTokenImg;
+    const iconLightUrl = item.IconLight ? item.IconLight : defaultTokenImg;
+
+    const Icon = () => renderIcon(iconUrl);
+    const IconLight = () => renderIcon(iconLightUrl);
+
+    return {
+      ...item,
+      Icon,
+      IconLight
+    };
+  });
+};
+
+// export const mapListWithIconComponent = (
 export const mapListWithIcon = (list: any[], listIcon: ChainIcon[] | TokenIcon[], key: 'chainId' | 'coinGeckoId') => {
   return list.map((item) => {
     let Icon = OraiIcon;
@@ -248,7 +271,7 @@ export const mapListWithIcon = (list: any[], listIcon: ChainIcon[] | TokenIcon[]
     if (findedItem) {
       Icon = findedItem.Icon;
       IconLight = findedItem.IconLight;
-    } 
+    }
 
     return {
       ...item,

@@ -3,7 +3,6 @@ import {
   CosmosChainId,
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
-  NetworkChainId,
   TON_ORAICHAIN_DENOM,
   TRON_DENOM,
   TokenItemType,
@@ -148,10 +147,10 @@ const SwapComponent: React.FC<{
   } = useHandleEffectTokenChange({ fromTokenDenomSwap, toTokenDenomSwap });
   const { addressTransfer, initAddressTransfer, setAddressTransfer } = addressInfo;
 
-  const getDefaultChainFrom = () => originalFromToken?.chainId || ('OraiChain' as NetworkChainId);
-  const getDefaultChainTo = () => originalToToken?.chainId || ('OraiChain' as NetworkChainId);
-  const [selectChainFrom, setSelectChainFrom] = useState<NetworkChainId>(getDefaultChainFrom());
-  const [selectChainTo, setSelectChainTo] = useState<NetworkChainId>(getDefaultChainTo());
+  const getDefaultChainFrom = () => originalFromToken?.chainId || ('OraiChain' as string);
+  const getDefaultChainTo = () => originalToToken?.chainId || ('OraiChain' as string);
+  const [selectChainFrom, setSelectChainFrom] = useState<string>(getDefaultChainFrom());
+  const [selectChainTo, setSelectChainTo] = useState<string>(getDefaultChainTo());
 
   // hooks
   useGetFeeConfig();
@@ -335,10 +334,12 @@ const SwapComponent: React.FC<{
         alphaSmartRoutes
       };
 
+      console.log({ swapData, alphaSmartRoutes });
+
       // @ts-ignore
       const univeralSwapHandler = new UniversalSwapHandler(swapData, {
         cosmosWallet: window.Keplr,
-        evmWallet: new Metamask(window.tronWebDapp),
+        evmWallet: new Metamask(window.tronWebDapp as any),
         swapOptions: {
           isAlphaIbcWasm: useAlphaIbcWasm,
           isIbcWasm: useIbcWasm
@@ -497,7 +498,7 @@ const SwapComponent: React.FC<{
     // because non-evm token cannot be swapped to evm token with no Oraichain pool
     if (
       UniversalSwapHelper.isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
-      !UniversalSwapHelper.isEvmNetworkNativeSwapSupported(toToken.chainId)
+      !UniversalSwapHelper.isEvmNetworkNativeSwapSupported(toToken.chainId as any)
     ) {
       return;
     }
@@ -853,7 +854,7 @@ const SwapComponent: React.FC<{
                 {swapLoading && <Loader width={20} height={20} />}
                 {/* hardcode check minimum tron */}
                 {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
-                  <span>Minimum amount: {(fromToken.minAmountSwap || '0') + ' ' + fromToken.name} </span>
+                  <span>Minimum amount: {'0' + ' ' + fromToken.name} </span>
                 ) : (
                   <span>{disableMsg || 'Swap'}</span>
                 )}

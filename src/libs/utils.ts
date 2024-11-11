@@ -1,10 +1,10 @@
 import {
   COSMOS_CHAIN_ID_COMMON,
-  NetworkChainId,
+  string,
   TokenItemType,
   getSubAmountDetails,
   toAmount,
-  toDisplay,
+  toDisplay
 } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import WalletConnectProvider from '@walletconnect/ethereum-provider';
@@ -221,7 +221,7 @@ export const initClient = async () => {
       network.chainId,
       COSMOS_CHAIN_ID_COMMON.ORAIBRIDGE_CHAIN_ID,
       COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID
-    ] as NetworkChainId[];
+    ] as string[];
     for (const chainId of arrChainIds) {
       await window.Keplr.suggestChain(chainId);
     }

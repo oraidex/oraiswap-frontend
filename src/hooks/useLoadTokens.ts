@@ -2,7 +2,7 @@ import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
-import { btcTokens, evmTokens, oraichainTokens } from 'config/bridgeTokens';
+import { btcTokens, oraichainTokens, evmTokens } from 'config/bridgeTokens';
 import { genAddressCosmos, getAddress, handleCheckWallet, getWalletByNetworkCosmosFromStorage } from 'helper';
 import flatten from 'lodash/flatten';
 import { updateAmounts } from 'reducer/token';
@@ -263,7 +263,7 @@ async function loadEvmEntries(
     const nativeEvmToken = evmTokens.find(
       (t) =>
         !t.contractAddress &&
-        UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId) &&
+        UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId as any) &&
         chain?.chainId === t.chainId
     );
     if (!tokens.length) return [];

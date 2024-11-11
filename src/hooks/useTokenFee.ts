@@ -1,6 +1,5 @@
 import {
   BigDecimal,
-  NetworkChainId,
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   TokenItemType,
@@ -25,11 +24,7 @@ import { updateFeeConfig } from 'reducer/token';
 import { fetchFeeConfig } from 'rest/api';
 import { RootState } from 'store/configure';
 
-export default function useTokenFee(
-  remoteTokenDenom: string,
-  fromChainId?: NetworkChainId,
-  toChainId?: NetworkChainId
-) {
+export default function useTokenFee(remoteTokenDenom: string, fromChainId?: string, toChainId?: string) {
   const [bridgeFee, setBridgeFee] = useState(0);
   const feeConfig = useSelector((state: RootState) => state.token.feeConfigs);
 

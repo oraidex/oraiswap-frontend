@@ -1,6 +1,5 @@
 import {
   CoinGeckoId,
-  NetworkChainId,
   GAS_ESTIMATION_SWAP_DEFAULT,
   GAS_ESTIMATION_BRIDGE_DEFAULT,
   AIRI_BSC_CONTRACT,
@@ -36,7 +35,7 @@ describe('universal-swap', () => {
     ];
     it.each(testCases)(
       'throws an error when not logged in to wallet (%s)',
-      (chainId: NetworkChainId, metamaskAddress?: string, tronAddress?: string | boolean) => {
+      (chainId: string, metamaskAddress?: string, tronAddress?: string | boolean) => {
         expect(() => {
           checkEvmAddress(chainId, metamaskAddress, tronAddress);
         }).toThrow();
