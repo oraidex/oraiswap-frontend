@@ -94,7 +94,7 @@
 
     @include theme {
       background: theme-get('colors-neutral-surface-bg');
-      backdrop-filter: blur(4px)
+      backdrop-filter: blur(4px);
     }
 
     .header {
@@ -218,7 +218,14 @@
             display: flex;
             align-self: center;
 
-            svg {
+            svg,
+            img {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              background: $white;
+              border: 1px solid $border;
+
               &:not(:first-child) {
                 transform: translateX(-6px);
               }
@@ -241,7 +248,6 @@
             border: 1px solid theme-get('colors-neutral-border-border-bold');
             border-radius: 6px;
           }
-
         }
       }
     }

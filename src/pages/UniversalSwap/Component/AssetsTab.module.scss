@@ -90,10 +90,13 @@
     display: flex;
     align-items: center;
 
-    .tokenIcon {
+    .tokenIcon,
+    img {
       width: 44px;
       height: 44px;
       border-radius: 50%;
+      background: $white;
+
       @include mobile() {
         width: 25px;
         height: 25px;

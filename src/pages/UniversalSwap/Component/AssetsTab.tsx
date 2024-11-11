@@ -13,7 +13,7 @@ import WalletIcon from 'assets/icons/wallet-v3.svg';
 import cn from 'classnames/bind';
 import { Table, TableHeaderProps } from 'components/Table';
 import ToggleSwitch from 'components/ToggleSwitch';
-import { tokensIcon } from 'config/chainInfos';
+import { flattenTokensWithIcon, tokensIcon } from 'config/chainInfos';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
@@ -87,7 +87,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     return isHide;
   };
 
-  const data = flattenTokens
+  const data = flattenTokensWithIcon
     .reduce((result, token) => {
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
       if (token.bridgeTo || token.contractAddress || (token.denom && token.chainId !== 'oraibridge-subnet-2')) {
@@ -106,8 +106,8 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
           result.push({
             asset: token.name,
             chain: token.org,
-            icon: tokenIcon?.Icon,
-            iconLight: tokenIcon?.IconLight,
+            icon: token.Icon,
+            iconLight: token.IconLight,
             price: tokenPrice,
             balance: toDisplay(totalAmount.toString(), token.decimals),
             denom: token.denom,

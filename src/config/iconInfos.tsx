@@ -245,10 +245,12 @@ export const chainIconsInfos: ChainIcon[] = [
 const renderIcon = (url) => {
   return <img src={url} alt="icon" />;
 };
-export const mapListWithIconV2 = (list: any[]) => {
+export const mapListWithIcon = (list: any[], listIcon: ChainIcon[] | TokenIcon[], key: 'chainId' | 'coinGeckoId') => {
   return list.map((item) => {
     const iconUrl = item.Icon ? item.Icon : defaultTokenImg;
     const iconLightUrl = item.IconLight ? item.IconLight : defaultTokenImg;
+
+    const findedItem = listIcon.find((icon) => icon[key] === item[key]);
 
     const Icon = () => renderIcon(iconUrl);
     const IconLight = () => renderIcon(iconLightUrl);
@@ -261,8 +263,11 @@ export const mapListWithIconV2 = (list: any[]) => {
   });
 };
 
-// export const mapListWithIconComponent = (
-export const mapListWithIcon = (list: any[], listIcon: ChainIcon[] | TokenIcon[], key: 'chainId' | 'coinGeckoId') => {
+export const mapListWithIconComponent = (
+  list: any[],
+  listIcon: ChainIcon[] | TokenIcon[],
+  key: 'chainId' | 'coinGeckoId'
+) => {
   return list.map((item) => {
     let Icon = OraiIcon;
     let IconLight = OraiLightIcon;

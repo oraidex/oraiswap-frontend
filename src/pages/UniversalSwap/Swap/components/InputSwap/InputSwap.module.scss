@@ -53,10 +53,13 @@
         align-items: center;
         justify-content: center;
 
-        .logo {
+        .logo,
+        img {
+          background: $white;
           border-radius: 50%;
           width: 38px;
           height: 38px;
+          margin-left: 0;
         }
       }
 
@@ -234,9 +237,13 @@
         align-items: center;
         justify-content: center;
 
-        .logo {
+        .logo,
+        img {
+          margin-left: 0;
           width: 20px;
           height: 20px;
+          border-radius: 50%;
+          background: $white;
 
           @include mobile {
             width: 18px;

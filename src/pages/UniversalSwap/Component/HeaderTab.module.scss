@@ -66,11 +66,16 @@
       color: theme-get('neutral-text-text-token-name');
     }
 
-    svg {
+    svg,
+    img {
       border-radius: 50%;
       width: 30px;
       height: 30px;
       vertical-align: middle;
+
+      @include theme {
+        background: $white;
+      }
     }
 
     .tokenName {

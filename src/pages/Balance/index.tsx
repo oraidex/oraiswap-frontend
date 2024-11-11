@@ -643,6 +643,8 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const network = networks.find((n) => n.chainId === filterNetworkUI) ?? networks[0];
 
+  console.log('network', network);
+
   return (
     <Content nonBackground>
       <div className={classNames(styles.wrapper, { [styles.isMaintainBridge]: isMaintainBridge })}>

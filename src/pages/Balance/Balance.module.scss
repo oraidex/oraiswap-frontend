@@ -145,11 +145,13 @@
     }
   }
 
-  &_logo {
+  &_logo img {
     display: flex;
     align-items: center;
     width: 32px;
     height: 32px;
+    background: $white;
+    border-radius: 50%;
   }
 
   input {

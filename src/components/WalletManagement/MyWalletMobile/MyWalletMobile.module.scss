@@ -1,7 +1,6 @@
 @import 'src/styles/mixins';
 @import 'src/styles/themes';
 
-
 .myWallets {
   width: 25%;
   max-width: 350px;
@@ -32,7 +31,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 16px;
-    border-bottom: 1px solid #EFEFEF;
+    border-bottom: 1px solid #efefef;
 
     .balance {
       @include theme() {
@@ -84,12 +83,12 @@
       background-color: #f7f7f7;
       border-radius: 8px;
 
-      &>div:last-child {
+      & > div:last-child {
         border-bottom: none;
       }
 
       .addressByNetworkItem {
-        border-bottom: 1px solid #DFE0DE;
+        border-bottom: 1px solid #dfe0de;
 
         .addressByChainInNetwork {
           display: flex;
@@ -105,6 +104,13 @@
             .icon {
               position: relative;
               width: fit-content;
+
+              .iconChain img {
+                background: $white;
+                border-radius: 50%;
+                width: 28px;
+                height: 28px;
+              }
 
               .iconWalletByChain {
                 position: absolute;
@@ -127,7 +133,6 @@
                 @include theme() {
                   color: theme-get('neutral-text-text-token-name');
                 }
-
               }
 
               .chainAddress {
@@ -170,7 +175,6 @@
                 }
               }
             }
-
           }
         }
       }

@@ -97,7 +97,8 @@
       font-weight: 400;
       line-height: 150%;
 
-      svg {
+      svg,
+      img {
         width: 28px;
         height: 28px;
       }
@@ -498,7 +499,6 @@
 .simulating {
   font-style: italic;
   font-size: small;
-  
 
   @include theme {
     color: theme-get('basic-primary-surface-default');
