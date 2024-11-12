@@ -68,18 +68,11 @@ const ZapInTab: FC<ZapInTabProps> = ({
   extendedPrice,
   setZapAmount,
   setFocusId,
-  setTokenZap
+  setTokenZap,
 }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   return (
-    // <div className={styles.introZap}>
-    //   <IconInfo />
-    //   <span>
-    //     Zap In: Instantly swap your chosen token for two pool tokens and provide liquidity to the pool, all in one
-    //     seamless transaction.
-    //   </span>
-    // </div>
     <>
       <div className={classNames(styles.itemInput, { [styles.disabled]: false })}>
         <div className={styles.tokenInfo}>
@@ -175,9 +168,10 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 {simulating && <div className={styles.mask} />}
                 <span>
                   {zapInResponse
-                    ? (tokenFrom && numberWithCommas(Number(zapInResponse.amountX) / 10 ** tokenFrom.decimals, undefined, {
+                    ? tokenFrom &&
+                      numberWithCommas(Number(zapInResponse.amountX) / 10 ** tokenFrom.decimals, undefined, {
                         maximumFractionDigits: 3
-                      }))
+                      })
                     : 0}
                 </span>
                 <span className={styles.usd}>
@@ -199,9 +193,10 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 {simulating && tokenTo && <div className={styles.mask} />}
                 <span>
                   {zapInResponse
-                    ? (tokenTo && numberWithCommas(Number(zapInResponse.amountY) / 10 ** tokenTo.decimals, undefined, {
+                    ? tokenTo &&
+                      numberWithCommas(Number(zapInResponse.amountY) / 10 ** tokenTo.decimals, undefined, {
                         maximumFractionDigits: 3
-                      }))
+                      })
                     : 0}
                 </span>
                 <span className={styles.usd}>
@@ -221,19 +216,23 @@ const ZapInTab: FC<ZapInTabProps> = ({
 
           <div className={styles.feeInfoWrapper}>
             <div className={styles.priceToken}>
-              {tokenFrom && <p className={styles.ratio}>
-                1 {tokenFrom.name} ≈ $
-                {extendedPrice?.[tokenFrom?.coinGeckoId]
-                  ? numberWithCommas(extendedPrice[tokenFrom.coinGeckoId], undefined, { maximumFractionDigits: 2 })
-                  : '0'}
-              </p>}
+              {tokenFrom && (
+                <p className={styles.ratio}>
+                  1 {tokenFrom.name} ≈ $
+                  {extendedPrice?.[tokenFrom?.coinGeckoId]
+                    ? numberWithCommas(extendedPrice[tokenFrom.coinGeckoId], undefined, { maximumFractionDigits: 2 })
+                    : '0'}
+                </p>
+              )}
               <p className={styles.divide}>/</p>
-              {tokenTo && <p className={styles.ratio}>
-                1 {tokenTo.name} ≈ $
-                {extendedPrice?.[tokenTo?.coinGeckoId]
-                  ? numberWithCommas(extendedPrice[tokenTo.coinGeckoId], undefined, { maximumFractionDigits: 2 })
-                  : '0'}
-              </p>}
+              {tokenTo && (
+                <p className={styles.ratio}>
+                  1 {tokenTo.name} ≈ $
+                  {extendedPrice?.[tokenTo?.coinGeckoId]
+                    ? numberWithCommas(extendedPrice[tokenTo.coinGeckoId], undefined, { maximumFractionDigits: 2 })
+                    : '0'}
+                </p>
+              )}
             </div>
             <div className={styles.item}>
               <div className={styles.info}>
