@@ -3094,17 +3094,6 @@
   resolved "https://registry.yarnpkg.com/@oraichain/common-contracts-sdk/-/common-contracts-sdk-1.0.31.tgz#595f93b168438d69d64896909b37855c9afc92fb"
   integrity sha512-s8H20RXy5gCnu3DnM7L5ClQyj2mdQpbSBpZrXCpIAX9qY0LKsDdZG3sYaDQ8+VN333jz9Pp/qGWdFSYD+6PBsg==
 
-"@oraichain/common@../oraichain-sdk/packages/common":
-  version "1.1.5"
-  dependencies:
-    "@keplr-wallet/types" "0.12.141"
-    axios "0.21.4"
-    axios-extensions "3.1.6"
-    bech32 "^1.1.4"
-    cosmjs-types "^0.8.0"
-    ethers "^5.5.1"
-    lodash "^4.17.21"
-
 "@oraichain/common@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.0.3.tgz#c6746473deed39622a1368a8f8f733a13f628a7e"
@@ -3112,6 +3101,19 @@
   dependencies:
     "@cosmjs/cosmwasm-stargate" "0.31.3"
     "@cosmjs/tendermint-rpc" "^0.31.3"
+    axios "0.21.4"
+    axios-extensions "3.1.6"
+    bech32 "^1.1.4"
+    cosmjs-types "^0.8.0"
+    ethers "^5.5.1"
+    lodash "^4.17.21"
+
+"@oraichain/common@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.1.5.tgz#72d2b2fe669110eb2176454e2071c7ce38a46115"
+  integrity sha512-XT9IfGr4W+7czTabLNHJke4oOohl1iRtNdG+JzngckFi4dH5zm79q1bHb1NnDwZVUaxvRZW8beQ1cBYlFwfsXQ==
+  dependencies:
+    "@keplr-wallet/types" "0.12.141"
     axios "0.21.4"
     axios-extensions "3.1.6"
     bech32 "^1.1.4"
@@ -3230,8 +3232,8 @@
     react-use "^17.4.0"
     react-use-websocket "^4.5.0"
 
-"@oraichain/oraidex-common@../oraidex-sdk/packages/oraidex-common":
-  version "1.1.28-beta.3"
+"@oraichain/oraidex-common@../oraidex-sdk/packages/oraidex-common", "@oraichain/oraidex-common@1.1.28-beta.5":
+  version "1.1.28-beta.5"
   dependencies:
     "@cosmjs/amino" "0.31.3"
     "@cosmjs/cosmwasm-stargate" "0.31.3"
@@ -3242,7 +3244,7 @@
     "@ethersproject/providers" "^5.0.10"
     "@injectivelabs/sdk-ts" "1.12.1"
     "@keplr-wallet/types" "^0.11.38"
-    "@oraichain/common" "../oraichain-sdk/packages/common"
+    "@oraichain/common" "^1.1.5"
     "@oraichain/oraidex-contracts-sdk" latest
     axios "1.7.2"
     axios-extensions "3.1.7"
@@ -3280,7 +3282,7 @@
   version "1.1.18"
   dependencies:
     "@oraichain/common" "^1.0.3"
-    "@oraichain/oraidex-common" "../oraidex-sdk/packages/oraidex-common"
+    "@oraichain/oraidex-common" "1.1.28-beta.5"
     "@oraichain/oraidex-contracts-sdk" "^1.0.49"
     "@oraichain/osor-api-contracts-sdk" "^1.0.2"
     bech32 "1.1.4"
@@ -3292,7 +3294,7 @@
   version "0.1.25"
   dependencies:
     "@cosmjs/cosmwasm-stargate" "^0.31.0"
-    "@oraichain/oraidex-common" "../oraidex-sdk/packages/oraidex-common"
+    "@oraichain/oraidex-common" "1.1.28-beta.5"
     "@oraichain/oraidex-contracts-sdk" "^1.0.53"
 
 "@oraichain/osor-api-contracts-sdk@^1.0.2":

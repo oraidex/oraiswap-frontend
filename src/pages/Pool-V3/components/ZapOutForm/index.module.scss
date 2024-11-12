@@ -24,7 +24,7 @@
   .mask {
     height: 170px;
     width: 100%;
-    
+
     @include theme {
       background: theme-get('neutral-text-text-disabled');
     }
@@ -628,7 +628,8 @@
       line-height: 150%;
       /* 24px */
 
-      svg {
+      svg,
+      img {
         width: 28px;
         height: 28px;
       }
@@ -801,7 +802,7 @@
     flex: 1;
 
     border-radius: 16px;
-    
+
     @include theme {
       background: theme-get('neutral-surface-bg-section');
     }
@@ -913,7 +914,7 @@
     flex: 1;
 
     border-radius: 16px;
-  
+
     @include theme {
       background: theme-get('neutral-surface-bg-section');
     }
