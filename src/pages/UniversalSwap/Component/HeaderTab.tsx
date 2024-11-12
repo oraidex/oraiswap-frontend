@@ -18,7 +18,7 @@ export type HeaderTabPropsType = {
   setHideChart: (isHideChart: boolean) => void;
   toTokenDenom: string;
   priceUsd: number;
-  priceChange: {
+  priceChange?: {
     price_change: number;
     price: number;
     isError?: boolean;
@@ -34,7 +34,7 @@ export const HeaderTab: React.FC<HeaderTabPropsType> = ({
   setHideChart,
   hideChart,
   priceUsd,
-  priceChange,
+  // priceChange,
   percentChangeUsd,
   chartTokenType,
   setChartTokenType,
@@ -52,7 +52,7 @@ export const HeaderTab: React.FC<HeaderTabPropsType> = ({
         hideChart={hideChart}
         onClickAction={() => setHideChart(!hideChart)}
         priceUsd={priceUsd}
-        priceChange={priceChange}
+        // priceChange={priceChange}
         percentChangeUsd={percentChangeUsd}
         chartTokenType={chartTokenType}
         showTokenInfo={showTokenInfo}
@@ -117,11 +117,10 @@ export const HeaderTop = ({
   hideChart,
   onClickAction,
   priceUsd,
-  priceChange,
   percentChangeUsd,
   chartTokenType,
   showTokenInfo = true
-}: Pick<HeaderTabPropsType, 'priceChange' | 'percentChangeUsd' | 'priceUsd' | 'chartTokenType'> & {
+}: Pick<HeaderTabPropsType, 'percentChangeUsd' | 'priceUsd' | 'chartTokenType'> & {
   showHideChart?: boolean;
   hideChart?: boolean;
   onClickAction: () => void;
