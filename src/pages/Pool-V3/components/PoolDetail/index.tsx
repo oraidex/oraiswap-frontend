@@ -277,9 +277,13 @@ const PoolV3Detail = () => {
             <div className={styles.item}>
               <span>Swap Fee</span>
               <p>
-                {numberWithCommas((aprInfo[poolKeyString]?.swapFee || 0) * 100, undefined, {
-                  maximumFractionDigits: 1
-                })}
+                {aprInfo[poolKeyString].swapFee.min === aprInfo[poolKeyString].swapFee.max
+                  ? `${numberWithCommas(aprInfo[poolKeyString].swapFee.min * 100, undefined, { maximumFractionDigits: 1 })}`
+                  : `${numberWithCommas(aprInfo[poolKeyString].swapFee.min * 100, undefined, {
+                      maximumFractionDigits: 1
+                    })} - ${numberWithCommas(aprInfo[poolKeyString].swapFee.max * 100, undefined, {
+                      maximumFractionDigits: 1
+                    })}`}
                 %
               </p>
             </div>

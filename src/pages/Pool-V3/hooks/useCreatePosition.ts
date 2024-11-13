@@ -93,7 +93,7 @@ const useCreatePosition = (
         }
       }
     })();
-  }, [pool, poolKey, tokenX, tokenY, xUsd, yUsd, amountX, amountY]);
+  }, [pool, poolKey, tokenX, tokenY, xUsd, yUsd, amountX, amountY, minTick, maxTick]);
 
   useEffect(() => {
     if (!(pool && minTick && maxTick)) return;
