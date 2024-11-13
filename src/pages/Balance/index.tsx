@@ -704,74 +704,76 @@ const Balance: React.FC<BalanceProps> = () => {
         <LoadingBox loading={loadingRefresh}>
           <div className={styles.tokens}>
             <div className={styles.tokens_form} ref={ref}>
-              {getFilterTokens(filterNetworkUI).map((t: TokenItemType) => {
-                // check balance cw20
-                let amount = BigInt(amounts[t.denom] ?? 0);
-                let usd = getUsd(amount, t, prices);
-                let subAmounts: AmountDetails;
-                if (t.contractAddress && t.evmDenoms) {
-                  subAmounts = getSubAmountDetails(amounts, t);
-                  const subAmount = toAmount(toSumDisplay(subAmounts), t.decimals);
-                  amount += subAmount;
-                  usd += getUsd(subAmount, t, prices);
-                }
-                // TODO: hardcode check bitcoinTestnet need update later
-                const isOwallet =
-                  walletByNetworks.cosmos &&
-                  walletByNetworks.cosmos === 'owallet' &&
-                  //@ts-ignore
-                  window?.owallet?.isOwallet;
+              {getFilterTokens(filterNetworkUI)
+                .filter((t) => t.coinGeckoId !== 'dogecoin')
+                .map((t: TokenItemType) => {
+                  // check balance cw20
+                  let amount = BigInt(amounts[t.denom] ?? 0);
+                  let usd = getUsd(amount, t, prices);
+                  let subAmounts: AmountDetails;
+                  if (t.contractAddress && t.evmDenoms) {
+                    subAmounts = getSubAmountDetails(amounts, t);
+                    const subAmount = toAmount(toSumDisplay(subAmounts), t.decimals);
+                    amount += subAmount;
+                    usd += getUsd(subAmount, t, prices);
+                  }
+                  // TODO: hardcode check bitcoinTestnet need update later
+                  const isOwallet =
+                    walletByNetworks.cosmos &&
+                    walletByNetworks.cosmos === 'owallet' &&
+                    //@ts-ignore
+                    window?.owallet?.isOwallet;
 
-                const isBtcToken = t.chainId === bitcoinChainId && t?.coinGeckoId === 'bitcoin';
-                const isV2 = false;
-                const TokenItemELement: React.FC<TokenItemProps> = isBtcToken && isV2 ? TokenItemBtc : TokenItem;
-                return (
-                  <div key={t.denom}>
-                    {!isOwallet && !isMobile() && isBtcToken && (
-                      <div className={styles.info}>
-                        <div>
-                          <TooltipIcon width={20} height={20} />
+                  const isBtcToken = t.chainId === bitcoinChainId && t?.coinGeckoId === 'bitcoin';
+                  const isV2 = false;
+                  const TokenItemELement: React.FC<TokenItemProps> = isBtcToken && isV2 ? TokenItemBtc : TokenItem;
+                  return (
+                    <div key={t.denom}>
+                      {!isOwallet && !isMobile() && isBtcToken && (
+                        <div className={styles.info}>
+                          <div>
+                            <TooltipIcon width={20} height={20} />
+                          </div>
+                          <span>Feature only supported on Owallet. Please connect Cosmos with Owallet</span>
                         </div>
-                        <span>Feature only supported on Owallet. Please connect Cosmos with Owallet</span>
-                      </div>
-                    )}
-                    <TokenItemELement
-                      onDepositBtc={async () => {
-                        setIsDepositBtcModal(true);
-                      }}
-                      isBtcOfOwallet={isOwallet || isMobile()}
-                      isBtcToken={isBtcToken}
-                      className={classNames(styles.tokens_element, styles[theme])}
-                      key={t.denom}
-                      amountDetail={{ amount: amount.toString(), usd }}
-                      subAmounts={subAmounts}
-                      active={from?.denom === t.denom}
-                      token={t}
-                      theme={theme}
-                      onClick={() => {
-                        if (t.denom !== from?.denom) {
-                          onClickToken(t);
-                        }
-                      }}
-                      onClickTransfer={async (fromAmount: number, filterNetwork?: NetworkChainId) => {
-                        await onClickTransfer(fromAmount, from, to, filterNetwork);
-                      }}
-                      convertKwt={async (transferAmount: number, fromToken: TokenItemType) => {
-                        try {
-                          const result = await convertKwt(transferAmount, fromToken);
-                          processTxResult(from.rpc, result, getTransactionUrl(from.chainId, result.transactionHash));
-                        } catch (ex) {
-                          displayToast(TToastType.TX_FAILED, {
-                            message: ex.message
-                          });
-                        }
-                      }}
-                      isFastMode={isFastMode}
-                      setIsFastMode={setIsFastMode}
-                    />
-                  </div>
-                );
-              })}
+                      )}
+                      <TokenItemELement
+                        onDepositBtc={async () => {
+                          setIsDepositBtcModal(true);
+                        }}
+                        isBtcOfOwallet={isOwallet || isMobile()}
+                        isBtcToken={isBtcToken}
+                        className={classNames(styles.tokens_element, styles[theme])}
+                        key={t.denom}
+                        amountDetail={{ amount: amount.toString(), usd }}
+                        subAmounts={subAmounts}
+                        active={from?.denom === t.denom}
+                        token={t}
+                        theme={theme}
+                        onClick={() => {
+                          if (t.denom !== from?.denom) {
+                            onClickToken(t);
+                          }
+                        }}
+                        onClickTransfer={async (fromAmount: number, filterNetwork?: NetworkChainId) => {
+                          await onClickTransfer(fromAmount, from, to, filterNetwork);
+                        }}
+                        convertKwt={async (transferAmount: number, fromToken: TokenItemType) => {
+                          try {
+                            const result = await convertKwt(transferAmount, fromToken);
+                            processTxResult(from.rpc, result, getTransactionUrl(from.chainId, result.transactionHash));
+                          } catch (ex) {
+                            displayToast(TToastType.TX_FAILED, {
+                              message: ex.message
+                            });
+                          }
+                        }}
+                        isFastMode={isFastMode}
+                        setIsFastMode={setIsFastMode}
+                      />
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </LoadingBox>
