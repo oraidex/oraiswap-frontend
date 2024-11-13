@@ -56,7 +56,6 @@ const otherChainTokens = flatten(
     .map(getTokensFromNetwork)
 );
 export const oraichainTokens: TokenItemType[] = getTokensFromNetwork(oraichainNetwork);
-
 export const tokens = [otherChainTokens, oraichainTokens];
 export const flattenTokens = flatten(tokens);
 export const tokenMap = Object.fromEntries(flattenTokens.map((c) => [c.denom, c]));

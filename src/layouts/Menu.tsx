@@ -185,7 +185,7 @@ const Menu: React.FC = () => {
       {renderLink('/pools', 'Pools', setLink, false, <PoolIcon />)}
       {renderLink('/staking', 'Staking', setLink, false, <StakingIcon />)}
       {renderLink('/co-harvest', 'Co-Harvest', setLink, false, <CohavestIcon />)}
-      {renderLink('/bitcoin-dashboard', 'BTC Dashboard', setLink, false, <BtcDashboardIcon />)}
+      {/* {renderLink('/bitcoin-dashboard', 'BTC Dashboard', setLink, false, <BtcDashboardIcon />)} */}
       {renderLink('/bitcoin-dashboard-v2', 'BTC V2', setLink, false, <BtcDashboardIcon />)}
       {!isBeta && renderLink('https://beta.oraidex.io', 'OraiDEX Beta', setLink, true, <OraidexBetaIcon />)}
       <div className={styles.divider}></div>

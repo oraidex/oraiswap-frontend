@@ -11,6 +11,7 @@ import ConvertBitcoinV2 from './components/ConvertBitcoinV2';
 import { NomicContext } from 'context/nomic-context';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
 import useConfigReducer from 'hooks/useConfigReducer';
+import RefundBTC from './components/RefundBTC/RefundBTC';
 
 const BitcoinDashboard: React.FC<{}> = () => {
   const [oraiAddress] = useConfigReducer('address');
@@ -32,7 +33,8 @@ const BitcoinDashboard: React.FC<{}> = () => {
   const tabComponents = {
     [KeysFilter.pending_deposits]: PendingDeposits,
     [KeysFilter.checkpoint]: Checkpoint,
-    [KeysFilter.pending_withdraws]: PendingWithdraws
+    [KeysFilter.pending_withdraws]: PendingWithdraws,
+    [KeysFilter.refund_btc]: RefundBTC
   };
 
   const renderTabs = () => {

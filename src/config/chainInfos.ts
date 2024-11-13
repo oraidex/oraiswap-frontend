@@ -146,15 +146,15 @@ export const OraiToken: BridgeAppCurrency = {
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
   currencies: [
-    ...customOraichainNetwork.currencies
-    // {
-    //   coinDenom: 'BTC V2',
-    //   coinGeckoId: 'bitcoin',
-    //   coinMinimalDenom: CWBitcoinFactoryDenom,
-    //   bridgeTo: ['bitcoin'] as any,
-    //   coinDecimals: 14 as any,
-    //   coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'
-    // }
+    ...customOraichainNetwork.currencies,
+    {
+      coinDenom: 'BTC',
+      coinGeckoId: 'bitcoin',
+      coinMinimalDenom: CWBitcoinFactoryDenom,
+      bridgeTo: ['bitcoin'] as any,
+      coinDecimals: 14 as any,
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'
+    }
   ]
 };
 
