@@ -585,10 +585,6 @@ const Balance: React.FC<BalanceProps> = () => {
         if (!ibcInfo)
           throw generateError(`Could not find the ibc info given the from token with coingecko id ${from.coinGeckoId}`);
 
-        console.log({
-          msgTransferEncode: `${getCosmosGasPrice(from.gasPriceStep)}${from.feeCurrencies[0].coinMinimalDenom}`
-        });
-
         const offlineSigner = await collectWallet(from.chainId);
         const client = await connectWithSigner(
           from.rpc,
@@ -603,8 +599,7 @@ const Balance: React.FC<BalanceProps> = () => {
         );
 
         const receiver = await handleCheckAddress(to.chainId);
-
-        let msgTransfer = MsgTransfer.fromPartial({
+        const msgTransfer = MsgTransfer.fromPartial({
           sourcePort: ibcInfo.source,
           receiver,
           sourceChannel: ibcInfo.channel,
