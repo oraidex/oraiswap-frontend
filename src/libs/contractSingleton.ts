@@ -499,43 +499,6 @@ export default class SingletonOraiswapV3 {
     return positions;
   }
 
-  // public static async queryPosition(): Promise<PositionInfo[]> {
-  //   const positionInfo: PositionInfo[] = [];
-
-  //   const allPools: PoolWithPoolKey[] = await this.getPools();
-
-  //   const poolList: Record<string, PoolWithPoolKey> = {};
-  //   allPools.forEach((pool) => {
-  //     poolList[poolKeyToString(pool.pool_key)] = pool;
-  //   });
-
-  //   await this.loadHandler();
-  //   const allPosition = await this._handler.allPositions();
-
-  //   for (const position of allPosition) {
-  //     const positionData = position;
-  //     const poolKey = position.pool_key;
-  //     const res = calculateTokenAmounts(poolList[poolKeyToString(poolKey)].pool as any, position as any);
-
-  //     const positionInfoData: PositionInfo = {
-  //       id: `${poolKeyToString(poolKey)}-${positionData.token_id}`,
-  //       tokenId: positionData.token_id,
-  //       poolId: poolKeyToString(poolKey),
-  //       status: true,
-  //       liquidity: BigInt(positionData.liquidity).toString(),
-  //       tickLower: positionData.lower_tick_index.toString(),
-  //       tickUpper: positionData.upper_tick_index.toString(),
-  //       principalAmountX: res.x.toString(),
-  //       principalAmountY: res.y.toString(),
-  //       createdAt: BigInt(Date.now()).toString()
-  //     };
-
-  //     positionInfo.push(positionInfoData);
-  //   }
-
-  //   return positionInfo;
-  // }
-
   public static getPoolLiquidities = async (
     pools: PoolWithPoolKey[],
     prices: CoinGeckoPrices<string>
