@@ -86,7 +86,8 @@ const useCreatePosition = (
           Number(xUsd),
           Number(yUsd),
           !isXBlocked && !isYBlocked,
-          feeDailyData
+          feeDailyData,
+          true
         );
         if (apr.total && !isXBlocked && !isYBlocked) {
           setApr(apr.total * 100);
