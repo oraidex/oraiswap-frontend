@@ -695,7 +695,8 @@ export async function fetchPositionAprInfo(
   tokenXLiquidityInUsd: number,
   tokenYLiquidityInUsd: number,
   isInRange: boolean,
-  feeAndLiquidityInfo: PoolFeeAndLiquidityDaily[]
+  feeAndLiquidityInfo: PoolFeeAndLiquidityDaily[],
+  isSimulate: boolean = false
 ): Promise<PositionAprInfo> {
   const avgFeeAPRs = feeAndLiquidityInfo.map((pool) => {
     const feeAPR = (pool.feeDaily * 365) / pool.liquidityDaily;
@@ -706,7 +707,9 @@ export async function fetchPositionAprInfo(
   });
   const feeAPR = avgFeeAPRs.find((fee) => fee.poolKey === poolKeyToString(position.pool_key))?.feeAPR;
 
-  const positionSwapFeeApr = simulateSwapAprPosition(feeAPR, Number(pool.pool.liquidity), Number(position.liquidity));
+  const positionSwapFeeApr = isSimulate
+    ? (Number(position.liquidity) * feeAPR) / (Number(pool.pool.liquidity) + Number(position.liquidity))
+    : (Number(position.liquidity) * feeAPR) / Number(pool.pool.liquidity);
 
   if (pool === undefined) {
     const poolInfo = await SingletonOraiswapV3.getPool(position.pool_key);
@@ -742,11 +745,7 @@ export async function fetchPositionAprInfo(
   };
 }
 
-export function simulateSwapAprPosition(
-  feeApr: number,
-  poolLiquidity: number,
-  positionLiquidity: number,
-) {
+export function simulateSwapAprPosition(feeApr: number, poolLiquidity: number, positionLiquidity: number) {
   return (positionLiquidity * feeApr) / (poolLiquidity + positionLiquidity);
 }
 
@@ -877,7 +876,11 @@ export async function fetchPoolAprInfo(
     const { pool, pool_key } = item;
     const feeAPR = avgFeeAPRs.find((fee) => fee.poolKey === poolKeyToString(pool_key))?.feeAPR;
 
-    const minSwapApr = simulateSwapAprPosition(feeAPR ? feeAPR : 0, Number(pool.liquidity), Number(pool.liquidity) * 0.01);
+    const minSwapApr = simulateSwapAprPosition(
+      feeAPR ? feeAPR : 0,
+      Number(pool.liquidity),
+      Number(pool.liquidity) * 0.01
+    );
     const maxSwapApr = simulateSwapAprPosition(feeAPR ? feeAPR : 0, Number(pool.liquidity), Number(pool.liquidity) * 1);
 
     if (pool.incentives === undefined) {

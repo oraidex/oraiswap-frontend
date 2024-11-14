@@ -94,7 +94,7 @@ import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 
-interface BalanceProps {}
+interface BalanceProps { }
 
 export const isMaintainBridge = false;
 
@@ -750,7 +750,6 @@ const Balance: React.FC<BalanceProps> = () => {
           <div className={styles.tokens}>
             <div className={styles.tokens_form} ref={ref}>
               {getFilterTokens(filterNetworkUI)
-                .filter((t) => t.coinGeckoId !== 'dogecoin')
                 .map((t: TokenItemType) => {
                   // check balance cw20
                   let amount = BigInt(amounts[t.denom] ?? 0);
