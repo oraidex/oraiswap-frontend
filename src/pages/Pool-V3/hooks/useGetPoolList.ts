@@ -7,9 +7,12 @@ import useTheme from 'hooks/useTheme';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getPools } from 'pages/Pools/hooks';
 import { useCallback, useEffect, useState } from 'react';
-import { PoolInfoResponse } from 'types/pool';
+import { OsmosisPoolInfoResponse, PoolInfoResponse } from 'types/pool';
 import { calcPrice } from '../components/PriceRangePlot/utils';
 import { extractAddress, formatPoolData } from '../helpers/format';
+import { getOsmosisPools } from './useGetDataOsmosisPools';
+
+export type AllPoolType = PoolWithPoolKey | PoolInfoResponse | OsmosisPoolInfoResponse;
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const theme = useTheme();
@@ -30,7 +33,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
     data: poolList,
     refetch: refetchPoolList,
     isLoading: isLoadingGetPoolList
-  } = useQuery<(PoolWithPoolKey | PoolInfoResponse)[]>(['pool-v3-pools', coingeckoPrices], () => getPoolList(), {
+  } = useQuery<AllPoolType[]>(['pool-v3-pools', coingeckoPrices], () => getPoolList(), {
     refetchOnWindowFocus: false,
     placeholderData: []
     // cacheTime: 5 * 60 * 1000,
@@ -40,11 +43,9 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     const newPrice = { ...coingeckoPrices };
-    const newCgkPrice = { ...cachePrices };
-    let numberOfRecordsUpdate = 0;
 
     for (const pool of poolList) {
-      if ('liquidityAddr' in pool) {
+      if ('liquidityAddr' in pool || 'isOsmosisPool' in pool) {
         continue;
       }
 
@@ -57,9 +58,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           // calculate price of X in Y from current sqrt price
           const price = calcPrice(pool.pool.current_tick_index, true, tokenX.decimals, tokenY.decimals);
           newPrice[tokenX.coinGeckoId || tokenX.denom] = price * prices[tokenY.coinGeckoId];
-
-          // newCgkPrice[tokenX.coinGeckoId || tokenX.denom] = price * prices[tokenY.coinGeckoId];
-          // numberOfRecordsUpdate = numberOfRecordsUpdate + 1;
         }
       }
 
@@ -68,21 +66,18 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           // calculate price of Y in X from current sqrt price
           const price = calcPrice(pool.pool.current_tick_index, false, tokenX.decimals, tokenY.decimals);
           newPrice[tokenY.coinGeckoId || tokenY.denom] = price * prices[tokenX.coinGeckoId];
-
-          // newCgkPrice[tokenY.coinGeckoId || tokenY.denom] = price * prices[tokenX.coinGeckoId];
-          // numberOfRecordsUpdate = numberOfRecordsUpdate + 1;
         }
       }
     }
 
     setPrices(newPrice);
-    // setCachePrices(newCgkPrice);
   }, [poolList]);
 
   useEffect(() => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     const fmtPools = (poolList || []).map(formatPoolDataCallback).filter((e) => e.isValid);
+
     setDataPool(fmtPools);
   }, [poolList, coingeckoPrices]);
 
@@ -95,17 +90,18 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   };
 };
 
-const getPoolList = async (): Promise<PoolWithPoolKey[]> => {
+const getPoolList = async (): Promise<AllPoolType[]> => {
   try {
-    // const pools = await SingletonOraiswapV3.getPools();
+    const [poolV3, poolV2, osmosisPools] = await Promise.allSettled([
+      SingletonOraiswapV3.getPools(),
+      getPools(),
+      getOsmosisPools()
+    ]);
 
-    const [poolV3, poolV2] = await Promise.allSettled([SingletonOraiswapV3.getPools(), getPools()]);
-
-    const res = [...(poolV3['value'] || []), ...(poolV2['value'] || [])];
-
+    const res = [...(poolV3['value'] || []), ...(poolV2['value'] || []), ...(osmosisPools['value'] || [])];
     return res;
   } catch (error) {
-    console.error('Failed to fetch all positions:', error);
+    console.error('Failed to fetch all pools:', error);
     return [];
   }
 };

@@ -27,6 +27,13 @@ export enum POOL_TYPE {
   V2 = 'Pool V2'
 }
 
+// chainName list
+export enum POOL_CHAIN {
+  ALL = 'All Network',
+  ORAICHAIN = 'Oraichain',
+  OSMOSIS = 'Osmosis'
+}
+
 type TabRender = {
   id: PoolV3PageType;
   value: string;
@@ -43,13 +50,16 @@ const listTabRender: TabRender[] = [
 const PoolV3 = () => {
   const theme = useTheme();
   const refFilter = useRef();
+  const refFilterChain = useRef();
   const [prices] = useConfigReducer('coingecko');
   const navigate = useNavigate();
   let [searchParams] = useSearchParams();
   const type = searchParams.get('type') as PoolV3PageType;
   const [search, setSearch] = useState<string>();
-  const [openFilter, setOpenFilter] = useState<boolean>(false);
+  const [openFilter, setOpenFilter] = useState<boolean>(null);
+  const [openFilterChain, setOpenFilterChain] = useState<boolean>(null);
   const [poolType, setPoolType] = useState<POOL_TYPE>(POOL_TYPE.ALL);
+  const [poolChain, setPoolChain] = useState<POOL_CHAIN>(POOL_CHAIN.ORAICHAIN);
   const bgUrl = theme === 'light' ? SearchLightSvg : SearchSvg;
   const { poolList } = useGetPoolList(prices);
 
@@ -63,7 +73,11 @@ const PoolV3 = () => {
   const Content = listTabRender.find((tab) => tab.id === type)?.content ?? PoolList;
 
   useOnClickOutside(refFilter, () => {
-    setOpenFilter(false);
+    setOpenFilter(null);
+  });
+
+  useOnClickOutside(refFilterChain, () => {
+    setOpenFilterChain(null);
   });
 
   return (
@@ -86,56 +100,86 @@ const PoolV3 = () => {
           </div>
 
           {type === PoolV3PageType.POOL && (
-            <div className={styles.right}>
-              <div className={styles.dropDown} ref={refFilter}>
-                <div className={styles.btn} onClick={() => setOpenFilter(true)}>
-                  <span>{poolType}</span>
-                  <div>
-                    <ArrowIcon />
+            <div className={styles.filterWrapper}>
+              <div className={styles.right}>
+                <div className={styles.dropDown} ref={refFilterChain}>
+                  <div className={styles.btn} onClick={() => setOpenFilterChain(true)}>
+                    <span>{poolChain}</span>
+                    <div>
+                      <ArrowIcon />
+                    </div>
                   </div>
+                  {openFilterChain && (
+                    <div className={styles.dropdownContent}>
+                      {Object.entries(POOL_CHAIN).map(([key, value], idx) => {
+                        return (
+                          <div
+                            className={styles.filterItem}
+                            key={`filterItem-chain-${idx}-${key}`}
+                            onClick={() => {
+                              setPoolChain(value);
+                              setOpenFilterChain(null);
+                            }}
+                          >
+                            {value}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-                {openFilter && (
-                  <div className={styles.dropdownContent}>
-                    {Object.entries(POOL_TYPE).map(([key, value], idx) => {
-                      return (
-                        <div
-                          className={styles.filterItem}
-                          key={`filterItem-${idx}-${key}`}
-                          onClick={() => {
-                            setPoolType(value);
-                            setOpenFilter(false);
-                          }}
-                        >
-                          {value}
-                        </div>
-                      );
-                    })}
+                <div className={styles.dropDown} ref={refFilter}>
+                  <div className={styles.btn} onClick={() => setOpenFilter(true)}>
+                    <span>{poolType}</span>
+                    <div>
+                      <ArrowIcon />
+                    </div>
                   </div>
-                )}
+                  {openFilter && (
+                    <div className={styles.dropdownContent}>
+                      {Object.entries(POOL_TYPE).map(([key, value], idx) => {
+                        return (
+                          <div
+                            className={styles.filterItem}
+                            key={`filterItem-type-${idx}-${key}`}
+                            onClick={() => {
+                              setPoolType(value);
+                              setOpenFilter(null);
+                            }}
+                          >
+                            {value}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className={styles.search}>
-                <input
-                  type="text"
-                  placeholder="Search pool"
-                  value={search}
-                  onChange={(e) => {
-                    e.preventDefault();
-                    setSearch(e.target.value);
-                  }}
-                  style={{
-                    paddingLeft: 40,
-                    backgroundImage: `url(${bgUrl})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: '16px center'
-                  }}
-                />
+              <div className={styles.left}>
+                <div className={styles.search}>
+                  <input
+                    type="text"
+                    placeholder="Search pool"
+                    value={search}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      setSearch(e.target.value);
+                    }}
+                    style={{
+                      paddingLeft: 40,
+                      backgroundImage: `url(${bgUrl})`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: '16px center'
+                    }}
+                  />
+                </div>
+                <CreateNewPool pools={poolList} />
               </div>
-              <CreateNewPool pools={poolList} />
             </div>
           )}
         </div>
         <div className={classNames(styles.content, styles[theme], styles[type])}>
-          {Content && <Content search={search} filterType={poolType} />}
+          {Content && <Content search={search} filterType={poolType} filterChain={poolChain} />}
         </div>
       </div>
     </>

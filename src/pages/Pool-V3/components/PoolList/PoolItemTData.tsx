@@ -39,7 +39,8 @@ const PoolItemTData = ({
     totalLiquidity: liquidityV2,
     volume24Hour: volumeV2,
     firstAssetInfo,
-    secondAssetInfo
+    secondAssetInfo,
+    NetworkIcon
   } = item;
   const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
 
@@ -50,6 +51,9 @@ const PoolItemTData = ({
           <div className={classNames(styles.icons, styles[theme])}>
             <FromTokenIcon />
             <ToTokenIcon />
+            <div className={styles.chain}>
+              <NetworkIcon />
+            </div>
           </div>
           <span className={styles.title}>
             {tokenXinfo?.name} / {tokenYinfo?.name}
@@ -102,7 +106,15 @@ const PoolItemTData = ({
                 <div className={styles.itemInfo}>
                   <span>Swap fee</span>
                   <span className={styles.value}>
-                    {numberWithCommas(aprInfo.swapFee * 100, undefined, { maximumFractionDigits: 1 })}%
+                    {' '}
+                    {!aprInfo.swapFee.max
+                      ? `${numberWithCommas(aprInfo.swapFee * 100, undefined, { maximumFractionDigits: 1 })}`
+                      : `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, {
+                          maximumFractionDigits: 1
+                        })} - ${numberWithCommas(aprInfo.swapFee.max * 100, undefined, {
+                          maximumFractionDigits: 1
+                        })}`}
+                    %
                   </span>
                 </div>
                 <div className={styles.itemInfo}>

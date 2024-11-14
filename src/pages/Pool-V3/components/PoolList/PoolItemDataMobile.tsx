@@ -37,7 +37,8 @@ const PoolItemDataMobile = ({
     type,
     url,
     firstAssetInfo,
-    secondAssetInfo
+    secondAssetInfo,
+    NetworkIcon
   } = item;
 
   const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
@@ -50,6 +51,10 @@ const PoolItemDataMobile = ({
             <div className={classNames(styles.icons, styles[theme])}>
               <FromTokenIcon />
               <ToTokenIcon />
+
+              <div className={styles.chain}>
+                <NetworkIcon />
+              </div>
             </div>
             <span className={styles.title}>
               {tokenXinfo?.name} / {tokenYinfo?.name}
@@ -130,7 +135,14 @@ const PoolItemDataMobile = ({
                 <div className={styles.itemInfo}>
                   <span>Swap fee</span>
                   <span className={styles.value}>
-                    {numberWithCommas(aprInfo.swapFee * 100, undefined, { maximumFractionDigits: 1 })}%
+                    {!aprInfo.swapFee.max
+                      ? `${numberWithCommas(aprInfo.swapFee * 100, undefined, { maximumFractionDigits: 1 })}`
+                      : `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, {
+                          maximumFractionDigits: 1
+                        })} - ${numberWithCommas(aprInfo.swapFee.max * 100, undefined, {
+                          maximumFractionDigits: 1
+                        })}`}
+                    %
                   </span>
                 </div>
                 <div className={styles.itemInfo}>

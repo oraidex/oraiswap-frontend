@@ -20,7 +20,7 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTheme from 'hooks/useTheme';
 import { fetchPoolAprInfo } from 'libs/contractSingleton';
-import { POOL_TYPE } from 'pages/Pool-V3';
+import { POOL_CHAIN, POOL_TYPE } from 'pages/Pool-V3';
 import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
 import { useGetPoolLiquidityVolume } from 'pages/Pool-V3/hooks/useGetPoolLiquidityVolume';
 import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
@@ -42,7 +42,15 @@ export enum PoolColumnHeader {
   APR = 'Apr'
 }
 
-const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYPE }) => {
+const PoolList = ({
+  search,
+  filterType,
+  filterChain
+}: {
+  search: string;
+  filterType: POOL_TYPE;
+  filterChain: POOL_CHAIN;
+}) => {
   const theme = useTheme();
   const { data: price } = useCoinGeckoPrices();
   const [, setLiquidityPools] = useConfigReducer('liquidityPools');
@@ -62,7 +70,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
   const [isOpenCreatePosition, setIsOpenCreatePosition] = useState(false);
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
 
-  // const [dataPool, setDataPool] = useState([...Array(0)]);
   const [totalVolume, setTotalVolume] = useState(0);
   const [totalLiquidity, setTotalLiquidity] = useState(0);
   const { feeDailyData } = useGetFeeDailyData();
@@ -155,16 +162,31 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
   const filteredPool = dataPool
     .map((item) => {
       let volumeV3 = 0;
+      let liquidityV3 = poolLiquidities?.[item?.poolKey];
       if (item?.poolKey) {
         const findPool = volumnePools && volumnePools.find((vo) => vo.poolAddress === item?.poolKey);
         if (findPool) volumeV3 = findPool.volume24;
       }
 
-      const { type, totalLiquidity: liquidityV2, volume24Hour: volumeV2, liquidityAddr, poolKey } = item || {};
+      const {
+        type,
+        network: poolChainName,
+        totalLiquidity: calculatedLiquidity,
+        volume24Hour: calculatedVolume,
+        aprInfo: aprOsmosisPool,
+        liquidityAddr,
+        poolKey,
+        chainInfo
+      } = item || {};
+
+      if (poolChainName === POOL_CHAIN.OSMOSIS) {
+        volumeV3 = calculatedVolume;
+        liquidityV3 = calculatedLiquidity;
+      }
 
       const showLiquidity =
-        type === POOL_TYPE.V3 ? poolLiquidities?.[item?.poolKey] : toDisplay(Math.trunc(liquidityV2 || 0).toString());
-      const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
+        type === POOL_TYPE.V3 ? liquidityV3 : toDisplay(Math.trunc(calculatedLiquidity || 0).toString());
+      const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(calculatedVolume || 0);
 
       let showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr] || {};
 
@@ -179,20 +201,23 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
         };
       }
 
+      if (poolChainName === POOL_CHAIN.OSMOSIS) {
+        showApr = aprOsmosisPool;
+      }
+
+      const NetworkIcon = theme === 'dark' ? chainInfo.Icon : chainInfo.IconLight || chainInfo.Icon;
+
       return {
         ...item,
         showVolume,
         showLiquidity,
-        showApr
+        showApr,
+        NetworkIcon
       };
     })
     .sort((a, b) => {
       switch (sortField) {
         case PoolColumnHeader.LIQUIDITY:
-          // return (
-          //   Number(CoefficientBySort[sortOrder]) *
-          //   ((poolLiquidities?.[a?.poolKey] || 0) - (poolLiquidities?.[b?.poolKey] || 0))
-          // );
           return Number(CoefficientBySort[sortOrder]) * ((a.showLiquidity || 0) - (b.showLiquidity || 0));
         case PoolColumnHeader.POOL_NAME:
           return CoefficientBySort[sortOrder] * (a?.tokenXinfo?.name || '').localeCompare(b.tokenXinfo?.name || '');
@@ -208,7 +233,7 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
       }
     })
     .filter((p) => {
-      const { tokenXinfo, tokenYinfo, type } = p;
+      const { tokenXinfo, tokenYinfo, type, network: networkName } = p;
       let conditions = true;
 
       if (search) {
@@ -220,6 +245,10 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
 
       if (filterType && filterType !== POOL_TYPE.ALL) {
         conditions = conditions && type === filterType;
+      }
+
+      if (filterChain && filterChain !== POOL_CHAIN.ALL) {
+        conditions = conditions && networkName === filterChain;
       }
 
       return conditions;
@@ -356,13 +385,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
             {filteredPool.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
               const { showLiquidity, showVolume, showApr } = item || {};
 
-              // const { type, totalLiquidity: liquidityV2, volume24Hour: volumeV2, liquidityAddr, poolKey } = item || {};
-
-              // const showLiquidity =
-              //   type === POOL_TYPE.V3 ? poolLiquidities?.[item?.poolKey] : toDisplay(Math.trunc(liquidityV2 || 0).toString());
-              // const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
-              // const showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr];
-
               return (
                 <tr className={styles.item} key={`${index}-pool-${item?.id}`}>
                   <PoolItemTData
@@ -392,54 +414,36 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
 
   return (
     <div className={styles.poolList}>
-      <div className={styles.headerTable}>
+      <div className={classNames(styles.headerTable, { [styles.visibleHeader]: filterChain === POOL_CHAIN.ORAICHAIN })}>
         <div className={styles.headerInfo}>
-          {/* <div className={styles.total}>
-            <p>Total liquidity</p>
-            {totalLiquidity === 0 || totalLiquidity ? (
-              <h1>{formatDisplayUsdt(Number(totalLiquidity) || 0)}</h1>
-            ) : (
-              <img src={Loading} alt="loading" width={32} height={32} />
-            )}
-          </div>
-          <div className={styles.total}>
-            <p>24H volume</p>
-            {totalVolume ? (
-              <h1>{formatDisplayUsdt(Number(totalVolume))}</h1>
-            ) : (
-              <img src={Loading} alt="loading" width={32} height={32} />
-            )}
-          </div> */}
-          <div className={styles.headerInfo}>
-            {liquidityData.map((e) => (
-              <div key={e.name} className={`${styles.headerInfo_item} ${openChart ? styles.activeChart : ''}`}>
-                <div className={styles.info} onClick={() => setOpenChart((open) => !open)}>
-                  <div className={styles.content}>
-                    <span>{e.name}</span>
-                    <div className={styles.headerInfo_item_info}>
-                      {e.Icon && (
-                        <div>
-                          <e.Icon />
-                        </div>
-                      )}
-                      {!e.value ? (
-                        <img src={Loading} alt="loading_img" />
-                      ) : (
-                        <TokenBalance
-                          balance={e.value}
-                          prefix="$"
-                          className={styles.liq_value}
-                          decimalScale={e.decimal || 6}
-                        />
-                      )}
-                    </div>
+          {liquidityData.map((e) => (
+            <div key={e.name} className={`${styles.headerInfo_item} ${openChart ? styles.activeChart : ''}`}>
+              <div className={styles.info} onClick={() => setOpenChart((open) => !open)}>
+                <div className={styles.content}>
+                  <span>{e.name}</span>
+                  <div className={styles.headerInfo_item_info}>
+                    {e.Icon && (
+                      <div>
+                        <e.Icon />
+                      </div>
+                    )}
+                    {!e.value ? (
+                      <img src={Loading} alt="loading_img" />
+                    ) : (
+                      <TokenBalance
+                        balance={e.value}
+                        prefix="$"
+                        className={styles.liq_value}
+                        decimalScale={e.decimal || 6}
+                      />
+                    )}
                   </div>
-                  <div>{e.value && openChart ? <UpIcon /> : <DownIcon />}</div>
                 </div>
-                <div className={`${styles.chart} ${e.value && openChart ? styles.active : ''}`}>{e.chart}</div>
+                <div>{e.value && openChart ? <UpIcon /> : <DownIcon />}</div>
               </div>
-            ))}
-          </div>
+              <div className={`${styles.chart} ${e.value && openChart ? styles.active : ''}`}>{e.chart}</div>
+            </div>
+          ))}
         </div>
       </div>
       <LoadingBox loading={loading} styles={{ minHeight: '60vh', height: 'fit-content' }}>

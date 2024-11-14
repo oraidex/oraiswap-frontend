@@ -848,17 +848,16 @@ export function simulateAprPosition(
   };
 }
 
+export type MinMax = {
+  min: number;
+  max: number;
+};
+
 export type PoolAprInfo = {
-  apr: {
-    min: number;
-    max: number;
-  };
+  apr: MinMax;
   incentives: string[];
-  swapFee: number;
-  incentivesApr: {
-    min: number;
-    max: number;
-  };
+  swapFee: number | MinMax;
+  incentivesApr: MinMax;
 };
 
 export async function fetchPoolAprInfo(
@@ -892,6 +891,10 @@ export async function fetchPoolAprInfo(
           max: 0
         }
       };
+      continue;
+    }
+
+    if ('isOsmosisPool' in item) {
       continue;
     }
 

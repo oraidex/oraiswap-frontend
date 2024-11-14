@@ -72,14 +72,28 @@
       }
     }
 
-    .right {
+    .filterWrapper {
+      width: 100%;
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       align-items: flex-start;
+      justify-content: space-between;
 
       @include medium_mobile {
-        flex-direction: column-reverse;
+        flex-direction: column;
+      }
+
+      .right {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .left {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
     }
 

@@ -27,6 +27,9 @@ import TonIcon from 'assets/icons/ton.svg?react';
 import PepeIcon from 'assets/icons/pepe.svg?react';
 import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
+import DydxIcon from 'assets/icons/dydx.svg?react';
+import SagaIcon from 'assets/icons/saga.svg?react';
+import AktIcon from 'assets/icons/akt.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -163,6 +166,21 @@ export const tokensIconInfos: TokenIcon[] = [
     coinGeckoId: 'hamster-kombat',
     Icon: HmstrIcon,
     IconLight: HmstrIcon
+  },
+  {
+    coinGeckoId: 'dydx-chain' as any,
+    Icon: DydxIcon,
+    IconLight: DydxIcon
+  },
+  {
+    coinGeckoId: 'saga-2',
+    Icon: SagaIcon,
+    IconLight: SagaIcon
+  },
+  {
+    coinGeckoId: 'akash-network',
+    Icon: AktIcon,
+    IconLight: AktIcon
   }
 ];
 
