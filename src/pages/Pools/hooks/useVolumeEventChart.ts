@@ -86,15 +86,16 @@ export const useVolumeEventChart = (
           value: poolV3.sum.volumeInUSD
         };
       });
+      const combinedData = dataVolumeV3
+        .map((dataV3ByDay) => {
+          const dataV2ByDay = dataV2.find((item) => item.time === dataV3ByDay.time);
 
-      const combinedData = dataV2.map((dataV2ByDay) => {
-        const dataV3ByDay = dataVolumeV3.find((item) => item.time === dataV2ByDay.time);
-
-        return {
-          time: dataV2ByDay.time,
-          value: dataV2ByDay.value + (dataV3ByDay?.value ?? 0)
-        };
-      });
+          return {
+            time: dataV3ByDay.time,
+            value: (dataV2ByDay?.value ?? 0) + (dataV3ByDay?.value ?? 0)
+          };
+        })
+        .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
       setCurrentDataVolume(combinedData);
       if (combinedData.length > 0) {
