@@ -102,7 +102,6 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
 
           if (checkShouldHide(value)) return result;
 
-          const tokenIcon = tokensIcon.find((tIcon) => tIcon.coinGeckoId === token.coinGeckoId);
           result.push({
             asset: token.name,
             chain: token.org,

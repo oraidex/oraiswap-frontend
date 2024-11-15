@@ -54,7 +54,7 @@ export default function InputSwap({
   impactWarning
 }: InputSwapProps) {
   const chainInfo = chainInfosWithIcon.find((chain) => chain.chainId === selectChain);
-  const tokenInfo = flattenTokensWithIcon.find((flattenToken) => flattenToken.coinGeckoId === token.coinGeckoId);
+  const tokenInfo = flattenTokensWithIcon.find((flattenToken) => flattenToken.denom === token.denom);
   const isLightMode = theme === 'light';
 
   return (

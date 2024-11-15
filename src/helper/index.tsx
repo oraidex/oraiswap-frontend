@@ -49,6 +49,9 @@ export const EVM_CHAIN_ID: string[] = evmChains.map((c) => c.chainId);
 export const networks = chainInfos.filter(
   (c) => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
 );
+export const networksWithIcon = chainInfosWithIcon.filter(
+  (c) => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
+);
 export const cosmosNetworks = chainInfos.filter(
   (c) =>
     c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
@@ -637,7 +640,7 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
 
     return <DefaultIcon />;
   } else {
-    const networkIcon = chainIcons.find((chain) => chain.chainId === chainId);
+    const networkIcon = chainInfosWithIcon.find((chain) => chain.chainId === chainId);
     if (networkIcon) {
       return isLightTheme ? (
         <networkIcon.IconLight width={width} height={height} />

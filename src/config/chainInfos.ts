@@ -1,6 +1,7 @@
 // @ts-nocheck
 import {
   tokens,
+  flattenTokens,
   oraichainNetwork as customOraichainNetwork,
   chainInfos as customChainInfos,
   ChainIdEnum,
@@ -125,7 +126,7 @@ export const bitcoinMainnet: CustomChainInfo = {
 
 export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
 
-console.log('oraichainTokens', customChainInfos, customOraichainNetwork, tokens);
+console.log('oraichainTokens', {customChainInfos, customOraichainNetwork, tokens, flattenTokens});
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
 

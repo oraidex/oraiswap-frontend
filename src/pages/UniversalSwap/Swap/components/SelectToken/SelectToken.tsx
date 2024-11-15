@@ -4,7 +4,7 @@ import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import cn from 'classnames/bind';
 import SearchInput from 'components/SearchInput';
-import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
+import { chainIcons, chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import styles from './SelectToken.module.scss';
 import { Themes } from 'context/theme-context';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
@@ -29,22 +29,22 @@ interface InputSwapProps {
 interface GetIconInterface {
   type: 'token' | 'network';
   chainId?: string;
-  coinGeckoId?: string;
+  denom?: string;
   isLightTheme: boolean;
   width?: number;
   height?: number;
 }
 
-const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
+const getIcon = ({ isLightTheme, type, chainId, denom, width, height }: GetIconInterface) => {
   if (type === 'token') {
-    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === coinGeckoId);
+    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.denom === denom);
     return isLightTheme ? (
       <tokenIcon.IconLight className={cx('logo')} width={width} height={height} />
     ) : (
       <tokenIcon.Icon className={cx('logo')} width={width} height={height} />
     );
   } else {
-    const networkIcon = chainIcons.find((chain) => chain.chainId === chainId);
+    const networkIcon = chainInfosWithIcon.find((chain) => chain.chainId === chainId);
     return isLightTheme ? (
       <networkIcon.IconLight className={cx('logo')} width={width} height={height} />
     ) : (
@@ -112,7 +112,7 @@ export default function SelectToken({
                 const tokenIcon = getIcon({
                   isLightTheme,
                   type: 'token',
-                  coinGeckoId: token.coinGeckoId,
+                  denom: token.denom,
                   width: 30,
                   height: 30
                 });

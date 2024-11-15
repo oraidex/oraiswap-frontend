@@ -4,7 +4,7 @@ import cn from 'classnames/bind';
 import { tokenMap } from 'config/bridgeTokens';
 import { chainIcons } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
-import { networks } from 'helper';
+import { networks, networksWithIcon } from 'helper';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
@@ -34,7 +34,7 @@ export default function SelectChain({
 }: InputSwapProps) {
   // const isAllowChainId = (chainId) => ['kawaii_6886-1', 'bitcoin', 'noble-1', 'Neutaro-1'].includes(chainId);
   const isAllowChainId = (chainId) => ['kawaii_6886-1', 'bitcoin'].includes(chainId);
-  const totalUsd = networks.reduce((acc, cur) => {
+  const totalUsd = networksWithIcon.reduce((acc, cur) => {
     if (isAllowChainId(cur.chainId)) return acc;
     const subAmounts = Object.fromEntries(
       Object.entries(amounts).filter(([denom]) => tokenMap[denom] && tokenMap[denom].chainId === cur.chainId)
@@ -88,7 +88,6 @@ export default function SelectChain({
               })
               .sort((a, b) => Number(b.totalUsd || 0) - Number(a.totalUsd || 0))
               .map((item) => {
-                const networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
                 const key = item.chainId.toString();
                 const title = item.chainName;
                 const balance = '$' + (item.totalUsd > 0 ? item.totalUsd.toFixed(2) : '0');
@@ -103,9 +102,9 @@ export default function SelectChain({
                   >
                     <div className={styles.selectChainItemLeft}>
                       {theme === 'light' ? (
-                        <networkIcon.IconLight className={styles.selectChainItemLogo} />
+                        <item.IconLight className={styles.selectChainItemLogo} />
                       ) : (
-                        <networkIcon.Icon className={styles.selectChainItemLogo} />
+                        <item.Icon className={styles.selectChainItemLogo} />
                       )}
                       <div className={styles.selectChainItemTitle}>
                         <div>{title}</div>

@@ -140,15 +140,11 @@ export const HeaderTop = ({
   };
 
   if (currentToToken) {
-    const tokenIcon = flattenTokensWithIcon.find(
-      (tokenWithIcon) => tokenWithIcon.coinGeckoId === currentToToken.coinGeckoId
-    );
+    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.denom === currentToToken.denom);
     if (tokenIcon) ToTokenIcon = generateIconTokenByTheme(tokenIcon);
   }
   if (currentFromToken) {
-    const tokenIcon = flattenTokensWithIcon.find(
-      (tokenWithIcon) => tokenWithIcon.coinGeckoId === currentFromToken.coinGeckoId
-    );
+    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.denom === currentFromToken.denom);
     if (tokenIcon) FromTokenIcon = generateIconTokenByTheme(tokenIcon);
   }
 

@@ -23,21 +23,22 @@
     "@oraichain/ethereum-multicall": "^1.0.2",
     "@oraichain/kawaiiverse-txs": "^0.0.3",
     "@oraichain/orai-bitcoin": "2.0.0",
+    "@oraichain/oraidex-common": "1.1.28-beta.7",
     "@oraichain/oraidex-common-ui": "1.0.11",
     "@oraichain/oraidex-contracts-sdk": "1.0.51-beta.3",
-    "@oraichain/oraidex-universal-swap": "../oraidex-sdk/packages/universal-swap",
+    "@oraichain/oraidex-universal-swap": "1.1.19-beta.1",
     "@react-spring/web": "^9.7.5",
     "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "7.99.0",
     "@tanstack/react-query": "^4.32.6",
     "@tharsis/proto": "^0.1.17",
     "@tippyjs/react": "^4.2.0",
-    "@vitejs/plugin-react": "^4.3.1",
     "@visx/curve": "^2.17.0",
     "@visx/gradient": "^3.3.0",
     "@visx/responsive": "^2.17.0",
     "@visx/scale": "^2.18.0",
     "@visx/xychart": "^3.11.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "@walletconnect/browser-utils": "^1.8.0",
     "@walletconnect/ethereum-provider": "^1.7.8",
     "axios": "^0.26.1",
@@ -50,6 +51,7 @@
     "classnames": "^2.2.6",
     "dayjs": "^1.10.7",
     "ethers": "^5.0.15",
+    "fast-average-color": "^9.4.0",
     "idb-keyval": "^6.2.1",
     "lightweight-charts": "^4.1.3",
     "lottie-react": "^2.4.0",
@@ -71,8 +73,7 @@
     "tronweb": "^5.1.0",
     "urql": "^4.1.0",
     "vite-plugin-svgr": "^4.2.0",
-    "vite-tsconfig-paths": "^5.0.1",
-    "@oraichain/oraidex-common": "../oraidex-sdk/packages/oraidex-common"
+    "vite-tsconfig-paths": "^5.0.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -84,7 +85,7 @@
     "@oraichain/common-contracts-build": "1.0.35",
     "@oraichain/cw-simulate": "^2.8.75",
     "@oraichain/oraidex-contracts-build": "1.0.22",
-    "@oraichain/oraiswap-v3": "../oraidex-sdk/packages/oraiswap-v3",
+    "@oraichain/oraiswap-v3": "0.1.25-beta.1",
     "@sentry/webpack-plugin": "^2.10.3",
     "@testing-library/jest-dom": "^6.5.0",
     "@types/classnames": "^2.2.10",
@@ -112,8 +113,8 @@
     "ts-jest": "^29.1.1",
     "typed-scss-modules": "^7.1.4",
     "typescript": "^5.1.6",
-    "vite-plugin-node-polyfills": "^0.22.0",
     "vite": "^5.4.10",
+    "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-wasm": "^3.3.0",
     "vitest": "2.0.2"
   },
@@ -151,7 +152,7 @@
     "bitcoinjs-lib": "5.2.0",
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
-    "@oraichain/oraidex-common": "../oraidex-sdk/packages/oraidex-common"
+    "@oraichain/oraidex-common": "1.1.28-beta.7"
   },
   "engines": {
     "node": "^18 || ^20"

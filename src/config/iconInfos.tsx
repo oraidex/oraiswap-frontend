@@ -30,7 +30,8 @@ import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
-import { FC } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
+import { FastAverageColor } from 'fast-average-color';
 
 export type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
 // @ts-ignore
@@ -243,14 +244,71 @@ export const chainIconsInfos: ChainIcon[] = [
 ];
 
 const renderIcon = (url) => {
-  return <img src={url} alt="icon" />;
+  const [bgColor, setBgColor] = useState('#fff'); // Default color
+  // const fac = new FastAverageColor();
+  // fac
+  //   .getColorAsync(url, {
+  //     ignoredColor: [
+  //       // [255, 255, 255, 255], // white
+  //       // [0, 0, 0, 255] // black
+  //     ]
+  //   })
+  //   .then((color) => {
+  //     setBgColor(color.rgba);
+  //   })
+  //   .catch((e) => {
+  //     // console.log('error gen color', e);
+  //   });
+
+  return (
+    <div style={{ backgroundColor: bgColor, display: 'inline-block', borderRadius: '50%' }}>
+      <img src={url} alt="Image" style={{ display: 'block' }} />
+    </div>
+  );
+
+  // return <img src={url} alt="icon" />;
 };
+
+export const ImageBackgroundDetector = ({ imageUrl }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    const image = new Image();
+    image.crossOrigin = 'Anonymous';
+    image.src = imageUrl;
+
+    image.onload = () => {
+      // Draw the image onto the canvas
+      ctx.drawImage(image, 0, 0);
+
+      // Get the pixel data of the top-left corner (position: 0,0)
+      const pixelData = ctx.getImageData(0, 0, 1, 1).data;
+
+      // Extract RGB values from the pixel data
+      const [red, green, blue] = pixelData;
+
+      // Convert RGB values to hex code
+      const hexCode = rgbToHex(red, green, blue);
+
+      console.log('Background color:', hexCode);
+    };
+  }, [imageUrl]);
+
+  // Helper function to convert RGB values to hex code
+  const rgbToHex = (r, g, b) => `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+
+  return <canvas ref={canvasRef} />;
+};
+
 export const mapListWithIcon = (list: any[], listIcon: ChainIcon[] | TokenIcon[], key: 'chainId' | 'coinGeckoId') => {
   return list.map((item) => {
     const iconUrl = item.Icon ? item.Icon : defaultTokenImg;
     const iconLightUrl = item.IconLight ? item.IconLight : defaultTokenImg;
 
-    const findedItem = listIcon.find((icon) => icon[key] === item[key]);
+    // const findedItem = listIcon.find((icon) => icon[key] === item[key]);
 
     const Icon = () => renderIcon(iconUrl);
     const IconLight = () => renderIcon(iconLightUrl);
