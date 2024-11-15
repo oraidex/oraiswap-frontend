@@ -30,7 +30,7 @@ export default function StuckOraib({ handleMove, loading, remainingOraib }: Prop
       <TooltipIcon
         placement="bottom-end"
         content={remainingOraib.map((token) => {
-          const tokensIcon = flattenTokensWithIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
+          const tokensIcon = flattenTokensWithIcon.find((tok) => tok.denom === token.denom);
           return (
             <div key={token.denom} className={styles.stuckToken}>
               <div className={styles.icon}>

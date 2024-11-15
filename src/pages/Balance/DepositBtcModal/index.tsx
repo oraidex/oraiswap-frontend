@@ -38,6 +38,8 @@ const DepositBtcModal: FC<ModalProps> = ({ isOpen, open, close, handleRecoveryAd
   const { infoBTC } = useGetInfoBtc();
   const fromToken = flattenTokens.find((flat) => flat.chainId === ('bitcoin' as any));
   const toToken = flattenTokens.find((flat) => flat.chainId === 'Oraichain' && flat.coinGeckoId === 'bitcoin');
+
+  console.log('fromToken', fromToken);
   const depositFeeBtc = useDepositFeesBitcoin(true);
   const { relayerFee } = useRelayerFeeToken(fromToken, toToken);
   const [addrOrai, setAddrOrai] = useState('');

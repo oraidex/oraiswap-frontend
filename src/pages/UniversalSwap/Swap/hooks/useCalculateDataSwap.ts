@@ -35,6 +35,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
   const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
   const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
 
+  console.log('first', { originalFromToken, originalToToken });
+
   const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
   const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, { useIbcWasm, useAlphaIbcWasm });
   const simulateOption = {

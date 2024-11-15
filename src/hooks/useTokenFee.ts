@@ -65,6 +65,8 @@ export const useRelayerFeeToken = (originalFromToken: TokenItemType, originalToT
 
   const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
   const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
+  console.log('first', { originalFromToken, originalToToken });
+
   const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, { useIbcWasm, useAlphaIbcWasm });
   const simulateOption = {
     useAlphaIbcWasm,

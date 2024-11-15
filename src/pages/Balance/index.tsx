@@ -8,7 +8,6 @@ import {
   flattenTokens,
   getTokenOnOraichain,
   KWT_SCAN,
-  string,
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
   toAmount,
   TokenItemType,

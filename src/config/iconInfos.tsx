@@ -262,7 +262,7 @@ const renderIcon = (url) => {
 
   return (
     <div style={{ backgroundColor: bgColor, display: 'inline-block', borderRadius: '50%' }}>
-      <img src={url} alt="Image" style={{ display: 'block' }} />
+      <img src={url} alt="Image" style={{ display: 'block', borderRadius: '50%' }} />
     </div>
   );
 

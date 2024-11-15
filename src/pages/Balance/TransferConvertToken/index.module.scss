@@ -304,12 +304,19 @@
       &_logo {
         display: flex;
         align-items: center;
+
+        img {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+        }
       }
 
       &_text {
         font-size: 16px;
         font-weight: 600;
         padding-left: 10px;
+        text-transform: capitalize;
 
         &.light {
           color: #6f767e;

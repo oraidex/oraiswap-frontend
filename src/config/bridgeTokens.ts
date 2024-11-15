@@ -4,12 +4,14 @@ import {
   KWT_BSC_CONTRACT,
   MILKYBSC_ORAICHAIN_DENOM,
   MILKY_BSC_CONTRACT,
+  getTokensFromNetwork,
   oraichainTokens,
-  otherChainTokens
+  otherChainTokens as otherTokens
 } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 import flatten from 'lodash/flatten';
 import uniqBy from 'lodash/uniqBy';
+import { customChains } from './chainInfos';
 
 const evmDenomsMap = {
   kwt: [KWTBSC_ORAICHAIN_DENOM],
@@ -30,7 +32,9 @@ const minAmountSwapMap = {
 // );
 // export const oraichainTokens: TokenItemType[] = getTokensFromNetwork(oraichainNetwork);
 
-export { oraichainTokens, otherChainTokens };
+const customChainTokens = flatten(customChains.map(getTokensFromNetwork));
+export const otherChainTokens = [...otherTokens, ...customChainTokens];
+export { oraichainTokens };
 
 export const tokens = [otherChainTokens, oraichainTokens];
 export const flattenTokens = flatten(tokens);

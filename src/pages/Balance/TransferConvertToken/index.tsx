@@ -1,11 +1,4 @@
-import {
-  BigDecimal,
-  // flattenTokens
-  string,
-  toDisplay,
-  TokenItemType,
-  BTC_CONTRACT
-} from '@oraichain/oraidex-common';
+import { BigDecimal, toDisplay, TokenItemType, BTC_CONTRACT } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';

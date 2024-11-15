@@ -118,6 +118,9 @@ const PoolDetail: React.FC = () => {
 
   const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
 
+  console.log('first', { poolDetailData, BaseTokenInOraichain, QuoteTokenInOraichain });
+
+  // return null;
   return (
     <Content nonBackground otherBackground>
       <div className={styles.pool_detail}>
@@ -132,8 +135,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  {BaseTokenIcon && <BaseTokenIcon />}
-                  {QuoteTokenIcon && <QuoteTokenIcon />}
+                  <BaseTokenIcon />
+                  <QuoteTokenIcon />
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} / {quoteToken?.name?.toUpperCase()}

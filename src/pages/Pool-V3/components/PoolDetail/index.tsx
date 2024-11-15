@@ -29,6 +29,7 @@ import CreateNewPosition from '../CreateNewPosition';
 import PositionItem from '../PositionItem';
 import TransactionHistory from '../TransactionHistory';
 import styles from './index.module.scss';
+import { flattenTokensWithIcon } from 'config/chainInfos';
 
 const PoolV3Detail = () => {
   const [address] = useConfigReducer('address');
@@ -271,7 +272,17 @@ const PoolV3Detail = () => {
               <p>
                 {!aprInfo[poolKeyString]?.incentives?.length
                   ? '--'
-                  : [...new Set(aprInfo[poolKeyString].incentives)].join(', ')}
+                  : [...new Set(aprInfo[poolKeyString].incentives)]
+                      .map((denom) => {
+                        const token = flattenTokensWithIcon.find(
+                          (fltnToken) => fltnToken.denom.toLowerCase() === denom.toLowerCase()
+                        );
+                        if (token) {
+                          return token.name;
+                        }
+                        return denom;
+                      })
+                      .join(', ')}
               </p>
             </div>
             <div className={styles.item}>

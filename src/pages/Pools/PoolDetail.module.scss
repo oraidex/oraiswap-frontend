@@ -85,6 +85,9 @@
 
         .icons {
           display: inline-flex;
+          & div:not(:first-of-type) {
+            margin-left: -10px;
+          }
 
           img,
           svg {

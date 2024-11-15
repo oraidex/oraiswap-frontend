@@ -19,6 +19,7 @@ import { PoolInfoResponse } from 'types/pool';
 import { PoolTableData } from '..';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
+import { oraichainTokensWithIcon } from 'config/chainInfos';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -216,7 +217,7 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
 
   const pairRawData = pairDenoms.split('_');
   const tokenTypes = pairRawData.map((raw) =>
-    oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
+    oraichainTokensWithIcon.find((token) => token.denom === raw || token.contractAddress === raw)
   );
   return {
     info: poolDetail,
@@ -327,6 +328,7 @@ export const getClaimableInfoByPool = ({ pool, totalRewardInfoData }) => {
             org: 'Oraichain',
             denom: '',
             Icon: undefined,
+            icon: undefined,
             chainId: 'Oraichain',
             rpc: '',
             decimals: 0,

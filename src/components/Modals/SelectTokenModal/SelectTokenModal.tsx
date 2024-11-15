@@ -5,8 +5,15 @@ import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { FC } from 'react';
 import styles from './SelectTokenModal.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { CustomChainInfo, TokenItemType, getSubAmountDetails, tokenMap, truncDecimals } from '@oraichain/oraidex-common';
-import { chainIcons, tokensIcon } from 'config/chainInfos';
+import {
+  CustomChainInfo,
+  TokenItemType,
+  getSubAmountDetails,
+  tokenMap,
+  truncDecimals
+} from '@oraichain/oraidex-common';
+import { chainIcons, chainInfosWithIcon, flattenTokensWithIcon, tokensIcon } from 'config/chainInfos';
+import { chainIconsInfos } from 'config/iconInfos';
 
 const cx = cn.bind(styles);
 
@@ -61,19 +68,22 @@ export const SelectTokenModal: FC<ModalProps> = ({
                 sumAmountDetails = { ...sumAmountDetails, ...subAmounts };
                 sumAmount = toSumDisplay(sumAmountDetails);
               }
-              tokenAndChainIcons = tokensIcon.find((tokenIcon) => tokenIcon.coinGeckoId === token.coinGeckoId);
+              tokenAndChainIcons = flattenTokensWithIcon.find((tokenIcon) => tokenIcon.denom === token.denom);
               balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
             } else {
               const network = item as CustomChainInfo;
               key = network.chainId.toString();
               title = network.chainName;
               const subAmounts = Object.fromEntries(
-                Object.entries(amounts).filter(([denom]) => tokenMap[denom] && tokenMap[denom].chainId === network.chainId)
+                Object.entries(amounts).filter(
+                  ([denom]) => tokenMap[denom] && tokenMap[denom].chainId === network.chainId
+                )
               );
               const totalUsd = getTotalUsd(subAmounts, prices);
-              tokenAndChainIcons = chainIcons.find((chainIcon) => chainIcon.chainId === network.chainId);
+              tokenAndChainIcons = chainInfosWithIcon.find((chainIcon) => chainIcon.chainId === network.chainId);
               balance = '$' + (totalUsd > 0 ? totalUsd.toFixed(2) : '0');
             }
+
             const icon =
               tokenAndChainIcons && theme === 'light' ? (
                 <tokenAndChainIcons.IconLight className={cx('logo')} />

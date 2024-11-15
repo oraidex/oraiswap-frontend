@@ -492,6 +492,10 @@
       .icons {
         display: inline-flex;
 
+        & div:not(:first-child) {
+          margin-left: -10px;
+        }
+
         img,
         svg {
           width: 32px;

@@ -126,7 +126,7 @@ export const bitcoinMainnet: CustomChainInfo = {
 
 export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
 
-console.log('oraichainTokens', {customChainInfos, customOraichainNetwork, tokens, flattenTokens});
+console.log('oraichainTokens', { customChainInfos, customOraichainNetwork, tokens, flattenTokens });
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
 
@@ -217,6 +217,7 @@ export const OraiBTCBridgeNetwork = {
   }
 };
 
+export const customChains = [bitcoinMainnet, oraibtcNetwork];
 export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 

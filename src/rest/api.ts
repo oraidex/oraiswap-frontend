@@ -126,7 +126,7 @@ export async function fetchPairPriceWithStablecoin(
       if (res.status === 'fulfilled') return res.value; // only collect the result of the actual existing pool. If both exist then we only need data from one pool
     }
   });
-  return result.amount;
+  return result?.amount || '0';
 }
 
 async function fetchPoolInfoAmount(

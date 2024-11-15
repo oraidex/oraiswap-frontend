@@ -21,6 +21,7 @@ import styles from './Earning.module.scss';
 import { TokenItemType, ORAI, toDisplay, CW20_DECIMALS } from '@oraichain/oraidex-common';
 import { WithdrawLP } from 'types/pool';
 import classNames from 'classnames';
+import { flattenTokensWithIcon } from 'config/chainInfos';
 
 type TokenItemTypeExtended = TokenItemType & {
   amount: bigint;
@@ -87,6 +88,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
               org: 'Oraichain',
               denom: '',
               Icon: undefined,
+              icon: undefined,
               chainId: 'Oraichain',
               rpc: '',
               decimals: 0,
@@ -178,6 +180,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
   if (cachedReward && cachedReward.length > 0) {
     poolReward = cachedReward.find((item) => item.liquidity_token === stakingToken);
   }
+  console.log('pendingReward', pendingRewards);
 
   return (
     <div className={styles.earningWrapper}>
@@ -199,11 +202,14 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
             pendingRewards
               .sort((a, b) => a.denom.localeCompare(b.denom))
               .map((pendingReward, idx) => {
+                const tokenWithIcon =
+                  flattenTokensWithIcon.find((tk) => tk.denom === pendingReward.denom) || pendingReward;
+
                 return (
                   <div className={styles.assetEarning} key={idx}>
                     <div className={styles.title}>
-                      {generateIcon(pendingReward)}
-                      <span>{pendingReward.denom.toUpperCase()} Earning</span>
+                      {/* {generateIcon(pendingReward)} */}
+                      <span>{pendingReward.name.toUpperCase()} Earning</span>
                     </div>
                     <div className={styles.amountWrapper}>
                       <div className={styles.amount}>
@@ -222,7 +228,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
                         <TokenBalance
                           balance={{
                             amount: pendingReward.amount,
-                            denom: pendingReward?.denom.toUpperCase(),
+                            denom: pendingReward?.name.toUpperCase(),
                             decimals: 6
                           }}
                           decimalScale={6}

@@ -12,6 +12,7 @@ import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import styles from './OverviewPool.module.scss';
 import { formatDisplayUsdt, formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { flattenTokensWithIcon } from 'config/chainInfos';
 
 export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail }) => {
   const theme = useTheme();

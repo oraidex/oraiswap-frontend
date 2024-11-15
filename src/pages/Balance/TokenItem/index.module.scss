@@ -161,6 +161,17 @@
   align-items: center;
   margin-right: 10px;
 
+  img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+
+    @include small-mobile {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
   .tokenInfo {
     padding-left: 16px;
 
