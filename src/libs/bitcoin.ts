@@ -53,11 +53,12 @@ export default class Bitcoin {
   async getBitcoinKey(chainId?: string): Promise<Key | undefined> {
     try {
       chainId = chainId ?? network.chainId;
+      const bitcoin = window.bitcoin;
       if (!chainId) return undefined;
-      if (!window.bitcoin || !window.owallet) {
+      if (!bitcoin || !window.owallet) {
         throw new Error('Bitcoin wallet not found.');
       }
-      if (window.bitcoin.getKey) return window.bitcoin.getKey(chainId);
+      if (bitcoin.getKey && bitcoin.sign) return bitcoin.getKey(chainId);
       //TODO: Default for get key by legacy
       return window.owallet.getKey(chainId);
     } catch (error) {
