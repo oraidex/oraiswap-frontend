@@ -3,9 +3,24 @@ import { Key } from '@keplr-wallet/types';
 import { ChainIdEnum } from '@oraichain/oraidex-common';
 import { network } from 'config/networks';
 import { bitcoinChainId } from 'helper/constants';
+import {BitcoinUnit} from "bitcoin-units";
 export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 // import { CosmosChainId, BitcoinWallet } from '@oraichain/oraidex-common';
 type BitcoinChainId = 'bitcoin' | 'bitcoinTestnet';
+export enum TransactionBtcType {
+  Legacy = "legacy",
+  Bech32 = "bech32",
+  TapRoot = "tap-root",
+  Segwit = "segwit",
+}
+export interface UnsignedBtcTransaction {
+  amount: string;
+  to: string;
+  sender: string;
+  memo: string;
+  coinMinimalDenom: string;
+  chainId: string;
+}
 export interface IBitcoin {
   readonly version: string;
   /**
@@ -21,6 +36,13 @@ export interface IBitcoin {
     rawTxHex: string;
   }>;
   getKey(chainId: string): Promise<Key>;
+  sendTx(chainId: string, signedTx: string): Promise<string>;
+  sign(
+      chainId: string,
+      signer: string,
+      data: string | Uint8Array,
+      type: TransactionBtcType
+  ): Promise<string>;
 }
 
 export default class Bitcoin {
@@ -32,12 +54,11 @@ export default class Bitcoin {
     try {
       chainId = chainId ?? network.chainId;
       if (!chainId) return undefined;
-
-      if (!window.owallet) {
-        console.error('OWallet not found.');
-        return undefined;
+      if (!window.bitcoin || !window.owallet) {
+        throw new Error('Bitcoin wallet not found.');
       }
-
+      if (window.bitcoin.getKey) return window.bitcoin.getKey(chainId);
+      //TODO: Default for get key by legacy
       return window.owallet.getKey(chainId);
     } catch (error) {
       console.error('Error while getting Bitcoin key:', error);
@@ -57,12 +78,32 @@ export default class Bitcoin {
 
   async signAndBroadCast(chainId: BitcoinChainId = bitcoinChainId, data: object): Promise<{ rawTxHex: string }> {
     try {
-      if (!window.bitcoin) {
+      const bitcoin = window.bitcoin;
+      if (!bitcoin) {
         throw new Error('Bitcoin wallet not found.');
       }
+      if(bitcoin.sign && bitcoin.sendTx){
+        const amount = new BitcoinUnit(data.msgs.amount, 'satoshi').to('BTC').toString();
+        const unsignedTx:UnsignedBtcTransaction = {
+          chainId: chainId,
+          to:data.msgs.address,
+          amount:amount,
+          coinMinimalDenom: "segwit:btc",
+          memo:data.memo || '',
+          sender:data.address,
+        }
+        const signedTx = await bitcoin.sign(
+            chainId,
+            data.address,
+            JSON.stringify(unsignedTx),
+            TransactionBtcType.Bech32
+        );
+        const txHash = await bitcoin.sendTx(chainId, signedTx);
+        return {rawTxHex:txHash};
+      }
 
-      const rs = await window.bitcoin.signAndBroadcast(chainId, data);
-      return rs;
+      //TODO: Default for sign get key by legacy
+      return await window.bitcoin.signAndBroadcast(chainId, data);
     } catch (error) {
       console.error('Error while signing and broadcasting Bitcoin transaction:', error);
       throw new Error(`Error while signing and broadcasting Bitcoin transaction:  ${JSON.stringify(error)}`);
