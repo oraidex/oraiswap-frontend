@@ -3383,10 +3383,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
   integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
 
-"@oraichain/oraidex-universal-swap@1.1.20":
-  version "1.1.20"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.1.20.tgz#62d305a7789bd39df638c062ef8b99c151956ae5"
-  integrity sha512-kkzvD9LHJDOAG8bueQAkM8XhyqadhSmiiSXaCGGhPgHxDA2o5420br2nAo63MFrsNRruYIrVkjeFYfPh97um5w==
+"@oraichain/oraidex-universal-swap@1.1.21":
+  version "1.1.21"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.1.21.tgz#9de36e17eac9b8bb663566898a73b9f4e12dca2e"
+  integrity sha512-CrHCfl37kQlmRq8xP2MTIHRaIMv4W8VQsL2hb2BUC784BeOmCzwDSLTqlDzs+/0s6O9BPS+lhZO5Vh83uxj/vQ==
   dependencies:
     "@oraichain/common" "^1.0.3"
     "@oraichain/oraidex-common" "^1.1.27"
