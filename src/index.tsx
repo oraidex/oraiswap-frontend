@@ -19,6 +19,8 @@ import { persistor, store } from 'store/configure';
 import './index.scss';
 import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
+import { initOraiCommon, initOraiCommonNetwork } from '@oraichain/oraidex-common';
+import { oraichainTokensWithIcon } from 'config/chainInfos';
 
 // const client = new Client({
 //   url: 'http://10.10.20.72:3000/',
@@ -58,13 +60,25 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
   mixpanel.init(import.meta.env.VITE_APP_MIX_PANEL_ENVIRONMENT);
 }
 
-// init queryClient
-const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
-const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
-// @ts-ignore
-window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
-
 const initApp = async () => {
+  const [token, networks] = await Promise.all([initOraiCommon(), initOraiCommonNetwork()]);
+  console.log('first', [token, networks]);
+  // return;
+
+  console.log('123', network, oraichainTokensWithIcon);
+
+  // init queryClient
+  const useHttp = network.rpc?.startsWith('http://') || network.rpc?.startsWith('https://');
+
+  console.log('useHttp', useHttp);
+
+  if (!useHttp) {
+    return;
+  }
+  const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
+  // @ts-ignore
+  window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
+
   const root = createRoot(document.getElementById('oraiswap'));
   root.render(
     <Provider store={store}>

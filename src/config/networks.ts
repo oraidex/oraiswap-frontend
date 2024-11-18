@@ -20,7 +20,7 @@ export const network: CustomChainInfo & NetworkConfig & { pool_v3: string; index
   ...oraichainNetwork,
   prefix: oraichainNetwork.bech32Config.bech32PrefixAccAddr,
   denom: 'orai',
-  coinType: oraichainNetwork.bip44.coinType,
+  coinType: oraichainNetwork?.bip44?.coinType,
   fee: { gasPrice: '0.00506', amount: '1518', gas: '2000000' }, // 0.000500 ORAI
   factory: FACTORY_CONTRACT,
   factory_v2: FACTORY_V2_CONTRACT,
