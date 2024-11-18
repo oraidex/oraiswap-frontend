@@ -118,8 +118,6 @@ const PoolDetail: React.FC = () => {
 
   const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
 
-  console.log('first', { poolDetailData, BaseTokenInOraichain, QuoteTokenInOraichain });
-
   // return null;
   return (
     <Content nonBackground otherBackground>

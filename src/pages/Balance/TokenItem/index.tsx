@@ -39,7 +39,10 @@ const TokenItem: React.FC<TokenItemProps> = ({
   isFastMode,
   setIsFastMode
 }) => {
-  const tokenIcon = flattenTokensWithIcon.find((tok) => tok.denom === token.denom);
+  const tokenIcon =
+    flattenTokensWithIcon.find((tok) => tok.denom === token.denom) ||
+    tokensIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
+
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
   return (
     <div

@@ -134,6 +134,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const toNetwork = bridgeNetworks.find((n) => n.chainId === toNetworkChainId);
   const to = flattenTokens.find((t) => t.coinGeckoId === token.coinGeckoId && t.chainId === toNetworkChainId);
 
+  console.log('to', flattenTokens, to, token, toNetworkChainId);
+
   const getRemoteTokenDenom = (token: TokenItemType) => {
     if (!token) return null;
     return token.contractAddress ? token.prefix + token.contractAddress : token.denom;
