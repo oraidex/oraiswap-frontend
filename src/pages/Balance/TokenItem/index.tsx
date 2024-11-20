@@ -5,6 +5,8 @@ import TransferConvertToken from '../TransferConvertToken';
 import { TokenItemType } from '@oraichain/oraidex-common';
 
 import { flattenTokensWithIcon, tokensIcon } from 'config/chainInfos';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
+
 export interface TokenItemProps {
   token: TokenItemType;
   amountDetail?: { amount: string; usd: number };
@@ -39,10 +41,17 @@ const TokenItem: React.FC<TokenItemProps> = ({
   isFastMode,
   setIsFastMode
 }) => {
-  const tokenIcon =
+  let tokenIcon =
     flattenTokensWithIcon.find((tok) => tok.denom === token.denom) ||
     tokensIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
 
+  if (!tokenIcon) {
+    tokenIcon = {
+      coinGeckoId: token.coinGeckoId,
+      Icon: DefaultIcon,
+      IconLight: DefaultIcon
+    };
+  }
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
   return (
     <div

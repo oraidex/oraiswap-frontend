@@ -68,7 +68,7 @@ const PoolV3 = () => {
 
   return (
     <>
-      {/* <BannerNoticePool /> */}
+      <BannerNoticePool />
       <div className={classNames(styles.poolV3, 'small_container')}>
         <div className={styles.header}>
           <div className={styles.headerTab}>
