@@ -1,4 +1,4 @@
-import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { getUsd } from 'libs/utils';
@@ -9,6 +9,7 @@ import ChartColumn from '../ChartColumn';
 import { TooltipIconBtn } from '../Tooltip';
 import styles from './index.module.scss';
 import { formatNumberKMB } from 'pages/CoHarvest/helpers';
+import { oraichainTokens } from 'config/bridgeTokens';
 
 const BiddingChart = (props: { round: number; bidInfo }) => {
   const { round, bidInfo } = props;

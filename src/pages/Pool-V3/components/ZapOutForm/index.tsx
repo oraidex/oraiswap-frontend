@@ -1,11 +1,10 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import {
   MULTICALL_CONTRACT,
-  oraichainTokens,
   toDisplay,
   TokenItemType,
   USDT_CONTRACT,
-  ZAPPER_CONTRACT
+  ZAPPER_CONTRACT,
 } from '@oraichain/oraidex-common';
 import { ZapperQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import {
@@ -47,6 +46,8 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from 'store/configure';
 import SelectToken from '../SelectToken';
 import styles from './index.module.scss';
+import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { oraichainTokens } from 'config/bridgeTokens';
 
 const cx = cn.bind(styles);
 
@@ -60,7 +61,7 @@ interface ZapOutFormProps {
   onCloseModal: () => void;
 }
 
-const TOKEN_ZAP = oraichainTokens.find((e) => extractAddress(e) === USDT_CONTRACT);
+const TOKEN_ZAP = oraichainTokensWithIcon.find((e) => extractAddress(e) === USDT_CONTRACT);
 
 const ZapOutForm: FC<ZapOutFormProps> = ({
   incentives,

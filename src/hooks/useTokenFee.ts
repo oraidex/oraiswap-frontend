@@ -3,10 +3,10 @@ import {
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   TokenItemType,
-  network,
   toAmount,
-  // oraichainTokens,
   toDisplay,
+  GLOBAL_NETWORK_CONFIG,
+  GLOBAL_TOKEN_CONFIG,
   PEPE_ORAICHAIN_EXT_DENOM,
   PEPE_BSC_CONTRACT,
   PEPE_ETH_CONTRACT
@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateFeeConfig } from 'reducer/token';
 import { fetchFeeConfig } from 'rest/api';
 import { RootState } from 'store/configure';
+
+const { network } = GLOBAL_NETWORK_CONFIG;
 
 export default function useTokenFee(remoteTokenDenom: string, fromChainId?: string, toChainId?: string) {
   const [bridgeFee, setBridgeFee] = useState(0);

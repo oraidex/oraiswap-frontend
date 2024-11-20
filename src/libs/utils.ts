@@ -1,6 +1,5 @@
 import {
   COSMOS_CHAIN_ID_COMMON,
-  string,
   TokenItemType,
   getSubAmountDetails,
   toAmount,

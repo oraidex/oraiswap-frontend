@@ -2,7 +2,6 @@ import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/Oraiswap
 import { poolKeyToString } from '@oraichain/oraiswap-v3';
 import CloseIcon from 'assets/icons/close.svg?react';
 import classNames from 'classnames';
-import { oraichainTokens } from '@oraichain/oraidex-common';
 import { getIcon } from 'helper';
 import useTheme from 'hooks/useTheme';
 import { useRef, useState } from 'react';
@@ -14,7 +13,7 @@ import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { useDispatch } from 'react-redux';
 import { setToDefault } from 'reducer/poolDetailV3';
 import CreatePositionForm from '../CreatePositionForm';
-
+import { oraichainTokens } from 'config/bridgeTokens';
 
 const cx = cn.bind(styles);
 export const openInNewTab = (url: string): void => {

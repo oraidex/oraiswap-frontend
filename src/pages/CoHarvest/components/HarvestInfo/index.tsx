@@ -1,4 +1,4 @@
-import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -9,6 +9,7 @@ import { memo, useState } from 'react';
 import CountDownTime from '../CountDownTime';
 import { TooltipIconBtn } from '../Tooltip';
 import styles from './index.module.scss';
+import { oraichainTokens } from 'config/bridgeTokens';
 import { BiddingInfo } from '@oraichain/oraidex-contracts-sdk/build/CoharvestBidPool.types';
 
 const HarvestInfo = (props: {

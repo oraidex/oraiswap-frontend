@@ -9,11 +9,13 @@ import {
   CustomChainInfo,
   TokenItemType,
   getSubAmountDetails,
-  tokenMap,
+  GLOBAL_TOKEN_CONFIG,
   truncDecimals
 } from '@oraichain/oraidex-common';
 import { chainIcons, chainInfosWithIcon, flattenTokensWithIcon, tokensIcon } from 'config/chainInfos';
 import { chainIconsInfos } from 'config/iconInfos';
+
+const { tokenMap } = GLOBAL_TOKEN_CONFIG;
 
 const cx = cn.bind(styles);
 

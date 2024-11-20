@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { BridgeAppCurrency } from '@oraichain/oraidex-common';
 import CelestiaIcon from 'assets/icons/celestia.svg?react';
 import InjIcon from 'assets/icons/inj.svg?react';

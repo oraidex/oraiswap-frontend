@@ -1,5 +1,5 @@
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
-import { BigDecimal, ORAIX_CONTRACT, oraichainTokens, toAmount, toDisplay, tokenMap } from '@oraichain/oraidex-common';
+import { BigDecimal, ORAIX_CONTRACT, toAmount, toDisplay } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import OraiXIcon from 'assets/icons/oraix.svg?react';
@@ -30,6 +30,7 @@ import { RootState } from 'store/configure';
 import InputBalance from '../InputBalance';
 import InputRange from '../InputRange';
 import styles from './index.module.scss';
+import { oraichainTokens, tokenMap } from 'config/bridgeTokens';
 
 export type BiddingProps = {
   openExplainModal: () => void;

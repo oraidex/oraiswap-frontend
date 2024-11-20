@@ -5,7 +5,6 @@ import { DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import {
   CosmosChainId,
-  flattenTokens,
   getTokenOnOraichain,
   KWT_SCAN,
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
@@ -28,7 +27,7 @@ import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
 import SearchInput from 'components/SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { tokens } from 'config/bridgeTokens';
+import { flattenTokens, tokens } from 'config/bridgeTokens';
 import { chainInfos } from 'config/chainInfos';
 import { NomicContext } from 'context/nomic-context';
 import {

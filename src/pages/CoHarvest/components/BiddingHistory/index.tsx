@@ -1,4 +1,5 @@
-import { BigDecimal, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
+import { BigDecimal } from '@oraichain/oraidex-common';
+import { oraichainTokens, tokenMap } from 'config/bridgeTokens';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import LoadingBox from 'components/LoadingBox';
 import { network } from 'config/networks';

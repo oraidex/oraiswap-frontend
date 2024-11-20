@@ -1,4 +1,4 @@
-import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
 import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
 import NoData from 'assets/images/nodata-bid.svg?react';
 import useConfigReducer from 'hooks/useConfigReducer';

@@ -1,5 +1,5 @@
 import { Coin } from '@cosmjs/proto-signing';
-import { BigDecimal, CW20_DECIMALS, oraichainTokens, TokenItemType } from '@oraichain/oraidex-common';
+import { BigDecimal, CW20_DECIMALS, GLOBAL_TOKEN_CONFIG, TokenItemType } from '@oraichain/oraidex-common';
 import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
 import { PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import {
@@ -130,7 +130,7 @@ export const tickerToAddress = (ticker: string): string => {
   return addressTickerMap[ticker] || ticker;
 };
 
-export const TokenList = oraichainTokens.reduce((acc, cur) => {
+export const TokenList = GLOBAL_TOKEN_CONFIG.oraichainTokens.reduce((acc, cur) => {
   return {
     ...acc,
     [cur.name]: cur.contractAddress ?? cur.denom

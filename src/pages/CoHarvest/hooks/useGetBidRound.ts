@@ -1,6 +1,6 @@
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { BigDecimal, oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { BigDecimal, toDisplay } from '@oraichain/oraidex-common';
 import { CoharvestBidPoolQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import { network } from 'config/networks';
@@ -10,6 +10,7 @@ import { getUsd } from 'libs/utils';
 import { useEffect, useState } from 'react';
 import { fetchRoundBid } from 'rest/api';
 import { BidStatus, TIMER } from '../constants';
+import { oraichainTokens } from 'config/bridgeTokens';
 import { Bid, BiddingInfo, BiddingInfoResponse } from '@oraichain/oraidex-contracts-sdk/build/CoharvestBidPool.types';
 
 export const getDateNowToSecond = () => {

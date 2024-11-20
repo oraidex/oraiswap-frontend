@@ -4,9 +4,8 @@ import {
   ChainIdEnum,
   COSMOS_CHAIN_ID_COMMON,
   CosmosChainId,
-  cosmosChains,
   ETHEREUM_SCAN,
-  evmChains,
+  GLOBAL_NETWORK_CONFIG,
   KWT_SCAN,
   MULTIPLIER,
   TRON_SCAN,
@@ -32,6 +31,7 @@ import { evmChainInfos } from 'config/evmChainInfos';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
 
+const { cosmosChains, evmChains } = GLOBAL_NETWORK_CONFIG;
 export interface Tokens {
   denom?: string;
   chainId?: string;

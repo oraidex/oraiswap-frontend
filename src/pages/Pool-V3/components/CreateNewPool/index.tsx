@@ -1,4 +1,4 @@
-import { oraichainTokens, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { FeeTier, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import OpenBlankTabIcon from 'assets/icons/arrow_right_ic.svg?react';
 import BackIcon from 'assets/icons/back.svg?react';

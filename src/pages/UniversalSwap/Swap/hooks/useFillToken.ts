@@ -1,6 +1,8 @@
-import { tokenMap } from '@oraichain/oraidex-common';
+import { GLOBAL_TOKEN_CONFIG } from '@oraichain/oraidex-common';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+
+const { tokenMap } = GLOBAL_TOKEN_CONFIG;
 
 export const FROM_QUERY_KEY = 'from';
 export const TO_QUERY_KEY = 'to';

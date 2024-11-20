@@ -1,7 +1,9 @@
-import { EVM_CHAIN_ID_COMMON, WalletType, cosmosTokens, flattenTokens } from '@oraichain/oraidex-common';
+import { EVM_CHAIN_ID_COMMON, WalletType, GLOBAL_TOKEN_CONFIG } from '@oraichain/oraidex-common';
 import { btcTokens } from 'config/bridgeTokens';
 import { useDispatch } from 'react-redux';
 import { updateAmounts } from 'reducer/token';
+
+const { cosmosTokens, flattenTokens } = GLOBAL_TOKEN_CONFIG;
 
 export type Wallet = WalletType | 'metamask' | 'tron' | 'bitcoin';
 export const useResetBalance = () => {

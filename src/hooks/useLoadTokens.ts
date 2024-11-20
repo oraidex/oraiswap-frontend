@@ -55,7 +55,6 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
     const otherChainTokens = flatten(
       chainInfos.filter((chainInfo) => chainInfo.chainId !== 'Oraichain').map(getTokensFromNetwork)
     );
-    const { oraichainTokens } = await import('@oraichain/oraidex-common');
     const tokens = [otherChainTokens, oraichainTokens];
     const flattenTokens = flatten(tokens);
     const cosmosTokens = uniqBy(

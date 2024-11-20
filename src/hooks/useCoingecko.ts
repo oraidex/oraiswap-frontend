@@ -1,7 +1,9 @@
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import useConfigReducer from './useConfigReducer';
-import { CoinGeckoId, cosmosTokens, evmTokens } from '@oraichain/oraidex-common';
+import { CoinGeckoId, GLOBAL_TOKEN_CONFIG } from '@oraichain/oraidex-common';
+
+const { cosmosTokens, evmTokens } = GLOBAL_TOKEN_CONFIG;
 
 /**
  * Constructs the URL to retrieve prices from CoinGecko.

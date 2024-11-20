@@ -60,21 +60,9 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
   mixpanel.init(import.meta.env.VITE_APP_MIX_PANEL_ENVIRONMENT);
 }
 
-const initApp = async () => {
-  const [token, networks] = await Promise.all([initOraiCommon(), initOraiCommonNetwork()]);
-  console.log('first', [token, networks]);
-  // return;
-
-  console.log('123', network, oraichainTokensWithIcon);
-
+export const initApp = async () => {
   // init queryClient
-  const useHttp = network.rpc?.startsWith('http://') || network.rpc?.startsWith('https://');
-
-  console.log('useHttp', useHttp);
-
-  if (!useHttp) {
-    return;
-  }
+  const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
   const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
   // @ts-ignore
   window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));

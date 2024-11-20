@@ -1,9 +1,7 @@
 // @ts-nocheck
 import {
-  tokens,
-  flattenTokens,
-  oraichainNetwork as customOraichainNetwork,
-  chainInfos as customChainInfos,
+  GLOBAL_TOKEN_CONFIG,
+  GLOBAL_NETWORK_CONFIG,
   ChainIdEnum,
   BridgeAppCurrency,
   CustomChainInfo,
@@ -14,6 +12,9 @@ import OraiIcon from 'assets/icons/oraichain.svg';
 import BTCIcon from 'assets/icons/btc-icon.svg';
 import OraiLightIcon from 'assets/icons/oraichain_light.svg';
 import flatten from 'lodash/flatten';
+
+const { tokens, flattenTokens } = GLOBAL_TOKEN_CONFIG;
+const { oraichainNetwork: customOraichainNetwork, chainInfos: customChainInfos } = GLOBAL_NETWORK_CONFIG;
 
 import { chainIconsInfos, tokensIconInfos, mapListWithIcon } from './iconInfos';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
@@ -151,7 +152,7 @@ export const OraiToken: BridgeAppCurrency = {
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
   currencies: [
-    ...customOraichainNetwork.currencies
+    ...customOraichainNetwork?.currencies
     // {
     //   coinDenom: 'BTC V2',
     //   coinGeckoId: 'bitcoin',

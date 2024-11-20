@@ -5,8 +5,7 @@ import {
   MILKYBSC_ORAICHAIN_DENOM,
   MILKY_BSC_CONTRACT,
   getTokensFromNetwork,
-  oraichainTokens,
-  otherChainTokens as otherTokens
+  GLOBAL_TOKEN_CONFIG
 } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 import flatten from 'lodash/flatten';
@@ -18,6 +17,8 @@ const evmDenomsMap = {
   milky: [MILKYBSC_ORAICHAIN_DENOM],
   injective: [INJECTIVE_ORAICHAIN_DENOM]
 };
+const { oraichainTokens, otherChainTokens: otherTokens } = GLOBAL_TOKEN_CONFIG;
+
 const minAmountSwapMap = {
   trx: 10
 };
