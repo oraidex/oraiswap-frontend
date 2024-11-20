@@ -728,6 +728,7 @@ export async function fetchPositionAprInfo(
   }
 
   for (const incentive of incentives) {
+    if (incentive.remaining === '0') continue;
     const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
     const rewardsPerSec = incentive.reward_per_sec;
     const rewardInUsd = prices[token.coinGeckoId];
@@ -780,6 +781,7 @@ export function simulateIncentiveAprPosition(
   const totalPositionLiquidityUsd = positionLiquidityUsdX + positionLiquidityUsdY;
 
   for (const incentive of incentives) {
+    if (incentive.remaining === '0') continue;
     const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
     const rewardsPerSec = incentive.reward_per_sec;
     const rewardInUsd = prices[token.coinGeckoId];
@@ -806,6 +808,7 @@ export function simulateIncentiveAprPosition(
   const totalPositionLiquidityUsd2 = positionLiquidityUsdX2 + positionLiquidityUsdY2;
 
   for (const incentive of incentives) {
+    if (incentive.remaining === '0') continue;
     const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
     const rewardsPerSec = incentive.reward_per_sec;
     const rewardInUsd = prices[token.coinGeckoId];
@@ -896,9 +899,10 @@ export async function fetchPoolAprInfo(
         max: res.max + (maxSwapApr ? maxSwapApr : 0)
       },
       incentives: pool.incentives.map((incentive) => {
+        if (incentive.remaining === '0') return null;
         const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
         return token.denom.toUpperCase();
-      }),
+      }).filter((incentive) => incentive !== null),
       swapFee: {
         min: minSwapApr,
         max: maxSwapApr
