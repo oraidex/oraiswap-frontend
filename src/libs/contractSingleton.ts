@@ -695,7 +695,8 @@ export async function fetchPositionAprInfo(
   tokenXLiquidityInUsd: number,
   tokenYLiquidityInUsd: number,
   isInRange: boolean,
-  feeAndLiquidityInfo: PoolFeeAndLiquidityDaily[]
+  feeAndLiquidityInfo: PoolFeeAndLiquidityDaily[],
+  isSimulate: boolean = false
 ): Promise<PositionAprInfo> {
   const avgFeeAPRs = feeAndLiquidityInfo.map((pool) => {
     const feeAPR = (pool.feeDaily * 365) / pool.liquidityDaily;
@@ -706,7 +707,9 @@ export async function fetchPositionAprInfo(
   });
   const feeAPR = avgFeeAPRs.find((fee) => fee.poolKey === poolKeyToString(position.pool_key))?.feeAPR;
 
-  const positionSwapFeeApr = simulateSwapAprPosition(feeAPR, Number(pool.pool.liquidity), Number(position.liquidity));
+  const positionSwapFeeApr = isSimulate
+    ? (Number(position.liquidity) * feeAPR) / (Number(pool.pool.liquidity) + Number(position.liquidity))
+    : (Number(position.liquidity) * feeAPR) / Number(pool.pool.liquidity);
 
   if (pool === undefined) {
     const poolInfo = await SingletonOraiswapV3.getPool(position.pool_key);
@@ -725,6 +728,7 @@ export async function fetchPositionAprInfo(
   }
 
   for (const incentive of incentives) {
+    if (incentive.remaining === '0') continue;
     const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
     const rewardsPerSec = incentive.reward_per_sec;
     const rewardInUsd = prices[token.coinGeckoId];
@@ -742,11 +746,7 @@ export async function fetchPositionAprInfo(
   };
 }
 
-export function simulateSwapAprPosition(
-  feeApr: number,
-  poolLiquidity: number,
-  positionLiquidity: number,
-) {
+export function simulateSwapAprPosition(feeApr: number, poolLiquidity: number, positionLiquidity: number) {
   return (positionLiquidity * feeApr) / (poolLiquidity + positionLiquidity);
 }
 
@@ -781,6 +781,7 @@ export function simulateIncentiveAprPosition(
   const totalPositionLiquidityUsd = positionLiquidityUsdX + positionLiquidityUsdY;
 
   for (const incentive of incentives) {
+    if (incentive.remaining === '0') continue;
     const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
     const rewardsPerSec = incentive.reward_per_sec;
     const rewardInUsd = prices[token.coinGeckoId];
@@ -807,6 +808,7 @@ export function simulateIncentiveAprPosition(
   const totalPositionLiquidityUsd2 = positionLiquidityUsdX2 + positionLiquidityUsdY2;
 
   for (const incentive of incentives) {
+    if (incentive.remaining === '0') continue;
     const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
     const rewardsPerSec = incentive.reward_per_sec;
     const rewardInUsd = prices[token.coinGeckoId];
@@ -877,7 +879,11 @@ export async function fetchPoolAprInfo(
     const { pool, pool_key } = item;
     const feeAPR = avgFeeAPRs.find((fee) => fee.poolKey === poolKeyToString(pool_key))?.feeAPR;
 
-    const minSwapApr = simulateSwapAprPosition(feeAPR ? feeAPR : 0, Number(pool.liquidity), Number(pool.liquidity) * 0.01);
+    const minSwapApr = simulateSwapAprPosition(
+      feeAPR ? feeAPR : 0,
+      Number(pool.liquidity),
+      Number(pool.liquidity) * 0.01
+    );
     const maxSwapApr = simulateSwapAprPosition(feeAPR ? feeAPR : 0, Number(pool.liquidity), Number(pool.liquidity) * 1);
 
     if (pool.incentives === undefined) {
@@ -893,9 +899,10 @@ export async function fetchPoolAprInfo(
         max: res.max + (maxSwapApr ? maxSwapApr : 0)
       },
       incentives: pool.incentives.map((incentive) => {
+        if (incentive.remaining === '0') return null;
         const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
         return token.denom.toUpperCase();
-      }),
+      }).filter((incentive) => incentive !== null),
       swapFee: {
         min: minSwapApr,
         max: maxSwapApr

@@ -341,7 +341,10 @@ const SwapComponent: React.FC<{
         evmWallet: new Metamask(window.tronWebDapp),
         swapOptions: {
           isAlphaIbcWasm: useAlphaIbcWasm,
-          isIbcWasm: useIbcWasm
+          isIbcWasm: useIbcWasm,
+
+          // FIXME: hardcode with case celestia not check balance
+          isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
         }
       });
 
