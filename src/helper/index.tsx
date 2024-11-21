@@ -661,3 +661,18 @@ export const getIconToken = ({ isLightTheme, denom, width = 18, height = 18 }) =
 
   return <DefaultIcon />;
 };
+
+export const handleErrorRateLimit = (errorMsg: string) => {
+  if (!errorMsg) {
+    return;
+  }
+
+  const RATE_LIMIT_CODE = 429;
+
+  const fmtMsg = errorMsg.toLowerCase();
+  if (fmtMsg.includes(`${RATE_LIMIT_CODE}`) || fmtMsg.includes('network error')) {
+    displayToast(TToastType.TX_INFO, {
+      message: 'RPC call limit reached. Please wait or switch networks to continue!'
+    });
+  }
+};

@@ -26,7 +26,6 @@ const ListHistory = ({
 }) => {
   const [theme] = useConfigReducer('theme');
   const { listBiddingRoundInfo, isLoading } = useGetListBiddingRoundInfo(activeRound);
-
   const [limit, setLimit] = useState(LIMIT_PAGE);
 
   // const { handleUpdateRoundURL } = useRoundRoute(activeRound, setFilterRound);

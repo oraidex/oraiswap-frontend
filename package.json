@@ -8,10 +8,10 @@
   "type": "module",
   "dependencies": {
     "@babel/plugin-proposal-import-wasm-source": "^7.24.7",
-    "@cosmjs/cosmwasm-stargate": "^0.31.0",
-    "@cosmjs/proto-signing": "^0.31.0",
-    "@cosmjs/stargate": "^0.31.0",
-    "@cosmjs/tendermint-rpc": "^0.31.0",
+    "@cosmjs/cosmwasm-stargate": "^0.32.4",
+    "@cosmjs/proto-signing": "^0.32.4",
+    "@cosmjs/stargate": "^0.32.4",
+    "@cosmjs/tendermint-rpc": "^0.32.4",
     "@duckdb/duckdb-wasm": "1.28.0",
     "@injectivelabs/sdk-ts": "1.12.1",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
@@ -24,8 +24,8 @@
     "@oraichain/kawaiiverse-txs": "^0.0.3",
     "@oraichain/orai-bitcoin": "2.0.0",
     "@oraichain/oraidex-common-ui": "1.0.11",
-    "@oraichain/oraidex-contracts-sdk": "1.0.51-beta.3",
-    "@oraichain/oraidex-universal-swap": "1.1.16",
+    "@oraichain/oraidex-contracts-sdk": "1.0.55",
+    "@oraichain/oraidex-universal-swap": "1.1.22",
     "@react-spring/web": "^9.7.5",
     "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "7.99.0",
@@ -83,7 +83,7 @@
     "@oraichain/common-contracts-build": "1.0.35",
     "@oraichain/cw-simulate": "^2.8.75",
     "@oraichain/oraidex-contracts-build": "1.0.22",
-    "@oraichain/oraiswap-v3": "0.1.22",
+    "@oraichain/oraiswap-v3": "1.1.1",
     "@sentry/webpack-plugin": "^2.10.3",
     "@testing-library/jest-dom": "^6.5.0",
     "@types/classnames": "^2.2.10",
@@ -150,7 +150,7 @@
     "bitcoinjs-lib": "5.2.0",
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
-    "@oraichain/oraidex-common": "1.1.28"
+    "@oraichain/oraidex-common": "1.1.32"
   },
   "engines": {
     "node": "^18 || ^20"

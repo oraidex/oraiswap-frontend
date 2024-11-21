@@ -1,4 +1,10 @@
-import { CustomChainInfo, TokenItemType, truncDecimals, HMSTR_ORAICHAIN_DENOM } from '@oraichain/oraidex-common';
+import {
+  CustomChainInfo,
+  TokenItemType,
+  truncDecimals,
+  HMSTR_ORAICHAIN_DENOM,
+  DOGE_BNB_ORAICHAIN_DENOM
+} from '@oraichain/oraidex-common';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
@@ -150,15 +156,14 @@ export default function SelectToken({
               })
               .sort((a, b) => {
                 const balanceDelta = Number(b.usd) - Number(a.usd);
+                if (a.denom === DOGE_BNB_ORAICHAIN_DENOM && b.denom !== DOGE_BNB_ORAICHAIN_DENOM) {
+                  return -1; // Push PepePoolKey elements to the top
+                }
+                if (a.denom !== DOGE_BNB_ORAICHAIN_DENOM && b.denom === DOGE_BNB_ORAICHAIN_DENOM) {
+                  return 1; // Keep non-'a' elements below 'a'
+                }
 
                 if (!balanceDelta) {
-                  if (a.denom === HMSTR_ORAICHAIN_DENOM && b.denom !== HMSTR_ORAICHAIN_DENOM) {
-                    return -1; // Push PepePoolKey elements to the top
-                  }
-                  if (a.denom !== HMSTR_ORAICHAIN_DENOM && b.denom === HMSTR_ORAICHAIN_DENOM) {
-                    return 1; // Keep non-'a' elements below 'a'
-                  }
-
                   return (tokenRank[b.coinGeckoId] || 0) - (tokenRank[a.coinGeckoId] || 0);
                 }
                 return balanceDelta;

@@ -86,14 +86,15 @@ const useCreatePosition = (
           Number(xUsd),
           Number(yUsd),
           !isXBlocked && !isYBlocked,
-          feeDailyData
+          feeDailyData,
+          true
         );
         if (apr.total && !isXBlocked && !isYBlocked) {
           setApr(apr.total * 100);
         }
       }
     })();
-  }, [pool, poolKey, tokenX, tokenY, xUsd, yUsd, amountX, amountY]);
+  }, [pool, poolKey, tokenX, tokenY, xUsd, yUsd, amountX, amountY, minTick, maxTick]);
 
   useEffect(() => {
     if (!(pool && minTick && maxTick)) return;

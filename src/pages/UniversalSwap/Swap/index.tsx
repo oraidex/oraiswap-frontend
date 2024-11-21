@@ -341,7 +341,10 @@ const SwapComponent: React.FC<{
         evmWallet: new Metamask(window.tronWebDapp),
         swapOptions: {
           isAlphaIbcWasm: useAlphaIbcWasm,
-          isIbcWasm: useIbcWasm
+          isIbcWasm: useIbcWasm,
+
+          // FIXME: hardcode with case celestia not check balance
+          isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
         }
       });
 
@@ -693,15 +696,6 @@ const SwapComponent: React.FC<{
                 coe={coe}
                 usdPrice={usdPriceShowFrom}
               />
-              {/* !fromToken && !toTokenFee mean that this is internal swap operation */}
-              {!fromTokenFee && !toTokenFee && isWarningSlippage && (
-                <div className={cx('impact-warning')}>
-                  <WarningIcon />
-                  <div className={cx('title')}>
-                    <span>&nbsp;Current slippage exceed configuration!</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
           <div className={cx('swap-center')}>

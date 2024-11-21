@@ -54,6 +54,8 @@ const useZapIn = (
   const { zapIn } = useZap();
 
   const debounceZapAmount = useDebounce(zapAmount, 1000);
+  const debounceLowerTick = useDebounce(minTick, 1000);
+  const debounceUpperTick = useDebounce(maxTick, 1000);
 
   const xUsd =
     zapInResponse &&
@@ -101,7 +103,7 @@ const useZapIn = (
     if (Number(zapAmount) > 0 && toggleZap) {
       handleSimulateZapIn();
     }
-  }, [debounceZapAmount, minTick, maxTick]);
+  }, [debounceZapAmount, debounceLowerTick, debounceUpperTick]);
 
   useEffect(() => {
     if (Number(zapAmount) > 0 && !zapInResponse && !simulating) {
@@ -182,8 +184,8 @@ const useZapIn = (
       const amountFee = Math.floor(zapFee * Number(zapAmount) * 10 ** tokenZap.decimals);
 
       setZapFee(amountFee);
-      const lowerTick = Math.min(minTick, maxTick);
-      const upperTick = Math.max(minTick, maxTick);
+      const lowerTick = Math.min(debounceLowerTick, debounceUpperTick);
+      const upperTick = Math.max(debounceLowerTick, debounceUpperTick);
 
       const result = await zapper.processZapInPositionLiquidity({
         poolKey: poolKey,
