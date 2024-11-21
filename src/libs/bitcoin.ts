@@ -58,6 +58,7 @@ export default class Bitcoin {
       if (!bitcoin || !window.owallet) {
         throw new Error('Bitcoin wallet not found.');
       }
+      //GetKey for new keyring
       if (bitcoin.getKey && bitcoin.sign) return bitcoin.getKey(chainId);
       //TODO: Default for get key by legacy
       return window.owallet.getKey(chainId);
@@ -77,12 +78,13 @@ export default class Bitcoin {
     }
   }
 
-  async signAndBroadCast(chainId: BitcoinChainId = bitcoinChainId, data: object): Promise<{ rawTxHex: string }> {
+  async signAndBroadCast(chainId: BitcoinChainId = bitcoinChainId, data): Promise<{ rawTxHex: string }> {
     try {
       const bitcoin = window.bitcoin;
       if (!bitcoin) {
         throw new Error('Bitcoin wallet not found.');
       }
+      //Sign for new keyring
       if(bitcoin.sign && bitcoin.sendTx){
         const amount = new BitcoinUnit(data.msgs.amount, 'satoshi').to('BTC').toString();
         const unsignedTx:UnsignedBtcTransaction = {
@@ -103,7 +105,7 @@ export default class Bitcoin {
         return {rawTxHex:txHash};
       }
 
-      //TODO: Default for sign get key by legacy
+      //TODO: Default sign by legacy
       return await window.bitcoin.signAndBroadcast(chainId, data);
     } catch (error) {
       console.error('Error while signing and broadcasting Bitcoin transaction:', error);
