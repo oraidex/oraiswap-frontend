@@ -339,6 +339,7 @@ const useCreatePositionForm = (
 
   // wide: take the price range of prices in 3m
   const handleOptionWide = () => {
+    setIsFullRange(false);
     changeHistoricalRange('3mo');
     const data = cache3Month?.map(({ time, close }) => ({
       time,
@@ -364,6 +365,7 @@ const useCreatePositionForm = (
 
   // narrow: take the price range of prices in 7d
   const handleOptionNarrow = () => {
+    setIsFullRange(false);
     changeHistoricalRange('7d');
     const data = cache7Day?.map(({ time, close }) => ({
       time,
@@ -438,7 +440,7 @@ const useCreatePositionForm = (
           return;
         }
       }
-
+      
       setLowerTick(Math.min(lowerTick, higherTick));
       setHigherTick(Math.max(lowerTick, higherTick));
     } catch (error) {

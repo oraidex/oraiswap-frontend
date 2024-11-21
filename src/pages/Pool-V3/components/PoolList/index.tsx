@@ -1,4 +1,4 @@
-import { BigDecimal, toDisplay } from '@oraichain/oraidex-common';
+import { BigDecimal, toDisplay, DOGE_BNB_ORAICHAIN_DENOM } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import Loading from 'assets/gif/loading.gif';
 import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
@@ -82,7 +82,7 @@ const PoolList = ({
   const [filterDay, setFilterDay] = useState(FILTER_DAY.DAY);
   const [liquidityDataChart, setLiquidityDataChart] = useState(0);
   const [volumeDataChart, setVolumeDataChart] = useState(0);
-
+  const prioritizePool = DOGE_BNB_ORAICHAIN_DENOM;
   const liquidityData = [
     {
       name: 'Total Liquidity',
@@ -216,6 +216,12 @@ const PoolList = ({
       };
     })
     .sort((a, b) => {
+      const aIsPrioritized = a.tokenXinfo.denom === prioritizePool;
+      const bIsPrioritized = b.tokenXinfo.denom === prioritizePool;
+
+      if (aIsPrioritized && !bIsPrioritized) return CoefficientBySort[SortType.DESC];
+      if (bIsPrioritized && !aIsPrioritized) return CoefficientBySort[SortType.ASC];
+
       switch (sortField) {
         case PoolColumnHeader.LIQUIDITY:
           return Number(CoefficientBySort[sortOrder]) * ((a.showLiquidity || 0) - (b.showLiquidity || 0));

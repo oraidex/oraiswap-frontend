@@ -30,6 +30,7 @@ import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import DydxIcon from 'assets/icons/dydx.svg?react';
 import SagaIcon from 'assets/icons/saga.svg?react';
 import AktIcon from 'assets/icons/akt.svg?react';
+import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -180,7 +181,12 @@ export const tokensIconInfos: TokenIcon[] = [
   {
     coinGeckoId: 'akash-network',
     Icon: AktIcon,
-    IconLight: AktIcon
+    IconLight: AktIcon,
+  },
+  {
+    coinGeckoId: 'dogecoin',
+    Icon: DogecoinIcon,
+    IconLight: DogecoinIcon
   }
 ];
 

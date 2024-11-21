@@ -135,8 +135,8 @@ const PoolItemDataMobile = ({
                 <div className={styles.itemInfo}>
                   <span>Swap fee</span>
                   <span className={styles.value}>
-                    {!aprInfo.swapFee.max
-                      ? `${numberWithCommas(aprInfo.swapFee * 100, undefined, { maximumFractionDigits: 1 })}`
+                    {aprInfo.swapFee.min === aprInfo.swapFee.max
+                      ? `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, { maximumFractionDigits: 1 })}`
                       : `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, {
                           maximumFractionDigits: 1
                         })} - ${numberWithCommas(aprInfo.swapFee.max * 100, undefined, {
