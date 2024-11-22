@@ -75,7 +75,7 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
   const [filterDay, setFilterDay] = useState(FILTER_DAY.DAY);
   const [liquidityDataChart, setLiquidityDataChart] = useState(0);
   const [volumeDataChart, setVolumeDataChart] = useState(0);
-  const prioritizePool = DOGE_BNB_ORAICHAIN_DENOM;
+  const prioritizePool = '';
   const liquidityData = [
     {
       name: 'Total Liquidity',
