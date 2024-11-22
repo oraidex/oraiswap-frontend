@@ -248,11 +248,6 @@ export const chainIconsInfos: ChainIcon[] = [
     chainId: TonChainId,
     Icon: TonIcon,
     IconLight: TonIcon
-  },
-  {
-    chainId: 'Ton' as any,
-    Icon: TonIcon,
-    IconLight: TonIcon
   }
 ];
 
