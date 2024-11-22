@@ -38,7 +38,7 @@ const PoolV3Detail = () => {
   const [isOpenCreatePosition, setIsOpenCreatePosition] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
-  const { poolId } = useParams<{ poolId: string }>();
+  const { poolId } = useParams<{ poolId: string }>();  
 
   const [tokenX, tokenY, fee, tick] = poolId.split('-');
   const poolKeyString = poolKeyToString({
@@ -70,6 +70,13 @@ const PoolV3Detail = () => {
   const { allPosition } = useGetAllPositions();
   const { positions: userPositions } = useGetPositions(address);
   const { liquidityDistribution } = useGetPoolDetail(poolKeyString, poolPrice);
+
+  useEffect(() => {
+    if (poolId.includes('osmosis-pool-')) {
+      const osmoPoolId = poolId.split('osmosis-pool-')[1];
+      
+    }
+  }, [poolId]);
 
   useEffect(() => {
     (async () => {

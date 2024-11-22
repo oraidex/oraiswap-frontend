@@ -180,7 +180,7 @@ export const formatOsmosisPools = (p: OsmosisPoolInfoResponse, isLight: boolean 
     tokenXinfo,
     tokenYinfo,
     marketInfo,
-    url: `/pools/v3/osmosis_${id}`
+    url: `/pools/v3/osmosis-pool-${id}`
   };
 };
 
