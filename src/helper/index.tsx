@@ -413,8 +413,8 @@ export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwor
 export const getAddressTransfer = async (network: CustomChainInfo, walletByNetworks: WalletsByNetwork) => {
   try {
     let address = '';
-    if (network.networkType === ('ton' as any)) {
-      address = toUserFriendlyAddress(window.Ton.account.address);
+    if (network.networkType === 'ton') {
+      address = toUserFriendlyAddress(window.Ton?.account?.address);
     } else if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
     } else if (isConnectSpecificNetwork(walletByNetworks.cosmos)) {
@@ -704,6 +704,21 @@ export const getTonClient = async () => {
     return new TonClient({
       endpoint:
         'https://ton.access.orbs.network/55013c0ff5Bd3F8B62C092Ab4D238bEE463E5501/1/mainnet/toncenter-api-v2/jsonRPC'
+    });
+  }
+};
+
+export const handleErrorRateLimit = (errorMsg: string) => {
+  if (!errorMsg) {
+    return;
+  }
+
+  const RATE_LIMIT_CODE = 429;
+
+  const fmtMsg = errorMsg.toLowerCase();
+  if (fmtMsg.includes(`${RATE_LIMIT_CODE}`) || fmtMsg.includes('network error')) {
+    displayToast(TToastType.TX_INFO, {
+      message: 'RPC call limit reached. Please wait or switch networks to continue!'
     });
   }
 };

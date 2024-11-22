@@ -1,7 +1,7 @@
 import { coin, makeStdTx } from '@cosmjs/amino';
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
 import { Decimal } from '@cosmjs/math';
-import { DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate';
+import { DeliverTxResponse, GasPrice, isDeliverTxFailure } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import {
   CosmosChainId,
@@ -13,9 +13,10 @@ import {
   toAmount,
   TokenItemType,
   tronToEthAddress,
-  calculateTimeoutTimestamp
+  calculateTimeoutTimestamp,
+  getCosmosGasPrice
 } from '@oraichain/oraidex-common';
-import { isSupportedNoPoolSwapEvm, UniversalSwapHandler } from '@oraichain/oraidex-universal-swap';
+import { isSupportedNoPoolSwapEvm, UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
@@ -91,6 +92,9 @@ import useTonBridgeHandler from './hooks/useTonBridgeHandler';
 import DepositBtcModalV2 from './DepositBtcModalV2';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
 import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
+import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
+import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 
 interface BalanceProps {}
 
@@ -575,7 +579,7 @@ const Balance: React.FC<BalanceProps> = () => {
       );
 
       // hardcode case Neutaro-1 & Noble-1
-      if (from.chainId === 'Neutaro-1') return await handleTransferIBC(from, newToToken, fromAmount);
+      // if (from.chainId === 'Neutaro-1') return await handleTransferIBC(from, newToToken, fromAmount);
 
       // remaining tokens, we override from & to of onClickTransfer on index.tsx of Balance based on the user's token destination choice
       // to is Oraibridge tokens
@@ -623,6 +627,51 @@ const Balance: React.FC<BalanceProps> = () => {
       );
 
       if (findRelayerFee) relayerFee.relayerAmount = findRelayerFee.amount;
+
+      //-------------------------------------------------------
+      // FIXME: need remove after fix ibc hooks
+      if (from.cosmosBased && from.chainId !== 'noble-1' && to.chainId === 'Oraichain') {
+        const ibcInfo = UniversalSwapHelper.getIbcInfo(from.chainId as CosmosChainId, to.chainId);
+        if (!ibcInfo)
+          throw generateError(`Could not find the ibc info given the from token with coingecko id ${from.coinGeckoId}`);
+
+        const offlineSigner = await collectWallet(from.chainId);
+        const client = await connectWithSigner(
+          from.rpc,
+          offlineSigner as any,
+          from.chainId === 'injective-1' ? 'injective' : 'cosmwasm',
+          {
+            gasPrice: GasPrice.fromString(
+              `${getCosmosGasPrice(from.gasPriceStep)}${from.feeCurrencies[0].coinMinimalDenom}`
+            ),
+            broadcastPollIntervalMs: 600
+          }
+        );
+
+        const receiver = await handleCheckAddress(to.chainId);
+        const msgTransferObj = {
+          sourcePort: ibcInfo.source,
+          receiver,
+          sourceChannel: ibcInfo.channel,
+          token: coin(toAmount(fromAmount, from.decimals).toString(), from.denom),
+          sender: cosmosAddress,
+          memo: '',
+          timeoutTimestamp: calculateTimeoutTimestamp(ibcInfo.timeout)
+        };
+        let msgTransfer: any = MsgTransfer.fromPartial(msgTransferObj as any);
+        if (from.chainId === 'injective-1') {
+          msgTransfer = MsgTransferInjective.fromPartial(msgTransferObj);
+        }
+
+        const msgTransferEncodeObj = {
+          typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
+          value: msgTransfer
+        };
+
+        result = await client.signAndBroadcast(cosmosAddress, [msgTransferEncodeObj], 'auto');
+        return processTxResult(from.rpc, result, getTransactionUrl(from.chainId, result.transactionHash));
+      }
+      //-------------------------------------------------------
 
       const universalSwapHandler = new UniversalSwapHandler(
         {

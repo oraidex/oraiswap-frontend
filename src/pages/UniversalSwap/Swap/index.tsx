@@ -85,6 +85,7 @@ import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculate
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
+import TonWallet from '@oraichain/tonbridge-sdk/build/wallet';
 
 const cx = cn.bind(styles);
 
@@ -320,8 +321,21 @@ const SwapComponent: React.FC<{
       const isCustomRecipient = validAddress.isValid && addressTransfer !== initAddressTransfer;
       const alphaSmartRoutes = simulateData?.routes;
 
+      const tonWallet = await TonWallet.create('mainnet', {
+        mnemonicData: {
+          mnemonic: undefined,
+          tonWalletVersion: 'V4'
+        },
+        tonConnector: window?.Ton as any
+      });
+
       const swapData = {
-        sender: { cosmos: cosmosAddress, evm: checksumMetamaskAddress, tron: tronAddress },
+        sender: {
+          cosmos: cosmosAddress,
+          evm: checksumMetamaskAddress,
+          tron: tronAddress,
+          ton: tonWallet?.sender?.address?.toString()
+        },
         originalFromToken,
         originalToToken,
         fromAmount: fromAmountToken,
@@ -339,9 +353,13 @@ const SwapComponent: React.FC<{
       const univeralSwapHandler = new UniversalSwapHandler(swapData, {
         cosmosWallet: window.Keplr,
         evmWallet: new Metamask(window.tronWebDapp),
+        tonWallet,
         swapOptions: {
           isAlphaIbcWasm: useAlphaIbcWasm,
-          isIbcWasm: useIbcWasm
+          isIbcWasm: useIbcWasm,
+
+          // FIXME: hardcode with case celestia not check balance
+          isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
         }
       });
 
@@ -693,15 +711,6 @@ const SwapComponent: React.FC<{
                 coe={coe}
                 usdPrice={usdPriceShowFrom}
               />
-              {/* !fromToken && !toTokenFee mean that this is internal swap operation */}
-              {!fromTokenFee && !toTokenFee && isWarningSlippage && (
-                <div className={cx('impact-warning')}>
-                  <WarningIcon />
-                  <div className={cx('title')}>
-                    <span>&nbsp;Current slippage exceed configuration!</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
           <div className={cx('swap-center')}>

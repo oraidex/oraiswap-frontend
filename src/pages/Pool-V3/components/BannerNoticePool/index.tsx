@@ -1,12 +1,18 @@
 import CloseIcon from 'assets/icons/close.svg?react';
 import HamsterIcon from 'assets/icons/hmstr.svg?react';
 import PepeIcon from 'assets/icons/pepe.svg?react';
+import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
 import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './index.module.scss';
 
-import { PEPE_ORAICHAIN_EXT_DENOM, HMSTR_ORAICHAIN_DENOM, USDC_CONTRACT } from '@oraichain/oraidex-common';
+import {
+  PEPE_ORAICHAIN_EXT_DENOM,
+  HMSTR_ORAICHAIN_DENOM,
+  USDC_CONTRACT,
+  DOGE_BNB_ORAICHAIN_DENOM
+} from '@oraichain/oraidex-common';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 
 const urlPepe = `/pools/v3/${encodeURIComponent(PEPE_ORAICHAIN_EXT_DENOM)}-${encodeURIComponent(
@@ -17,21 +23,18 @@ const urlHmstr = `/pools/v3/${encodeURIComponent(HMSTR_ORAICHAIN_DENOM)}-${encod
   USDC_CONTRACT
 )}-3000000000-100`;
 
+const urlDoge = `/pools/v3/${encodeURIComponent(DOGE_BNB_ORAICHAIN_DENOM)}-${encodeURIComponent(
+  USDC_CONTRACT
+)}-3000000000-100`;
+
 const INTERVAL_TIME = 3000;
 
 const NoticeList = [
   {
-    url: urlHmstr,
-    XIcon: HamsterIcon,
+    url: urlDoge,
+    XIcon: DogecoinIcon,
     YIcon: UsdcIcon,
-    Xname: 'HMSTR',
-    Yname: 'USDC'
-  },
-  {
-    url: urlPepe,
-    XIcon: PepeIcon,
-    YIcon: UsdcIcon,
-    Xname: 'PEPE',
+    Xname: 'DOGE',
     Yname: 'USDC'
   }
 ];

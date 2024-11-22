@@ -27,6 +27,7 @@ import TonIcon from 'assets/icons/ton.svg?react';
 import PepeIcon from 'assets/icons/pepe.svg?react';
 import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
+import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 import { TonChainId } from 'context/ton-provider';
@@ -164,6 +165,11 @@ export const tokensIconInfos: TokenIcon[] = [
     coinGeckoId: 'hamster-kombat',
     Icon: HmstrIcon,
     IconLight: HmstrIcon
+  },
+  {
+    coinGeckoId: 'dogecoin',
+    Icon: DogecoinIcon,
+    IconLight: DogecoinIcon
   }
 ];
 
@@ -240,6 +246,11 @@ export const chainIconsInfos: ChainIcon[] = [
   },
   {
     chainId: TonChainId,
+    Icon: TonIcon,
+    IconLight: TonIcon
+  },
+  {
+    chainId: 'Ton' as any,
     Icon: TonIcon,
     IconLight: TonIcon
   }

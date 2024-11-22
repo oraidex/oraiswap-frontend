@@ -5,6 +5,8 @@ import TransferConvertToken from '../TransferConvertToken';
 import { TokenItemType } from '@oraichain/oraidex-common';
 
 import { tokensIcon } from 'config/chainInfos';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
+
 export interface TokenItemProps {
   token: TokenItemType;
   amountDetail?: { amount: string; usd: number };
@@ -41,7 +43,14 @@ const TokenItem: React.FC<TokenItemProps> = ({
   setIsFastMode,
   setToNetworkChainId
 }) => {
-  const tokenIcon = tokensIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
+  let tokenIcon = tokensIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
+  if (!tokenIcon) {
+    tokenIcon = {
+      coinGeckoId: token.coinGeckoId,
+      Icon: DefaultIcon,
+      IconLight: DefaultIcon
+    };
+  }
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
   return (
     <div

@@ -402,20 +402,6 @@ const useTonBridgeHandler = ({
           }
         ).toBoc();
 
-      console.log('first', {
-        data: {
-          amount: BigInt(fmtAmount.toString()),
-          memo,
-          remoteReceiver: oraiAddress,
-          timeout
-        },
-        oraiAddressBech32,
-        ops: {
-          queryId: 0,
-          value: toNano(0) // don't care this
-        }
-      });
-
       const getOtherBridgeTokenPayload = () =>
         JettonWallet.buildSendTransferPacket(
           Address.parse(tonAddress),

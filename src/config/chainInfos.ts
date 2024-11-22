@@ -415,8 +415,8 @@ export const chainInfosWithSdk = [
     return net;
   }),
   bitcoinMainnet,
-  oraibtcNetwork,
-  tonNetworkMainnet
+  oraibtcNetwork
+  // tonNetworkMainnet
 ];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 
