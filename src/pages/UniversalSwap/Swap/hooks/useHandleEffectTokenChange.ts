@@ -80,7 +80,7 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
       }
     })();
   }, [
-    originalToToken,
+    originalToToken?.chainId,
     oraiAddress,
     metamaskAddress,
     tronAddress,
