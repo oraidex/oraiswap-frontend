@@ -328,13 +328,13 @@ const SwapComponent: React.FC<{
         },
         tonConnector: window?.Ton as any
       });
-
+      const tonAddress = tonWallet?.sender?.address?.toString();
       const swapData = {
         sender: {
           cosmos: cosmosAddress,
           evm: checksumMetamaskAddress,
           tron: tronAddress,
-          ton: tonWallet?.sender?.address?.toString()
+          ton: tonAddress
         },
         originalFromToken,
         originalToToken,
@@ -363,12 +363,17 @@ const SwapComponent: React.FC<{
         }
       });
 
-      const { transactionHash } = await univeralSwapHandler.processUniversalSwap();
+      const result = await univeralSwapHandler.processUniversalSwap();
+      // @ts-ignore
+      let transactionHash = result?.transactionHash;
+
       if (transactionHash) {
+        if (originalFromToken.chainId === 'ton') transactionHash = tonAddress;
+
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl(originalFromToken.chainId, transactionHash)
         });
-        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress });
+        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress, tonAddress });
         setSwapLoading(false);
 
         // save to duckdb

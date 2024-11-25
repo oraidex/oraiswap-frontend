@@ -35,7 +35,7 @@ import { TonNetwork } from 'context/ton-provider';
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
   const [, setTronAddress] = useConfigReducer('tronAddress');
-  const [, setTonAddress] = useConfigReducer('tonAddress');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [, setMetamaskAddress] = useConfigReducer('metamaskAddress');
   const [, setBtcAddress] = useConfigReducer('btcAddress');
   const [, setStatusChangeAccount] = useConfigReducer('statusChangeAccount');
@@ -275,7 +275,8 @@ const App = () => {
         oraiAddress,
         metamaskAddress,
         tronAddress,
-        btcAddress
+        btcAddress,
+        tonAddress
       });
     } catch (error) {
       console.log('Error: ', error.message);

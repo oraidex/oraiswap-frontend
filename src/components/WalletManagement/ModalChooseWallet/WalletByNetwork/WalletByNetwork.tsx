@@ -178,6 +178,7 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         setBtcAddress(undefined);
         break;
       case 'ton':
+        setTonAddress(undefined);
         handleDisconnectTon();
         break;
       default:

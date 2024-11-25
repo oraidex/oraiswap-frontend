@@ -46,10 +46,6 @@ const useTonConnectAddress = () => {
         // handleSetTonAddress({ tonAddress: undefined });
         // handleSetTonWallet({ tonWallet: undefined });
 
-        setWalletByNetworks({
-          ...walletByNetworks,
-          ton: null
-        });
         setTonAddress(undefined);
       }
     } catch (error) {

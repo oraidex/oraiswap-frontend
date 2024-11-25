@@ -105,16 +105,17 @@ export const WalletManagement: FC<{}> = () => {
 
   // reset balance when disconnect
   useEffect(() => {
-    if (!metamaskAddress || !tronAddress || !oraiAddress || !btcAddress) {
+    if (!metamaskAddress || !tronAddress || !oraiAddress || !btcAddress || !tonAddress) {
       let arrResetBalance: WalletResetType[] = [];
       if (!metamaskAddress) arrResetBalance.push('metamask');
       if (!tronAddress) arrResetBalance.push('tron');
       if (!oraiAddress) arrResetBalance.push('keplr');
       if (!btcAddress) arrResetBalance.push('bitcoin');
+      if (!tonAddress) arrResetBalance.push('ton');
       arrResetBalance.length && handleResetBalance(arrResetBalance);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress]);
+  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress, tonAddress]);
 
   const isAnyWalletConnected = Object.values(walletByNetworks).some((wallet) => wallet !== null);
   useEffect(() => {
