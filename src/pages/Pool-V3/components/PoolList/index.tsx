@@ -1,4 +1,4 @@
-import { BigDecimal, toDisplay, DOGE_BNB_ORAICHAIN_DENOM } from '@oraichain/oraidex-common';
+import { BigDecimal, DOGE_BNB_ORAICHAIN_DENOM, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import Loading from 'assets/gif/loading.gif';
 import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
@@ -176,7 +176,7 @@ const PoolList = ({
         aprInfo: aprOsmosisPool,
         liquidityAddr,
         poolKey,
-        chainInfo
+        chainInfo,
       } = item || {};
 
       if (poolChainName === POOL_CHAIN.OSMOSIS) {
@@ -216,8 +216,8 @@ const PoolList = ({
       };
     })
     .sort((a, b) => {
-      const aIsPrioritized = a.tokenXinfo.denom === prioritizePool;
-      const bIsPrioritized = b.tokenXinfo.denom === prioritizePool;
+      const aIsPrioritized = a.tokenXInfo.denom === prioritizePool;
+      const bIsPrioritized = b.tokenXInfo.denom === prioritizePool;
 
       if (aIsPrioritized && !bIsPrioritized) return CoefficientBySort[SortType.DESC];
       if (bIsPrioritized && !aIsPrioritized) return CoefficientBySort[SortType.ASC];
@@ -226,7 +226,7 @@ const PoolList = ({
         case PoolColumnHeader.LIQUIDITY:
           return Number(CoefficientBySort[sortOrder]) * ((a.showLiquidity || 0) - (b.showLiquidity || 0));
         case PoolColumnHeader.POOL_NAME:
-          return CoefficientBySort[sortOrder] * (a?.tokenXinfo?.name || '').localeCompare(b.tokenXinfo?.name || '');
+          return CoefficientBySort[sortOrder] * (a?.tokenXInfo?.name || '').localeCompare(b.tokenXInfo?.name || '');
         case PoolColumnHeader.VOLUME:
           return new BigDecimal(CoefficientBySort[sortOrder]).mul(a.showVolume - b.showVolume).toNumber();
         case PoolColumnHeader.APR:
@@ -239,14 +239,14 @@ const PoolList = ({
       }
     })
     .filter((p) => {
-      const { tokenXinfo, tokenYinfo, type, network: networkName } = p;
+      const { tokenXInfo, tokenYInfo, type, network: networkName } = p;
       let conditions = true;
 
       if (search) {
         conditions =
           conditions &&
-          ((tokenXinfo && tokenXinfo.name.toLowerCase().includes(search.toLowerCase())) ||
-            (tokenYinfo && tokenYinfo.name.toLowerCase().includes(search.toLowerCase())));
+          ((tokenXInfo && tokenXInfo.name.toLowerCase().includes(search.toLowerCase())) ||
+            (tokenYInfo && tokenYInfo.name.toLowerCase().includes(search.toLowerCase())));
       }
 
       if (filterType && filterType !== POOL_TYPE.ALL) {
@@ -457,11 +457,11 @@ const PoolList = ({
           {filteredPool?.length > 0
             ? renderList()
             : !loading && (
-                <div className={styles.nodata}>
-                  {theme === 'light' ? <NoData /> : <NoDataDark />}
-                  <span>{!dataPool.length ? 'No Pools!' : !filteredPool.length && 'No Matched Pools!'}</span>
-                </div>
-              )}
+              <div className={styles.nodata}>
+                {theme === 'light' ? <NoData /> : <NoDataDark />}
+                <span>{!dataPool.length ? 'No Pools!' : !filteredPool.length && 'No Matched Pools!'}</span>
+              </div>
+            )}
         </div>
 
         <div className={styles.paginate}>

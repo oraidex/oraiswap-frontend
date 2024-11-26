@@ -40,6 +40,7 @@ import {
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
+import { OsmosisAmm } from '@oraichain/oraidex-zapper';
 import { oraichainTokens, tokenMap, tokens } from 'config/bridgeTokens';
 import { network } from 'config/networks';
 import { Long } from 'cosmjs-types/helpers';

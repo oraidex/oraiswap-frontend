@@ -44,8 +44,8 @@ export default () => (
       {/* <Route path="/pools" element={<Pools />} /> */}
       <Route path="/pools" element={<PoolsV3 />} />
       <Route path="/pools-v3" element={<Navigate to="/pools" replace />} />
-      <Route path="/pools/v3/:poolId" element={<PoolV3Detail />} />
-      <Route path="/pools/v2/:poolUrl" element={<PoolDetail />} />
+      <Route path="/pools/v3/:network/:poolId" element={<PoolV3Detail />} />
+      <Route path="/pools/v2/:network/:poolUrl" element={<PoolDetail />} />
       {/* <Route path="/new-position/:item" element={<CreatePosition />} /> */}
       <Route path="/staking" element={<StakingPage />} />
       <Route path="/co-harvest" element={<CoHarvest />} />

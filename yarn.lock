@@ -3409,10 +3409,10 @@
     tronweb "5.3.2"
     ts-protoc-gen "^0.15.0"
 
-"@oraichain/oraidex-zapper@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-zapper/-/oraidex-zapper-0.1.0.tgz#b6aec1be889df8bbe47c4db313b4414aeea33002"
-  integrity sha512-dN05HjPqbxsf4WI+M2IUuBCRbCU2+779Hg5KfjmDbenqC7PAAq6FKF05FBHBz8gYyegNiiTGVMNwJFW3p/9eww==
+"@oraichain/oraidex-zapper@^0.1.14":
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-zapper/-/oraidex-zapper-0.1.14.tgz#b8032ece7d6ed4abfaefaf4e8960e85c714d72d5"
+  integrity sha512-hIlVsqILry0iHnJcHavwE4Pcg4nC9tv2Fx9RzC5ka9vSj7pXoM+bwpnY4xJ/Lm38HWaSGkNI5UclcQp4mJbJVg==
   dependencies:
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
     "@cosmjs/encoding" "^0.32.4"

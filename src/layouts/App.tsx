@@ -3,6 +3,7 @@ import {
   WEBSOCKET_RECONNECT_ATTEMPTS,
   WEBSOCKET_RECONNECT_INTERVAL
 } from '@oraichain/oraidex-common';
+import { OsmosisAmm } from '@oraichain/oraidex-zapper';
 import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { network } from 'config/networks';
@@ -12,6 +13,8 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
 import useWalletReducer from 'hooks/useWalletReducer';
+import SingletonOraiswapV3 from 'libs/contractSingleton';
+import { getCosmWasmClient } from 'libs/cosmjs';
 import Keplr from 'libs/keplr';
 import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
@@ -26,8 +29,6 @@ import './index.scss';
 import Menu from './Menu';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
-import SingletonOraiswapV3 from 'libs/contractSingleton';
-import { getCosmWasmClient } from 'libs/cosmjs';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
@@ -40,6 +41,7 @@ const App = () => {
   const [theme] = useConfigReducer('theme');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const [, setCosmosAddress] = useConfigReducer('cosmosAddress');
+  const [, setOsmosisDex] = useConfigReducer('osmosisDex');
   const mobileMode = isMobile();
   const { tron, evm } = walletByNetworks;
   const ethOwallet = window.eth_owallet;
@@ -58,7 +60,7 @@ const App = () => {
       }
     })();
 
-    return () => {};
+    return () => { };
   }, []);
 
   // TODO: polyfill evm, tron, need refactor
@@ -270,6 +272,19 @@ const App = () => {
       });
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      console.log("call first");
+      const osmosisAmm = await OsmosisAmm.create(
+        "https://rpc.osmosis.zone/",
+        "https://lcd.app.osmosis.zone/",
+        "https://app.osmosis.zone/api",
+        "https://data.app.osmosis.zone"
+      );
+      setOsmosisDex(osmosisAmm);
+    })();
+  }, []);
 
   const [openBanner, setOpenBanner] = useState(false);
 

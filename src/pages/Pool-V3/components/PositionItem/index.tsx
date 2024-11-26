@@ -70,8 +70,11 @@ const PositionItem = ({ position }) => {
     tokenYDecimal,
     tokenXDecimal,
     tokenX = {},
-    tokenY = {}
+    tokenY = {},
+    address: owner
   } = position || {};
+
+  const isOraichain = owner.startsWith('orai');
 
   const { earnX = 0, earnY = 0, earnIncentive = null } = totalEarn || {};
 
@@ -111,6 +114,7 @@ const PositionItem = ({ position }) => {
   });
 
   useEffect(() => {
+    if (!isOraichain) return;
     const getAPRInfo = async () => {
       const res = await fetchPositionAprInfo(
         poolList.find((e) => poolKeyToString(e.pool_key) === poolKeyToString(position.pool_key)),
@@ -136,10 +140,12 @@ const PositionItem = ({ position }) => {
   }, [statusRange, poolPrice, position, poolList, feeDailyData]);
 
   useEffect(() => {
+    if (!isOraichain) return;
     if (!openCollapse) return;
 
     (async () => {
       try {
+        if (!isOraichain) return;
         const { pool_key, lower_tick_index, upper_tick_index } = position;
 
         const {
@@ -177,6 +183,7 @@ const PositionItem = ({ position }) => {
 
   useEffect(() => {
     (async () => {
+      if (!isOraichain) return;
       if (poolList.length === 0) return;
       if (position === undefined) return;
 
@@ -190,6 +197,7 @@ const PositionItem = ({ position }) => {
 
   useEffect(() => {
     (async () => {
+      if (!isOraichain) return;
       if (openCollapse && incentives) {
         if (Object.keys(simulation).length <= 0) {
           await refetchGetIncentiveSimulate();
@@ -225,6 +233,7 @@ const PositionItem = ({ position }) => {
   }, [isClaimSuccess]);
 
   const [tokenXClaim, tokenYClaim, tokenXClaimInUsd, tokenYClaimInUsd, incentivesUSD] = useMemo(() => {
+    if (!isOraichain) return [0, 0, 0, 0, 0];
     if (isClaimSuccess) return [0, 0, 0, 0, 0];
     if (position?.poolData && openCollapse && tick.lowerTick && tick.lowerTick && incentives) {
       const convertedPool = getConvertedPool(position);

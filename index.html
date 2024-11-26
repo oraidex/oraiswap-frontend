@@ -39,6 +39,16 @@
     <script>
       var exports = {};
     </script>
+    <script type="module">
+      import { Buffer } from 'buffer';
+      import process from 'process';
+
+      window.process = process;
+      window.Buffer = Buffer;
+    </script>
+    <script>
+      window.global = window;
+    </script>
   </head>
   <body>
     <div id="oraiswap"></div>

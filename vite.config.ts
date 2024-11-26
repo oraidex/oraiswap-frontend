@@ -1,14 +1,20 @@
-import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
+import path from 'path';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import svgr from 'vite-plugin-svgr';
 import wasm from 'vite-plugin-wasm';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import path from 'path';
+import viteTsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   base: '',
-  plugins: [react(), wasm(), viteTsconfigPaths(), svgr(), nodePolyfills()],
+  plugins: [react(), wasm(), viteTsconfigPaths(), svgr(), nodePolyfills({
+    globals: {
+      Buffer: false,
+      global: false,
+      process: false
+    }
+  })],
   server: {
     open: true,
     port: 3000

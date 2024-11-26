@@ -1,8 +1,6 @@
 import { toDisplay } from '@oraichain/oraidex-common';
 import AddIcon from 'assets/icons/Add.svg?react';
 import BackIcon from 'assets/icons/back.svg?react';
-import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
-import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import NoDataDark from 'assets/images/NoDataPool.svg?react';
 import NoData from 'assets/images/NoDataPoolLight.svg?react';
 import classNames from 'classnames';
@@ -12,160 +10,43 @@ import Tabs from 'components/TabCustom';
 import { formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
-import SingletonOraiswapV3, { fetchPoolAprInfo, poolKeyToString } from 'libs/contractSingleton';
-import { formatPoolData, getIconPoolData, PoolWithTokenInfo } from 'pages/Pool-V3/helpers/format';
-import { convertPosition } from 'pages/Pool-V3/helpers/helper';
-import { useGetAllPositions } from 'pages/Pool-V3/hooks/useGetAllPosition';
-import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
-import { useGetPoolDetail } from 'pages/Pool-V3/hooks/useGetPoolDetail';
-import { useGetPoolLiquidityVolume } from 'pages/Pool-V3/hooks/useGetPoolLiquidityVolume';
-import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
-import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getFeeClaimData } from 'rest/graphClient';
 import CreateNewPosition from '../CreateNewPosition';
 import PositionItem from '../PositionItem';
 import TransactionHistory from '../TransactionHistory';
 import styles from './index.module.scss';
+import useOsmosisV3Pool from './hooks/useOsmosisV3Pool';
+import useOraichainV3Pool from './hooks/useOraichainV3Pool';
 
 const PoolV3Detail = () => {
+  const { poolId, network } = useParams<{ poolId: string, network: string }>();
   const [address] = useConfigReducer('address');
-  const [cachePrices] = useConfigReducer('coingecko');
-  const { poolList, poolPrice } = useGetPoolList(cachePrices);
-  const { poolLiquidities, poolVolume } = useGetPoolLiquidityVolume(poolPrice);
   const [isOpenCreatePosition, setIsOpenCreatePosition] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
-  const { poolId } = useParams<{ poolId: string }>();  
 
-  const [tokenX, tokenY, fee, tick] = poolId.split('-');
-  const poolKeyString = poolKeyToString({
-    token_x: tokenX,
-    token_y: tokenY,
-    fee_tier: {
-      fee: Number(fee),
-      tick_spacing: Number(tick)
-    }
-  });
-  const isLight = theme === 'light';
-  const IconBoots = isLight ? BootsIcon : BootsIconDark;
+  const {
+    poolDetail,
+    IconBoots,
+    isInactive,
+    totalLiquidity,
+    volume24h,
+    aprInfo,
+    balanceX,
+    balanceY,
+    dataPosition,
+    loading,
+    poolKeyString,
+    FromTokenIcon,
+    ToTokenIcon,
+    tokenXInfo,
+    tokenYInfo,
+    fee,
+  } = (network === 'oraichain' ? useOraichainV3Pool : useOsmosisV3Pool)(poolId, theme);
 
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(tokenX, tokenY, isLight);
-  const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
-  const totalLiquidity = poolLiquidities?.[poolId] ?? 0;
-  const volumn24h = poolVolume?.[poolId] ?? 0;
-
-  const [dataPosition, setDataPosition] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [poolDetail, setPoolDetail] = useState<PoolWithTokenInfo>();
-  const [statusRemove, setStatusRemove] = useState<boolean>(undefined);
-  const [liquidity, setLiquidity] = useState({
-    total: totalLiquidity,
-    allocation: {}
-  });
-
-  const { feeDailyData } = useGetFeeDailyData();
-  const { allPosition } = useGetAllPositions();
-  const { positions: userPositions } = useGetPositions(address);
-  const { liquidityDistribution } = useGetPoolDetail(poolKeyString, poolPrice);
-
-  useEffect(() => {
-    if (poolId.includes('osmosis-pool-')) {
-      const osmoPoolId = poolId.split('osmosis-pool-')[1];
-      
-    }
-  }, [poolId]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        if (!(poolList.length && allPosition && poolId)) return;
-        if (liquidityDistribution !== null) {
-          setLiquidity(liquidityDistribution);
-          return;
-        }
-
-        const pool = poolList.find((p) => poolKeyToString(p.pool_key) === poolKeyString);
-        const liquidity = await SingletonOraiswapV3.getLiquidityByPool(pool, poolPrice, allPosition);
-        setLiquidity(liquidity);
-      } catch (error) {
-        console.log('error: get pool detail', error);
-      } finally {
-        if (poolList.length === 0) {
-          return;
-        }
-        const pool = poolList.find((p) => poolKeyToString(p.pool_key) === poolKeyString);
-        const isLight = theme === 'light';
-        const fmtPool = formatPoolData(pool, isLight);
-        setPoolDetail(fmtPool as any);
-      }
-    })();
-  }, [poolId, allPosition, poolList, theme, poolPrice, poolKeyString, liquidityDistribution]);
-
-  const [aprInfo, setAprInfo] = useConfigReducer('aprPools');
-
-  useEffect(() => {
-    const getAPRInfo = async () => {
-      const res = await fetchPoolAprInfo(
-        [poolDetail],
-        poolPrice,
-        {
-          [poolKeyString]: liquidity.total
-        },
-        feeDailyData
-      );
-      setAprInfo({
-        ...aprInfo,
-        [poolKeyString]: res[poolKeyString]
-      });
-    };
-
-    if (poolDetail && poolPrice && liquidity && poolDetail.poolKey === poolKeyString) {
-      getAPRInfo();
-    }
-  }, [liquidity.total, feeDailyData, poolDetail, poolPrice, poolKeyString]);
-
-  const { spread, pool_key } = poolDetail || {};
-  const { allocation, total } = liquidity;
-
-  const [balanceX, balanceY] = [
-    allocation[pool_key?.token_x]?.balance || 0,
-    allocation[pool_key?.token_y]?.balance || 0
-  ];
-
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        if (!(poolList.length && userPositions.length && poolPrice && address)) return setDataPosition([]);
-        // if (dataPosition.length) return;
-        const feeClaimData = await getFeeClaimData(address);
-
-        const positionsMap = convertPosition({
-          positions: userPositions.map((po, ind) => ({ ...po, ind })),
-          poolsData: poolList,
-          cachePrices: poolPrice,
-          address,
-          isLight,
-          feeClaimData
-        });
-        const filteredPositions = positionsMap
-          .filter((pos) => poolKeyToString(pos.pool_key) === poolKeyString)
-          .sort((a, b) => a.token_id - b.token_id);
-
-        setDataPosition(filteredPositions);
-      } catch (error) {
-        console.log({ error });
-      } finally {
-        setLoading(false);
-        setStatusRemove(false);
-      }
-    })();
-
-    return () => {};
-  }, [address, poolList.length, userPositions]);
+  console.log({dataPosition})
 
   const calcShowApr = (apr: number) =>
     numberWithCommas(apr * 100, undefined, {
@@ -195,7 +76,7 @@ const PoolV3Detail = () => {
               {ToTokenIcon && <ToTokenIcon />}
             </div>
             <span>
-              {tokenXinfo?.name?.toUpperCase()} / {tokenYinfo?.name?.toUpperCase()}
+              {tokenXInfo?.name?.toUpperCase()} / {tokenYInfo?.name?.toUpperCase()}
             </span>
             <span className={classNames(styles.tag, styles.v3)}>V3</span>
           </div>
@@ -242,7 +123,7 @@ const PoolV3Detail = () => {
             </div>
             <div className={styles.box}>
               <p>Volume (24H)</p>
-              <h1>{Number.isNaN(volumn24h) ? 0 : formatDisplayUsdt(volumn24h)}</h1>
+              <h1>{Number.isNaN(volume24h) ? 0 : formatDisplayUsdt(volume24h)}</h1>
               {/* <span className={classNames(styles.percent, { [styles.positive]: false })}>
               {false ? '+' : '-'}
               {numberWithCommas(2.07767, undefined, { maximumFractionDigits: 1 })}%
@@ -259,12 +140,12 @@ const PoolV3Detail = () => {
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 {FromTokenIcon && <FromTokenIcon />}
-                {/* <span>{tokenXinfo?.name?.toUpperCase()}</span> */}
+                {/* <span>{tokenXInfo?.name?.toUpperCase()}</span> */}
                 <span className={styles.value}>{formatNumberKMB(balanceX, false)}</span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 {ToTokenIcon && <ToTokenIcon />}
-                {/* <span>{tokenYinfo?.name?.toUpperCase()}</span> */}
+                {/* <span>{tokenYInfo?.name?.toUpperCase()}</span> */}
                 <span className={styles.value}>{formatNumberKMB(balanceY, false)}</span>
               </div>
             </div>
@@ -286,13 +167,13 @@ const PoolV3Detail = () => {
               <p>
                 {aprInfo[poolKeyString]?.swapFee.min === aprInfo[poolKeyString]?.swapFee.max
                   ? `${numberWithCommas(aprInfo[poolKeyString]?.swapFee.min * 100, undefined, {
-                      maximumFractionDigits: 1
-                    })}`
+                    maximumFractionDigits: 1
+                  })}`
                   : `${numberWithCommas(aprInfo[poolKeyString]?.swapFee.min * 100, undefined, {
-                      maximumFractionDigits: 1
-                    })} - ${numberWithCommas(aprInfo[poolKeyString]?.swapFee.max * 100, undefined, {
-                      maximumFractionDigits: 1
-                    })}`}
+                    maximumFractionDigits: 1
+                  })} - ${numberWithCommas(aprInfo[poolKeyString]?.swapFee.max * 100, undefined, {
+                    maximumFractionDigits: 1
+                  })}`}
                 %
               </p>
             </div>
@@ -308,13 +189,13 @@ const PoolV3Detail = () => {
               <p className={styles.total}>
                 {aprInfo[poolKeyString]?.apr.min === aprInfo[poolKeyString]?.apr.max
                   ? `${numberWithCommas(aprInfo[poolKeyString]?.apr.min * 100, undefined, {
-                      maximumFractionDigits: 1
-                    })}`
+                    maximumFractionDigits: 1
+                  })}`
                   : `${numberWithCommas(aprInfo[poolKeyString]?.apr.min * 100, undefined, {
-                      maximumFractionDigits: 1
-                    })} - ${numberWithCommas(aprInfo[poolKeyString]?.apr.max * 100, undefined, {
-                      maximumFractionDigits: 1
-                    })}`}
+                    maximumFractionDigits: 1
+                  })} - ${numberWithCommas(aprInfo[poolKeyString]?.apr.max * 100, undefined, {
+                    maximumFractionDigits: 1
+                  })}`}
                 %
               </p>
             </div>
@@ -334,18 +215,18 @@ const PoolV3Detail = () => {
                   <div className={styles.list}>
                     {dataPosition.length
                       ? dataPosition.map((position, index) => {
-                          return (
-                            <div className={styles.positionWrapper} key={`pos-${index}`}>
-                              <PositionItem position={position} />
-                            </div>
-                          );
-                        })
-                      : !loading && (
-                          <div className={styles.nodata}>
-                            {theme === 'light' ? <NoData /> : <NoDataDark />}
-                            <span>No Positions!</span>
+                        return (
+                          <div className={styles.positionWrapper} key={`pos-${index}`}>
+                            <PositionItem position={position} />
                           </div>
-                        )}
+                        );
+                      })
+                      : !loading && (
+                        <div className={styles.nodata}>
+                          {theme === 'light' ? <NoData /> : <NoDataDark />}
+                          <span>No Positions!</span>
+                        </div>
+                      )}
                   </div>
                 </LoadingBox>
               )
@@ -354,7 +235,7 @@ const PoolV3Detail = () => {
               id: 'txs',
               value: 'Transactions',
               content: (
-                <TransactionHistory poolKey={poolDetail?.poolKey} baseToken={tokenXinfo} quoteToken={tokenYinfo} />
+                <TransactionHistory poolKey={poolDetail?.poolKey} baseToken={tokenXInfo} quoteToken={tokenYInfo} />
               )
             }
           ]}

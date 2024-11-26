@@ -35,6 +35,7 @@ export type ActiveLiquidityPerTickRange = {
 };
 
 export interface PoolDetailV3State {
+  network: string;
   poolId: string; //
   poolKey: PoolKey; //
   pool: Pool;
@@ -59,6 +60,7 @@ export interface PoolDetailV3State {
 }
 
 const initialState: PoolDetailV3State = {
+  network: 'oraichain',
   poolId: '',
   poolKey: null,
   pool: null,
@@ -86,7 +88,14 @@ export const poolDetailV3Slice = createSlice({
   name: 'poolDetailV3',
   initialState,
   reducers: {
+    setNetwork: (state, action: PayloadAction<string>) => { 
+      state.network = action.payload;
+    },
     setPoolId: (state, action: PayloadAction<string>) => {
+      if (state.network === 'osmosis') {
+        state.poolId = action.payload;
+        return;
+      }
       state.poolId = action.payload;
       const poolKey = stringToPoolKey(action.payload);
       state.poolKey = poolKey;
@@ -94,6 +103,16 @@ export const poolDetailV3Slice = createSlice({
       const tokenY = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
       state.tokenX = tokenX;
       state.tokenY = tokenY;
+    },
+    setPool: (state, action: PayloadAction<Pool>) => {
+      state.pool = action.payload;
+    },
+    setPoolKey: (state, action: PayloadAction<PoolKey>) => {
+      state.poolKey = action.payload;
+    },
+    setPair: (state, action: PayloadAction<{ tokenX: TokenItemType; tokenY: TokenItemType }>) => {
+      state.tokenX = action.payload.tokenX;
+      state.tokenY = action.payload.tokenY;
     },
     setYRange: (state, action: PayloadAction<[number, number]>) => {
       state.yRange = action.payload;
@@ -136,7 +155,9 @@ export const poolDetailV3Slice = createSlice({
     return depths;
   }
     */
-
+    setRawLiquidityChartData: (state, action: PayloadAction<LiquidityChartData[]>) => {
+      state.liquidityChartData = action.payload;
+    },
     setLiquidityChartData: (state) => {
       if (!state.liquidityTicks || !state.poolKey || !state.tokenX || !state.tokenY || !state.yRange) return;
 
@@ -220,6 +241,9 @@ export const poolDetailV3Slice = createSlice({
     },
     setAllLiquidityTicks: (state, action: PayloadAction<LiquidityTick[]>) => {
       state.liquidityTicks = action.payload;
+    },
+    setCurrentPrice: (state, action: PayloadAction<number>) => {  
+      state.currentPrice = action.payload;
     },
     setToDefault: () => ({ ...initialState }),
     setIsXToY: (state, action: PayloadAction<boolean>) => {
@@ -368,10 +392,16 @@ const revertHistoricalChartData = (data: TokenPairHistoricalPrice[]) => {
 };
 
 export const {
+  setNetwork,
+  setPair,
+  setPool,
+  setPoolKey,
+  setCurrentPrice,
   setPoolId,
   setXRange,
   setYRange,
   setLiquidityChartData,
+  setRawLiquidityChartData,
   setHistoricalChartData,
   setHistoricalRange,
   setZoom,

@@ -70,6 +70,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
   setFocusId,
   setTokenZap,
 }) => {
+  console.log(zapInResponse);
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   return (
@@ -114,12 +115,12 @@ const ZapInTab: FC<ZapInTabProps> = ({
           <p className={styles.bal}>
             <span>Balance:</span>{' '}
             <span className={styles.value}>
-              {numberWithCommas(toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals))} {tokenZap?.name}
+              {numberWithCommas(toDisplay(amounts[tokenZap?.denom] || '0', tokenZap?.decimals))} {tokenZap?.name}
             </span>
             <span
               className={styles.max}
               onClick={() => {
-                const val = toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals);
+                const val = toDisplay(amounts[tokenZap?.denom] || '0', tokenZap?.decimals);
                 setZapAmount(val);
                 setFocusId('zap');
               }}
@@ -130,7 +131,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
           <div className={styles.usd}>
             ≈ $
             {zapAmount
-              ? numberWithCommas(Number(zapUsd) || 0, undefined, { maximumFractionDigits: tokenZap.decimals })
+              ? numberWithCommas(Number(zapUsd) || 0, undefined, { maximumFractionDigits: tokenZap?.decimals })
               : 0}
           </div>
         </div>
@@ -194,7 +195,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
                 <span>
                   {zapInResponse
                     ? tokenTo &&
-                      numberWithCommas(Number(zapInResponse.amountY) / 10 ** tokenTo.decimals, undefined, {
+                      numberWithCommas(Number(zapInResponse.amountY) / 10 ** (tokenTo as any).coinDecimals, undefined, {
                         maximumFractionDigits: 3
                       })
                     : 0}

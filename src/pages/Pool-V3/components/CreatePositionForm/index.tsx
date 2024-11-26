@@ -32,6 +32,7 @@ import PriceDetail from '../PriceDetail';
 import ZapInTab from '../ZapInTab';
 import styles from './index.module.scss';
 import LoadingBox from 'components/LoadingBox';
+import useOsmosisAddLiquidity from './hooks/useOsmosisAddLiqudiity';
 
 interface CreatePositionFormProps {
   poolId: string;
@@ -42,11 +43,17 @@ interface CreatePositionFormProps {
 
 const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, showModal, onCloseModal }) => {
   const theme = useTheme();
+
+  // no problem
   const amounts = useSelector((state: RootState) => state.token.amounts);
+
+  // no problem
   const { data: prices } = useCoinGeckoPrices();
   const { poolPrice: extendPrices } = useGetPoolList(prices);
 
-  const [walletAddress] = useConfigReducer('address');
+  // no problem
+    const walletAddress = useConfigReducer('cosmosAddress')[0]["osmosis-1"];
+    // const [walletAddress] = useConfigReducer('address');
 
   const loadOraichainToken = useLoadOraichainTokens();
   const navigate = useNavigate();
@@ -121,7 +128,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
     handleOptionWide,
     handleOptionNarrow,
     handleOptionFullRange
-  } = useAddLiquidityNew(poolId, slippage, extendPrices, feeDailyData, toggleZap);
+  } = (poolId.length < 10 ? useOsmosisAddLiquidity : useAddLiquidityNew)(poolId, slippage, extendPrices, feeDailyData, toggleZap);
 
   const isLightTheme = theme === 'light';
 
@@ -137,70 +144,76 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
 
   const TokenFromIcon = tokenX && getIcon(renderTokenObj(tokenX.coinGeckoId));
   const TokenToIcon = tokenY && getIcon(renderTokenObj(tokenY.coinGeckoId));
+  console.log({tokenX , tokenY})
 
-  const fromUsd = extendPrices?.[tokenX?.coinGeckoId]
-    ? (extendPrices[tokenX.coinGeckoId] * Number(amountX || 0)).toFixed(6)
-    : '0';
-  const toUsd = extendPrices?.[tokenY?.coinGeckoId]
-    ? (extendPrices[tokenY.coinGeckoId] * Number(amountY || 0)).toFixed(6)
-    : '0';
+  // const fromUsd = extendPrices?.[tokenX?.coinGeckoId]
+  //   ? (extendPrices[tokenX.coinGeckoId] * Number(amountX || 0)).toFixed(6)
+  //   : '0';
+  // const toUsd = extendPrices?.[tokenY?.coinGeckoId]
+  //   ? (extendPrices[tokenY.coinGeckoId] * Number(amountY || 0)).toFixed(6)
+  //   : '0';
 
-  const getButtonMessage = () => {
-    if (!walletAddress) {
-      return 'Connect wallet';
-    }
+  const fromUsd = "0"
+  const toUsd = "0"
 
-    if (!toggleZap) {
-      const isInsufficientTo =
-        amountY && Number(amountY) > toDisplay(amounts[tokenY?.denom], tokenY?.decimals || CW20_DECIMALS);
-      const isInsufficientFrom =
-        amountX && Number(amountX) > toDisplay(amounts[tokenX?.denom], tokenX?.decimals || CW20_DECIMALS);
+  // const getButtonMessage = () => {
+  //   if (!walletAddress) {
+  //     return 'Connect wallet';
+  //   }
 
-      if (!tokenX || !tokenY) {
-        return 'Select tokens';
-      }
+  //   if (!toggleZap) {
+  //     const isInsufficientTo =
+  //       amountY && Number(amountY) > toDisplay(amounts[tokenY?.denom], tokenY?.decimals || CW20_DECIMALS);
+  //     const isInsufficientFrom =
+  //       amountX && Number(amountX) > toDisplay(amounts[tokenX?.denom], tokenX?.decimals || CW20_DECIMALS);
 
-      if (tokenX?.denom === tokenY?.denom) {
-        return 'Select different tokens';
-      }
+  //     if (!tokenX || !tokenY) {
+  //       return 'Select tokens';
+  //     }
 
-      if (isInsufficientFrom) {
-        return `Insufficient ${tokenX.name.toUpperCase()}`;
-      }
+  //     if (tokenX?.denom === tokenY?.denom) {
+  //       return 'Select different tokens';
+  //     }
 
-      if (isInsufficientTo) {
-        return `Insufficient ${tokenY.name.toUpperCase()}`;
-      }
+  //     if (isInsufficientFrom) {
+  //       return `Insufficient ${tokenX.name.toUpperCase()}`;
+  //     }
 
-      if ((!isXBlocked && (!amountX || +amountX === 0)) || (!isYBlocked && (!amountY || +amountY === 0))) {
-        return 'Liquidity must be greater than 0';
-      }
-      return 'Create new position';
-    } else {
-      const isInsufficientZap =
-        zapAmount && Number(zapAmount) > toDisplay(amounts[tokenZap.denom], tokenZap.decimals || CW20_DECIMALS);
+  //     if (isInsufficientTo) {
+  //       return `Insufficient ${tokenY.name.toUpperCase()}`;
+  //     }
 
-      if (!tokenZap) {
-        return 'Select token';
-      }
+  //     if ((!isXBlocked && (!amountX || +amountX === 0)) || (!isYBlocked && (!amountY || +amountY === 0))) {
+  //       return 'Liquidity must be greater than 0';
+  //     }
+  //     return 'Create new position';
+  //   } else {
+  //     const isInsufficientZap =
+  //       zapAmount && Number(zapAmount) > toDisplay(amounts[tokenZap.denom], tokenZap.decimals || CW20_DECIMALS);
 
-      if (!zapAmount || +zapAmount === 0) {
-        return 'Zap amount must be greater than 0';
-      }
+  //     if (!tokenZap) {
+  //       return 'Select token';
+  //     }
 
-      if (simulating) {
-        return 'Simulating';
-      }
+  //     if (!zapAmount || +zapAmount === 0) {
+  //       return 'Zap amount must be greater than 0';
+  //     }
 
-      if (isInsufficientZap) {
-        return `Insufficient ${tokenZap.name.toUpperCase()}`;
-      }
+  //     if (simulating) {
+  //       return 'Simulating';
+  //     }
 
-      return 'Zap in';
-    }
-  };
+  //     if (isInsufficientZap) {
+  //       return `Insufficient ${tokenZap.name.toUpperCase()}`;
+  //     }
+
+  //     return 'Zap in';
+  //   }
+  // };
 
   // console.log({minPrice, maxPrice})
+
+  const getButtonMessage = () => "Create new position"
 
   return (
     <div className={styles.createPositionForm}>
@@ -436,7 +449,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                 zapError={zapError}
                 zapFee={zapFee}
                 zapImpactPrice={zapImpactPrice}
-                zapInResponse={zapInResponse}
+                zapInResponse={zapInResponse as any}
                 zapUsd={Number(zapUsd)}
                 extendedPrice={extendPrices}
               />
@@ -482,7 +495,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                   if (toggleZap) {
                     setLoading(true);
                     await handleZapIn(
-                      walletAddress,
+                       walletAddress,
                       (tx: string) => {
                         displayToast(TToastType.TX_SUCCESSFUL, {
                           customLink: getTransactionUrl('Oraichain', tx)
@@ -512,7 +525,8 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                       poolKeyData: poolKey,
                       lowerTick: lowerTick,
                       upperTick: higherTick,
-                      liquidityDelta: liquidity,
+                      // liquidityDelta: liquidity,
+                      liquidityDelta: 0n,
                       spotSqrtPrice: BigInt(pool?.sqrt_price),
                       slippageTolerance: BigInt(slippage),
                       tokenXAmount:
@@ -537,6 +551,7 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
                       );
                       onCloseModal();
                       setApr(0);
+                      // FIXME: 
                       navigate(`/pools/v3/${encodeURIComponent(poolKeyToString(poolKey))}`);
                     },
                     callBackFailed: (e) => {

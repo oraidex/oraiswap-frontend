@@ -21,8 +21,8 @@ export type PoolWithTokenInfo = PoolWithPoolKey & {
   >;
   feeTier: number;
   spread: number;
-  tokenXinfo: TokenItemType;
-  tokenYinfo: TokenItemType;
+  tokenXInfo: TokenItemType;
+  tokenYInfo: TokenItemType;
   poolKey: string;
   type: POOL_TYPE;
   url: string;
@@ -38,22 +38,22 @@ export const getTokenInfo = (address, isLight) => {
 
 export const getIconPoolData = (tokenX, tokenY, isLight) => {
   let [FromTokenIcon, ToTokenIcon] = [DefaultIcon, DefaultIcon];
-  const tokenXinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
-  const tokenYinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
+  const tokenXInfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
+  const tokenYInfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
 
-  if (tokenXinfo) FromTokenIcon = isLight ? tokenXinfo.IconLight : tokenXinfo.Icon;
-  if (tokenYinfo) ToTokenIcon = isLight ? tokenYinfo.IconLight : tokenYinfo.Icon;
-  return { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo };
+  if (tokenXInfo) FromTokenIcon = isLight ? tokenXInfo.IconLight : tokenXInfo.Icon;
+  if (tokenYInfo) ToTokenIcon = isLight ? tokenYInfo.IconLight : tokenYInfo.Icon;
+  return { FromTokenIcon, ToTokenIcon, tokenXInfo, tokenYInfo };
 };
 
 export const getIconOsmosisPoolData = (tokenX, tokenY, isLight) => {
   let [FromTokenIcon, ToTokenIcon] = [DefaultIcon, DefaultIcon];
-  const tokenXinfo = osmosisPoolTokenWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
-  const tokenYinfo = osmosisPoolTokenWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
+  const tokenXInfo = osmosisPoolTokenWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
+  const tokenYInfo = osmosisPoolTokenWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
 
-  if (tokenXinfo) FromTokenIcon = isLight ? tokenXinfo.IconLight : tokenXinfo.Icon;
-  if (tokenYinfo) ToTokenIcon = isLight ? tokenYinfo.IconLight : tokenYinfo.Icon;
-  return { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo };
+  if (tokenXInfo) FromTokenIcon = isLight ? tokenXInfo.IconLight : tokenXInfo.Icon;
+  if (tokenYInfo) ToTokenIcon = isLight ? tokenYInfo.IconLight : tokenYInfo.Icon;
+  return { FromTokenIcon, ToTokenIcon, tokenXInfo, tokenYInfo };
 };
 
 export const formatPoolV2 = (p: PoolInfoResponse, isLight: boolean = false) => {
@@ -64,7 +64,7 @@ export const formatPoolV2 = (p: PoolInfoResponse, isLight: boolean = false) => {
     parseAssetOnlyDenom(JSON.parse(secondAssetInfo))
   ];
 
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(baseDenom, quoteDenom, isLight);
+  const { FromTokenIcon, ToTokenIcon, tokenXInfo, tokenYInfo } = getIconPoolData(baseDenom, quoteDenom, isLight);
 
   return {
     ...p,
@@ -74,9 +74,9 @@ export const formatPoolV2 = (p: PoolInfoResponse, isLight: boolean = false) => {
     type: POOL_TYPE.V2,
     FromTokenIcon,
     ToTokenIcon,
-    tokenXinfo,
-    tokenYinfo,
-    url: `/pools/v2/${encodeURIComponent(baseDenom)}_${encodeURIComponent(quoteDenom)}`
+    tokenXInfo,
+    tokenYInfo,
+    url: `/pools/v2/oraichain/${encodeURIComponent(baseDenom)}_${encodeURIComponent(quoteDenom)}`
   };
 };
 
@@ -160,7 +160,7 @@ export const formatOsmosisPools = (p: OsmosisPoolInfoResponse, isLight: boolean 
     }
   };
 
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconOsmosisPoolData(token0, token1, isLight);
+  const { FromTokenIcon, ToTokenIcon, tokenXInfo, tokenYInfo } = getIconOsmosisPoolData(token0, token1, isLight);
 
   return {
     ...p,
@@ -177,17 +177,17 @@ export const formatOsmosisPools = (p: OsmosisPoolInfoResponse, isLight: boolean 
     reserveCoinsInfo,
     FromTokenIcon,
     ToTokenIcon,
-    tokenXinfo,
-    tokenYinfo,
+    tokenXInfo,
+    tokenYInfo,
     marketInfo,
-    url: `/pools/v3/osmosis-pool-${id}`
+    url: `/pools/v3/osmosis/${id}`
   };
 };
 
 export const formatOraichainPoolV3 = (p: PoolWithPoolKey, isLight: boolean = false) => {
   const [tokenX, tokenY] = [p?.pool_key.token_x, p?.pool_key.token_y];
   const feeTier = p?.pool_key.fee_tier.fee || 0;
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(tokenX, tokenY, isLight);
+  const { FromTokenIcon, ToTokenIcon, tokenXInfo, tokenYInfo } = getIconPoolData(tokenX, tokenY, isLight);
   const spread = p?.pool_key.fee_tier.tick_spacing || 100;
 
   const poolKey = p?.pool_key ? poolKeyToString(p.pool_key) : '';
@@ -200,11 +200,11 @@ export const formatOraichainPoolV3 = (p: PoolWithPoolKey, isLight: boolean = fal
     ToTokenIcon,
     feeTier,
     spread,
-    tokenXinfo,
-    tokenYinfo,
+    tokenXInfo,
+    tokenYInfo,
     poolKey,
-    isValid: tokenXinfo && tokenYinfo,
-    url: `/pools/v3/${encodeURIComponent(poolKey)}`
+    isValid: tokenXInfo && tokenYInfo,
+    url: `/pools/v3/oraichain/${encodeURIComponent(poolKey)}`
   };
 };
 

@@ -587,11 +587,11 @@ export const convertPosition = ({
       let {
         FromTokenIcon: tokenXIcon,
         ToTokenIcon: tokenYIcon,
-        tokenXinfo,
-        tokenYinfo
+        tokenXInfo,
+        tokenYInfo
       } = getIconPoolData(tokenX, tokenY, isLight);
 
-      if (!tokenXinfo || !tokenYinfo) {
+      if (!tokenXInfo || !tokenYInfo) {
         return null;
       }
 
@@ -604,8 +604,8 @@ export const convertPosition = ({
         }
       };
 
-      const lowerPrice = calcYPerXPriceByTickIndex(position.lower_tick_index, tokenXinfo.decimals, tokenYinfo.decimals);
-      const upperPrice = calcYPerXPriceByTickIndex(position.upper_tick_index, tokenXinfo.decimals, tokenYinfo.decimals);
+      const lowerPrice = calcYPerXPriceByTickIndex(position.lower_tick_index, tokenXInfo.decimals, tokenYInfo.decimals);
+      const upperPrice = calcYPerXPriceByTickIndex(position.upper_tick_index, tokenXInfo.decimals, tokenYInfo.decimals);
 
       const min = Math.min(lowerPrice, upperPrice);
       const max = Math.max(lowerPrice, upperPrice);
@@ -624,14 +624,14 @@ export const convertPosition = ({
       }
 
       try {
-        tokenXLiq = +printBigint(x, tokenXinfo.decimals);
+        tokenXLiq = +printBigint(x, tokenXInfo.decimals);
       } catch (error) {
         console.log(error);
         tokenXLiq = 0;
       }
 
       try {
-        tokenYLiq = +printBigint(y, tokenYinfo.decimals);
+        tokenYLiq = +printBigint(y, tokenYInfo.decimals);
       } catch (error) {
         console.log(error);
         tokenYLiq = 0;
@@ -639,8 +639,8 @@ export const convertPosition = ({
 
       const currentPrice = calcYPerXPriceByTickIndex(
         position.poolData?.pool?.current_tick_index ?? 0,
-        tokenXinfo.decimals,
-        tokenYinfo.decimals
+        tokenXInfo.decimals,
+        tokenYInfo.decimals
       );
 
       const valueX = tokenXLiq + tokenYLiq / currentPrice;
@@ -673,8 +673,8 @@ export const convertPosition = ({
           );
         });
 
-      const tokenYDecimal = tokenYinfo.decimals || CW20_DECIMALS;
-      const tokenXDecimal = tokenXinfo.decimals || CW20_DECIMALS;
+      const tokenYDecimal = tokenYInfo.decimals || CW20_DECIMALS;
+      const tokenXDecimal = tokenXInfo.decimals || CW20_DECIMALS;
 
       return {
         ...position,
@@ -682,31 +682,31 @@ export const convertPosition = ({
           ...poolData,
           ...position
         },
-        tokenX: tokenXinfo,
-        tokenY: tokenYinfo,
-        tokenXName: tokenXinfo.name,
-        tokenYName: tokenYinfo.name,
+        tokenX: tokenXInfo,
+        tokenY: tokenYInfo,
+        tokenXName: tokenXInfo.name,
+        tokenYName: tokenYInfo.name,
         tokenXIcon: tokenXIcon,
         tokenYIcon: tokenYIcon,
-        tokenYinfo,
-        tokenXinfo,
+        tokenYInfo,
+        tokenXInfo,
         tokenYDecimal,
         tokenXDecimal,
         fee: +printBigint(BigInt(position.pool_key.fee_tier.fee), PERCENTAGE_SCALE - 2),
         min,
         max,
-        tokenXUsd: cachePrices[tokenXinfo.coinGeckoId],
-        tokenYUsd: cachePrices[tokenYinfo.coinGeckoId],
+        tokenXUsd: cachePrices[tokenXInfo.coinGeckoId],
+        tokenYUsd: cachePrices[tokenYInfo.coinGeckoId],
         tokenXLiq,
-        tokenXLiqInUsd: tokenXLiq * cachePrices[tokenXinfo.coinGeckoId],
-        tokenYLiqInUsd: tokenYLiq * cachePrices[tokenYinfo.coinGeckoId],
+        tokenXLiqInUsd: tokenXLiq * cachePrices[tokenXInfo.coinGeckoId],
+        tokenYLiqInUsd: tokenYLiq * cachePrices[tokenYInfo.coinGeckoId],
         tokenYLiq,
         valueX,
         valueY,
         address,
         id: position.ind,
         isActive: currentPrice >= min && currentPrice <= max,
-        tokenXId: tokenXinfo.coinGeckoId,
+        tokenXId: tokenXInfo.coinGeckoId,
         principalAmountX,
         principalAmountY,
         totalEarn,

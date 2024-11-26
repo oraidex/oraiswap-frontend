@@ -1,3 +1,4 @@
+import { OsmosisAmm } from '@oraichain/oraidex-zapper';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { Themes } from 'context/theme-context';
@@ -63,6 +64,7 @@ export interface ConfigState {
     tvl: number;
     volume24: number;
   }[];
+  osmosisDex: OsmosisAmm;
 }
 
 const initialState: ConfigState = {
@@ -92,7 +94,8 @@ const initialState: ConfigState = {
   volumnePools: [],
   filterDefaultPool: KeyFilterPool.all_pool,
   persistVersion: PERSIST_VER,
-  AIRoute: true
+  AIRoute: true,
+  osmosisDex: null,
 };
 
 export const configSlice = createSlice({

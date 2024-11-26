@@ -39,13 +39,18 @@ const CreateNewPosition = ({
   const [walletAddress] = useConfigReducer('address');
   const { refetchPositions } = useGetPositions(walletAddress);
 
+  // FIXME: should check by strategy network
+  const isOraichain = (pool as any).url.includes('oraichain/');
+
   const onCloseModal = () => {
     setShowModal(false);
     dispatch(setToDefault());
   };
 
-  const tokenFrom = oraichainTokens.find((e) => extractAddress(e) === pool.pool_key.token_x);
-  const tokenTo = oraichainTokens.find((e) => extractAddress(e) === pool.pool_key.token_y);
+  // const tokenFrom = oraichainTokens.find((e) => extractAddress(e) === pool.pool_key.token_x);
+  // const tokenTo = oraichainTokens.find((e) => extractAddress(e) === pool.pool_key.token_y);
+  const tokenFrom = (pool as any).tokenXInfo;
+  const tokenTo = (pool as any).tokenYInfo;
 
   const isLightTheme = theme === 'light';
   const TokenFromIcon =
@@ -124,7 +129,7 @@ const CreateNewPosition = ({
             </div>
           </div>
           <CreatePositionForm
-            poolId={poolKeyToString(pool.pool_key)}
+            poolId={isOraichain ? poolKeyToString(pool.pool_key) : (pool as any).poolKey}
             showModal={showModal}
             slippage={slippage}
             onCloseModal={async () => {
