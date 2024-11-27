@@ -601,7 +601,9 @@ const SwapComponent: React.FC<{
 
   const getSwitchIcon = () => (isLightMode ? SwitchLightImg : SwitchDarkImg);
 
+  const isEvmToEvm = originalFromToken.chainId === originalToToken.chainId && !originalFromToken.cosmosBased;
   const noRoutesFound =
+    !isEvmToEvm &&
     !isAveragePreviousSimulate &&
     (!averageSimulateData?.displayAmount ||
       (averageSimulateData?.displayAmount &&
