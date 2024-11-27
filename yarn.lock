@@ -3347,10 +3347,10 @@
     react-use "^17.4.0"
     react-use-websocket "^4.5.0"
 
-"@oraichain/oraidex-common@1.1.32-beta.5", "@oraichain/oraidex-common@^1.1.27", "@oraichain/oraidex-common@^1.1.32", "@oraichain/oraidex-common@^1.1.6":
-  version "1.1.32-beta.5"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.32-beta.5.tgz#3e8c5ede7209701bee710e34dd6bd529f64cabfa"
-  integrity sha512-WLFJo1h0VGLFDj+p0WdT2bUDFW4P6hqI+gBAk0nHaQ93QdFoyynlIQnlMBhnQuNBPNkdtC97wZsI1O/zIDRRAA==
+"@oraichain/oraidex-common@1.1.32-beta.7", "@oraichain/oraidex-common@^1.1.32", "@oraichain/oraidex-common@^1.1.32-beta.5", "@oraichain/oraidex-common@^1.1.6":
+  version "1.1.32-beta.7"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.32-beta.7.tgz#acc48b8fe003d639e7550edc8a3b9e4a6c3ee743"
+  integrity sha512-73sKbCZUO6pn+/g14V5A9FaGmcl7QkrysFz1A7EiluZajMOFYMNqc1GHDHWpHCepwkfS8Qi+hgAPu8pJtJUYgA==
   dependencies:
     "@cosmjs/amino" "^0.32.4"
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
@@ -3394,13 +3394,13 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
   integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
 
-"@oraichain/oraidex-universal-swap@1.1.22-beta.3":
-  version "1.1.22-beta.3"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.1.22-beta.3.tgz#9681502f156489330a7ef6494756b55ff76a1af6"
-  integrity sha512-6pTZAJ3CSUOFLeTpm+SLl+lp/tJitRluYN3jvN3R1SzhKmP5sx8H4UhWmlY9AtMTnEk8PwotBca0iFk2mBbM+A==
+"@oraichain/oraidex-universal-swap@1.1.22-beta.6":
+  version "1.1.22-beta.6"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.1.22-beta.6.tgz#080c5bb5c6704a76cd929482397990e1c5a45b1b"
+  integrity sha512-o4sRlPZWIoxt/TLSJirt6fHmYvcoAPzWklvSCv7nMFdb7VywyTa7NMVJerM7wSLXJrfE1pfjv+81Kr1hO4FJsA==
   dependencies:
     "@oraichain/common" "^1.0.3"
-    "@oraichain/oraidex-common" "^1.1.27"
+    "@oraichain/oraidex-common" "^1.1.32-beta.5"
     "@oraichain/oraidex-contracts-sdk" "^1.0.49"
     "@oraichain/osor-api-contracts-sdk" "^1.0.2"
     bech32 "1.1.4"

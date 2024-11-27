@@ -54,19 +54,23 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   useEffect(() => {
     (async () => {
       if (!isMobile()) {
-        if (!walletByNetworks.evm && !walletByNetworks.cosmos && !walletByNetworks.tron && !walletByNetworks.cosmos) {
+        const isNetworkSupported =
+          walletByNetworks.evm || walletByNetworks.cosmos || walletByNetworks.tron || walletByNetworks.ton;
+
+        if (!isNetworkSupported) {
           return setAddressTransfer('');
         }
 
-        if (originalToToken.cosmosBased && !walletByNetworks.cosmos) {
-          return setAddressTransfer('');
-        }
+        const isCosmosBased = originalToToken.cosmosBased;
+        const chainId = originalToToken.chainId;
 
-        if (!originalToToken.cosmosBased && originalToToken.chainId === '0x2b6653dc' && !walletByNetworks.tron) {
-          return setAddressTransfer('');
-        }
-
-        if (!originalToToken.cosmosBased && !walletByNetworks.evm) {
+        if (
+          (isCosmosBased && !walletByNetworks.cosmos) ||
+          (!isCosmosBased &&
+            ((chainId === '0x2b6653dc' && !walletByNetworks.tron) ||
+              (chainId === 'ton' && !walletByNetworks.ton) ||
+              (['0x01', '0x38'].includes(chainId) && !walletByNetworks.evm)))
+        ) {
           return setAddressTransfer('');
         }
       }

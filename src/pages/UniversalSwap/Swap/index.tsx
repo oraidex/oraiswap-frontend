@@ -368,8 +368,6 @@ const SwapComponent: React.FC<{
       let transactionHash = result?.transactionHash;
 
       if (transactionHash) {
-        if (originalFromToken.chainId === 'ton') transactionHash = tonAddress;
-
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl(originalFromToken.chainId, transactionHash)
         });

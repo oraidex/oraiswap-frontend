@@ -193,6 +193,8 @@ export const getExplorerScan = (chainId: NetworkChainId) => {
       return 'https://scan.kawaii.global/tx';
     case 'noble-1':
       return 'https://www.mintscan.io/noble/tx';
+    case 'ton':
+      return 'https://tonscan.org/address';
     default:
       return 'https://scan.orai.io/txs';
   }

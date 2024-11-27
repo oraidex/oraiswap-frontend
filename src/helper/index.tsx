@@ -31,7 +31,7 @@ import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
 import { evmChainInfos } from 'config/evmChainInfos';
 import { TonChainId } from 'context/ton-provider';
-import { useTonAddress } from '@tonconnect/ui-react';
+import { toUserFriendlyAddress, useTonAddress } from '@tonconnect/ui-react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
 import { getHttpEndpoint } from '@orbs-network/ton-access';
@@ -418,7 +418,9 @@ export const getAddressTransfer = async (network: CustomChainInfo, walletByNetwo
   try {
     let address = '';
     if (network.networkType === 'ton') {
-      address = useTonAddress();
+      address = JSON.parse(JSON.parse(localStorage.getItem('persist:root'))?.config)?.tonAddress;
+      // address = useTonAddress();
+      // address = toUserFriendlyAddress(window.Ton?.account?.address);
     } else if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
     } else if (isConnectSpecificNetwork(walletByNetworks.cosmos)) {
