@@ -57,6 +57,7 @@ const useCreatePositionForm = (
   const [higherTick, setHigherTick] = useState<number>(0);
   const [optionType, setOptionType] = useState<OptionType>(OptionType.CUSTOM);
   const [isFullRange, setIsFullRange] = useState<boolean>(false);
+  const [isSuperNarrow, setIsSuperNarrow] = useState<boolean>(false);
 
   const poolId = usePoolDetailV3Reducer('poolId');
   const poolKey = usePoolDetailV3Reducer('poolKey');
@@ -312,13 +313,13 @@ const useCreatePositionForm = (
     const higherTick = Math.max(
       Number(getMinTick(Number(poolKey.fee_tier.tick_spacing))),
       Number(pool.current_tick_index) +
-        Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
+      Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
     );
 
     const lowerTick = Math.min(
       Number(getMaxTick(Number(poolKey.fee_tier.tick_spacing))),
       Number(pool.current_tick_index) -
-        Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
+      Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
     );
 
     const minPrice = calcPrice(lowerTick, isXToY, tokenX.decimals, tokenY.decimals);
@@ -340,6 +341,7 @@ const useCreatePositionForm = (
   // wide: take the price range of prices in 3m
   const handleOptionWide = () => {
     setIsFullRange(false);
+    setIsSuperNarrow(false);
     changeHistoricalRange('3mo');
     const data = cache3Month?.map(({ time, close }) => ({
       time,
@@ -367,6 +369,7 @@ const useCreatePositionForm = (
   const handleOptionNarrow = () => {
     setIsFullRange(false);
     changeHistoricalRange('7d');
+    setIsSuperNarrow(true);
     // const data = cache7Day?.map(({ time, close }) => ({
     //   time,
     //   price: close
@@ -390,24 +393,12 @@ const useCreatePositionForm = (
 
     setLowerTick(Number(pool.current_tick_index));
     setHigherTick(Number(pool.current_tick_index) + Number(poolKey.fee_tier.tick_spacing));
-    const minPrice = calcPrice(
-      pool.current_tick_index,
-      isXToY,
-      tokenX.decimals,
-      tokenY.decimals
-    );
-    const maxPrice = calcPrice(
-      pool.current_tick_index + poolKey.fee_tier.tick_spacing,
-      isXToY,
-      tokenX.decimals,
-      tokenY.decimals
-    );
     if (isXToY) {
-      setMinPrice(minPrice);
-      setMaxPrice(maxPrice);
+      setMinPrice(currentPrice);
+      setMaxPrice(currentPrice);
     } else {
-      setMinPrice(maxPrice);
-      setMaxPrice(minPrice);
+      setMinPrice(currentPrice);
+      setMaxPrice(currentPrice);
     }
   };
 
@@ -427,6 +418,7 @@ const useCreatePositionForm = (
 
   const getCorrespondingTickRange = (priceMin: number, priceMax: number) => {
     try {
+      if (isSuperNarrow) return;
       if (isFullRange) {
         setLowerTick(getMinTick(Number(poolKey.fee_tier.tick_spacing)));
         setHigherTick(getMaxTick(Number(poolKey.fee_tier.tick_spacing)));
@@ -462,7 +454,7 @@ const useCreatePositionForm = (
           return;
         }
       }
-      
+
       setLowerTick(Math.min(lowerTick, higherTick));
       setHigherTick(Math.max(lowerTick, higherTick));
     } catch (error) {
@@ -530,6 +522,7 @@ const useCreatePositionForm = (
     zapUsd,
     zapApr,
     setIsFullRange,
+    setIsSuperNarrow,
     setApr,
     setZapApr,
     handleOptionCustom,
