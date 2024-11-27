@@ -367,25 +367,47 @@ const useCreatePositionForm = (
   const handleOptionNarrow = () => {
     setIsFullRange(false);
     changeHistoricalRange('7d');
-    const data = cache7Day?.map(({ time, close }) => ({
-      time,
-      price: close
-    }));
-    data.push({
-      time: Date.now(),
-      price: currentPrice
-    });
-    const prices = data.map((d) => d.price);
+    // const data = cache7Day?.map(({ time, close }) => ({
+    //   time,
+    //   price: close
+    // }));
+    // data.push({
+    //   time: Date.now(),
+    //   price: currentPrice
+    // });
+    // const prices = data.map((d) => d.price);
 
-    const chartMin = cache7Day?.length > 0 ? Math.max(0, Math.min(...prices)) : currentPrice * 0.5;
-    const chartMax = cache7Day?.length > 0 ? Math.max(...prices) : currentPrice * 1.5;
+    // const chartMin = cache7Day?.length > 0 ? Math.max(0, Math.min(...prices)) : currentPrice * 0.5;
+    // const chartMax = cache7Day?.length > 0 ? Math.max(...prices) : currentPrice * 1.5;
 
+    // if (isXToY) {
+    //   setMinPrice(chartMin);
+    //   setMaxPrice(chartMax);
+    // } else {
+    //   setMinPrice(chartMax);
+    //   setMaxPrice(chartMin);
+    // }
+
+    setLowerTick(Number(pool.current_tick_index));
+    setHigherTick(Number(pool.current_tick_index) + Number(poolKey.fee_tier.tick_spacing));
+    const minPrice = calcPrice(
+      pool.current_tick_index,
+      isXToY,
+      tokenX.decimals,
+      tokenY.decimals
+    );
+    const maxPrice = calcPrice(
+      pool.current_tick_index + poolKey.fee_tier.tick_spacing,
+      isXToY,
+      tokenX.decimals,
+      tokenY.decimals
+    );
     if (isXToY) {
-      setMinPrice(chartMin);
-      setMaxPrice(chartMax);
+      setMinPrice(minPrice);
+      setMaxPrice(maxPrice);
     } else {
-      setMinPrice(chartMax);
-      setMaxPrice(chartMin);
+      setMinPrice(maxPrice);
+      setMaxPrice(minPrice);
     }
   };
 
