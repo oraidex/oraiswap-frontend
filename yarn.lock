@@ -3408,10 +3408,10 @@
     tronweb "5.3.2"
     ts-protoc-gen "^0.15.0"
 
-"@oraichain/oraiswap-v3@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraiswap-v3/-/oraiswap-v3-1.1.1.tgz#868c7e942227b26a26e6bd27065e27cba87af989"
-  integrity sha512-MZPVpIe6KU2EuwVJsyFpZocoAaZ3BwML+xEaDdR1hOiLZIjhOp0U/gIiDhHM5xwkaI9oXXHAQLHLezqyzF3AxQ==
+"@oraichain/oraiswap-v3@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraiswap-v3/-/oraiswap-v3-1.1.2.tgz#60edd01ef9afae5c1b1ee32425305375ad635039"
+  integrity sha512-1WCbsDpDoKkuzRo6f8C0PUFPzG80s6LOvsYT47FdYFt+GIe6F10ARDgR26v4J4BddPoguLpLtb2d2T83Rz18/Q==
   dependencies:
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
     "@oraichain/oraidex-common" "^1.1.32"
