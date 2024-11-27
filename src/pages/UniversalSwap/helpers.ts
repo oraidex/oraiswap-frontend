@@ -281,13 +281,13 @@ export const getTokenIcon = (token: TokenItemType, theme: string) => {
 export const refreshBalances = async (
   loadingRefresh: boolean,
   setLoadingRefresh: (boolean) => void,
-  { metamaskAddress, tronAddress, oraiAddress },
+  { metamaskAddress, tronAddress, oraiAddress, tonAddress },
   callback
 ) => {
   try {
     if (loadingRefresh) return;
     setLoadingRefresh(true);
-    await callback({ metamaskAddress, tronAddress, oraiAddress });
+    await callback({ metamaskAddress, tronAddress, oraiAddress, tonAddress });
   } catch (err) {
     console.log({ err });
   } finally {

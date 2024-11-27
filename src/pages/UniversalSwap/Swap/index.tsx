@@ -98,6 +98,7 @@ const SwapComponent: React.FC<{
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [tronAddress] = useConfigReducer('tronAddress');
   const [oraiAddress] = useConfigReducer('address');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const [theme] = useConfigReducer('theme');
   const isLightMode = theme === 'light';
@@ -686,7 +687,7 @@ const SwapComponent: React.FC<{
                     loadingRefresh,
                     setLoadingRefresh,
                     // TODO: need add bitcoinAddress when universal swap support bitcoin
-                    { metamaskAddress, tronAddress, oraiAddress },
+                    { metamaskAddress, tronAddress, oraiAddress, tonAddress },
                     loadTokenAmounts
                   )
                 }
