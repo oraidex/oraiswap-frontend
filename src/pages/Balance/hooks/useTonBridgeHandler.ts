@@ -618,7 +618,7 @@ const useTonBridgeHandler = ({
                 sender: fromAddress,
                 receiver: toAddress,
                 memo,
-                timeoutTimestamp: calculateTimeoutTimestamp(ibcInfo.timeout)
+                timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout))
               })
             }
           ];
