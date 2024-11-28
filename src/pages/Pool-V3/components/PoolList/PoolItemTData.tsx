@@ -43,6 +43,8 @@ const PoolItemTData = ({
   } = item;
   const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
 
+  const isOraiBtcPoolV2 = tokenXinfo?.name === 'ORAI' && tokenYinfo?.name === 'BTC (Legacy)' && type === 'Pool V2';
+
   return (
     <>
       <td>
@@ -52,7 +54,7 @@ const PoolItemTData = ({
             <ToTokenIcon />
           </div>
           <span className={styles.title}>
-            {tokenXinfo?.name} / {tokenYinfo?.name}
+            {tokenXinfo?.name} / {isOraiBtcPoolV2 ? 'BTC' : tokenYinfo?.name}
             <span className={classNames(styles.tag, { [styles.v3]: type === POOL_TYPE.V3 })}>
               {type === POOL_TYPE.V3 ? 'V3' : 'V2'}
             </span>
@@ -102,7 +104,7 @@ const PoolItemTData = ({
                 <div className={styles.itemInfo}>
                   <span>Swap fee</span>
                   <span className={styles.value}>
-                  {aprInfo.swapFee.min === aprInfo.swapFee.max
+                    {aprInfo.swapFee.min === aprInfo.swapFee.max
                       ? `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, { maximumFractionDigits: 1 })}`
                       : `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, {
                           maximumFractionDigits: 1

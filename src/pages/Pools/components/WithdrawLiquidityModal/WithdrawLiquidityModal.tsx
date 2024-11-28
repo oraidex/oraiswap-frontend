@@ -1,4 +1,4 @@
-import { ORAI, toAmount } from '@oraichain/oraidex-common';
+import { BTC_CONTRACT, ORAI, toAmount } from '@oraichain/oraidex-common';
 import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
@@ -90,7 +90,13 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
   const lp1BurnAmount =
     totalSupply === BigInt(0) || !lpAmountBurn ? BigInt(0) : (token1Amount * BigInt(lpAmountBurn)) / totalSupply;
   const lp2BurnAmount =
-    totalSupply === BigInt(0) || !lpAmountBurn ? BigInt(0) : (token2Amount * BigInt(lpAmountBurn)) / totalSupply;
+    // TOODO: remove after pool ORAI/BTC close
+    totalSupply === BigInt(0) || !lpAmountBurn
+      ? BigInt(0)
+      : (token2.contractAddress === BTC_CONTRACT
+          ? (token2Amount / BigInt(10 ** 8)) * BigInt(lpAmountBurn)
+          : token2Amount * BigInt(lpAmountBurn)) / totalSupply;
+
   const lpAmountBurnUsdt = !myLpBalance ? 0 : (Number(lpAmountBurn) / Number(myLpBalance)) * Number(myLpUsdt);
   return (
     <Modal isOpen={isOpen} close={close} open={open} isCloseBtn={false} className={cx('modal')}>

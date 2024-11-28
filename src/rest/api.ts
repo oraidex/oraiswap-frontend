@@ -3,6 +3,7 @@ import { Coin, coin } from '@cosmjs/stargate';
 import { CwIcs20LatestQueryClient, MulticallQueryClient, Uint128 } from '@oraichain/common-contracts-sdk';
 import { ConfigResponse, RelayerFeeResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
+  BTC_CONTRACT,
   IBCInfo,
   IBC_WASM_CONTRACT,
   KWT_DENOM,
@@ -99,6 +100,17 @@ async function fetchTokenInfos(tokens: TokenItemType[]): Promise<TokenInfo[]> {
 }
 
 function parsePoolAmount(poolInfo: OraiswapPairTypes.PoolResponse, trueAsset: AssetInfo): bigint {
+  // TODO: remove when pool orai/btc close
+  if ('token' in trueAsset && trueAsset.token.contract_addr === BTC_CONTRACT) {
+    return BigInt(
+      poolInfo.assets.find(
+        (asset) =>
+          'native_token' in asset.info &&
+          asset.info.native_token.denom ===
+            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+      )?.amount || '0'
+    );
+  }
   return BigInt(poolInfo.assets.find((asset) => isEqual(asset.info, trueAsset))?.amount || '0');
 }
 
