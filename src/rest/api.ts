@@ -164,7 +164,6 @@ async function fetchPoolInfoAmount(
     const poolInfo = cachedPairs?.[pair.contract_addr] ?? (await pairContract.pool());
     offerPoolAmount = parsePoolAmount(poolInfo, fromInfo);
     askPoolAmount = parsePoolAmount(poolInfo, toInfo);
-    console.log({ poolInfo });
   } else {
     // handle multi-swap case
     const oraiTokenType = oraichainTokens.find((token) => token.denom === ORAI);
@@ -179,7 +178,6 @@ async function fetchPoolInfoAmount(
     offerPoolAmount = parsePoolAmount(fromPoolInfo, fromInfo);
     askPoolAmount = parsePoolAmount(toPoolInfo, toInfo);
   }
-  console.log({ offerPoolAmount, askPoolAmount, fromInfo, toInfo });
   return { offerPoolAmount, askPoolAmount };
 }
 
@@ -701,7 +699,7 @@ async function getPairAmountInfo(
   oraiUsdtPoolInfo?: PoolInfo
 ): Promise<PairAmountInfo> {
   const poolData = poolInfo ?? (await fetchPoolInfoAmount(fromToken, toToken, cachedPairs));
-  console.log({ poolData });
+
   // default is usdt
   let tokenPrice = 0;
 
