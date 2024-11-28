@@ -136,15 +136,18 @@ const PoolDetail: React.FC = () => {
                   {QuoteTokenIcon && <QuoteTokenIcon />}
                 </div>
                 <span>
-                  {baseToken?.name?.toUpperCase()} / {quoteToken?.name?.toUpperCase()}
+                  {baseToken?.name?.toUpperCase()} /{' '}
+                  {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name?.toUpperCase()}
                 </span>
                 <span className={classNames(styles.tag)}>V2</span>
               </div>
             </div>
             <div className={styles.price}>
               1 {baseToken?.name} = {numberWithCommas(priceChange?.price || 0, undefined, { maximumFractionDigits: 6 })}{' '}
-              {quoteToken?.name}
-              {isMobileMode ? <br /> : <div className={styles.divider}>|</div>}1 {quoteToken?.name} ={' '}
+              {/* TODO: remove after pool close */}
+              {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name}
+              {isMobileMode ? <br /> : <div className={styles.divider}>|</div>}1{' '}
+              {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name} ={' '}
               {numberWithCommas(1 / (priceChange?.price || 1), undefined, { maximumFractionDigits: 6 })}{' '}
               {baseToken?.name}
             </div>
