@@ -203,7 +203,12 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                               <span>
                                 {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                               </span>
-                              <span className={styles.symbol}>{offerToken.name}</span>
+
+                              {/* <span className={styles.symbol}>{offerToken.name}</span> */}
+                              {/* TODO: remove after pool close */}
+                              <span className={styles.symbol}>
+                                {offerToken?.name === 'BTC (Legacy)' ? 'BTC' : offerToken?.name}
+                              </span>
                             </div>
                           </td>
                           <td className={`${styles.receive}`}>
@@ -216,7 +221,10 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                                   maximumFractionDigits: 6
                                 })}
                               </span>
-                              <span className={styles.symbol}>{returnToken.name}</span>
+                              {/* <span className={styles.symbol}>{returnToken.name}</span> */}
+                              <span className={styles.symbol}>
+                                {returnToken?.name === 'BTC (Legacy)' ? 'BTC' : returnToken?.name}
+                              </span>
                             </div>
                           </td>
                           <td className={styles.value}>

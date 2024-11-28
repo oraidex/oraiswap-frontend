@@ -144,7 +144,8 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
               <div className={cx('token')}>
                 {Token2Icon && <Token2Icon className={cx('logo')} />}
                 <div className={cx('title', theme)}>
-                  <div>{token2?.name}</div>
+                  {/* TODO: remove after pool close */}
+                  <div>{token2?.name === 'BTC (Legacy)' ? 'BTC' : token2?.name}</div>
                   <div className={cx('des')}>Oraichain</div>
                 </div>
               </div>
