@@ -322,13 +322,17 @@ const SwapComponent: React.FC<{
       const isCustomRecipient = validAddress.isValid && addressTransfer !== initAddressTransfer;
       const alphaSmartRoutes = simulateData?.routes;
 
-      const tonWallet = await TonWallet.create('mainnet', {
-        mnemonicData: {
-          mnemonic: undefined,
-          tonWalletVersion: 'V4'
-        },
-        tonConnector: window?.Ton as any
-      });
+      let tonWallet = undefined;
+      if ([originalFromToken.chainId, originalToToken.chainId].includes('ton') && !!walletByNetworks.ton) {
+        tonWallet = await TonWallet.create('mainnet', {
+          mnemonicData: {
+            mnemonic: undefined,
+            tonWalletVersion: 'V4'
+          },
+          tonConnector: window?.Ton as any
+        });
+      }
+
       const tonAddress = tonWallet?.sender?.address?.toString();
       const swapData = {
         sender: {
@@ -350,7 +354,6 @@ const SwapComponent: React.FC<{
         alphaSmartRoutes
       };
 
-      // @ts-ignore
       const univeralSwapHandler = new UniversalSwapHandler(swapData, {
         cosmosWallet: window.Keplr,
         evmWallet: new Metamask(window.tronWebDapp),
@@ -365,7 +368,6 @@ const SwapComponent: React.FC<{
       });
 
       const result = await univeralSwapHandler.processUniversalSwap();
-      // @ts-ignore
       let transactionHash = result?.transactionHash;
 
       if (transactionHash) {
