@@ -85,6 +85,7 @@ import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculate
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
+import TonWallet from '@oraichain/tonbridge-sdk/build/wallet';
 
 const cx = cn.bind(styles);
 
@@ -97,6 +98,7 @@ const SwapComponent: React.FC<{
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [tronAddress] = useConfigReducer('tronAddress');
   const [oraiAddress] = useConfigReducer('address');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const [theme] = useConfigReducer('theme');
   const isLightMode = theme === 'light';
@@ -320,8 +322,25 @@ const SwapComponent: React.FC<{
       const isCustomRecipient = validAddress.isValid && addressTransfer !== initAddressTransfer;
       const alphaSmartRoutes = simulateData?.routes;
 
+      let tonWallet = undefined;
+      if ([originalFromToken.chainId, originalToToken.chainId].includes('ton') && !!walletByNetworks.ton) {
+        tonWallet = await TonWallet.create('mainnet', {
+          mnemonicData: {
+            mnemonic: undefined,
+            tonWalletVersion: 'V4'
+          },
+          tonConnector: window?.Ton as any
+        });
+      }
+
+      const tonAddress = tonWallet?.sender?.address?.toString();
       const swapData = {
-        sender: { cosmos: cosmosAddress, evm: checksumMetamaskAddress, tron: tronAddress },
+        sender: {
+          cosmos: cosmosAddress,
+          evm: checksumMetamaskAddress,
+          tron: tronAddress,
+          ton: tonAddress
+        },
         originalFromToken,
         originalToToken,
         fromAmount: fromAmountToken,
@@ -335,10 +354,10 @@ const SwapComponent: React.FC<{
         alphaSmartRoutes
       };
 
-      // @ts-ignore
       const univeralSwapHandler = new UniversalSwapHandler(swapData, {
         cosmosWallet: window.Keplr,
         evmWallet: new Metamask(window.tronWebDapp),
+        tonWallet,
         swapOptions: {
           isAlphaIbcWasm: useAlphaIbcWasm,
           isIbcWasm: useIbcWasm,
@@ -348,12 +367,14 @@ const SwapComponent: React.FC<{
         }
       });
 
-      const { transactionHash } = await univeralSwapHandler.processUniversalSwap();
+      const result = await univeralSwapHandler.processUniversalSwap();
+      let transactionHash = result?.transactionHash;
+
       if (transactionHash) {
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl(originalFromToken.chainId, transactionHash)
         });
-        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress });
+        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress, tonAddress });
         setSwapLoading(false);
 
         // save to duckdb
@@ -601,7 +622,9 @@ const SwapComponent: React.FC<{
 
   const getSwitchIcon = () => (isLightMode ? SwitchLightImg : SwitchDarkImg);
 
+  const isEvmToEvm = originalFromToken.chainId === originalToToken.chainId && !originalFromToken.cosmosBased;
   const noRoutesFound =
+    !isEvmToEvm &&
     !isAveragePreviousSimulate &&
     (!averageSimulateData?.displayAmount ||
       (averageSimulateData?.displayAmount &&
@@ -668,7 +691,7 @@ const SwapComponent: React.FC<{
                     loadingRefresh,
                     setLoadingRefresh,
                     // TODO: need add bitcoinAddress when universal swap support bitcoin
-                    { metamaskAddress, tronAddress, oraiAddress },
+                    { metamaskAddress, tronAddress, oraiAddress, tonAddress },
                     loadTokenAmounts
                   )
                 }

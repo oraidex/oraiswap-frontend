@@ -117,3 +117,8 @@ textarea {
 [type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
+
+#tc-widget-root {
+  position: absolute;
+  z-index: 1022; // set for zindex above react-modal (1021)
+}

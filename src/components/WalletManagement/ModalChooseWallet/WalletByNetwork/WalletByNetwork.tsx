@@ -8,13 +8,15 @@ import useTheme from 'hooks/useTheme';
 import useWalletReducer from 'hooks/useWalletReducer';
 import Keplr from 'libs/keplr';
 import { initClient } from 'libs/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { WalletItem } from '../WalletItem';
 import styles from './WalletByNetwork.module.scss';
 import { useInactiveConnect } from 'hooks/useMetamask';
 import Metamask from 'libs/metamask';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { ChainEnableByNetwork, triggerUnlockOwalletInEvmNetwork } from 'components/WalletManagement/wallet-helper';
+import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react';
+import useTonConnectAddress from 'hooks/useTonConnectAddress';
 
 export type ConnectStatus = 'init' | 'confirming-switch' | 'confirming-disconnect' | 'loading' | 'failed' | 'success';
 export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProvider }) => {
@@ -25,10 +27,13 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
   const [, setOraiAddress] = useConfigReducer('address');
   const [, setTronAddress] = useConfigReducer('tronAddress');
   const [, setBtcAddress] = useConfigReducer('btcAddress');
+  const [, setTonAddress] = useConfigReducer('tonAddress');
   const [, setMetamaskAddress] = useConfigReducer('metamaskAddress');
   const [, setCosmosAddress] = useConfigReducer('cosmosAddress');
   const [walletByNetworks, setWalletByNetworks] = useWalletReducer('walletsByNetwork');
   const connect = useInactiveConnect();
+
+  const { handleConnectTon, handleDisconnectTon } = useTonConnectAddress();
 
   const handleConfirmSwitch = async () => {
     setConnectStatus('loading');
@@ -86,6 +91,14 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     setBtcAddress(btcAddress);
   };
 
+  const handleConnectWalletInTONNetwork = async (walletType: WalletType) => {
+    if (walletType === 'owallet') {
+      // TODO: need check when use multi wallet support bitcoin
+    }
+
+    handleConnectTon();
+  };
+
   const handleConnectWalletByNetwork = async (wallet: WalletNetwork) => {
     try {
       setConnectStatus('loading');
@@ -102,14 +115,20 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         case 'bitcoin':
           await handleConnectWalletInBtcNetwork(wallet.nameRegistry);
           break;
+        case 'ton':
+          await handleConnectWalletInTONNetwork(wallet.nameRegistry);
+          break;
         default:
           setConnectStatus('init');
           break;
       }
-      setWalletByNetworks({
-        ...walletByNetworks,
-        [networkType]: wallet.nameRegistry
-      });
+
+      if (networkType !== 'ton') {
+        setWalletByNetworks({
+          ...walletByNetworks,
+          [networkType]: wallet.nameRegistry
+        });
+      }
       setCurrentWalletConnecting(null);
       setConnectStatus('init');
     } catch (error) {
@@ -157,6 +176,10 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         break;
       case 'bitcoin':
         setBtcAddress(undefined);
+        break;
+      case 'ton':
+        setTonAddress(undefined);
+        handleDisconnectTon();
         break;
       default:
         break;

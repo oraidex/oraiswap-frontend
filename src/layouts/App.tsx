@@ -26,16 +26,21 @@ import './index.scss';
 import Menu from './Menu';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
+import { useTonConnectUI } from '@tonconnect/ui-react';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
+import { useLoadWalletsTon } from 'pages/Balance/hooks/useLoadWalletsTon';
+import { TonNetwork } from 'context/ton-provider';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
   const [, setTronAddress] = useConfigReducer('tronAddress');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [, setMetamaskAddress] = useConfigReducer('metamaskAddress');
   const [, setBtcAddress] = useConfigReducer('btcAddress');
   const [, setStatusChangeAccount] = useConfigReducer('statusChangeAccount');
   const loadTokenAmounts = useLoadTokens();
+  const [tonConnectUI] = useTonConnectUI();
   const [persistVersion, setPersistVersion] = useConfigReducer('persistVersion');
   const [theme] = useConfigReducer('theme');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
@@ -47,6 +52,15 @@ const App = () => {
   const dispatch = useDispatch();
 
   useTronEventListener();
+
+  // init TON
+  useEffect(() => {
+    window.Ton = tonConnectUI;
+  }, [tonConnectUI]);
+
+  useLoadWalletsTon({
+    tonNetwork: TonNetwork.Mainnet
+  });
 
   useEffect(() => {
     (async () => {
@@ -248,6 +262,7 @@ const App = () => {
     return tronAddress;
   };
 
+  // TODO: owallet not support TON. need to update in next time
   const keplrHandler = async () => {
     try {
       polyfillForMobileMode();
@@ -260,7 +275,8 @@ const App = () => {
         oraiAddress,
         metamaskAddress,
         tronAddress,
-        btcAddress
+        btcAddress,
+        tonAddress
       });
     } catch (error) {
       console.log('Error: ', error.message);

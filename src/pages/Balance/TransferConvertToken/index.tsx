@@ -1,5 +1,6 @@
 import {
   BigDecimal,
+  getTokensFromNetwork,
   // flattenTokens
   NetworkChainId,
   toDisplay,
@@ -17,9 +18,9 @@ import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
-import { btcChains, evmChains } from 'config/chainInfos';
+import { btcChains, evmChains, OsmosisTokenList, tonNetworkMainnet } from 'config/chainInfos';
 import copy from 'copy-to-clipboard';
-import { filterChainBridge, getAddressTransfer, networks } from 'helper';
+import { filterChainBridge, findChainByChainId, getAddressTransfer, networks } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
@@ -39,6 +40,9 @@ import styles from './index.module.scss';
 import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
+import useGetFee from '../hooks/useGetFee';
+import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
+import { TonChainId } from 'context/ton-provider';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -48,6 +52,7 @@ interface TransferConvertProps {
   subAmounts?: object;
   isFastMode?: boolean;
   setIsFastMode?: Function;
+  setToNetwork: Function;
 }
 
 const TransferConvertToken: FC<TransferConvertProps> = ({
@@ -57,9 +62,14 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   onClickTransfer,
   subAmounts,
   isFastMode,
-  setIsFastMode
+  setIsFastMode,
+  setToNetwork
 }) => {
-  const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
+  // const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
+  const bridgeNetworks = [...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
+    const net = findChainByChainId(chainId);
+    return net;
+  });
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
   const [transferLoading, setTransferLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -84,6 +94,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         const address = await getAddressTransfer(findNetwork, walletByNetworks);
         setAddressTransfer(address);
         setToNetworkChainId(defaultToChainId);
+        setToNetwork(defaultToChainId);
       }
     })();
   }, [token.chainId]);
@@ -150,8 +161,20 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const remoteTokenDenomTo = getRemoteTokenDenom(to);
 
   // token fee
-  const fromTokenFee = useTokenFee(remoteTokenDenomFrom);
-  const toTokenFee = useTokenFee(remoteTokenDenomTo);
+  const fromTokenFee = useTokenFee(remoteTokenDenomFrom) || 0;
+  const toTokenFee = useTokenFee(remoteTokenDenomTo) || 0;
+
+  const { bridgeFee: bridgeFeeTon, tokenFee: tonTokenFee } = useGetFee({
+    token,
+    fromNetwork: token.chainId,
+    toNetwork: toNetworkChainId
+  });
+
+  const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
+    token,
+    fromNetwork: token.chainId,
+    toNetwork: toNetworkChainId
+  });
 
   // bridge fee & relayer fee
   let bridgeFee = fromTokenFee + toTokenFee;
@@ -197,12 +220,49 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toDisplayBTCFee = new BigDecimal(withdrawalFeeBtc.withdrawal_fees ?? 0).div(1e14).toNumber();
   }
 
-  let receivedAmount = convertAmount ? convertAmount * (1 - bridgeFee / 100) - relayerFeeTokenFee - toDisplayBTCFee : 0;
+  let receivedAmount = convertAmount
+    ? convertAmount * (1 - bridgeFee / 100) - relayerFeeTokenFee - toDisplayBTCFee - (bridgeFeeTon || 0)
+    : 0;
 
   const renderBridgeFee = () => {
+    const [balanceMax, setBalanceMax] = useState(0);
+
+    useEffect(() => {
+      (async () => {
+        if (toNetworkChainId === TonChainId) {
+          const tokenOnTon = [...getTokensFromNetwork(tonNetworkMainnet)].find(
+            (tk) => tk.chainId === toNetworkChainId && tk.coinGeckoId === token.coinGeckoId
+          );
+
+          const maxBalance = await checkBalanceBridgeByNetwork(token.chainId, tokenOnTon);
+          setBalanceMax(maxBalance || 0);
+        }
+      })();
+    }, [token, toNetworkChainId]);
+
     return (
       <div className={styles.bridgeFee}>
-        Bridge fee: <span>{bridgeFee}% </span>
+        {bridgeFeeTon ? (
+          <>
+            Bridge fee:{' '}
+            <span>
+              {bridgeFeeTon} {token.name}{' '}
+            </span>
+          </>
+        ) : (
+          <>
+            Bridge fee: <span>{bridgeFee}% </span>
+          </>
+        )}
+        {tonTokenFee > 0 ? (
+          <div className={styles.relayerFee}>
+            - Token fee:{' '}
+            <span>
+              {' '}
+              {tonTokenFee} {token.name}{' '}
+            </span>
+          </div>
+        ) : null}{' '}
         {relayerFeeTokenFee > 0 ? (
           <div className={styles.relayerFee}>
             - Relayer fee:{' '}
@@ -215,13 +275,21 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         - Received amount:
         <span>
           {' '}
-          {receivedAmount.toFixed(6)} {token.name}
+          {(receivedAmount > 0 ? receivedAmount : 0).toFixed(6)} {token.name}
         </span>
         {!!toDisplayBTCFee && (
           <>
             {' '}
             - BTC fee: <span>{toDisplayBTCFee} BTC </span>
           </>
+        )}
+        {toNetworkChainId === TonChainId && (
+          <p>
+            Available amount:{' '}
+            <span>
+              {balanceMax.toFixed(6)} {token.name}
+            </span>
+          </p>
         )}
       </div>
     );
@@ -314,31 +382,31 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {isOpen && (
                 <div>
                   <ul className={classNames(styles.items, styles[theme])}>
-                    {networks
-                      .filter((item) => filterChainBridge(token, item))
-                      .map((net) => {
-                        return (
-                          <li
-                            key={net.chainId}
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              const address = await getAddressTransfer(net, walletByNetworks);
-                              setAddressTransfer(address);
-                              setToNetworkChainId(net.chainId);
-                              setIsOpen(false);
-                            }}
-                          >
-                            {net && (
-                              <div className={classNames(styles.items_chain)}>
-                                <div>
-                                  <net.Icon width={44} height={44} />
-                                </div>
-                                <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
+                    {[...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
+                      const net = findChainByChainId(chainId);
+                      return (
+                        <li
+                          key={net.chainId}
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            const address = await getAddressTransfer(net, walletByNetworks);
+                            setAddressTransfer(address);
+                            setToNetworkChainId(net.chainId);
+                            setToNetwork(net.chainId);
+                            setIsOpen(false);
+                          }}
+                        >
+                          {net && (
+                            <div className={classNames(styles.items_chain)}>
+                              <div>
+                                <net.Icon width={44} height={44} />
                               </div>
-                            )}
-                          </li>
-                        );
-                      })}
+                              <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
+                            </div>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
@@ -377,13 +445,22 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                   className={classNames(styles.balanceBtn, styles[theme])}
                   onClick={(event) => {
                     event.stopPropagation();
-                    const finalAmount = calcMaxAmount({
-                      maxAmount,
-                      token,
-                      coeff
-                    });
+                    if (token.chainId === TonChainId && token.coinGeckoId === 'the-open-network') {
+                      const finalAmount = new BigDecimal(maxAmount)
+                        .sub(toDisplay(deductNativeAmount || 0n, token.decimals))
+                        .sub(deductNativeAmount > 0n ? EXTERNAL_MESSAGE_FEE : 0)
+                        .toNumber();
 
-                    setConvertAmount([finalAmount * coeff, amountDetail.usd * coeff]);
+                      setConvertAmount([finalAmount * coeff, amountDetail.usd * coeff]);
+                    } else {
+                      const finalAmount = calcMaxAmount({
+                        maxAmount,
+                        token,
+                        coeff
+                      });
+
+                      setConvertAmount([finalAmount * coeff, amountDetail.usd * coeff]);
+                    }
                   }}
                 >
                   {text}

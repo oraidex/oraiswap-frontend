@@ -1,12 +1,19 @@
 import { WalletType as WalletCosmosType } from '@oraichain/oraidex-common/build/constant';
+import {
+  cosmosNetworksWithIcon,
+  evmNetworksIconWithoutTron,
+  tronNetworksWithIcon,
+  btcNetworksWithIcon,
+  tonNetworksWithIcon
+} from 'helper';
+import TonIcon from 'assets/icons/ton.svg?react';
 import KeplrIcon from 'assets/icons/keplr-icon.svg?react';
 import MetamaskIcon from 'assets/icons/metamask-icon.svg?react';
 import OwalletIcon from 'assets/icons/owallet-icon.svg?react';
 import TronIcon from 'assets/icons/tron-icon.svg?react';
-import { cosmosNetworksWithIcon, evmNetworksIconWithoutTron, tronNetworksWithIcon, btcNetworksWithIcon } from 'helper';
 
-export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin';
-export type WalletType = WalletCosmosType | 'metamask' | 'tronLink' | 'eip191' | 'bitcoin';
+export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin' | 'ton';
+export type WalletType = WalletCosmosType | 'metamask' | 'tronLink' | 'eip191' | 'bitcoin' | 'ton';
 export type WalletNetwork = {
   icon: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & {
@@ -94,7 +101,22 @@ export const btcWallets: WalletNetwork[] = [
   }
 ];
 
-export const allWallets: WalletNetwork[] = [...cosmosWallets, ...tronWallets, ...evmWallets, ...btcWallets];
+export const tonWallets: WalletNetwork[] = [
+  {
+    icon: TonIcon,
+    name: 'TonConnect',
+    nameRegistry: 'ton',
+    isActive: true
+  }
+];
+
+export const allWallets: WalletNetwork[] = [
+  ...cosmosWallets,
+  ...tronWallets,
+  ...evmWallets,
+  ...btcWallets,
+  ...tonWallets
+];
 
 export const walletProvider: WalletProvider[] = [
   {
@@ -116,5 +138,10 @@ export const walletProvider: WalletProvider[] = [
     networkType: 'bitcoin',
     networks: btcNetworksWithIcon,
     wallets: btcWallets
+  },
+  {
+    networkType: 'ton',
+    networks: tonNetworksWithIcon,
+    wallets: tonWallets
   }
 ];

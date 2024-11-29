@@ -37,7 +37,7 @@
 
       .title {
         @include theme {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
 
         font-size: 14px;
@@ -119,7 +119,7 @@
 
           .usd {
             @include theme {
-              color: theme-get('neutral-9');
+              color: theme-get('neutral-8');
             }
             font-size: 14px;
             font-weight: 400;

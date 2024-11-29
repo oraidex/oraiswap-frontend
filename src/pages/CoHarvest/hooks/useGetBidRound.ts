@@ -140,19 +140,29 @@ export const useGetListBiddingRoundInfo = (round: number) => {
   const getListHistoryRound = async () => {
     const multicall = new MulticallQueryClient(window.client, network.multicall);
 
-    const res = await multicall.aggregate({
-      queries: roundArr.map((round) => ({
+    const calls = roundArr.map((round) => {
+      return {
         address: network.bid_pool,
         data: toBinary({
           bidding_info: {
             round
           }
         })
-      }))
+      };
     });
 
+    const chunks = [];
+    const MAX_CHUNK_SIZE = 30;
+
+    for (let i = 0; i < roundArr.length; i += MAX_CHUNK_SIZE) {
+      chunks.push(calls.slice(i, i + MAX_CHUNK_SIZE));
+    }
+
+    const result = (await Promise.all(chunks.map((chunk) => multicall.tryAggregate({ queries: chunk })))) as any;
+    const res = result.flatMap((item) => item.return_data.map((data) => data));
+
     return roundArr.map((round, ind) => {
-      if (!res.return_data[ind].success) {
+      if (!res[ind]?.success) {
         return {
           bid_info: {
             round,
@@ -170,7 +180,7 @@ export const useGetListBiddingRoundInfo = (round: number) => {
           }
         };
       }
-      const response: BiddingInfoResponse = fromBinary(res.return_data[ind].data);
+      const response: BiddingInfoResponse = fromBinary(res[ind].data);
       return response;
     });
   };
@@ -200,6 +210,10 @@ export const useGetListBiddingRoundInfo = (round: number) => {
       };
     }),
     enabled: !!round
+  });
+
+  console.log({
+    listBiddingRoundInfo
   });
 
   return { listBiddingRoundInfo, isLoading, refetchListBiddingRoundInfo };

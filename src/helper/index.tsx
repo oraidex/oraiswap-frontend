@@ -11,7 +11,8 @@ import {
   MULTIPLIER,
   TRON_SCAN,
   EVM_CHAIN_ID_COMMON,
-  WalletType as WalletCosmosType
+  WalletType as WalletCosmosType,
+  oraichainNetwork
 } from '@oraichain/oraidex-common';
 import { network } from 'config/networks';
 import { serializeError } from 'serialize-error';
@@ -29,8 +30,12 @@ import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
 import { evmChainInfos } from 'config/evmChainInfos';
+import { TonChainId } from 'context/ton-provider';
+import { toUserFriendlyAddress, useTonAddress } from '@tonconnect/ui-react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { TonClient } from '@ton/ton';
 
 export interface Tokens {
   denom?: string;
@@ -69,10 +74,15 @@ export const evmNetworksIconWithoutTron = chainInfosWithIcon.filter(
 export const tronNetworks = chainInfos.filter((c) => c.chainId === '0x2b6653dc');
 export const tronNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === '0x2b6653dc');
 export const btcNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === bitcoinChainId);
+export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === TonChainId);
 
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
   return tokenCanBridgeTo.includes(item.chainId);
+};
+
+export const findChainByChainId = (chainId: string) => {
+  return networks.find((n) => n.chainId === chainId) || oraichainNetwork;
 };
 
 export const getDenomEvm = (): EvmDenom => {
@@ -98,6 +108,10 @@ export const getSpecialCoingecko = (fromCoingecko: string, toCoingecko: string) 
 };
 
 export const getTransactionUrl = (chainId: NetworkChainId, transactionHash: string) => {
+  if (chainId === 'ton') {
+    return `https://tonscan.org/address/${transactionHash}`;
+  }
+
   switch (Number(chainId)) {
     case Networks.bsc:
       return `${BSC_SCAN}/tx/${transactionHash}`;
@@ -403,7 +417,11 @@ export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwor
 export const getAddressTransfer = async (network: CustomChainInfo, walletByNetworks: WalletsByNetwork) => {
   try {
     let address = '';
-    if (network.networkType === 'evm') {
+    if (network.networkType === 'ton') {
+      address = JSON.parse(JSON.parse(localStorage.getItem('persist:root'))?.config)?.tonAddress;
+      // address = useTonAddress();
+      // address = toUserFriendlyAddress(window.Ton?.account?.address);
+    } else if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
     } else if (isConnectSpecificNetwork(walletByNetworks.cosmos)) {
       address = await window.Keplr.getKeplrAddr(network.chainId);
@@ -660,6 +678,40 @@ export const getIconToken = ({ isLightTheme, denom, width = 18, height = 18 }) =
   }
 
   return <DefaultIcon />;
+};
+
+export const retryOrbs = async (fn, retryTimes = 30, delay = 2000) => {
+  try {
+    return await fn();
+  } catch (error) {
+    let response = error?.response;
+    let message = response?.data?.error;
+    if (message?.includes('No working liteservers')) {
+      await sleep(delay * 2);
+      return await retryOrbs(fn, retryTimes, delay);
+    }
+    if (retryTimes > 0) {
+      await sleep(delay * 5);
+      return await retryOrbs(fn, retryTimes - 1, delay);
+    }
+  }
+};
+
+export const getTonClient = async () => {
+  try {
+    const endpoint = await getHttpEndpoint({
+      network: 'mainnet'
+    });
+    const client = new TonClient({
+      endpoint
+    });
+    return client;
+  } catch (err) {
+    return new TonClient({
+      endpoint:
+        'https://ton.access.orbs.network/55013c0ff5Bd3F8B62C092Ab4D238bEE463E5501/1/mainnet/toncenter-api-v2/jsonRPC'
+    });
+  }
 };
 
 export const handleErrorRateLimit = (errorMsg: string) => {

@@ -13,7 +13,6 @@
     flex-wrap: wrap;
     margin-bottom: 16px;
 
-
     &_text {
       display: flex;
       align-items: flex-end;
@@ -28,7 +27,7 @@
 
       .priceOrai {
         @include theme() {
-          color: theme-get('neutral-9');
+          color: theme-get('neutral-8');
         }
         font-size: 24px;
         font-weight: 500;
@@ -117,7 +116,6 @@
       padding: 16px;
       flex-direction: column;
       flex: 1 0 0;
-
 
       color: $neutron-text-body-light;
       font-size: 16px;
