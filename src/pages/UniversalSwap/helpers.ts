@@ -340,11 +340,6 @@ export const getDisableSwap = ({
   simulateData,
   isLoadingSimulate
 }) => {
-  const mobileMode = isMobile();
-  const canSwapToCosmos = !mobileMode && originalToToken.cosmosBased && !walletByNetworks.cosmos;
-  const canSwapToEvm = !mobileMode && !originalToToken.cosmosBased && !walletByNetworks.evm;
-  const canSwapToTron = !mobileMode && originalToToken.chainId === '0x2b6653dc' && !walletByNetworks.tron;
-  const canSwapTo = canSwapToCosmos || canSwapToEvm || canSwapToTron;
   const disabledSwapBtn =
     swapLoading ||
     !fromAmountToken ||
@@ -352,15 +347,11 @@ export const getDisableSwap = ({
     fromAmountTokenBalance > fromTokenBalance || // insufficent fund
     !addressTransfer ||
     !validAddress.isValid ||
-    isLoadingSimulate ||
-    canSwapTo;
+    isLoadingSimulate;
 
   let disableMsg: string;
   if (!validAddress.isValid) disableMsg = `Recipient address not found`;
   if (!addressTransfer) disableMsg = `Recipient address not found`;
-  if (canSwapToCosmos) disableMsg = `Please connect cosmos wallet`;
-  if (canSwapToEvm) disableMsg = `Please connect evm wallet`;
-  if (canSwapToTron) disableMsg = `Please connect tron wallet`;
   if (!simulateData || simulateData.displayAmount <= 0) disableMsg = 'Enter an amount';
   if (fromAmountTokenBalance > fromTokenBalance) disableMsg = `Insufficient funds`;
   if (isLoadingSimulate) disableMsg = `Swap`;
