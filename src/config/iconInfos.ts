@@ -28,6 +28,7 @@ import PepeIcon from 'assets/icons/pepe.svg?react';
 import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
+import SolanaIcon from 'assets/icons/solana.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -169,6 +170,11 @@ export const tokensIconInfos: TokenIcon[] = [
     coinGeckoId: 'dogecoin',
     Icon: DogecoinIcon,
     IconLight: DogecoinIcon
+  },
+  {
+    coinGeckoId: 'solana',
+    Icon: SolanaIcon,
+    IconLight: SolanaIcon
   }
 ];
 
