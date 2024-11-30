@@ -94,7 +94,7 @@ import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
 import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 
-interface BalanceProps {}
+interface BalanceProps { }
 
 export const isMaintainBridge = false;
 

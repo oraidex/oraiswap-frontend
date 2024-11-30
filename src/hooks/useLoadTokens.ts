@@ -313,6 +313,7 @@ async function loadBtcEntries(
 }
 
 async function loadEvmAmounts(dispatch: Dispatch, evmAddress: string, chains: CustomChainInfo[]) {
+  console.log('---', chains);
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map((chain) => loadEvmEntries(evmAddress, chain))))
   );
