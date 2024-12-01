@@ -1,21 +1,11 @@
-import {
-  // TODO: init OraidexCommon
-  tokens,
-  oraichainNetwork as customOraichainNetwork,
-  chainInfos as customChainInfos,
-  ChainIdEnum,
-  BridgeAppCurrency,
-  CustomChainInfo,
-  defaultBech32Config
-} from '@oraichain/oraidex-common';
+import { ChainIdEnum, BridgeAppCurrency, CustomChainInfo, defaultBech32Config } from '@oraichain/oraidex-common';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import OraiIcon from 'assets/icons/oraichain.svg?react';
 import BTCIcon from 'assets/icons/btc-icon.svg?react';
 import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
 import flatten from 'lodash/flatten';
-
+import { tokens, oraichainNetwork as customOraichainNetwork, chainInfos as customChainInfos } from 'index';
 import { chainIconsInfos, tokensIconInfos, mapListWithIcon } from './iconInfos';
-import { CWBitcoinFactoryDenom } from 'helper/constants';
 
 export const tokensIcon = tokensIconInfos;
 export const chainIcons = chainIconsInfos;

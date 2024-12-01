@@ -5,8 +5,6 @@ import { DeliverTxResponse, GasPrice, isDeliverTxFailure } from '@cosmjs/stargat
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import {
   CosmosChainId,
-  // TODO: init OraidexCommon
-  flattenTokens,
   getTokenOnOraichain,
   KWT_SCAN,
   NetworkChainId,
@@ -17,6 +15,7 @@ import {
   calculateTimeoutTimestamp,
   getCosmosGasPrice
 } from '@oraichain/oraidex-common';
+import { flattenTokens } from 'index';
 import { isSupportedNoPoolSwapEvm, UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';

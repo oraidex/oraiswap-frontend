@@ -93,5 +93,16 @@ const initApp = async () => {
   }
 };
 export const oraidexCommon = await OraidexCommon.load();
-export const { oraichainTokens, tokenMap, cosmosTokens, evmTokens } = oraidexCommon;
+export const {
+  tokens,
+  oraichainNetwork,
+  chainInfos,
+  cosmosChains,
+  evmChains,
+  flattenTokens,
+  oraichainTokens,
+  tokenMap,
+  cosmosTokens,
+  evmTokens
+} = oraidexCommon;
 initApp();
