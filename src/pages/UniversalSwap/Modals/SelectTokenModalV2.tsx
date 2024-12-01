@@ -2,8 +2,6 @@ import {
   CustomChainInfo,
   TokenItemType,
   getSubAmountDetails,
-  // TODO: init OraidexCommon
-  tokenMap,
   truncDecimals
 } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -21,6 +19,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { FC, useRef, useState } from 'react';
 import styles from './SelectTokenModalV2.module.scss';
+import { tokenMap } from 'index';
 
 const cx = cn.bind(styles);
 

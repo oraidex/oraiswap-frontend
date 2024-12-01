@@ -1,8 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import {
   MULTICALL_CONTRACT,
-  // TODO: init OraidexCommon
-  oraichainTokens,
+  NetworkChainId,
   toDisplay,
   TokenItemType,
   USDT_CONTRACT,
@@ -48,6 +47,7 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from 'store/configure';
 import SelectToken from '../SelectToken';
 import styles from './index.module.scss';
+import { oraichainTokens } from 'index';
 
 const cx = cn.bind(styles);
 
@@ -622,7 +622,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
 
                   if (transactionHash) {
                     displayToast(TToastType.TX_SUCCESSFUL, {
-                      customLink: getTransactionUrl(network.chainId, transactionHash)
+                      customLink: getTransactionUrl(network.chainId as NetworkChainId, transactionHash)
                     });
                     onCloseModal();
                     // navigate(`/pools?type=positions`);

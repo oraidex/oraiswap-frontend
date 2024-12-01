@@ -1,5 +1,3 @@
-// TODO: init OraidexCommon
-import { oraichainTokens } from '@oraichain/oraidex-common';
 import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { useQuery } from '@tanstack/react-query';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
@@ -11,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { PoolInfoResponse } from 'types/pool';
 import { calcPrice } from '../components/PriceRangePlot/utils';
 import { extractAddress, formatPoolData } from '../helpers/format';
+import { oraichainTokens } from 'index';
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const theme = useTheme();

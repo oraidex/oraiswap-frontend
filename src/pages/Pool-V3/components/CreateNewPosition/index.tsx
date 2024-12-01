@@ -2,8 +2,7 @@ import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/Oraiswap
 import { poolKeyToString } from '@oraichain/oraiswap-v3';
 import CloseIcon from 'assets/icons/close.svg?react';
 import classNames from 'classnames';
-// TODO: init OraidexCommon
-import { oraichainTokens } from '@oraichain/oraidex-common';
+import { oraichainTokens } from 'index';
 import { getIcon } from 'helper';
 import useTheme from 'hooks/useTheme';
 import { useRef, useState } from 'react';

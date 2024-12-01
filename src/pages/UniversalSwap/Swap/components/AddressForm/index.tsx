@@ -1,8 +1,6 @@
 import {
   CustomChainInfo,
   TokenItemType,
-  // TODO: init OraidexCommon
-  flattenTokens,
   checkValidateAddressWithNetwork
 } from '@oraichain/oraidex-common';
 import BackIcon from 'assets/icons/back.svg?react';
@@ -30,6 +28,7 @@ import styles from './index.module.scss';
 import { getTokenIcon } from 'pages/UniversalSwap/helpers';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
 import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { flattenTokens } from 'index';
 
 const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
   const theme = useTheme();

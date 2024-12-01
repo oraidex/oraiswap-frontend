@@ -1,6 +1,5 @@
 import { Coin } from '@cosmjs/proto-signing';
-// TODO: init OraidexCommon
-import { BigDecimal, CW20_DECIMALS, oraichainTokens, TokenItemType } from '@oraichain/oraidex-common';
+import { BigDecimal, CW20_DECIMALS, TokenItemType } from '@oraichain/oraidex-common';
 import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
 import { PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import {
@@ -24,6 +23,7 @@ import SingletonOraiswapV3, { poolKeyToString } from 'libs/contractSingleton';
 import { PRICE_SCALE, printBigint } from '../components/PriceRangePlot/utils';
 import { extractAddress, getIconPoolData } from './format';
 import { numberWithCommas } from 'helper/format';
+import { oraichainTokens } from 'index';
 
 export interface InitPositionData {
   poolKeyData: PoolKey;

@@ -1,9 +1,10 @@
 // TODO: init OraidexCommon
-import { oraichainTokens, TokenItemType } from '@oraichain/oraidex-common';
+import { TokenItemType } from '@oraichain/oraidex-common';
 import { Pool, PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { extractAddress, LiquidityTick, Tickmap } from '@oraichain/oraiswap-v3';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { oraichainTokens } from 'index';
 import SingletonOraiswapV3, { PRICE_SCALE, stringToPoolKey } from 'libs/contractSingleton';
 import {
   convertPlotTicks,

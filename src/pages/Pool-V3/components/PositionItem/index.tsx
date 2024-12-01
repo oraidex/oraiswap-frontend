@@ -8,8 +8,7 @@ import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import {
   BigDecimal,
   CW20_DECIMALS,
-  // TODO: init OraidexCommon
-  oraichainTokens,
+  NetworkChainId,
   parseAssetInfo,
   toDisplay,
   TokenItemType
@@ -49,6 +48,7 @@ import { printBigint } from '../PriceRangePlot/utils';
 import ZapOut from '../ZapOut';
 import styles from './index.module.scss';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import { oraichainTokens } from 'index';
 
 let intervalId = null;
 
@@ -574,7 +574,7 @@ const PositionItem = ({ position }) => {
                       if (transactionHash) {
                         setIsClaimSuccess(true);
                         displayToast(TToastType.TX_SUCCESSFUL, {
-                          customLink: getTransactionUrl(network.chainId, transactionHash)
+                          customLink: getTransactionUrl(network.chainId as NetworkChainId, transactionHash)
                         });
                         refetchPositions();
                       }

@@ -1,9 +1,9 @@
-// TODO: init OraidexCommon
-import { USDC_CONTRACT, cw20TokenMap, tokenMap } from '@oraichain/oraidex-common';
+import { USDC_CONTRACT } from '@oraichain/oraidex-common';
 import { Cw20StakingQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import { network } from 'config/networks';
 import { USDC_TOKEN_INFO } from '../constants';
+import { cw20TokenMap, tokenMap } from 'index';
 
 export const useGetRewardPerSecInfo = (stakingToken) => {
   const getRewardPerSec = async () => {
