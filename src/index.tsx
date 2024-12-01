@@ -103,6 +103,11 @@ export const {
   oraichainTokens,
   tokenMap,
   cosmosTokens,
-  evmTokens
+  evmTokens,
+  kawaiiTokens,
+  otherChainTokens,
+  cw20TokenMap,
+  cw20Tokens,
+  assetInfoMap
 } = oraidexCommon;
 initApp();

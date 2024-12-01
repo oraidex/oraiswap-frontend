@@ -5,7 +5,6 @@ import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { cw20TokenMap, tokenMap } from 'config/bridgeTokens';
 import { network } from 'config/networks';
 import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -21,6 +20,7 @@ import styles from './Earning.module.scss';
 import { TokenItemType, ORAI, toDisplay, CW20_DECIMALS } from '@oraichain/oraidex-common';
 import { WithdrawLP } from 'types/pool';
 import classNames from 'classnames';
+import { cw20TokenMap, tokenMap } from 'index';
 
 type TokenItemTypeExtended = TokenItemType & {
   amount: bigint;
@@ -91,7 +91,8 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
               rpc: '',
               decimals: 0,
               coinGeckoId: 'scatom',
-              cosmosBased: undefined
+              cosmosBased: undefined,
+              icon: undefined
             });
 
             token = {

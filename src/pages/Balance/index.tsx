@@ -30,7 +30,6 @@ import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
 import SearchInput from 'components/SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { tokens } from 'config/bridgeTokens';
 import { chainInfos } from 'config/chainInfos';
 import { NomicContext } from 'context/nomic-context';
 import {

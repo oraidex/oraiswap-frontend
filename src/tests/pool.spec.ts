@@ -6,11 +6,12 @@ import {
   ORAIX_CONTRACT,
   WETH_CONTRACT
 } from '@oraichain/oraidex-common';
-import { flattenTokens } from 'config/bridgeTokens';
 import { getPoolTokens } from 'config/pools';
 import { estimateShare, formatDisplayUsdt, getSymbolPools, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { ProvideQuery, Type, generateContractMessages } from 'rest/api';
 import { constants } from './listing-simulate';
+import { describe, expect, it } from 'vitest';
+import { flattenTokens } from 'index';
 
 /**
  * We use 2 pairs: ORAI/AIRI & ORAI/USDT for all test below.

@@ -1,7 +1,6 @@
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NetworkImg from 'assets/icons/network.svg';
 import cn from 'classnames/bind';
-import { tokenMap } from 'config/bridgeTokens';
 import { chainIcons } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
 import { networks } from 'helper';
@@ -10,6 +9,7 @@ import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import styles from './SelectChain.module.scss';
+import { tokenMap } from 'index';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {

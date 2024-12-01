@@ -16,7 +16,6 @@ import { network } from 'config/networks';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { useQuery } from '@tanstack/react-query';
-import { oraichainTokens } from 'config/bridgeTokens';
 import { EVM_CHAIN_ID } from 'helper';
 import { getRouterConfig } from 'pages/UniversalSwap/Swap/hooks';
 import { getProtocolsSmartRoute, isAllowAlphaIbcWasm, isAllowIBCWasm } from 'pages/UniversalSwap/helpers';
@@ -25,6 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateFeeConfig } from 'reducer/token';
 import { fetchFeeConfig } from 'rest/api';
 import { RootState } from 'store/configure';
+import { oraichainTokens } from 'index';
 
 export default function useTokenFee(
   remoteTokenDenom: string,

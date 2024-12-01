@@ -10,7 +10,6 @@ import {
   toAmount
 } from '@oraichain/oraidex-common';
 import { getSourceReceiver } from '@oraichain/oraidex-universal-swap';
-import { cosmosTokens, flattenTokens, oraichainTokens } from 'config/bridgeTokens';
 import { CoinGeckoId, NetworkChainId } from '@oraichain/oraidex-common';
 import {
   BSC_SCAN,
@@ -34,6 +33,8 @@ import {
   generateConvertErc20Cw20Message,
   generateMoveOraib2OraiMessages
 } from 'rest/api';
+import { describe, expect, it } from 'vitest';
+import { cosmosTokens, flattenTokens, oraichainTokens } from 'index';
 
 // @ts-ignore
 window.Networks = require('@oraichain/ethereum-multicall').Networks;

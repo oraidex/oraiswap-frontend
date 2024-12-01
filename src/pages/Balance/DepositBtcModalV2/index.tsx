@@ -14,10 +14,10 @@ import { timeAgo } from 'helper';
 import { satToBTC, useDepositFeesBitcoin, useDepositFeesBitcoinV2, useGetInfoBtc } from '../helpers';
 import { useCopy } from 'hooks/useCopy';
 import { Link } from 'react-router-dom';
-import { flattenTokens } from 'config/bridgeTokens';
 import { BigDecimal, CoinGeckoPrices } from '@oraichain/oraidex-common';
 import { useRelayerFeeToken } from 'hooks/useTokenFee';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
+import { flattenTokens } from 'index';
 
 interface ModalProps {
   isOpen: boolean;

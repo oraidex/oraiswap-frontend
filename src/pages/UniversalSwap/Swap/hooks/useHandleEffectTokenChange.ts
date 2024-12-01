@@ -1,6 +1,5 @@
 import { checkValidateAddressWithNetwork } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { tokenMap } from 'config/bridgeTokens';
 import { getAddressTransfer, networks } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useWalletReducer from 'hooks/useWalletReducer';
@@ -16,6 +15,7 @@ import {
   setCurrentToToken
 } from 'reducer/tradingSlice';
 import useFilteredTokens from './useFilteredTokens';
+import { tokenMap } from 'index';
 
 const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) => {
   const dispatch = useDispatch();

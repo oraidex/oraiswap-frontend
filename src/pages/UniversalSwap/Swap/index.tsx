@@ -30,7 +30,6 @@ import Loader from 'components/Loader';
 import LoadingBox from 'components/LoadingBox';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { flattenTokens } from 'config/bridgeTokens';
 import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import { ethers } from 'ethers';
@@ -85,6 +84,7 @@ import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculate
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
+import { flattenTokens } from 'index';
 
 const cx = cn.bind(styles);
 

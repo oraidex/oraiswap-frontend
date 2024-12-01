@@ -6,7 +6,6 @@ import {
   createTxIBCMsgTransfer
 } from '@oraichain/kawaiiverse-txs';
 import { createTxRaw } from '@tharsis/proto';
-import { kawaiiTokens } from 'config/bridgeTokens';
 
 import Long from 'long';
 import { collectWallet } from './cosmjs';

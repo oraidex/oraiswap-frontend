@@ -1,4 +1,3 @@
-// TODO: init OraidexCommon
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { Pool, PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { extractAddress, LiquidityTick, Tickmap } from '@oraichain/oraiswap-v3';

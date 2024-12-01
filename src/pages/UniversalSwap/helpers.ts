@@ -22,7 +22,7 @@ import {
   // swapToTokens
 } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
-import { swapFromTokens, swapToTokens, tokenMap } from 'config/bridgeTokens';
+import { swapFromTokens, swapToTokens } from 'config/bridgeTokens';
 import { flattenTokensWithIcon, oraichainTokensWithIcon, tokensWithIcon } from 'config/chainInfos';
 import { PAIRS_CHART } from 'config/pools';
 import { networks } from 'helper';
@@ -33,6 +33,7 @@ import { formatDate, formatTimeWithPeriod } from 'pages/CoHarvest/helpers';
 import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
 import { FILTER_TIME_CHART, PairToken } from 'reducer/type';
 import { assets } from 'chain-registry';
+import { tokenMap } from 'index';
 
 export enum SwapDirection {
   From,

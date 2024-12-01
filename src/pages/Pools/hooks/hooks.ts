@@ -4,7 +4,6 @@ import { AggregateResult } from '@oraichain/common-contracts-sdk/build/Multicall
 import { toDisplay } from '@oraichain/oraidex-common';
 import { OraiswapStakingQueryClient, OraiswapStakingTypes } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { cw20TokenMap, oraichainTokens, tokenMap } from 'config/bridgeTokens';
 import { network } from 'config/networks';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { getUsd } from 'libs/utils';
@@ -19,6 +18,7 @@ import { PoolInfoResponse } from 'types/pool';
 import { PoolTableData } from '..';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
+import { cw20TokenMap, oraichainTokens, tokenMap } from 'index';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -331,7 +331,8 @@ export const getClaimableInfoByPool = ({ pool, totalRewardInfoData }) => {
             rpc: '',
             decimals: 0,
             coinGeckoId: 'scatom',
-            cosmosBased: undefined
+            cosmosBased: undefined,
+            icon: undefined
           });
 
           token = {

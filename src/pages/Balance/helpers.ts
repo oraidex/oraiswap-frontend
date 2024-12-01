@@ -21,7 +21,6 @@ import {
   CustomChainInfo,
   validateNumber
 } from '@oraichain/oraidex-common';
-import { flattenTokens, kawaiiTokens, oraichainTokens, tokenMap } from 'config/bridgeTokens';
 import { chainInfos } from 'config/chainInfos';
 import { network } from 'config/networks';
 import { cosmosNetworks, feeEstimate, getNetworkGasPrice } from 'helper';
@@ -54,6 +53,7 @@ import {
   btcNetwork
 } from 'helper/constants';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
+import { flattenTokens, kawaiiTokens, tokenMap } from 'index';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;

@@ -9,7 +9,6 @@ import Loader from 'components/Loader';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
 import { btcChains, evmChains } from 'config/chainInfos';
 import copy from 'copy-to-clipboard';
 import { filterChainBridge, getAddressTransfer, networks } from 'helper';
@@ -32,6 +31,7 @@ import styles from './index.module.scss';
 import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
+import { cosmosTokens, flattenTokens, tokenMap } from 'index';
 
 interface TransferConvertProps {
   token: TokenItemType;

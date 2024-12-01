@@ -1,11 +1,10 @@
-import { CW20_DECIMALS, CoinIcon, getSubAmountDetails, toAmount, toDisplay, tokenMap } from '@oraichain/oraidex-common';
+import { CW20_DECIMALS, CoinIcon, getSubAmountDetails, toAmount, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import StakeIcon from 'assets/icons/stake.svg';
 import WalletIcon from 'assets/icons/wallet-v3.svg';
 import cn from 'classnames/bind';
 import { Table, TableHeaderProps } from 'components/Table';
 import ToggleSwitch from 'components/ToggleSwitch';
-import { flattenTokens } from 'config/bridgeTokens';
 import { tokensIcon } from 'config/chainInfos';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -19,6 +18,7 @@ import { AssetInfoResponse } from 'types/swap';
 import styles from './AssetsTab.module.scss';
 import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { updateTotalLpv3 } from 'reducer/token';
+import { flattenTokens, tokenMap } from 'index';
 
 const cx = cn.bind(styles);
 
