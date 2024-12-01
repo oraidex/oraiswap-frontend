@@ -4,19 +4,16 @@ import {
   ChainIdEnum,
   COSMOS_CHAIN_ID_COMMON,
   CosmosChainId,
-  // TODO: init OraidexCommon
-  cosmosChains,
   ETHEREUM_SCAN,
-  evmChains,
   KWT_SCAN,
   MULTIPLIER,
   TRON_SCAN,
   EVM_CHAIN_ID_COMMON,
   WalletType as WalletCosmosType
 } from '@oraichain/oraidex-common';
+import { cosmosChains, evmChains } from 'index';
 import { network } from 'config/networks';
 import { serializeError } from 'serialize-error';
-
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { bitcoinChainId, leapSnapId } from './constants';
 import { getSnap } from '@leapwallet/cosmos-snap-provider';

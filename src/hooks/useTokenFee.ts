@@ -4,8 +4,6 @@ import {
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   TokenItemType,
-  // TODO: init OraidexCommon
-  network,
   toAmount,
   // oraichainTokens,
   toDisplay,
@@ -13,6 +11,8 @@ import {
   PEPE_BSC_CONTRACT,
   PEPE_ETH_CONTRACT
 } from '@oraichain/oraidex-common';
+import { network } from 'config/networks';
+
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { useQuery } from '@tanstack/react-query';
