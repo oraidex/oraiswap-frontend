@@ -1,18 +1,18 @@
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { ChainInfo, FeeCurrency, Keplr as keplr, Key } from '@keplr-wallet/types';
 import {
+  checkValidateAddressWithNetwork,
   CosmosChainId,
   CosmosWallet,
   NetworkChainId,
   TokenItemType,
-  WalletType,
-  checkValidateAddressWithNetwork
+  WalletType
 } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { chainInfos, OraiBTCBridgeNetwork } from 'config/chainInfos';
-import { network } from 'config/networks';
 import { getAddress, getAddressByEIP191 } from 'helper';
+import { network } from 'index';
 import { EIP_EIP_STORAGE_KEY_ACC, MetamaskOfflineSigner } from './eip191';
 
 export default class Keplr extends CosmosWallet {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import {
   BigDecimal,
   MULTICALL_CONTRACT,
@@ -6,6 +6,8 @@ import {
   TokenItemType,
   ZAPPER_CONTRACT
 } from '@oraichain/oraidex-common';
+import { ZapperQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { Pool, PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import {
   poolKeyToString,
   RouteNoLiquidity,
@@ -14,15 +16,13 @@ import {
   ZapConsumer,
   ZapInLiquidityResponse
 } from '@oraichain/oraiswap-v3';
-import { useDebounce } from 'hooks/useDebounce';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import useZap from './useZap';
-import mixpanel from 'mixpanel-browser';
-import { Pool, PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
-import { ZapperQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { network } from 'config/networks';
+import { useDebounce } from 'hooks/useDebounce';
+import { network } from 'index';
 import { fetchPositionAprInfo, PoolFeeAndLiquidityDaily } from 'libs/contractSingleton';
+import mixpanel from 'mixpanel-browser';
+import { useEffect, useState } from 'react';
+import useZap from './useZap';
 
 const useZapIn = (
   pool: Pool,

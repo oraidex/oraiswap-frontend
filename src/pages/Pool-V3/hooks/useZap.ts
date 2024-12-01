@@ -1,11 +1,8 @@
 import { Coin } from '@cosmjs/proto-signing';
-import { ZapperClient } from '@oraichain/oraidex-contracts-sdk';
-import { network } from 'config/networks';
-import SingletonOraiswapV3 from 'libs/contractSingleton';
-import { getCosmWasmClient } from 'libs/cosmjs';
-import { executeMultiple } from '../helpers/helper';
 import { TokenItemType, ZAPPER_CONTRACT } from '@oraichain/oraidex-common';
 import { parseAsset, ZapInLiquidityResponse, ZapOutLiquidityResponse } from '@oraichain/oraiswap-v3';
+import { network } from 'index';
+import { executeMultiple } from '../helpers/helper';
 
 export type ZapInData = {
   tokenZap: TokenItemType;

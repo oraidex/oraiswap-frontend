@@ -1,15 +1,15 @@
-import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
 import { buildMultipleExecuteMessages, DEFAULT_SLIPPAGE, ORAI, toAmount } from '@oraichain/oraidex-common';
+import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { network } from 'config/networks';
-import { getIcon, getIconToken, handleCheckAddress, handleErrorTransaction } from 'helper';
+import { getIconToken, handleCheckAddress, handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { network } from 'index';
 import CosmJs from 'libs/cosmjs';
 import { getUsd, toSumDisplay } from 'libs/utils';
 import { estimateShare } from 'pages/Pools/helpers';

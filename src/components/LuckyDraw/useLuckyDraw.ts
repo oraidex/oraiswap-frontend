@@ -4,9 +4,9 @@ import { LuckyWheelContractQueryClient } from './luckyDrawClient';
 import { flattenTokensWithIcon } from 'config/chainInfos';
 import { LUCKY_DRAW_CONTRACT, LUCKY_DRAW_FEE, FETCH_RESULT_INTERVAL, MAX_SPIN_TIME_PER_SEND } from './constants';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { network } from 'config/networks';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { Spin } from './luckyDrawClient/LuckyWheelContract.types';
+import { network } from 'index';
 
 export const getDataLogByKey = (log: any, key: string) => {
   const events = log?.events || [];

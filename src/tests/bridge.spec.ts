@@ -1,31 +1,30 @@
 import { coin } from '@cosmjs/stargate';
 import {
-  IBC_WASM_CONTRACT,
-  INJECTIVE_ORAICHAIN_DENOM,
-  KWTBSC_ORAICHAIN_DENOM,
-  TokenItemType,
-  buildMultipleExecuteMessages,
-  getEncodedExecuteContractMsgs,
-  parseTokenInfo,
-  toAmount
-} from '@oraichain/oraidex-common';
-import { getSourceReceiver } from '@oraichain/oraidex-universal-swap';
-import { CoinGeckoId, NetworkChainId } from '@oraichain/oraidex-common';
-import {
   BSC_SCAN,
+  buildMultipleExecuteMessages,
+  CoinGeckoId,
   ETHEREUM_SCAN,
+  getEncodedExecuteContractMsgs,
+  IBC_WASM_CONTRACT,
+  ibcInfos, ibcInfosOld,
+  INJECTIVE_ORAICHAIN_DENOM,
   KWT_BSC_CONTRACT,
   KWT_DENOM,
-  KWT_SCAN,
+  KWTBSC_ORAICHAIN_DENOM,
   MILKY_BSC_CONTRACT,
   MILKY_DENOM,
+  NetworkChainId,
   ORAI_BSC_CONTRACT,
   ORAI_INFO,
+  oraib2oraichain,
+  parseTokenInfo,
+  toAmount,
+  TokenItemType,
   TRON_SCAN
 } from '@oraichain/oraidex-common';
-import { ibcInfos, ibcInfosOld, oraib2oraichain } from '@oraichain/oraidex-common';
-import { network } from 'config/networks';
-import { filterChainBridge, getTransactionUrl, networks, Tokens } from 'helper';
+import { getSourceReceiver } from '@oraichain/oraidex-universal-swap';
+import { getTransactionUrl } from 'helper';
+import { cosmosTokens, flattenTokens, network, oraichainTokens } from 'index';
 import Long from 'long';
 import { findDefaultToToken } from 'pages/Balance/helpers';
 import {
@@ -34,7 +33,6 @@ import {
   generateMoveOraib2OraiMessages
 } from 'rest/api';
 import { describe, expect, it } from 'vitest';
-import { cosmosTokens, flattenTokens, oraichainTokens } from 'index';
 
 // @ts-ignore
 window.Networks = require('@oraichain/ethereum-multicall').Networks;

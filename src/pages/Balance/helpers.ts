@@ -3,57 +3,47 @@ import { Coin, coin } from '@cosmjs/proto-signing';
 import { DeliverTxResponse, GasPrice } from '@cosmjs/stargate';
 // import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import {
+  BigDecimal,
   CosmosChainId,
+  GAS_ESTIMATION_BRIDGE_DEFAULT,
   IBCInfo,
   KWT,
   ORAI,
   TokenItemType,
-  ibcInfos,
-  ibcInfosOld,
-  oraichain2oraib,
-  BigDecimal,
-  GAS_ESTIMATION_BRIDGE_DEFAULT,
   buildMultipleExecuteMessages,
   calculateTimeoutTimestamp,
   getEncodedExecuteContractMsgs,
+  ibcInfos,
+  ibcInfosOld,
+  oraichain2oraib,
   parseTokenInfo,
   toAmount,
-  CustomChainInfo,
   validateNumber
 } from '@oraichain/oraidex-common';
 import { chainInfos } from 'config/chainInfos';
-import { network } from 'config/networks';
-import { cosmosNetworks, feeEstimate, getNetworkGasPrice } from 'helper';
+import { feeEstimate, getNetworkGasPrice } from 'helper';
+import { network } from 'index';
 
 import { CwIcs20LatestClient } from '@oraichain/common-contracts-sdk';
 import { TransferBackMsg } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
-import { OraiswapRouterQueryClient, OraiswapTokenClient } from '@oraichain/oraidex-contracts-sdk';
+import { OraiswapTokenClient } from '@oraichain/oraidex-contracts-sdk';
+import { useQuery } from '@tanstack/react-query';
+import { BitcoinUnit } from 'bitcoin-units';
+import { opcodes, script } from 'bitcoinjs-lib';
 import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
+import {
+  bitcoinLcd,
+  bitcoinLcdV2
+} from 'helper/constants';
+import { flattenTokens, kawaiiTokens, tokenMap } from 'index';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import KawaiiverseJs from 'libs/kawaiiversejs';
+import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
 import { generateError } from 'libs/utils';
 import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMoveOraib2OraiMessages } from 'rest/api';
-import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 import axios from 'rest/request';
-import { script, opcodes } from 'bitcoinjs-lib';
-import { useQuery } from '@tanstack/react-query';
-import { config } from 'libs/nomic/config';
-import QRCode from 'qrcode';
-import { useEffect, useState } from 'react';
-import { OraiBtcSubnetChain } from 'libs/nomic/models/ibc-chain';
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { BitcoinUnit } from 'bitcoin-units';
-import {
-  MIN_DEPOSIT_BTC,
-  MIN_WITHDRAW_BTC,
-  bitcoinChainId,
-  bitcoinLcd,
-  bitcoinLcdV2,
-  btcNetwork
-} from 'helper/constants';
-import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
-import { flattenTokens, kawaiiTokens, tokenMap } from 'index';
+import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;

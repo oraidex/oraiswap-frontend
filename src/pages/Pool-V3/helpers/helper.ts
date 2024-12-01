@@ -16,14 +16,12 @@ import {
   calculateFee as wasmCalculateFee
 } from '@oraichain/oraiswap-v3';
 import { oraichainTokensWithIcon } from 'config/chainInfos';
-import { network } from 'config/networks';
 import { Position as PositionsNode } from 'gql/graphql';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { network, oraichainTokens } from 'index';
 import SingletonOraiswapV3, { poolKeyToString } from 'libs/contractSingleton';
 import { PRICE_SCALE, printBigint } from '../components/PriceRangePlot/utils';
 import { extractAddress, getIconPoolData } from './format';
-import { numberWithCommas } from 'helper/format';
-import { oraichainTokens } from 'index';
 
 export interface InitPositionData {
   poolKeyData: PoolKey;
@@ -88,15 +86,15 @@ const defaultPrefixConfig: PrefixConfig = {
 
 export const formatNumbers =
   (thresholds: FormatNumberThreshold[] = defaultThresholds) =>
-  (value: string) => {
-    const num = Number(value);
-    const abs = Math.abs(num);
-    const threshold = thresholds.sort((a, b) => a.value - b.value).find((thr) => abs < thr.value);
+    (value: string) => {
+      const num = Number(value);
+      const abs = Math.abs(num);
+      const threshold = thresholds.sort((a, b) => a.value - b.value).find((thr) => abs < thr.value);
 
-    const formatted = threshold ? (abs / (threshold.divider ?? 1)).toFixed(threshold.decimals) : value;
+      const formatted = threshold ? (abs / (threshold.divider ?? 1)).toFixed(threshold.decimals) : value;
 
-    return num < 0 && threshold ? '-' + formatted : formatted;
-  };
+      return num < 0 && threshold ? '-' + formatted : formatted;
+    };
 
 export const showPrefix = (nr: number, config: PrefixConfig = defaultPrefixConfig): string => {
   const abs = Math.abs(nr);

@@ -25,6 +25,7 @@ import {
 } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
+  CoharvestBidPoolQueryClient,
   OraiswapFactoryQueryClient,
   OraiswapOracleQueryClient,
   OraiswapPairQueryClient,
@@ -34,18 +35,14 @@ import {
   OraiswapStakingTypes,
   OraiswapTokenQueryClient,
   OraiswapTokenTypes,
-  PairInfo,
-  CoharvestBidPoolQueryClient,
-  CoharvestBidPoolTypes
+  PairInfo
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
-import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
 import { tokens } from 'config/bridgeTokens';
-import { network } from 'config/networks';
 import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { oraichainTokens, tokenMap } from 'index';
+import { network, oraichainTokens, tokenMap } from 'index';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
 import { BondLP, MiningLP, UnbondLP, WithdrawLP } from 'types/pool';
@@ -108,7 +105,7 @@ function parsePoolAmount(poolInfo: OraiswapPairTypes.PoolResponse, trueAsset: As
         (asset) =>
           'native_token' in asset.info &&
           asset.info.native_token.denom ===
-            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+          'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
       )?.amount || '0'
     );
   }
@@ -723,24 +720,20 @@ async function getPairAmountInfo(
 }
 
 export {
-  fetchCachedPairInfo,
-  fetchPairInfo,
+  fetchCachedPairInfo, fetchLpBalance, fetchPairInfo,
   fetchPoolInfoAmount,
   fetchRelayerFee,
-  fetchRewardPerSecInfo,
-  fetchStakingPoolInfo,
+  fetchRewardPerSecInfo, fetchRoundBid, fetchStakingPoolInfo,
   fetchTaxRate,
   fetchTokenAllowance,
   fetchTokenInfo,
-  fetchTokenInfos,
-  fetchLpBalance,
-  generateContractMessages,
+  fetchTokenInfos, generateContractMessages,
   generateConvertCw20Erc20Message,
   generateConvertErc20Cw20Message,
   generateConvertMsgs,
   generateMiningMsgs,
   generateMoveOraib2OraiMessages,
   getPairAmountInfo,
-  getSubAmountDetails,
-  fetchRoundBid
+  getSubAmountDetails
 };
+

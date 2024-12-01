@@ -5,13 +5,15 @@ import {
 } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
 import { ThemeProvider } from 'context/theme-context';
 import { getListAddressCosmos, interfaceRequestTron } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
 import useWalletReducer from 'hooks/useWalletReducer';
+import { network } from 'index';
+import SingletonOraiswapV3 from 'libs/contractSingleton';
+import { getCosmWasmClient } from 'libs/cosmjs';
 import Keplr from 'libs/keplr';
 import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
@@ -26,8 +28,6 @@ import './index.scss';
 import Menu from './Menu';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
-import SingletonOraiswapV3 from 'libs/contractSingleton';
-import { getCosmWasmClient } from 'libs/cosmjs';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
@@ -58,7 +58,7 @@ const App = () => {
       }
     })();
 
-    return () => {};
+    return () => { };
   }, []);
 
   // TODO: polyfill evm, tron, need refactor

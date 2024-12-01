@@ -1,10 +1,3 @@
-import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
-import classNames from 'classnames';
-import RewardIcon from 'assets/icons/rewardIc.svg?react';
-import LiquidityIcon from 'assets/icons/liquidity.svg?react';
-import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
-import BootsIcon from 'assets/icons/boost-icon.svg?react';
-import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import {
   BigDecimal,
   CW20_DECIMALS,
@@ -14,41 +7,44 @@ import {
   TokenItemType
 } from '@oraichain/oraidex-common';
 import { Tick } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import IconInfo from 'assets/icons/infomationIcon.svg?react';
+import LiquidityIcon from 'assets/icons/liquidity.svg?react';
+import RewardIcon from 'assets/icons/rewardIc.svg?react';
+import classNames from 'classnames';
+import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
 
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { TooltipIcon } from 'components/Tooltip';
+import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { getTransactionUrl, handleErrorTransaction, minimize } from 'helper';
+import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTheme from 'hooks/useTheme';
+import { network, oraichainTokens } from 'index';
 import SingletonOraiswapV3, { fetchPositionAprInfo, poolKeyToString, PositionAprInfo } from 'libs/contractSingleton';
+import { getCosmWasmClient } from 'libs/cosmjs';
+import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import {
   calculateFee,
-  formatNumbers,
   getConvertedPool,
   getConvertedPosition,
   getTick,
   initialXtoY,
   tickerToAddress
 } from 'pages/Pool-V3/helpers/helper';
-import useConfigReducer from 'hooks/useConfigReducer';
-import { network } from 'config/networks';
-import { getTransactionUrl, handleErrorTransaction, minimize } from 'helper';
-import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { getCosmWasmClient } from 'libs/cosmjs';
-import { useCoinGeckoPrices } from 'hooks/useCoingecko';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
 import { useGetIncentiveSimulate } from 'pages/Pool-V3/hooks/useGetIncentiveSimulate';
 import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
 import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import CreateNewPosition from '../CreateNewPosition';
 import { printBigint } from '../PriceRangePlot/utils';
 import ZapOut from '../ZapOut';
 import styles from './index.module.scss';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
-import { oraichainTokens } from 'index';
 
 let intervalId = null;
 
@@ -173,7 +169,7 @@ const PositionItem = ({ position }) => {
       }
     })();
 
-    return () => {};
+    return () => { };
   }, [openCollapse, poolPrice]);
 
   useEffect(() => {
@@ -186,7 +182,7 @@ const PositionItem = ({ position }) => {
       setStatusRange(pool.current_tick_index >= lower_tick_index && pool.current_tick_index < upper_tick_index);
     })();
 
-    return () => {};
+    return () => { };
   }, [position, poolList]);
 
   useEffect(() => {
@@ -432,8 +428,8 @@ const PositionItem = ({ position }) => {
                       {!principalAmountX
                         ? '--'
                         : numberWithCommas(toDisplay(principalAmountX || 0, tokenXDecimal), undefined, {
-                            maximumFractionDigits: 6
-                          })}{' '}
+                          maximumFractionDigits: 6
+                        })}{' '}
                       {position?.tokenX.name}
                     </span>
                     <span className={classNames(styles.token, styles[theme])}>
@@ -441,8 +437,8 @@ const PositionItem = ({ position }) => {
                       {!principalAmountY
                         ? '--'
                         : numberWithCommas(toDisplay(principalAmountY || 0, tokenYDecimal), undefined, {
-                            maximumFractionDigits: 6
-                          })}{' '}
+                          maximumFractionDigits: 6
+                        })}{' '}
                       {position?.tokenY.name}
                     </span>
                   </div>

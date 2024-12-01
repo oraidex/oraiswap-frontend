@@ -1,11 +1,19 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 import { useQueryClient } from '@tanstack/react-query';
+import { isMobile } from '@walletconnect/browser-utils';
+import AddIcon from 'assets/icons/Add.svg?react';
 import BackIcon from 'assets/icons/ic_back.svg?react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { network } from 'config/networks';
+import classNames from 'classnames';
+import { Button } from 'components/Button';
+import Tabs from 'components/TabCustom';
+import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
+import { network } from 'index';
 import Content from 'layouts/Content';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -13,7 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { updateLpPools } from 'reducer/token';
 import { PoolInfoResponse } from 'types/pool';
 import styles from './PoolDetail.module.scss';
-import ChartDetailSection from './components/ChartDetailSection';
+import { AddLiquidityModal } from './components/AddLiquidityModal';
 import { Earning } from './components/Earning';
 import { MyPoolInfo } from './components/MyPoolInfo/MyPoolInfo';
 import { OverviewPool } from './components/OverviewPool';
@@ -21,16 +29,6 @@ import TransactionHistory from './components/TransactionHistory';
 import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools, useGetPriceChange } from './hooks';
 import { useGetLpBalance } from './hooks/useGetLpBalance';
 import { useGetPairInfo } from './hooks/useGetPairInfo';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
-import classNames from 'classnames';
-import Tabs from 'components/TabCustom';
-import { isMobile } from '@walletconnect/browser-utils';
-import { Button } from 'components/Button';
-import AddIcon from 'assets/icons/Add.svg?react';
-import { parseAssetOnlyDenom } from './helpers';
-import { AddLiquidityModal } from './components/AddLiquidityModal';
-import { formatNumberKMB, numberWithCommas } from 'helper/format';
-import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 
 const PoolDetail: React.FC = () => {
   const theme = useTheme();
@@ -177,19 +175,18 @@ const PoolDetail: React.FC = () => {
               {/* TODO: remove after pool close */}
               {ratioOraiBtc
                 ? `1 ${baseToken?.name} = ${numberWithCommas(1 / (ratioOraiBtc || 1), undefined, {
-                    maximumFractionDigits: 6
-                  })}`
+                  maximumFractionDigits: 6
+                })}`
                 : `1 ${baseToken?.name} = ${numberWithCommas(priceChange?.price || 0, undefined, {
-                    maximumFractionDigits: 6
-                  })}`}
+                  maximumFractionDigits: 6
+                })}`}
               {/* TODO: remove after pool close */} {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name}
               {isMobileMode ? <br /> : <div className={styles.divider}>|</div>}1{' '}
               {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name} ={' '}
               {ratioOraiBtc
                 ? `${numberWithCommas(ratioOraiBtc || 0, undefined, { maximumFractionDigits: 6 })} ${baseToken?.name}`
-                : `${numberWithCommas(1 / (priceChange?.price || 1) || 0, undefined, { maximumFractionDigits: 6 })} ${
-                    baseToken?.name
-                  }`}
+                : `${numberWithCommas(1 / (priceChange?.price || 1) || 0, undefined, { maximumFractionDigits: 6 })} ${baseToken?.name
+                }`}
             </div>
           </div>
           <div className={styles.addPosition}>
@@ -198,8 +195,7 @@ const PoolDetail: React.FC = () => {
               onClick={(event) => {
                 event.stopPropagation();
                 setPairDenomsDeposit(
-                  `${baseToken?.contractAddress || baseToken?.denom}_${
-                    quoteToken?.contractAddress || quoteToken?.denom
+                  `${baseToken?.contractAddress || baseToken?.denom}_${quoteToken?.contractAddress || quoteToken?.denom
                   }`
                 );
               }}

@@ -1,10 +1,9 @@
 import { BigDecimal, calculateMinReceive, CW20_DECIMALS, toAmount } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { network } from 'config/networks';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
-import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
+import { network } from 'index';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import {
   getAverageRatio,
@@ -13,10 +12,10 @@ import {
   isAllowAlphaIbcWasm,
   isAllowIBCWasm
 } from 'pages/UniversalSwap/helpers';
+import { useEffect, useState } from 'react';
 import { fetchTokenInfos } from 'rest/api';
 import { useSimulate } from './useSimulate';
 import { useSwapFee } from './useSwapFee';
-import { useEffect, useState } from 'react';
 
 export const SIMULATE_INIT_AMOUNT = 1;
 
@@ -124,31 +123,31 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
   const minimumReceive =
     isAverageRatio && fromAmountTokenBalance
       ? calculateMinReceive(
-          // @ts-ignore
-          new BigDecimal(averageRatio.amount).div(SIMULATE_INIT_AMOUNT).toString(),
-          fromAmountTokenBalance.toString(),
-          userSlippage,
-          originalFromToken.decimals
-        )
+        // @ts-ignore
+        new BigDecimal(averageRatio.amount).div(SIMULATE_INIT_AMOUNT).toString(),
+        fromAmountTokenBalance.toString(),
+        userSlippage,
+        originalFromToken.decimals
+      )
       : '0';
   const isWarningSlippage = +minimumReceive > +simulateData?.amount;
   const simulateDisplayAmount = simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
   const bridgeTokenFee =
     simulateDisplayAmount && (fromTokenFee || toTokenFee)
       ? new BigDecimal(simulateDisplayAmount)
-          .mul(fromTokenFee)
-          .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee).toString())
-          .div(100)
-          .toNumber()
+        .mul(fromTokenFee)
+        .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee).toString())
+        .div(100)
+        .toNumber()
       : 0;
 
   const minimumReceiveDisplay = isSimulateDataDisplay
     ? new BigDecimal(simulateDisplayAmount)
-        .sub(new BigDecimal(simulateDisplayAmount).mul(userSlippage).div(100).toString())
-        // TODO:  Fee has been deducted from simulated price
-        // .sub(relayerFee)
-        .sub(bridgeTokenFee)
-        .toNumber()
+      .sub(new BigDecimal(simulateDisplayAmount).mul(userSlippage).div(100).toString())
+      // TODO:  Fee has been deducted from simulated price
+      // .sub(relayerFee)
+      .sub(bridgeTokenFee)
+      .toNumber()
     : 0;
 
   const expectOutputDisplay = isSimulateDataDisplay

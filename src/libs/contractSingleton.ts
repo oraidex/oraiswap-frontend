@@ -1,26 +1,11 @@
 import { CosmWasmClient, fromBinary, SigningCosmWasmClient, toBinary } from '@cosmjs/cosmwasm-stargate';
-import {
-  Tickmap,
-  getMaxTick,
-  getMinTick,
-  PoolKey,
-  LiquidityTick,
-  positionToTick,
-  calculateSqrtPrice,
-  getChunkSize,
-  getLiquidityTicksLimit,
-  getMaxTickmapQuerySize,
-  OraiswapV3Handler,
-  parsePoolKey,
-  calculateAmountDelta
-} from '@oraichain/oraiswap-v3';
-import { network } from 'config/networks';
+import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { AXIOS_THROTTLE_THRESHOLD, AXIOS_TIMEOUT, CoinGeckoId, toDisplay } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
   OraiswapTokenClient,
   OraiswapTokenQueryClient,
-  OraiswapV3Client,
-  OraiswapV3QueryClient
+  OraiswapV3Client
 } from '@oraichain/oraidex-contracts-sdk';
 import {
   ArrayOfAsset,
@@ -32,16 +17,28 @@ import {
   Position,
   Tick
 } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { TokenDataOnChain } from 'pages/Pool-V3/components/PriceRangePlot/utils';
+import {
+  calculateAmountDelta,
+  calculateSqrtPrice,
+  getChunkSize,
+  getLiquidityTicksLimit,
+  getMaxTick,
+  getMaxTickmapQuerySize,
+  getMinTick,
+  LiquidityTick,
+  OraiswapV3Handler,
+  parsePoolKey,
+  PoolKey,
+  positionToTick,
+  Tickmap
+} from '@oraichain/oraiswap-v3';
 import Axios from 'axios';
-import { throttleAdapterEnhancer, retryAdapterEnhancer } from 'axios-extensions';
-import { AXIOS_TIMEOUT, AXIOS_THROTTLE_THRESHOLD, toDisplay } from '@oraichain/oraidex-common';
-import { CoinGeckoId } from '@oraichain/oraidex-common';
-import { oraichainTokens } from 'index';
-import { getPools } from 'rest/graphClient';
-import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { retryAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions';
+import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { network, oraichainTokens } from 'index';
+import { TokenDataOnChain } from 'pages/Pool-V3/components/PriceRangePlot/utils';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import { getPools } from 'rest/graphClient';
 import { PoolInfoResponse } from 'types/pool';
 
 export const ALL_FEE_TIERS_DATA: FeeTier[] = [
@@ -194,7 +191,7 @@ export default class SingletonOraiswapV3 {
     return this._cosmwasmClient;
   }
 
-  private constructor() {}
+  private constructor() { }
 
   public static async load(signingClient: SigningCosmWasmClient, sender: string) {
     if (!this._cosmwasmClient) {

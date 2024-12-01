@@ -1,6 +1,5 @@
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
 import { BigDecimal, ORAIX_CONTRACT, toAmount, toDisplay } from '@oraichain/oraidex-common';
-import { oraichainTokens, tokenMap } from 'index';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import OraiXIcon from 'assets/icons/oraix.svg?react';
@@ -9,12 +8,12 @@ import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
 import { getTransactionUrl, handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
+import { network, oraichainTokens, tokenMap } from 'index';
 import { getUsd } from 'libs/utils';
 import { INIT_AMOUNT_SIMULATE, TIMER } from 'pages/CoHarvest/constants';
 import {

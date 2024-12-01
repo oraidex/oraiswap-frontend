@@ -6,9 +6,9 @@ import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { network } from 'config/networks';
 import { handleCheckAddress, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { network } from 'index';
 import CosmJs from 'libs/cosmjs';
 import { useGetPoolDetail } from 'pages/Pools/hooks';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
@@ -94,8 +94,8 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
     totalSupply === BigInt(0) || !lpAmountBurn
       ? BigInt(0)
       : (token2.contractAddress === BTC_CONTRACT
-          ? (token2Amount / BigInt(10 ** 8)) * BigInt(lpAmountBurn)
-          : token2Amount * BigInt(lpAmountBurn)) / totalSupply;
+        ? (token2Amount / BigInt(10 ** 8)) * BigInt(lpAmountBurn)
+        : token2Amount * BigInt(lpAmountBurn)) / totalSupply;
 
   const lpAmountBurnUsdt = !myLpBalance ? 0 : (Number(lpAmountBurn) / Number(myLpBalance)) * Number(myLpUsdt);
   return (

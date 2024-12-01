@@ -4,7 +4,6 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import * as Sentry from '@sentry/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContext, ToastProvider } from 'components/Toasts/context';
-import { network } from 'config/networks';
 import { getWalletByNetworkCosmosFromStorage } from 'helper';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import mixpanel from 'mixpanel-browser';
@@ -60,8 +59,10 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
 }
 
 // init queryClient
-const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
-const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
+const RPC = "https://rpc.orai.io";
+// const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
+// const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
+const rpcClient = new HttpClient(RPC);
 // @ts-ignore
 window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 
@@ -108,6 +109,7 @@ export const {
   otherChainTokens,
   cw20TokenMap,
   cw20Tokens,
-  assetInfoMap
+  assetInfoMap,
+  network
 } = oraidexCommon;
 initApp();

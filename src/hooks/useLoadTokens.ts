@@ -3,7 +3,7 @@ import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import { btcTokens } from 'config/bridgeTokens';
-import { cosmosTokens, evmTokens, oraichainTokens, tokenMap } from 'index';
+import { cosmosTokens, evmTokens, network, oraichainTokens, tokenMap } from 'index';
 import {
   genAddressCosmos,
   getAddress,
@@ -28,7 +28,6 @@ import {
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { chainInfos, evmChains } from 'config/chainInfos';
-import { network } from 'config/networks';
 import { ethers } from 'ethers';
 import axios from 'rest/request';
 import { reduce } from 'lodash';

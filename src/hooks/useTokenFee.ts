@@ -11,7 +11,6 @@ import {
   PEPE_BSC_CONTRACT,
   PEPE_ETH_CONTRACT
 } from '@oraichain/oraidex-common';
-import { network } from 'config/networks';
 
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
@@ -24,7 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateFeeConfig } from 'reducer/token';
 import { fetchFeeConfig } from 'rest/api';
 import { RootState } from 'store/configure';
-import { oraichainTokens } from 'index';
+import { network, oraichainTokens } from 'index';
 
 export default function useTokenFee(
   remoteTokenDenom: string,
