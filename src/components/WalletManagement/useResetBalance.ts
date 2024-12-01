@@ -1,3 +1,4 @@
+// TODO: init OraidexCommon
 import { EVM_CHAIN_ID_COMMON, WalletType, cosmosTokens, flattenTokens } from '@oraichain/oraidex-common';
 import { btcTokens } from 'config/bridgeTokens';
 import { useDispatch } from 'react-redux';

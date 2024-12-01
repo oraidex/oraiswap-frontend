@@ -1,4 +1,5 @@
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
+// TODO: init OraidexCommon
 import { BigDecimal, ORAIX_CONTRACT, oraichainTokens, toAmount, toDisplay, tokenMap } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';

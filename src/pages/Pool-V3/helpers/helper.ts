@@ -1,4 +1,5 @@
 import { Coin } from '@cosmjs/proto-signing';
+// TODO: init OraidexCommon
 import { BigDecimal, CW20_DECIMALS, oraichainTokens, TokenItemType } from '@oraichain/oraidex-common';
 import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
 import { PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';

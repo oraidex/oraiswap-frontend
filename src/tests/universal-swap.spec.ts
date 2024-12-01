@@ -4,6 +4,7 @@ import {
   GAS_ESTIMATION_SWAP_DEFAULT,
   GAS_ESTIMATION_BRIDGE_DEFAULT,
   AIRI_BSC_CONTRACT,
+  // TODO: init OraidexCommon
   flattenTokens
 } from '@oraichain/oraidex-common';
 import { calcMaxAmount } from 'pages/Balance/helpers';

@@ -1,3 +1,4 @@
+// TODO: init OraidexCommon
 import { USDC_CONTRACT, cw20TokenMap, tokenMap } from '@oraichain/oraidex-common';
 import { Cw20StakingQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';

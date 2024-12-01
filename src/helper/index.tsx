@@ -4,6 +4,7 @@ import {
   ChainIdEnum,
   COSMOS_CHAIN_ID_COMMON,
   CosmosChainId,
+  // TODO: init OraidexCommon
   cosmosChains,
   ETHEREUM_SCAN,
   evmChains,

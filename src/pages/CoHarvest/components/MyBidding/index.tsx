@@ -1,4 +1,4 @@
-import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
 import BiddingIconLight from 'assets/icons/bidding-icon-light.svg?react';
 import BiddingIcon from 'assets/icons/bidding-icon.svg?react';
 import DrawIconLight from 'assets/icons/draw-icon-light.svg?react';

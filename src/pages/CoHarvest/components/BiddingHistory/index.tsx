@@ -1,3 +1,4 @@
+// TODO: init OraidexCommon
 import { BigDecimal, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import LoadingBox from 'components/LoadingBox';

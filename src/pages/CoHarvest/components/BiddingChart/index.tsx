@@ -1,3 +1,4 @@
+// TODO: init OraidexCommon
 import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';

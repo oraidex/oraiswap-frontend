@@ -1,6 +1,7 @@
 import {
   CustomChainInfo,
   TokenItemType,
+  // TODO: init OraidexCommon
   flattenTokens,
   checkValidateAddressWithNetwork
 } from '@oraichain/oraidex-common';

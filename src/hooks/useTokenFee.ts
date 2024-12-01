@@ -4,6 +4,7 @@ import {
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   TokenItemType,
+  // TODO: init OraidexCommon
   network,
   toAmount,
   // oraichainTokens,

@@ -8,6 +8,7 @@ import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import {
   BigDecimal,
   CW20_DECIMALS,
+  // TODO: init OraidexCommon
   oraichainTokens,
   parseAssetInfo,
   toDisplay,

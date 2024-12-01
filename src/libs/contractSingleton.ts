@@ -38,6 +38,7 @@ import Axios from 'axios';
 import { throttleAdapterEnhancer, retryAdapterEnhancer } from 'axios-extensions';
 import { AXIOS_TIMEOUT, AXIOS_THROTTLE_THRESHOLD, toDisplay } from '@oraichain/oraidex-common';
 import { CoinGeckoId } from '@oraichain/oraidex-common';
+// TODO: init OraidexCommon
 import { oraichainTokens } from '@oraichain/oraidex-common';
 import { getPools } from 'rest/graphClient';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
@@ -898,11 +899,15 @@ export async function fetchPoolAprInfo(
         min: res.min + (minSwapApr ? minSwapApr : 0),
         max: res.max + (maxSwapApr ? maxSwapApr : 0)
       },
-      incentives: pool.incentives.map((incentive) => {
-        if (incentive.remaining === '0') return null;
-        const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
-        return token.denom.toUpperCase();
-      }).filter((incentive) => incentive !== null),
+      incentives: pool.incentives
+        .map((incentive) => {
+          if (incentive.remaining === '0') return null;
+          const token = oraichainTokens.find(
+            (token) => extractAddress(token) === parseAssetInfo(incentive.reward_token)
+          );
+          return token.denom.toUpperCase();
+        })
+        .filter((incentive) => incentive !== null),
       swapFee: {
         min: minSwapApr,
         max: maxSwapApr

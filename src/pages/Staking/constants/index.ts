@@ -1,3 +1,4 @@
+// TODO: init OraidexCommon
 import { oraichainTokens } from '@oraichain/oraidex-common/build/token';
 
 export const TIMER = {

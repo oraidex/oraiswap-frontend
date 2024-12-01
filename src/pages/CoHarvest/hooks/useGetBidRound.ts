@@ -1,5 +1,6 @@
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+// TODO: init OraidexCommon
 import { BigDecimal, oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
 import { CoharvestBidPoolQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';

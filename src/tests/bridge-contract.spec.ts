@@ -15,10 +15,8 @@ import { CwIcs20LatestClient } from '@oraichain/common-contracts-sdk';
 import * as oraidexArtifacts from '@oraichain/oraidex-contracts-build';
 import { FungibleTokenPacketData } from 'cosmjs-types/ibc/applications/transfer/v2/packet';
 import { deployIcs20Token, deployToken, senderAddress as oraiSenderAddress, senderAddress } from './common';
-import { oraib2oraichain } from '@oraichain/oraidex-common';
-import { ORAI } from '@oraichain/oraidex-common';
 import { AssetInfo, TransferBackMsg } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
-import { toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay, ORAI, oraib2oraichain } from '@oraichain/oraidex-common';
 
 let cosmosChain: CWSimulateApp;
 // oraichain support cosmwasm

@@ -2,6 +2,7 @@ import {
   CustomChainInfo,
   TokenItemType,
   getSubAmountDetails,
+  // TODO: init OraidexCommon
   tokenMap,
   truncDecimals
 } from '@oraichain/oraidex-common';

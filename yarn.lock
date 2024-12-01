@@ -3025,6 +3025,13 @@
     long "^4.0.0"
     secretjs "^0.17.0"
 
+"@keplr-wallet/types@0.12.141":
+  version "0.12.141"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.12.141.tgz#341cc45882a86a39701d726edc8febdc42cafcb3"
+  integrity sha512-och1uUeqL6bUgWGLBSlV87rwXUDZMDUOJaARue65mRzfD6ohp9WBVFZfFgpyxU3M6S6UnzQQ6HuKUnWh4WuDjw==
+  dependencies:
+    long "^4.0.0"
+
 "@keplr-wallet/types@^0.11.38":
   version "0.11.64"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.11.64.tgz#5a308c8c019b4e18f894e0f35f0904b60134d605"
@@ -3230,6 +3237,19 @@
     ethers "^5.5.1"
     lodash "^4.17.21"
 
+"@oraichain/common@^1.2.1-beta6":
+  version "1.2.1-beta6"
+  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.1-beta6.tgz#c5089e42dce601fb2b6c87fddee469c2698c0259"
+  integrity sha512-U1LZ99Ym1LlgoNgvWGShcoxPLtOozWh+m+8q8xwoU/XlS/xDTbhbqhhIWwz6Hl9+6Ac4TFWLd0ewRpGCjrymtQ==
+  dependencies:
+    "@keplr-wallet/types" "0.12.141"
+    axios "0.21.4"
+    axios-extensions "3.1.6"
+    bech32 "^1.1.4"
+    cosmjs-types "^0.8.0"
+    ethers "^5.5.1"
+    lodash "^4.17.21"
+
 "@oraichain/cosmosjs@^0.0.94":
   version "0.0.94"
   resolved "https://registry.yarnpkg.com/@oraichain/cosmosjs/-/cosmosjs-0.0.94.tgz#35f1a045737b86015f728aa22b1a974058eb4104"
@@ -3341,10 +3361,10 @@
     react-use "^17.4.0"
     react-use-websocket "^4.5.0"
 
-"@oraichain/oraidex-common@1.1.34", "@oraichain/oraidex-common@^1.1.27", "@oraichain/oraidex-common@^1.1.32":
-  version "1.1.34"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.34.tgz#257d25408450c438dc2bf0870fa8de9125af92ed"
-  integrity sha512-3PzjIS7+QlhSl/5w1NDXr5hZ8LXgJP0IqMWK/ZwJNM7yySeWRui6pwzFwariW2AQ/raU/z1Umr1Bh13idfeQ4Q==
+"@oraichain/oraidex-common@2.0.0-beta.1", "@oraichain/oraidex-common@^1.1.27", "@oraichain/oraidex-common@^1.1.32":
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.0-beta.1.tgz#cf2cbe9a659ddaa95df74eb3c675c773c38c230b"
+  integrity sha512-D4ZXbTuZd17QMe1slZEOdcvetmDkDthr5JMeUi4GRMfPs15CQq/Q/NJ/3VpiFpHrDAKk8ZQAyW+mVXVrsjZ/1Q==
   dependencies:
     "@cosmjs/amino" "^0.32.4"
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
@@ -3355,6 +3375,7 @@
     "@ethersproject/providers" "^5.0.10"
     "@injectivelabs/sdk-ts" "1.12.1"
     "@keplr-wallet/types" "^0.11.38"
+    "@oraichain/common" "^1.2.1-beta6"
     "@oraichain/oraidex-contracts-sdk" latest
     axios "1.7.2"
     axios-extensions "3.1.7"

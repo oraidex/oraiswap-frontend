@@ -1,6 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import {
   MULTICALL_CONTRACT,
+  // TODO: init OraidexCommon
   oraichainTokens,
   toDisplay,
   TokenItemType,
