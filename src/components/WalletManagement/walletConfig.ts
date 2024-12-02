@@ -3,10 +3,16 @@ import KeplrIcon from 'assets/icons/keplr-icon.svg?react';
 import MetamaskIcon from 'assets/icons/metamask-icon.svg?react';
 import OwalletIcon from 'assets/icons/owallet-icon.svg?react';
 import TronIcon from 'assets/icons/tron-icon.svg?react';
-import { cosmosNetworksWithIcon, evmNetworksIconWithoutTron, tronNetworksWithIcon, btcNetworksWithIcon } from 'helper';
+import {
+  cosmosNetworksWithIcon,
+  evmNetworksIconWithoutTron,
+  tronNetworksWithIcon,
+  btcNetworksWithIcon,
+  solanaNetworksWithIcon
+} from 'helper';
 
-export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin';
-export type WalletType = WalletCosmosType | 'metamask' | 'tronLink' | 'eip191' | 'bitcoin';
+export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin' | 'solana';
+export type WalletType = WalletCosmosType | 'metamask' | 'tronLink' | 'eip191' | 'bitcoin' | 'phantom';
 export type WalletNetwork = {
   icon: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & {
@@ -94,6 +100,15 @@ export const btcWallets: WalletNetwork[] = [
   }
 ];
 
+export const solanaWallets: WalletNetwork[] = [
+  {
+    icon: OwalletIcon,
+    name: 'Phantom',
+    nameRegistry: 'phantom',
+    isActive: true
+  }
+];
+
 export const allWallets: WalletNetwork[] = [...cosmosWallets, ...tronWallets, ...evmWallets, ...btcWallets];
 
 export const walletProvider: WalletProvider[] = [
@@ -116,5 +131,10 @@ export const walletProvider: WalletProvider[] = [
     networkType: 'bitcoin',
     networks: btcNetworksWithIcon,
     wallets: btcWallets
+  },
+  {
+    networkType: 'solana',
+    networks: solanaNetworksWithIcon,
+    wallets: solanaWallets
   }
 ];

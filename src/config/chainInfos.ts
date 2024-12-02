@@ -121,6 +121,59 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
+export const solanaMainnet: CustomChainInfo = {
+  rpc: 'https://swr.xnftdata.com/rpc-proxy/',
+  rest: 'https://swr.xnftdata.com/rpc-proxy/',
+  chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp' as any,
+  chainName: 'Solana' as any,
+  bip44: {
+    coinType: 501 as any
+  },
+  bech32Config: defaultBech32Config('sol'),
+  stakeCurrency: {
+    coinDenom: 'SOL',
+    coinMinimalDenom: 'sol',
+    coinDecimals: 9,
+    coinGeckoId: 'solana',
+    coinImageUrl: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756'
+  },
+  chainSymbolImageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
+  networkType: 'svm' as any,
+  currencies: [
+    {
+      coinDenom: 'SOL',
+      coinMinimalDenom: 'sol',
+      coinDecimals: 9,
+      bridgeTo: ['Oraichain'],
+      coinGeckoId: 'solana' as any,
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756'
+    }
+  ],
+  get feeCurrencies() {
+    return [
+      {
+        coinDenom: 'SOL',
+        coinMinimalDenom: 'sol',
+        coinDecimals: 9,
+        coinGeckoId: 'solana',
+        coinImageUrl: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756',
+        gasPriceStep: {
+          low: 1,
+          average: 1.25,
+          high: 1.5
+        }
+      }
+    ];
+  },
+
+  features: [],
+  txExplorer: {
+    name: 'Sol Scan',
+    txUrl: 'https://solscan.io/tx/{txHash}',
+    accountUrl: 'https://solscan.io/address/{address}'
+  }
+};
+
 export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
@@ -212,7 +265,7 @@ export const OraiBTCBridgeNetwork = {
   }
 };
 
-export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork];
+export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork, solanaMainnet];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 
 // exclude kawaiverse subnet and other special evm that has different cointype

@@ -248,6 +248,11 @@ export const chainIconsInfos: ChainIcon[] = [
     chainId: 'celestia',
     Icon: CelestiaIcon,
     IconLight: CelestiaIcon
+  },
+  {
+    chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp' as any,
+    Icon: SolanaIcon,
+    IconLight: SolanaIcon
   }
 ];
 
