@@ -198,6 +198,12 @@ const useCreatePositionForm = (
         time,
         price: close
       }));
+
+      data.push({
+        time: Date.now(),
+        price: currentPrice
+      })
+
       const padding = 0.1;
 
       const prices = data.map((d) => d.price);
