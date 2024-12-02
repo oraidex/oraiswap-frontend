@@ -5,8 +5,9 @@ import { Coin, GasPrice } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import { Stargate } from '@injectivelabs/sdk-ts';
 import { getWalletByNetworkCosmosFromStorage } from 'helper';
-import { network } from 'index';
+// import { network } from 'index';
 import { MetamaskOfflineSigner } from './eip191';
+import { network } from 'initCommon';
 export type clientType = 'cosmwasm' | 'injective';
 
 const collectWallet = async (chainId: string) => {
@@ -24,6 +25,7 @@ const getCosmWasmClient = async (
     const { chainId, rpc, signer } = config;
     const wallet = signer ?? (await collectWallet(chainId));
     const defaultAddress = (await wallet.getAccounts())[0];
+    // console.log(network)
     const tmClient = await Tendermint37Client.connect(rpc ?? (network.rpc as string));
     const client = await cosmwasm.SigningCosmWasmClient.createWithSigner(
       tmClient,

@@ -155,3 +155,5 @@ if (!('timeout' in AbortSignal)) {
     return controller.signal;
   };
 }
+
+console.log("Hello from src/polyfill.ts");

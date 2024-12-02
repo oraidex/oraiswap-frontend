@@ -1,7 +1,8 @@
 import { PAIRS, TokenItemType, parseAssetInfo, USDC_CONTRACT, ORAIX_CONTRACT } from '@oraichain/oraidex-common';
 import uniq from 'lodash/uniq';
 import flatten from 'lodash/flatten';
-import { assetInfoMap } from 'index';
+import { assetInfoMap } from 'initCommon';
+// import { assetInfoMap } from 'index';
 
 export const getPoolTokens = (): TokenItemType[] => {
   return (

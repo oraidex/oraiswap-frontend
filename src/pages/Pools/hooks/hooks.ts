@@ -5,16 +5,18 @@ import { toDisplay } from '@oraichain/oraidex-common';
 import { OraiswapStakingQueryClient, OraiswapStakingTypes } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { cw20TokenMap, network, oraichainTokens, tokenMap } from 'index';
-import { getUsd } from 'libs/utils';
+import { cw20TokenMap, network, oraichainTokens, tokenMap } from 'initCommon';
 import isEqual from 'lodash/isEqual';
-import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'rest/request';
+
+
+import { getUsd } from 'libs/utils';
+import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
 import { updateLpPools } from 'reducer/token';
 import { fetchRewardPerSecInfo, fetchTokenInfo } from 'rest/api';
-import axios from 'rest/request';
 import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
 

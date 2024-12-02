@@ -4,13 +4,13 @@ import OraiIcon from 'assets/icons/oraichain.svg?react';
 import BTCIcon from 'assets/icons/btc-icon.svg?react';
 import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
 import flatten from 'lodash/flatten';
-import { tokens, oraichainNetwork as customOraichainNetwork, chainInfos as customChainInfos } from 'index';
+import { tokens, oraichainNetwork as customOraichainNetwork, chainInfos as customChainInfos, oraichainTokens, otherChainTokens } from 'initCommon';
 import { chainIconsInfos, tokensIconInfos, mapListWithIcon } from './iconInfos';
 
 export const tokensIcon = tokensIconInfos;
 export const chainIcons = chainIconsInfos;
 
-const [otherChainTokens, oraichainTokens] = tokens;
+// const [otherChainTokens, oraichainTokens] = tokens;
 const OraiBTCToken: BridgeAppCurrency = {
   coinDenom: 'ORAIBTC',
   coinMinimalDenom: 'uoraibtc',

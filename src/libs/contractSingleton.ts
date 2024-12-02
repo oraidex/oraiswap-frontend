@@ -20,6 +20,7 @@ import {
 import {
   calculateAmountDelta,
   calculateSqrtPrice,
+  extractAddress,
   getChunkSize,
   getLiquidityTicksLimit,
   getMaxTick,
@@ -34,10 +35,10 @@ import {
 } from '@oraichain/oraiswap-v3';
 import Axios from 'axios';
 import { retryAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions';
+import { network, oraichainTokens } from 'initCommon';
+
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { network, oraichainTokens } from 'index';
 import { TokenDataOnChain } from 'pages/Pool-V3/components/PriceRangePlot/utils';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { getPools } from 'rest/graphClient';
 import { PoolInfoResponse } from 'types/pool';
 

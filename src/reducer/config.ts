@@ -6,7 +6,6 @@ import { PoolAprInfo } from 'libs/contractSingleton';
 import { DepositInfo } from 'pages/BitcoinDashboard/@types';
 import { KeyFilterPool } from 'pages/Pools/components/Filter';
 import { PERSIST_VER } from 'store/constants';
-// import { PERSIST_VERSION } from 'store/configure';
 
 export type ChainInfoType = {
   networkType?: string;

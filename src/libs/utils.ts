@@ -11,7 +11,8 @@ import WalletConnectProvider from '@walletconnect/ethereum-provider';
 import bech32 from 'bech32';
 import { chainInfos } from 'config/chainInfos';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { cosmosTokens, network, tokenMap } from 'index';
+import { cosmosTokens, network, tokenMap } from 'initCommon';
+// import { cosmosTokens, network, tokenMap } from 'index';
 import { getCosmWasmClient } from 'libs/cosmjs';
 
 export const checkRegex = (str: string, regex?: RegExp) => {

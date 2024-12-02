@@ -1,7 +1,8 @@
 import { Key } from '@keplr-wallet/types';
 
 import { bitcoinChainId } from 'helper/constants';
-import { network } from 'index';
+import { network } from 'initCommon';
+// import { network } from 'index';
 export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 // import { CosmosChainId, BitcoinWallet } from '@oraichain/oraidex-common';
 type BitcoinChainId = 'bitcoin' | 'bitcoinTestnet';

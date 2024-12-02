@@ -1,9 +1,9 @@
 import { gql, GraphQLClient } from 'graphql-request';
-import { network } from 'index';
 import { PRICE_SCALE } from 'libs/contractSingleton';
 import { printBigint } from 'pages/Pool-V3/components/PriceRangePlot/utils';
 import { TimeDuration, TokenPairHistoricalPrice } from 'reducer/poolDetailV3';
 import axios from './request';
+import { network } from 'initCommon';
 
 export const INDEXER_V3_URL = network.indexer_v3 ?? 'https://staging-ammv3-indexer.oraidex.io/';
 export const graphqlClient = new GraphQLClient(INDEXER_V3_URL);

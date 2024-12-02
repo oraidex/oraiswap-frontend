@@ -1,24 +1,27 @@
+// import 'initCommon';
+console.log('Hello from src/index.tsx');
 import { HttpClient, Tendermint37Client, WebsocketClient } from '@cosmjs/tendermint-rpc';
-
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import * as Sentry from '@sentry/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContext, ToastProvider } from 'components/Toasts/context';
-import { getWalletByNetworkCosmosFromStorage } from 'helper';
-import { getCosmWasmClient } from 'libs/cosmjs';
 import mixpanel from 'mixpanel-browser';
-import 'polyfill';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Bounce, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from 'store/configure';
+import 'react-toastify/dist/ReactToastify.css';
 import './index.scss';
-import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
 import { OraidexCommon } from '@oraichain/oraidex-common';
+
+import { EVM_CHAIN_ID, getWalletByNetworkCosmosFromStorage } from 'helper';
+import { getCosmWasmClient } from 'libs/cosmjs';
+import 'polyfill';
+import App from './layouts/App';
+import { network, oraichainTokens } from 'initCommon';
 
 // const client = new Client({
 //   url: 'http://10.10.20.72:3000/',
@@ -59,10 +62,8 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
 }
 
 // init queryClient
-const RPC = "https://rpc.orai.io";
-// const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
-// const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
-const rpcClient = new HttpClient(RPC);
+const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
+const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
 // @ts-ignore
 window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 
@@ -75,7 +76,7 @@ const initApp = async () => {
           <Router>
             <ScrollToTop />
             <QueryClientProvider client={queryClient}>
-              <App />
+              {/* <App /> */}
             </QueryClientProvider>
           </Router>
           <ToastContext.Consumer>
@@ -85,7 +86,6 @@ const initApp = async () => {
       </PersistGate>
     </Provider>
   );
-
   // init cosmwasm client when user connected cosmos wallet
   const walletType = getWalletByNetworkCosmosFromStorage();
   if (walletType) {
@@ -93,23 +93,5 @@ const initApp = async () => {
     if (cosmWasmClient?.client) window.client = cosmWasmClient.client;
   }
 };
-export const oraidexCommon = await OraidexCommon.load();
-export const {
-  tokens,
-  oraichainNetwork,
-  chainInfos,
-  cosmosChains,
-  evmChains,
-  flattenTokens,
-  oraichainTokens,
-  tokenMap,
-  cosmosTokens,
-  evmTokens,
-  kawaiiTokens,
-  otherChainTokens,
-  cw20TokenMap,
-  cw20Tokens,
-  assetInfoMap,
-  network
-} = oraidexCommon;
+
 initApp();

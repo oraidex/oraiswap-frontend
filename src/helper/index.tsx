@@ -11,7 +11,7 @@ import {
   EVM_CHAIN_ID_COMMON,
   WalletType as WalletCosmosType
 } from '@oraichain/oraidex-common';
-import { cosmosChains, evmChains, network } from 'index';
+// import { cosmosChains, evmChains, network } from 'index';
 import { serializeError } from 'serialize-error';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { bitcoinChainId, leapSnapId } from './constants';
@@ -28,6 +28,7 @@ import { WalletsByNetwork } from 'reducer/wallet';
 import { evmChainInfos } from 'config/evmChainInfos';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
+import { cosmosChains, evmChains, network } from 'initCommon';
 
 export interface Tokens {
   denom?: string;
@@ -272,6 +273,7 @@ export const setStorageKey = (key = 'typeWallet', value) => {
 // TECH DEBT: need to update WalletTypeCosmos add type eip191 to oraidex-common
 export const getWalletByNetworkCosmosFromStorage = (key = 'persist:root'): WalletCosmosType | 'eip191' => {
   try {
+    console.log({EVM_CHAIN_ID});
     if (isMobile()) return 'owallet';
 
     const result = localStorage.getItem(key);
