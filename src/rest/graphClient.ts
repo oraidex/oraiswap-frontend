@@ -684,7 +684,7 @@ export const getHistoricalPriceDataInDay = async (
       default:
         dayIndex = currentIndex - 7;
     }
-
+    
     // create array of chunkOffset: [dayIndex, dayIndex + CHUNK_QUERY, ...] to current Index
     const length = Math.ceil((currentIndex - dayIndex) / CHUNK_QUERY);
     const chunkOffset = Array.from({ length }, (_, i) => dayIndex + i * CHUNK_QUERY);
@@ -749,6 +749,9 @@ export const getHistoricalPriceDataInDay = async (
         .sort((a, b) => a.time - b.time), // sort by time
       poolId
     };
+
+    // remove the last record and use the latest price
+    res.data.pop();
 
     return res;
   } catch (error) {
