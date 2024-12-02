@@ -483,11 +483,11 @@ const Balance: React.FC<BalanceProps> = () => {
   }) => {
     const web3Solana = new Web3SolanaProgramInteraction(fromToken.rpc);
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
-    processTxResult(
-      fromToken.rpc,
-      // @ts-ignore-check
-      response.result
-    );
+    const transaction = response?.transaction;
+    console.log(transaction, response);
+    displayToast(TToastType.TX_SUCCESSFUL, {
+      customLink: `https://solscan.io/tx/${transaction}`
+    });
   };
 
   const onClickTransfer = async (

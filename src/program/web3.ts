@@ -8,7 +8,12 @@ import {
   TransactionExpiredTimeoutError,
   TransactionInstruction
 } from '@solana/web3.js';
-import { createTransferCheckedInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token';
+import {
+  createAssociatedTokenAccount,
+  createAssociatedTokenAccountInstruction,
+  createTransferCheckedInstruction,
+  getAssociatedTokenAddressSync
+} from '@solana/spl-token';
 import * as anchor from '@coral-xyz/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import { BN, Program } from '@coral-xyz/anchor';
@@ -27,9 +32,9 @@ export class Web3SolanaProgramInteraction {
   connection: Connection;
 
   constructor(solanaRpc: string) {
-    console.log({ solanaRpc });
     this.connection = new Connection(solanaRpc, {
-      commitment: commitmentLevel
+      commitment: commitmentLevel,
+      wsEndpoint: 'wss://go.getblock.io/bed382d14bfd4f1999fb608b27794e8e'
     });
   }
 
@@ -39,60 +44,84 @@ export class Web3SolanaProgramInteraction {
     tokenAmountRaw: number,
     oraiReceiverAddress: string
   ) => {
-    const mintPubkey = new PublicKey(token.contractAddress);
-    const relayerPubkey = new PublicKey(SOL_RELAYER_ADDRESS);
+    try {
+      const mintPubkey = new PublicKey(token.contractAddress);
+      const relayerPubkey = new PublicKey(SOL_RELAYER_ADDRESS);
 
-    const walletTokenAccount = getAssociatedTokenAddressSync(mintPubkey, wallet.publicKey);
-    const relayerTokenAccount = getAssociatedTokenAddressSync(mintPubkey, relayerPubkey);
+      const walletTokenAccount = getAssociatedTokenAddressSync(mintPubkey, wallet.publicKey);
+      const relayerTokenAccount = getAssociatedTokenAddressSync(mintPubkey, relayerPubkey);
+      const accountInfo = await this.connection.getAccountInfo(relayerTokenAccount);
+      const lamports = accountInfo?.lamports || 0;
+      // check the connection
+      if (!wallet.publicKey || !this.connection) {
+        throw new Error('Warning: Wallet not connected');
+      }
 
-    // check the connection
-    if (!wallet.publicKey || !this.connection) {
-      throw new Error('Warning: Wallet not connected');
-    }
+      const parsedAmount = toAmount(tokenAmountRaw, token.decimals);
 
-    const parsedAmount = toAmount(tokenAmountRaw, token.decimals);
-    let transaction = new Transaction();
-    transaction.add(
-      createTransferCheckedInstruction(
-        walletTokenAccount,
-        mintPubkey,
-        relayerTokenAccount,
-        wallet.publicKey,
-        parsedAmount,
-        token.decimals
-      )
-    );
-    transaction.add(
-      new TransactionInstruction({
-        keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
-        data: Buffer.from(oraiReceiverAddress, 'utf-8'),
-        programId: new PublicKey(MEMO_PROGRAM_ID)
-      })
-    );
-    transaction.feePayer = wallet.publicKey;
-    const blockhash = await this.connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash.blockhash;
-
-    if (wallet.signTransaction) {
-      const signedTx = await wallet.signTransaction(transaction);
-      const sTx = signedTx.serialize();
-      console.log('---- simulate tx', await this.connection.simulateTransaction(signedTx));
-      const signature = await this.connection.sendRawTransaction(sTx, {
-        preflightCommitment: 'confirmed',
-        skipPreflight: false
-      });
-      const res = await this.connection.confirmTransaction(
-        {
-          signature,
-          blockhash: blockhash.blockhash,
-          lastValidBlockHeight: blockhash.lastValidBlockHeight
-        },
-        'finalized'
+      let transaction = new Transaction();
+      if (lamports == 0) {
+        transaction.add(
+          createAssociatedTokenAccountInstruction(wallet.publicKey, relayerTokenAccount, relayerPubkey, mintPubkey)
+        );
+      }
+      transaction.add(
+        createTransferCheckedInstruction(
+          walletTokenAccount,
+          mintPubkey,
+          relayerTokenAccount,
+          wallet.publicKey,
+          parsedAmount,
+          token.decimals
+        )
       );
-      console.log('Successfully initialized.\n Signature: ', signature);
-      return {
-        result: res
-      };
+      transaction.add(
+        new TransactionInstruction({
+          keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
+          data: Buffer.from(oraiReceiverAddress, 'utf-8'),
+          programId: new PublicKey(MEMO_PROGRAM_ID)
+        })
+      );
+      transaction.feePayer = wallet.publicKey;
+      const blockhash = await this.connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash.blockhash;
+
+      if (wallet.signTransaction) {
+        const signedTx = await wallet.signTransaction(transaction);
+        const sTx = signedTx.serialize();
+        console.log('---- simulate tx', await this.connection.simulateTransaction(signedTx));
+        const signature = await this.connection.sendRawTransaction(sTx, {
+          preflightCommitment: 'confirmed',
+          skipPreflight: false
+        });
+        // return {
+        //   transaction: signature
+        // };
+        const res = await this.connection.confirmTransaction(
+          {
+            signature,
+            blockhash: blockhash.blockhash,
+            lastValidBlockHeight: blockhash.lastValidBlockHeight
+          },
+          'confirmed'
+        );
+        console.log('Successfully initialized.\n Signature: ', signature);
+        return {
+          result: res,
+          transaction: signature
+        };
+      }
+    } catch (error) {
+      console.log('Error in swap transaction', error, error.error);
+      const { transaction = '', result } =
+        (await this.handleTransactionError({
+          error
+        })) || {};
+
+      if (result?.value?.confirmationStatus) {
+        console.log('----confirm----', { transaction, result });
+        return { transaction, result };
+      }
     }
   };
 
