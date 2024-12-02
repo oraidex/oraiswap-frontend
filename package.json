@@ -81,7 +81,7 @@
     "@keplr-wallet/types": "^0.11.38",
     "@oraichain/babel-plugin-operator-overloading": "^1.0.4",
     "@oraichain/common-contracts-build": "1.0.35",
-    "@oraichain/cw-simulate": "^2.8.75",
+    "@oraichain/cw-simulate": "^2.8.108",
     "@oraichain/oraidex-contracts-build": "1.0.22",
     "@oraichain/oraiswap-v3": "^1.1.2",
     "@sentry/webpack-plugin": "^2.10.3",
@@ -151,7 +151,8 @@
     "bitcoinjs-lib": "5.2.0",
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
-    "@oraichain/oraidex-common": "2.0.0-beta.1"
+    "@oraichain/oraidex-common": "2.0.0-beta.1",
+    "@cosmjs/amino": "0.32.4"
   },
   "engines": {
     "node": "^18 || ^20"
