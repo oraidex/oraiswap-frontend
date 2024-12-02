@@ -29,6 +29,7 @@ import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
 import SolanaIcon from 'assets/icons/solana.svg?react';
+import MaxIcon from 'assets/icons/max.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -178,8 +179,8 @@ export const tokensIconInfos: TokenIcon[] = [
   },
   {
     coinGeckoId: 'max.clan' as any,
-    Icon: SolanaIcon,
-    IconLight: SolanaIcon
+    Icon: MaxIcon,
+    IconLight: MaxIcon
   }
 ];
 

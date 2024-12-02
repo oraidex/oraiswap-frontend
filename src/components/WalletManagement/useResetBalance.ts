@@ -3,7 +3,7 @@ import { btcTokens } from 'config/bridgeTokens';
 import { useDispatch } from 'react-redux';
 import { updateAmounts } from 'reducer/token';
 
-export type Wallet = WalletType | 'metamask' | 'tron' | 'bitcoin';
+export type Wallet = WalletType | 'metamask' | 'tron' | 'bitcoin' | 'phantom';
 export const useResetBalance = () => {
   const dispatch = useDispatch();
 

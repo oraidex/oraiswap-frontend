@@ -20,17 +20,18 @@ export const TOKEN_RESERVES = 1_000_000_000_000_000;
 export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
 
-export const endpoint = process.env.NEXT_PUBLIC_SOLANA_RPC;
 export const SOL_RELAYER_ADDRESS = '8WHawEro2j7YQYnL1zjDpiJ4Qnf1AWz913Xmaj9mtqyz';
 export const MEMO_PROGRAM_ID = 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr';
 
 export class Web3SolanaProgramInteraction {
-  constructor(
-    private readonly connection = new Connection(endpoint, {
-      commitment: commitmentLevel,
-      wsEndpoint: process.env.NEXT_PUBLIC_SOLANA_WS
-    })
-  ) {}
+  connection: Connection;
+
+  constructor(solanaRpc: string) {
+    console.log({ solanaRpc });
+    this.connection = new Connection(solanaRpc, {
+      commitment: commitmentLevel
+    });
+  }
 
   bridgeSolToOrai = async (
     wallet: WalletContextState,
@@ -65,7 +66,7 @@ export class Web3SolanaProgramInteraction {
       new TransactionInstruction({
         keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
         data: Buffer.from(oraiReceiverAddress, 'utf-8'),
-        programId: new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr')
+        programId: new PublicKey(MEMO_PROGRAM_ID)
       })
     );
     transaction.feePayer = wallet.publicKey;

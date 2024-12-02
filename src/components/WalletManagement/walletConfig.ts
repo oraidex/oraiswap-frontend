@@ -2,6 +2,7 @@ import { WalletType as WalletCosmosType } from '@oraichain/oraidex-common/build/
 import KeplrIcon from 'assets/icons/keplr-icon.svg?react';
 import MetamaskIcon from 'assets/icons/metamask-icon.svg?react';
 import OwalletIcon from 'assets/icons/owallet-icon.svg?react';
+import PhantomIcon from 'assets/icons/phantom.svg?react';
 import TronIcon from 'assets/icons/tron-icon.svg?react';
 import {
   cosmosNetworksWithIcon,
@@ -102,14 +103,20 @@ export const btcWallets: WalletNetwork[] = [
 
 export const solanaWallets: WalletNetwork[] = [
   {
-    icon: OwalletIcon,
+    icon: PhantomIcon,
     name: 'Phantom',
     nameRegistry: 'phantom',
     isActive: true
   }
 ];
 
-export const allWallets: WalletNetwork[] = [...cosmosWallets, ...tronWallets, ...evmWallets, ...btcWallets];
+export const allWallets: WalletNetwork[] = [
+  ...cosmosWallets,
+  ...tronWallets,
+  ...evmWallets,
+  ...btcWallets,
+  ...solanaWallets
+];
 
 export const walletProvider: WalletProvider[] = [
   {

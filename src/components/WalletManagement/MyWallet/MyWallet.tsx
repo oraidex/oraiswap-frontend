@@ -12,14 +12,16 @@ import {
   evmWallets,
   btcWallets,
   type NetworkType,
-  WalletNetwork
+  WalletNetwork,
+  solanaWallets
 } from 'components/WalletManagement/walletConfig';
 import {
   tronNetworksWithIcon,
   cosmosNetworksWithIcon,
   evmNetworksIconWithoutTron,
   getListAddressCosmos,
-  btcNetworksWithIcon
+  btcNetworksWithIcon,
+  solanaNetworksWithIcon
 } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -46,6 +48,7 @@ export const MyWallet: React.FC<{
   const [oraiAddress] = useConfigReducer('address');
   const [tronAddress] = useConfigReducer('tronAddress');
   const [btcAddress] = useConfigReducer('btcAddress');
+  const [solAddress] = useConfigReducer('solAddress');
 
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [cosmosAddresses, setCosmosAddress] = useConfigReducer('cosmosAddress');
@@ -169,6 +172,15 @@ export const MyWallet: React.FC<{
     return renderWalletAddress(btcNetworks, btcWalletConnected, (_network) => btcAddress);
   };
 
+  const renderSolAddresses = () => {
+    if (!solAddress) return null;
+    const solWalletConnected = solanaWallets.find((item) => item.nameRegistry === walletByNetworks.solana);
+    if (!solWalletConnected) return <></>;
+
+    const solNetworks = solanaNetworksWithIcon.map((evm) => ({ ...evm, typeChain: 'solana' }));
+    return renderWalletAddress(solNetworks, solWalletConnected, (_network) => solAddress);
+  };
+
   return (
     <div
       ref={myWalletRef}
@@ -235,6 +247,7 @@ export const MyWallet: React.FC<{
           {renderEvmAddresses()}
           {renderTronAddresses()}
           {renderBtcAddresses()}
+          {renderSolAddresses()}
         </div>
       </div>
     </div>

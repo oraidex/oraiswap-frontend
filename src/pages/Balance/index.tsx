@@ -5,7 +5,6 @@ import { DeliverTxResponse, GasPrice, isDeliverTxFailure } from '@cosmjs/stargat
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import {
   CosmosChainId,
-  flattenTokens,
   getTokenOnOraichain,
   KWT_SCAN,
   NetworkChainId,
@@ -30,7 +29,7 @@ import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
 import SearchInput from 'components/SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { tokens } from 'config/bridgeTokens';
+import { flattenTokens, tokens } from 'config/bridgeTokens';
 import { chainInfos, solChainId } from 'config/chainInfos';
 import { NomicContext } from 'context/nomic-context';
 import {
@@ -482,7 +481,7 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
-    const web3Solana = new Web3SolanaProgramInteraction();
+    const web3Solana = new Web3SolanaProgramInteraction(fromToken.rpc);
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
     processTxResult(
       fromToken.rpc,
@@ -497,10 +496,7 @@ const Balance: React.FC<BalanceProps> = () => {
     to: TokenItemType,
     toNetworkChainId?: NetworkChainId
   ) => {
-    console.log('Hello', { from }, { to });
-
     try {
-      console.log(from, to);
       assert(from && to, 'Please choose both from and to tokens');
 
       // get & check balance
@@ -533,13 +529,6 @@ const Balance: React.FC<BalanceProps> = () => {
         });
       }
 
-      if (from.chainId == 'Oraichain' && (to.chainId as any) == solChainId) {
-        return handleTransferSol({
-          fromToken: from,
-          transferAmount: fromAmount
-        });
-      }
-
       let newToToken = to;
       if (toNetworkChainId) {
         // ORAICHAIN -> EVM (BSC/ETH/TRON) ( TO: TOKEN ORAIBRIDGE)
@@ -553,6 +542,13 @@ const Balance: React.FC<BalanceProps> = () => {
         newToToken.coinGeckoId === from.coinGeckoId,
         `From token ${from.coinGeckoId} is different from to token ${newToToken.coinGeckoId}`
       );
+
+      if (newToToken.chainId == 'Oraichain' && (from.chainId as any) == solChainId) {
+        return handleTransferSol({
+          fromToken: from,
+          transferAmount: fromAmount
+        });
+      }
 
       // hardcode case Neutaro-1 & Noble-1
       // if (from.chainId === 'Neutaro-1') return await handleTransferIBC(from, newToToken, fromAmount);

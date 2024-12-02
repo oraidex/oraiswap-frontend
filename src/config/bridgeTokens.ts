@@ -1,6 +1,6 @@
 import flatten from 'lodash/flatten';
 import uniqBy from 'lodash/uniqBy';
-import { chainInfos, oraichainNetwork } from './chainInfos';
+import { chainInfos, oraichainNetwork, solChainId } from './chainInfos';
 import {
   CustomChainInfo,
   INJECTIVE_ORAICHAIN_DENOM,
@@ -92,6 +92,11 @@ export const evmTokens = uniqBy(
 );
 export const btcTokens = uniqBy(
   flattenTokens.filter((token) => token.chainId === bitcoinChainId),
+  (c) => c.denom
+);
+
+export const solTokens = uniqBy(
+  flattenTokens.filter((token) => token.chainId === (solChainId as any)),
   (c) => c.denom
 );
 
