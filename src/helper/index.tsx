@@ -272,7 +272,6 @@ export const setStorageKey = (key = 'typeWallet', value) => {
 // TECH DEBT: need to update WalletTypeCosmos add type eip191 to oraidex-common
 export const getWalletByNetworkCosmosFromStorage = (key = 'persist:root'): WalletCosmosType | 'eip191' => {
   try {
-    console.log({EVM_CHAIN_ID});
     if (isMobile()) return 'owallet';
 
     const result = localStorage.getItem(key);

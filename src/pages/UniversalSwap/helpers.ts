@@ -32,7 +32,7 @@ import { formatDate, formatTimeWithPeriod } from 'pages/CoHarvest/helpers';
 import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
 import { FILTER_TIME_CHART, PairToken } from 'reducer/type';
 import { assets } from 'chain-registry';
-import { flattenTokens, tokenMap } from 'initCommon';
+import { flattenTokens, oraichainTokens, tokenMap } from 'initCommon';
 
 export enum SwapDirection {
   From,
@@ -103,7 +103,7 @@ export function filterNonPoolEvmTokens(
 
     // tokens that dont have a pool on Oraichain like WETH or WBNB cannot be swapped from a token on Oraichain
     if (direction === SwapDirection.To)
-      return [...new Set(filteredTokens.concat(filteredTokens.map((token) => getTokenOnOraichain(token.coinGeckoId))))];
+      return [...new Set(filteredTokens.concat(filteredTokens.map((token) => getTokenOnOraichain(token.coinGeckoId, oraichainTokens))))];
     filteredToTokens = filteredTokens;
   }
   // special case filter. Tokens on networks other than supported evm cannot swap to tokens, so we need to remove them
@@ -315,10 +315,10 @@ export const getFromToToken = (
   });
   const fromToken = isEvmSwap
     ? tokenMap[fromTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId) ?? tokenMap[fromTokenDenomSwap];
+    : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[fromTokenDenomSwap];
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId) ?? tokenMap[toTokenDenomSwap];
+    : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[toTokenDenomSwap];
 
   return { fromToken, toToken };
 };
@@ -384,7 +384,6 @@ export const getProtocolsSmartRoute = (
   { useAlphaIbcWasm, useIbcWasm }
 ) => {
   const protocols = ['Oraidex', 'OraidexV3'];
-  console.log({ fromToken, toToken })
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
   if (fromToken.chainId === 'noble-1' || toToken.chainId === 'noble-1') return protocols;
 

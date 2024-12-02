@@ -11,7 +11,7 @@ import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
-import { network } from 'initCommon';
+import { flattenTokens, network, oraichainTokens } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { getUsd } from 'libs/utils';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
@@ -49,6 +49,8 @@ const StakeInfo = () => {
   useEffect(() => {
     (async () => {
       const simulateData = await UniversalSwapHelper.handleSimulateSwap({
+        flattenTokens: flattenTokens,
+        oraichainTokens: oraichainTokens,
         originalFromInfo: USDC_TOKEN_INFO,
         originalToInfo: ORAIX_TOKEN_INFO,
         originalAmount: toDisplay(reward),
@@ -106,6 +108,8 @@ const StakeInfo = () => {
 
       const [averageRatioData] = await Promise.all([
         UniversalSwapHelper.handleSimulateSwap({
+          flattenTokens: flattenTokens,
+          oraichainTokens: oraichainTokens,
           originalFromInfo: USDC_TOKEN_INFO,
           originalToInfo: ORAIX_TOKEN_INFO,
           originalAmount: 1,

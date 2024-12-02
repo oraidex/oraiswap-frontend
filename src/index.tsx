@@ -1,4 +1,3 @@
-console.log('Hello from src/index.tsx');
 import { HttpClient, Tendermint37Client, WebsocketClient } from '@cosmjs/tendermint-rpc';
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import * as Sentry from '@sentry/react';

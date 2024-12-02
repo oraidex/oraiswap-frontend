@@ -26,7 +26,7 @@ import RefreshImg from 'assets/images/refresh.svg?react';
 import { assets } from 'chain-registry';
 import cn from 'classnames/bind';
 import styles from './index.module.scss';
-import { flattenTokens } from 'initCommon';
+import { flattenTokens, oraichainTokens } from 'initCommon';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
@@ -290,8 +290,8 @@ const SwapComponent: React.FC<{
       );
 
       if (isSpecialFromCoingecko && originalFromToken.chainId === 'Oraichain') {
-        const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
-        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, true);
+        const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId, oraichainTokens);
+        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, oraichainTokens, true);
         const [nativeAmount, cw20Amount] = await Promise.all([
           window.client.getBalance(oraiAddress, fromTokenInOrai.denom),
           window.client.queryContractSmart(tokenInfo.contractAddress, {
