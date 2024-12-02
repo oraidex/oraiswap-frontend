@@ -121,7 +121,8 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
-const solChainId = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
+export const solChainId = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
+
 export const solanaMainnet: CustomChainInfo = {
   rpc: 'https://swr.xnftdata.com/rpc-proxy/',
   rest: 'https://swr.xnftdata.com/rpc-proxy/',
@@ -154,6 +155,7 @@ export const solanaMainnet: CustomChainInfo = {
       coinMinimalDenom: 'max',
       coinDecimals: 6,
       bridgeTo: ['Oraichain'],
+      contractAddress: 'oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
       coinGeckoId: 'max.clan' as any,
       coinImageUrl:
         'https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2'

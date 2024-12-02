@@ -31,7 +31,7 @@ import SearchInput from 'components/SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { tokens } from 'config/bridgeTokens';
-import { chainInfos } from 'config/chainInfos';
+import { chainInfos, solChainId } from 'config/chainInfos';
 import { NomicContext } from 'context/nomic-context';
 import {
   assert,
@@ -93,8 +93,10 @@ import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
 import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { Web3SolanaProgramInteraction } from 'program/web3';
 
-interface BalanceProps { }
+interface BalanceProps {}
 
 export const isMaintainBridge = false;
 
@@ -131,6 +133,7 @@ const Balance: React.FC<BalanceProps> = () => {
     enabled: true,
     bitcoinAddress: btcAddress
   });
+  const wallet = useWallet();
 
   const ref = useRef(null);
   //@ts-ignore
@@ -472,15 +475,31 @@ const Balance: React.FC<BalanceProps> = () => {
     return latestEvmAddress;
   };
 
+  const handleTransferSol = async ({
+    fromToken,
+    transferAmount
+  }: {
+    fromToken: TokenItemType;
+    transferAmount: number;
+  }) => {
+    const web3Solana = new Web3SolanaProgramInteraction();
+    const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
+    processTxResult(
+      fromToken.rpc,
+      // @ts-ignore-check
+      response.result
+    );
+  };
+
   const onClickTransfer = async (
     fromAmount: number,
     from: TokenItemType,
     to: TokenItemType,
     toNetworkChainId?: NetworkChainId
   ) => {
-    try {
-      await handleCheckWallet();
+    console.log('Hello', { from }, { to });
 
+    try {
       console.log(from, to);
       assert(from && to, 'Please choose both from and to tokens');
 
@@ -509,6 +528,13 @@ const Balance: React.FC<BalanceProps> = () => {
       if (isBtcBridge) {
         return handleTransferBTC({
           isBTCToOraichain: isBTCToOraichain,
+          fromToken: from,
+          transferAmount: fromAmount
+        });
+      }
+
+      if (from.chainId == 'Oraichain' && (to.chainId as any) == solChainId) {
+        return handleTransferSol({
           fromToken: from,
           transferAmount: fromAmount
         });
