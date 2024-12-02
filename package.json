@@ -25,7 +25,7 @@
     "@oraichain/orai-bitcoin": "2.0.0",
     "@oraichain/oraidex-common-ui": "1.0.11",
     "@oraichain/oraidex-contracts-sdk": "1.0.55",
-    "@oraichain/oraidex-universal-swap": "1.1.23",
+    "@oraichain/oraidex-universal-swap": "1.2.0-beta4",
     "@react-spring/web": "^9.7.5",
     "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "7.99.0",
@@ -83,7 +83,7 @@
     "@oraichain/common-contracts-build": "1.0.35",
     "@oraichain/cw-simulate": "^2.8.108",
     "@oraichain/oraidex-contracts-build": "1.0.22",
-    "@oraichain/oraiswap-v3": "^1.1.2",
+    "@oraichain/oraiswap-v3": "1.2.0-beta4",
     "@sentry/webpack-plugin": "^2.10.3",
     "@testing-library/jest-dom": "^6.5.0",
     "@types/classnames": "^2.2.10",
@@ -114,8 +114,7 @@
     "vite-plugin-node-polyfills": "^0.22.0",
     "vite": "^5.4.10",
     "vite-plugin-wasm": "^3.3.0",
-    "vitest": "2.0.2",
-    "@oraichain/oraidex-common": "2.0.0-beta.1"
+    "vitest": "2.0.2"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
@@ -151,7 +150,7 @@
     "bitcoinjs-lib": "5.2.0",
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
-    "@oraichain/oraidex-common": "2.0.0-beta.1",
+    "@oraichain/oraidex-common": "2.0.0-beta.3",
     "@cosmjs/amino": "0.32.4"
   },
   "engines": {

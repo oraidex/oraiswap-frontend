@@ -12,7 +12,6 @@ import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { chainInfos, OraiBTCBridgeNetwork } from 'config/chainInfos';
 import { getAddress, getAddressByEIP191 } from 'helper';
-// import { network } from 'index';
 import { EIP_EIP_STORAGE_KEY_ACC, MetamaskOfflineSigner } from './eip191';
 import { network } from 'initCommon';
 

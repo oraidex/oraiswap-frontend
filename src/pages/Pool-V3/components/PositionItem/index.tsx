@@ -25,7 +25,7 @@ import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTheme from 'hooks/useTheme';
-import { network, oraichainTokens } from 'index';
+import { network, oraichainTokens } from 'initCommon';
 import SingletonOraiswapV3, { fetchPositionAprInfo, poolKeyToString, PositionAprInfo } from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';

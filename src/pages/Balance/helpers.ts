@@ -22,7 +22,6 @@ import {
 } from '@oraichain/oraidex-common';
 import { chainInfos } from 'config/chainInfos';
 import { feeEstimate, getNetworkGasPrice } from 'helper';
-import { network } from 'index';
 
 import { CwIcs20LatestClient } from '@oraichain/common-contracts-sdk';
 import { TransferBackMsg } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
@@ -36,7 +35,7 @@ import {
   bitcoinLcd,
   bitcoinLcdV2
 } from 'helper/constants';
-import { flattenTokens, kawaiiTokens, tokenMap } from 'index';
+import { flattenTokens, kawaiiTokens, tokenMap, network } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import KawaiiverseJs from 'libs/kawaiiversejs';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';

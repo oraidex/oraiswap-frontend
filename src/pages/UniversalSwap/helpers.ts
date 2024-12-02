@@ -10,7 +10,6 @@ import {
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
   TokenItemType,
   getTokenOnOraichain,
-  getTokenOnSpecificChainId,
   NetworkName,
   BigDecimal,
   toAmount,
@@ -33,7 +32,7 @@ import { formatDate, formatTimeWithPeriod } from 'pages/CoHarvest/helpers';
 import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
 import { FILTER_TIME_CHART, PairToken } from 'reducer/type';
 import { assets } from 'chain-registry';
-import { tokenMap } from 'index';
+import { flattenTokens, tokenMap } from 'initCommon';
 
 export enum SwapDirection {
   From,
@@ -79,6 +78,12 @@ export const getTransferTokenFee = async ({ remoteTokenDenom }): Promise<Ratio |
     console.log({ error });
   }
 };
+
+// FIXME: hard code function for test compatibility
+export const getTokenOnSpecificChainId = (coingeckoId: CoinGeckoId, chainId: string): TokenItemType | undefined => {
+  return flattenTokens.find((t) => t.coinGeckoId === coingeckoId && t.chainId === chainId);
+};
+
 
 export function filterNonPoolEvmTokens(
   chainId: string,
@@ -379,6 +384,7 @@ export const getProtocolsSmartRoute = (
   { useAlphaIbcWasm, useIbcWasm }
 ) => {
   const protocols = ['Oraidex', 'OraidexV3'];
+  console.log({ fromToken, toToken })
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
   if (fromToken.chainId === 'noble-1' || toToken.chainId === 'noble-1') return protocols;
 

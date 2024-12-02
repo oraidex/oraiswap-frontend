@@ -38,7 +38,7 @@ import Lottie from 'lottie-react';
 import InputRange from 'pages/CoHarvest/components/InputRange';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import { Spin } from './luckyDrawClient/LuckyWheelContract.types';
-import { network } from 'index';
+import { network } from 'initCommon';
 
 const LuckyDraw: FC<{}> = () => {
   const [address] = useConfigReducer('address');

@@ -9,7 +9,7 @@ import TokenBalance from 'components/TokenBalance';
 import { getIconToken, handleCheckAddress, handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { network } from 'index';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { getUsd, toSumDisplay } from 'libs/utils';
 import { estimateShare } from 'pages/Pools/helpers';

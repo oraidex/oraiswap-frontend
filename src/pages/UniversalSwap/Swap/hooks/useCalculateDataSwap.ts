@@ -3,7 +3,7 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import {
   getAverageRatio,

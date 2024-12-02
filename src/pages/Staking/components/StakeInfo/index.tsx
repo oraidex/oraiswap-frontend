@@ -2,9 +2,7 @@ import { CW20_STAKING_CONTRACT, ORAI, calculateMinReceive, toDisplay } from '@or
 import OraiXIcon from 'assets/icons/oraix.svg?react';
 import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
 import UsdcIcon from 'assets/icons/usd_coin.svg?react';
-
 import useConfigReducer from 'hooks/useConfigReducer';
-
 import { Cw20StakingClient, OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { Type, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { Button } from 'components/Button';
@@ -13,7 +11,7 @@ import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
-import { network } from 'index';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { getUsd } from 'libs/utils';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';

@@ -13,7 +13,7 @@ import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
-import { network, oraichainTokens, tokenMap } from 'index';
+import { network, oraichainTokens, tokenMap } from 'initCommon';
 import { getUsd } from 'libs/utils';
 import { INIT_AMOUNT_SIMULATE, TIMER } from 'pages/CoHarvest/constants';
 import {

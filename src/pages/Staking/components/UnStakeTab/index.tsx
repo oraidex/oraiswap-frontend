@@ -13,7 +13,7 @@ import { handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { getUsd } from 'libs/utils';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import { ORAIX_TOKEN_INFO, STAKE_TAB, STAKING_PERIOD, TIMER } from 'pages/Staking/constants';

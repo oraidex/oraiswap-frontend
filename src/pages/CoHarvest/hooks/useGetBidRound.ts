@@ -6,7 +6,7 @@ import { Bid, BiddingInfoResponse } from '@oraichain/oraidex-contracts-sdk/build
 import { useQuery } from '@tanstack/react-query';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { network, oraichainTokens } from 'index';
+import { network, oraichainTokens } from 'initCommon';
 import { getUsd } from 'libs/utils';
 import { useEffect, useState } from 'react';
 import { fetchRoundBid } from 'rest/api';

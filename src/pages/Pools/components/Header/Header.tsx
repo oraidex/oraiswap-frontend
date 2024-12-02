@@ -7,7 +7,7 @@ import TokenBalance from 'components/TokenBalance';
 import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
-import { network } from 'index';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { useGetMyStake, useGetPools, useGetRewardInfo, useGetTotalClaimable } from 'pages/Pools/hooks';
 import { FC, useEffect, useState } from 'react';

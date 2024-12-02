@@ -3,7 +3,7 @@ import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { handleCheckAddress, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
-import { network } from 'index';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { ORAIX_TOKEN_INFO } from 'pages/Staking/constants';
 import { useGetMyStakeRewardInfo, useGetStakeInfo } from 'pages/Staking/hooks';

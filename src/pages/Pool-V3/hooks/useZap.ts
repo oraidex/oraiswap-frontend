@@ -1,7 +1,7 @@
 import { Coin } from '@cosmjs/proto-signing';
 import { TokenItemType, ZAPPER_CONTRACT } from '@oraichain/oraidex-common';
 import { parseAsset, ZapInLiquidityResponse, ZapOutLiquidityResponse } from '@oraichain/oraiswap-v3';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { executeMultiple } from '../helpers/helper';
 
 export type ZapInData = {

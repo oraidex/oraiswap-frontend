@@ -19,7 +19,7 @@ import { useCopy } from 'hooks/useCopy';
 import { Link } from 'react-router-dom';
 import { BigDecimal, CoinGeckoPrices } from '@oraichain/oraidex-common';
 import { useRelayerFeeToken } from 'hooks/useTokenFee';
-import { flattenTokens } from 'index';
+import { flattenTokens } from 'initCommon';
 
 interface ModalProps {
   isOpen: boolean;

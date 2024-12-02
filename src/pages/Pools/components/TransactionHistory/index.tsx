@@ -8,7 +8,7 @@ import LoadingBox from 'components/LoadingBox';
 import { getTransactionUrl } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { getUsd, reduceString } from 'libs/utils';
 import { formatDateV2, formatTime } from 'pages/CoHarvest/helpers';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';

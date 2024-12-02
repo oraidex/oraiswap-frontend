@@ -18,7 +18,7 @@ import {
 import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { Position as PositionsNode } from 'gql/graphql';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { network, oraichainTokens } from 'index';
+import { network, oraichainTokens } from 'initCommon';
 import SingletonOraiswapV3, { poolKeyToString } from 'libs/contractSingleton';
 import { PRICE_SCALE, printBigint } from '../components/PriceRangePlot/utils';
 import { extractAddress, getIconPoolData } from './format';

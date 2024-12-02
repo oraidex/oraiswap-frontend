@@ -8,10 +8,7 @@ import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { ThemeProvider } from 'context/theme-context';
 import { getListAddressCosmos, interfaceRequestTron } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
-import useLoadTokens from 'hooks/useLoadTokens';
-import { useTronEventListener } from 'hooks/useTronLink';
 import useWalletReducer from 'hooks/useWalletReducer';
-import { network } from 'index';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import Keplr from 'libs/keplr';
@@ -21,11 +18,15 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
 import { setAddressBookList } from 'reducer/addressBook';
-import routes from 'routes';
 import { persistor } from 'store/configure';
 import { ADDRESS_BOOK_KEY_BACKUP, PERSIST_VER } from 'store/constants';
 import './index.scss';
+import { network } from 'initCommon';
+import useLoadTokens from 'hooks/useLoadTokens';
+import { useTronEventListener } from 'hooks/useTronLink';
 import Menu from './Menu';
+
+import routes from 'routes';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
 

@@ -5,7 +5,6 @@ import { Coin, GasPrice } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import { Stargate } from '@injectivelabs/sdk-ts';
 import { getWalletByNetworkCosmosFromStorage } from 'helper';
-// import { network } from 'index';
 import { MetamaskOfflineSigner } from './eip191';
 import { network } from 'initCommon';
 export type clientType = 'cosmwasm' | 'injective';

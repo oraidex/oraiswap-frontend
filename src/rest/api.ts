@@ -38,7 +38,7 @@ import {
   PairInfo
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
-// import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
+import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
 import { tokens } from 'config/bridgeTokens';
 import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';

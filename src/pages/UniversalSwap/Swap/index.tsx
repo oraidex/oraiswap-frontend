@@ -11,7 +11,6 @@ import {
   toAmount,
   toDisplay
 } from '@oraichain/oraidex-common';
-import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import BookIcon from 'assets/icons/book_icon.svg?react';
 import DownArrowIcon from 'assets/icons/down-arrow-v2.svg';
 import FeeIcon from 'assets/icons/fee.svg?react';
@@ -26,6 +25,11 @@ import WarningIcon from 'assets/icons/warning_icon.svg?react';
 import RefreshImg from 'assets/images/refresh.svg?react';
 import { assets } from 'chain-registry';
 import cn from 'classnames/bind';
+import styles from './index.module.scss';
+import { flattenTokens } from 'initCommon';
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import Loader from 'components/Loader';
 import LoadingBox from 'components/LoadingBox';
 import PowerByOBridge from 'components/PowerByOBridge';
@@ -64,8 +68,6 @@ import {
   isAllowIBCWasm,
   refreshBalances
 } from 'pages/UniversalSwap/helpers';
-import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentAddressBookStep, setCurrentAddressBookStep } from 'reducer/addressBook';
 import { AddressManagementStep } from 'reducer/type';
 import { RootState } from 'store/configure';
@@ -77,14 +79,14 @@ import AddressBook from './components/AddressBook';
 import InputCommon from './components/InputCommon';
 import InputSwap from './components/InputSwap/InputSwap';
 import SwapDetail from './components/SwapDetail';
+
 import TokenAndChainSelectors from './components/TokenAndChainSelectors';
 import { TooltipSwapBridge } from './components/TooltipSwapBridge';
 import { useGetTransHistory } from './hooks';
 import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculateDataSwap';
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
-import styles from './index.module.scss';
-import { flattenTokens } from 'index';
+
 
 const cx = cn.bind(styles);
 

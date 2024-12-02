@@ -19,7 +19,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { FC, useRef, useState } from 'react';
 import styles from './SelectTokenModalV2.module.scss';
-import { tokenMap } from 'index';
+import { tokenMap } from 'initCommon';
 
 const cx = cn.bind(styles);
 

@@ -6,7 +6,7 @@ import uniqBy from 'lodash/uniqBy';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
-import { cosmosTokens } from 'index';
+import { cosmosTokens } from 'initCommon';
 
 export type RemainingOraibTokenItem = TokenItemType & { amount: string };
 export default function useGetOraiBridgeBalances(moveOraib2OraiLoading: boolean) {

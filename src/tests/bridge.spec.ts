@@ -24,7 +24,7 @@ import {
 } from '@oraichain/oraidex-common';
 import { getSourceReceiver } from '@oraichain/oraidex-universal-swap';
 import { getTransactionUrl } from 'helper';
-import { cosmosTokens, flattenTokens, network, oraichainTokens } from 'index';
+import { cosmosTokens, flattenTokens, network, oraichainTokens } from 'initCommon';
 import Long from 'long';
 import { findDefaultToToken } from 'pages/Balance/helpers';
 import {

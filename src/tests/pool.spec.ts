@@ -1,17 +1,17 @@
 import {
-  ORAI,
-  buildMultipleExecuteMessages,
   INJECTIVE_CONTRACT,
-  USDC_CONTRACT,
+  ORAI,
   ORAIX_CONTRACT,
-  WETH_CONTRACT
+  USDC_CONTRACT,
+  WETH_CONTRACT,
+  buildMultipleExecuteMessages
 } from '@oraichain/oraidex-common';
 import { getPoolTokens } from 'config/pools';
+import { flattenTokens } from 'initCommon';
 import { estimateShare, formatDisplayUsdt, getSymbolPools, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { ProvideQuery, Type, generateContractMessages } from 'rest/api';
-import { constants } from './listing-simulate';
 import { describe, expect, it } from 'vitest';
-import { flattenTokens } from 'index';
+import { constants } from './listing-simulate';
 
 /**
  * We use 2 pairs: ORAI/AIRI & ORAI/USDT for all test below.

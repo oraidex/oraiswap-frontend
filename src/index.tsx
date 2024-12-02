@@ -1,4 +1,3 @@
-// import 'initCommon';
 console.log('Hello from src/index.tsx');
 import { HttpClient, Tendermint37Client, WebsocketClient } from '@cosmjs/tendermint-rpc';
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
@@ -15,13 +14,11 @@ import { persistor, store } from 'store/configure';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.scss';
 import ScrollToTop from './layouts/ScrollToTop';
-import { OraidexCommon } from '@oraichain/oraidex-common';
-
-import { EVM_CHAIN_ID, getWalletByNetworkCosmosFromStorage } from 'helper';
+import { getWalletByNetworkCosmosFromStorage } from 'helper';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import 'polyfill';
 import App from './layouts/App';
-import { network, oraichainTokens } from 'initCommon';
+import { network } from 'initCommon';
 
 // const client = new Client({
 //   url: 'http://10.10.20.72:3000/',
@@ -76,7 +73,7 @@ const initApp = async () => {
           <Router>
             <ScrollToTop />
             <QueryClientProvider client={queryClient}>
-              {/* <App /> */}
+              <App />
             </QueryClientProvider>
           </Router>
           <ToastContext.Consumer>

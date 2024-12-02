@@ -18,7 +18,7 @@ import {
 } from '@oraichain/oraiswap-v3';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { useDebounce } from 'hooks/useDebounce';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { fetchPositionAprInfo, PoolFeeAndLiquidityDaily } from 'libs/contractSingleton';
 import mixpanel from 'mixpanel-browser';
 import { useEffect, useState } from 'react';

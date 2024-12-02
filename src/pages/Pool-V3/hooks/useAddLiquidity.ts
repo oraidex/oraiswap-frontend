@@ -10,7 +10,7 @@ import {
 } from '../helpers/helper';
 
 import { newPoolKey } from '@oraichain/oraiswap-v3';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
 
 const useAddLiquidity = () => {

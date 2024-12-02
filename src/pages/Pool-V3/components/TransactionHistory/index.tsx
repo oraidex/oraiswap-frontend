@@ -8,7 +8,7 @@ import LoadingBox from 'components/LoadingBox';
 import { getTransactionUrl } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { reduceString } from 'libs/utils';
 import { formatDateV2, formatTime } from 'pages/CoHarvest/helpers';
 import { useTransactionHistory } from 'pages/Pool-V3/hooks/useTransactionHistory';

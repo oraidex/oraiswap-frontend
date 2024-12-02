@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateFeeConfig } from 'reducer/token';
 import { fetchFeeConfig } from 'rest/api';
 import { RootState } from 'store/configure';
-import { network, oraichainTokens } from 'index';
+import { network, oraichainTokens } from 'initCommon';
 
 export default function useTokenFee(
   remoteTokenDenom: string,

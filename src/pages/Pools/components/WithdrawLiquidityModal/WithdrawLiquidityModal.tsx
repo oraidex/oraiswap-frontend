@@ -8,7 +8,7 @@ import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { handleCheckAddress, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { network } from 'index';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { useGetPoolDetail } from 'pages/Pools/hooks';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';

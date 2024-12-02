@@ -1,7 +1,7 @@
 import { USDC_CONTRACT } from '@oraichain/oraidex-common';
 import { Cw20StakingQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { cw20TokenMap, network, tokenMap } from 'index';
+import { cw20TokenMap, network, tokenMap } from 'initCommon';
 import { USDC_TOKEN_INFO } from '../constants';
 
 export const useGetRewardPerSecInfo = (stakingToken) => {

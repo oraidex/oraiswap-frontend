@@ -7,7 +7,7 @@ import TokenBalance from 'components/TokenBalance';
 import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
-import { cw20TokenMap, network, tokenMap } from 'index';
+import { cw20TokenMap, network, tokenMap } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { getUsd } from 'libs/utils';
 import { isEqual } from 'lodash';

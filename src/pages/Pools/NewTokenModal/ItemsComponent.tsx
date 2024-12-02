@@ -1,12 +1,12 @@
-import cn from 'classnames/bind';
-import styles from './NewTokenModal.module.scss';
-import Input from 'components/Input';
-import NumberFormat from 'react-number-format';
-import CheckBox from 'components/CheckBox';
-import WalletIcon from 'assets/icons/wallet1.svg?react';
-import TokensIcon from 'assets/icons/tokens.svg?react';
 import { toAmount, toDisplay } from '@oraichain/oraidex-common';
-import { tokenMap } from 'index';
+import TokensIcon from 'assets/icons/tokens.svg?react';
+import WalletIcon from 'assets/icons/wallet1.svg?react';
+import cn from 'classnames/bind';
+import CheckBox from 'components/CheckBox';
+import Input from 'components/Input';
+import { tokenMap } from 'initCommon';
+import NumberFormat from 'react-number-format';
+import styles from './NewTokenModal.module.scss';
 
 const cx = cn.bind(styles);
 

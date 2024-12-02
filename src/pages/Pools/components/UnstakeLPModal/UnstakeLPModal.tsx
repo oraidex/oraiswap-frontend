@@ -7,7 +7,7 @@ import Modal from 'components/Modal';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { handleCheckAddress, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { network } from 'index';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetPoolDetail, useGetRewardInfoDetail } from 'pages/Pools/hooks';

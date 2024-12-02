@@ -11,7 +11,6 @@ import {
   EVM_CHAIN_ID_COMMON,
   WalletType as WalletCosmosType
 } from '@oraichain/oraidex-common';
-// import { cosmosChains, evmChains, network } from 'index';
 import { serializeError } from 'serialize-error';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { bitcoinChainId, leapSnapId } from './constants';

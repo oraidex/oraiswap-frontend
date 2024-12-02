@@ -14,7 +14,7 @@ import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
-import { network } from 'index';
+import { network } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { checkRegex, validateAddressCosmos } from 'libs/utils';
 import sumBy from 'lodash/sumBy';

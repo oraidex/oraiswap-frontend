@@ -9,7 +9,7 @@ import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import styles from './SelectChain.module.scss';
-import { tokenMap } from 'index';
+import { tokenMap } from 'initCommon';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {

@@ -8,17 +8,17 @@ import ToggleSwitch from 'components/ToggleSwitch';
 import { tokensIcon } from 'config/chainInfos';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { flattenTokens, tokenMap } from 'initCommon';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
+import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { formatDisplayUsdt, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetMyStake } from 'pages/Pools/hooks';
-import { FC, useState, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { updateTotalLpv3 } from 'reducer/token';
 import { RootState } from 'store/configure';
 import { AssetInfoResponse } from 'types/swap';
 import styles from './AssetsTab.module.scss';
-import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
-import { updateTotalLpv3 } from 'reducer/token';
-import { flattenTokens, tokenMap } from 'index';
 
 const cx = cn.bind(styles);
 

@@ -13,7 +13,7 @@ import { formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
-import { network } from 'index';
+import { network } from 'initCommon';
 import Content from 'layouts/Content';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';

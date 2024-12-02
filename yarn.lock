@@ -3183,13 +3183,12 @@
   resolved "https://registry.yarnpkg.com/@oraichain/common-contracts-sdk/-/common-contracts-sdk-1.0.31.tgz#595f93b168438d69d64896909b37855c9afc92fb"
   integrity sha512-s8H20RXy5gCnu3DnM7L5ClQyj2mdQpbSBpZrXCpIAX9qY0LKsDdZG3sYaDQ8+VN333jz9Pp/qGWdFSYD+6PBsg==
 
-"@oraichain/common@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.0.3.tgz#c6746473deed39622a1368a8f8f733a13f628a7e"
-  integrity sha512-4Rwwl8DF3bMNh5XSlP44LjUIKCOglDc/R1bUCeVFifZlrTGaz6Zo7Fdw6xwych7b4doxcuQBBh2gr7AZE6jQyQ==
+"@oraichain/common@1.2.1-beta6", "@oraichain/common@^1.2.1-beta6":
+  version "1.2.1-beta6"
+  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.1-beta6.tgz#c5089e42dce601fb2b6c87fddee469c2698c0259"
+  integrity sha512-U1LZ99Ym1LlgoNgvWGShcoxPLtOozWh+m+8q8xwoU/XlS/xDTbhbqhhIWwz6Hl9+6Ac4TFWLd0ewRpGCjrymtQ==
   dependencies:
-    "@cosmjs/cosmwasm-stargate" "0.31.3"
-    "@cosmjs/tendermint-rpc" "^0.31.3"
+    "@keplr-wallet/types" "0.12.141"
     axios "0.21.4"
     axios-extensions "3.1.6"
     bech32 "^1.1.4"
@@ -3201,19 +3200,6 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.0.tgz#201dddcff7bbb0dd90a04cacf82dc3f6b9480788"
   integrity sha512-gMTBSkLtHOMUfC5d3VJmEUtN17z5wL2YUrHLXCTcE6VA/K8nZ4jRt8yoO4JU/Lzy8LhZecQ2vM8r6kgLUpg8lw==
-  dependencies:
-    "@keplr-wallet/types" "0.12.141"
-    axios "0.21.4"
-    axios-extensions "3.1.6"
-    bech32 "^1.1.4"
-    cosmjs-types "^0.8.0"
-    ethers "^5.5.1"
-    lodash "^4.17.21"
-
-"@oraichain/common@^1.2.1-beta6":
-  version "1.2.1-beta6"
-  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.1-beta6.tgz#c5089e42dce601fb2b6c87fddee469c2698c0259"
-  integrity sha512-U1LZ99Ym1LlgoNgvWGShcoxPLtOozWh+m+8q8xwoU/XlS/xDTbhbqhhIWwz6Hl9+6Ac4TFWLd0ewRpGCjrymtQ==
   dependencies:
     "@keplr-wallet/types" "0.12.141"
     axios "0.21.4"
@@ -3336,10 +3322,10 @@
     react-use "^17.4.0"
     react-use-websocket "^4.5.0"
 
-"@oraichain/oraidex-common@2.0.0-beta.1", "@oraichain/oraidex-common@^1.1.27", "@oraichain/oraidex-common@^1.1.32":
-  version "2.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.0-beta.1.tgz#cf2cbe9a659ddaa95df74eb3c675c773c38c230b"
-  integrity sha512-D4ZXbTuZd17QMe1slZEOdcvetmDkDthr5JMeUi4GRMfPs15CQq/Q/NJ/3VpiFpHrDAKk8ZQAyW+mVXVrsjZ/1Q==
+"@oraichain/oraidex-common@2.0.0-beta.3":
+  version "2.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.0-beta.3.tgz#881c76c857aa11dcadc36ede0666d8a62720f1e4"
+  integrity sha512-pNmZcDdxlmHDwAiNi1OWfVx+UsumrMSfhfzTon2yPDE4dv8QmrjRQNzgrulik49lcPSB7eTcyrZTT+EIux8A+Q==
   dependencies:
     "@cosmjs/amino" "^0.32.4"
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
@@ -3379,13 +3365,13 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
   integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
 
-"@oraichain/oraidex-universal-swap@1.1.23":
-  version "1.1.23"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.1.23.tgz#2f6c5485728f096cbc11fba517376737c899e610"
-  integrity sha512-gSk4B84kT2qGx7Nc2uqiRQevS1447DWgmNAOdx4mNDUB4a6nJ79ie/hYGYemddEv6UQ1T/ppao9oxVjWmBecmQ==
+"@oraichain/oraidex-universal-swap@1.2.0-beta4":
+  version "1.2.0-beta4"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.2.0-beta4.tgz#f081ff04e67caf3f94e89300c7fffedcf47321af"
+  integrity sha512-qdSfsXJjb4B6S/1cCV+m7byRQe8pacMVztbQdfMJrktjDTa5X9pULTw2KmrwhvCnEF6Y4rHWaY2p3Zo5eVpGTg==
   dependencies:
-    "@oraichain/common" "^1.0.3"
-    "@oraichain/oraidex-common" "^1.1.27"
+    "@oraichain/common" "1.2.1-beta6"
+    "@oraichain/oraidex-common" "2.0.0-beta.3"
     "@oraichain/oraidex-contracts-sdk" "^1.0.49"
     "@oraichain/osor-api-contracts-sdk" "^1.0.2"
     bech32 "1.1.4"
@@ -3393,13 +3379,13 @@
     tronweb "5.3.2"
     ts-protoc-gen "^0.15.0"
 
-"@oraichain/oraiswap-v3@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraiswap-v3/-/oraiswap-v3-1.1.2.tgz#60edd01ef9afae5c1b1ee32425305375ad635039"
-  integrity sha512-1WCbsDpDoKkuzRo6f8C0PUFPzG80s6LOvsYT47FdYFt+GIe6F10ARDgR26v4J4BddPoguLpLtb2d2T83Rz18/Q==
+"@oraichain/oraiswap-v3@1.2.0-beta4":
+  version "1.2.0-beta4"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraiswap-v3/-/oraiswap-v3-1.2.0-beta4.tgz#1ff2bfa598df2010a61cdb87e7956d0b081a42c0"
+  integrity sha512-Cn1BpY8mxyA58tQEsscqvwbS18ks3Z16iuMhq9BzvN3bhmyc6+PVfpEpqZZBlJ5zYsKeszruTz9Z4CMNR664Eg==
   dependencies:
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
-    "@oraichain/oraidex-common" "^1.1.32"
+    "@oraichain/oraidex-common" "2.0.0-beta.3"
     "@oraichain/oraidex-contracts-sdk" "^1.0.54"
 
 "@oraichain/osor-api-contracts-sdk@^1.0.2":

@@ -1,6 +1,6 @@
 import { CW20_DECIMALS, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
-import { oraichainTokens } from 'index';
+import { oraichainTokens } from 'initCommon';
 import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useEffect, useState } from 'react';
 import { FILTER_TIME_CHART } from 'reducer/type';

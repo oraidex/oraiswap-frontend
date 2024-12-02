@@ -31,7 +31,7 @@ import styles from './index.module.scss';
 import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
-import { cosmosTokens, flattenTokens, tokenMap } from 'index';
+import { cosmosTokens, flattenTokens, tokenMap } from 'initCommon';
 
 interface TransferConvertProps {
   token: TokenItemType;

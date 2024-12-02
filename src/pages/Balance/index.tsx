@@ -13,25 +13,17 @@ import {
   TokenItemType,
   tronToEthAddress,
   calculateTimeoutTimestamp,
-  getCosmosGasPrice
+  getCosmosGasPrice,
+  OraidexCommon
 } from '@oraichain/oraidex-common';
-import { flattenTokens } from 'index';
+import { flattenTokens } from 'initCommon';
 import { isSupportedNoPoolSwapEvm, UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import RefreshIcon from 'assets/icons/reload.svg?react';
-import { BitcoinUnit } from 'bitcoin-units';
 import classNames from 'classnames';
-import CheckBox from 'components/CheckBox';
-import LoadingBox from 'components/LoadingBox';
-import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
-import SearchInput from 'components/SearchInput';
-import { displayToast, TToastType } from 'components/Toasts/Toast';
-import TokenBalance from 'components/TokenBalance';
-import { chainInfos } from 'config/chainInfos';
-import { NomicContext } from 'context/nomic-context';
 import {
   assert,
   EVM_CHAIN_ID,
@@ -55,11 +47,7 @@ import useLoadTokens from 'hooks/useLoadTokens';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import { useGetFeeConfig } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
-import Content from 'layouts/Content';
 import Metamask from 'libs/metamask';
-import { config } from 'libs/nomic/config';
-import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/nomic/models/ibc-chain';
-import { generateError, getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import isEqual from 'lodash/isEqual';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -67,6 +55,24 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './Balance.module.scss';
+import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
+import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
+import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
+import { BitcoinUnit } from 'bitcoin-units';
+import CheckBox from 'components/CheckBox';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
+import LoadingBox from 'components/LoadingBox';
+import SearchInput from 'components/SearchInput';
+import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
+
+import TokenBalance from 'components/TokenBalance';
+import { chainInfos } from 'config/chainInfos';
+import { NomicContext } from 'context/nomic-context';
+import Content from 'layouts/Content';
+import { config } from 'libs/nomic/config';
+import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/nomic/models/ibc-chain';
+import { generateError, getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import {
   calculatorTotalFeeBtc,
   convertKwt,
@@ -88,10 +94,6 @@ import TokenItem, { TokenItemProps } from './TokenItem';
 import { TokenItemBtc } from './TokenItem/TokenItemBtc';
 import DepositBtcModalV2 from './DepositBtcModalV2';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
-import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
-import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
-import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 
 interface BalanceProps {}
 
@@ -167,9 +169,9 @@ const Balance: React.FC<BalanceProps> = () => {
   useGetFeeConfig();
 
   useEffect(() => {
-    if (!tokenUrl) return setTokens(tokens);
+    if (!tokenUrl) return setTokens([oraichainTokens, otherChainTokens]);
     const _tokenUrl = tokenUrl.toUpperCase();
-    setTokens(tokens.map((childTokens) => childTokens.filter((t) => t.name.includes(_tokenUrl))));
+    setTokens([oraichainTokens, otherChainTokens].map((childTokens) => childTokens.filter((t) => t.name.includes(_tokenUrl))));
   }, [tokenUrl]);
 
   useEffect(() => {
@@ -640,7 +642,8 @@ const Balance: React.FC<BalanceProps> = () => {
           swapOptions: {
             isIbcWasm: false
           }
-        }
+        },
+        OraidexCommon.instance
       );
 
       result = await universalSwapHandler.processUniversalSwap();

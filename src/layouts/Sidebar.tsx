@@ -10,14 +10,14 @@ import DownloadOwalletIconDark from 'assets/icons/logo_owallet_gateway_dark.svg?
 import PoolV3Icon from 'assets/icons/pool-v3.svg?react';
 import PoolV3Lottie from 'assets/lottie/poolv3-beta.json';
 import classNames from 'classnames';
-import ModalDownloadOwallet from 'components/Modals/ModalDownloadOwallet/ModalDownloadOwallet';
-import { EVENT_CONFIG_THEME } from 'config/eventConfig';
-import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
-import useTheme from 'hooks/useTheme';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.scss';
+import useTheme from 'hooks/useTheme';
+import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import Lottie from 'lottie-react';
+import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
+import ModalDownloadOwallet from 'components/Modals/ModalDownloadOwallet/ModalDownloadOwallet';
 
 const Sidebar: React.FC<{}> = React.memo(() => {
   const location = useLocation();

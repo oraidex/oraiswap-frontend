@@ -7,7 +7,7 @@ import styles from './SelectTokenModal.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { CustomChainInfo, TokenItemType, getSubAmountDetails, truncDecimals } from '@oraichain/oraidex-common';
 import { chainIcons, tokensIcon } from 'config/chainInfos';
-import { tokenMap } from 'index';
+import { tokenMap } from 'initCommon';
 
 const cx = cn.bind(styles);
 

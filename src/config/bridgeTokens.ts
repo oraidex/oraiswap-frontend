@@ -8,7 +8,6 @@ import {
 } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 import { flattenTokens, oraichainTokens, otherChainTokens } from 'initCommon';
-// import { flattenTokens, oraichainTokens, otherChainTokens } from 'index';
 
 const evmDenomsMap = {
   kwt: [KWTBSC_ORAICHAIN_DENOM],

@@ -15,7 +15,7 @@ import {
   setCurrentToToken
 } from 'reducer/tradingSlice';
 import useFilteredTokens from './useFilteredTokens';
-import { tokenMap } from 'index';
+import { tokenMap } from 'initCommon';
 
 const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) => {
   const dispatch = useDispatch();
