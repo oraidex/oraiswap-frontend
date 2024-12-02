@@ -175,6 +175,11 @@ export const tokensIconInfos: TokenIcon[] = [
     coinGeckoId: 'solana',
     Icon: SolanaIcon,
     IconLight: SolanaIcon
+  },
+  {
+    coinGeckoId: 'max.clan' as any,
+    Icon: SolanaIcon,
+    IconLight: SolanaIcon
   }
 ];
 
