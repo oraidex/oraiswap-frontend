@@ -142,14 +142,14 @@ export const solanaMainnet: CustomChainInfo = {
   chainSymbolImageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
   networkType: 'svm' as any,
   currencies: [
-    {
-      coinDenom: 'SOL',
-      coinMinimalDenom: 'sol',
-      coinDecimals: 9,
-      bridgeTo: ['Oraichain'],
-      coinGeckoId: 'solana' as any,
-      coinImageUrl: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756'
-    },
+    // {
+    //   coinDenom: 'SOL',
+    //   coinMinimalDenom: 'sol',
+    //   coinDecimals: 9,
+    //   bridgeTo: ['Oraichain'],
+    //   coinGeckoId: 'solana' as any,
+    //   coinImageUrl: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756'
+    // },
     {
       coinDenom: 'MAX',
       coinMinimalDenom: 'max',
@@ -229,15 +229,15 @@ export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
   currencies: [
     ...customOraichainNetwork.currencies,
-    {
-      coinDenom: 'SOL',
-      coinGeckoId: 'solana' as any,
-      coinMinimalDenom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/sol',
-      bridgeTo: [solChainId] as any,
-      coinDecimals: 9,
-      coinImageUrl:
-        'https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2'
-    },
+    // {
+    //   coinDenom: 'SOL',
+    //   coinGeckoId: 'solana' as any,
+    //   coinMinimalDenom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/sol',
+    //   bridgeTo: [solChainId] as any,
+    //   coinDecimals: 9,
+    //   coinImageUrl:
+    //     'https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2'
+    // },
     {
       coinDenom: 'MAX',
       coinGeckoId: 'max.clan' as any,

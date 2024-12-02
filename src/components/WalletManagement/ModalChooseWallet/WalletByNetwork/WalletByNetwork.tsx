@@ -96,7 +96,7 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     if (walletType === 'owallet') {
       // TODO: need check when use multi wallet support solana
     }
-    setVisible(true);
+    await solanaWallet.select('Phantom' as any);
     setSolanaAddress(solanaWallet.publicKey.toBase58());
   };
 

@@ -334,24 +334,20 @@ async function loadSolEntries(
   try {
     const connection = new Connection(chain.rpc, {
       commitment: 'confirmed'
-      // wsEndpoint: NEXT_PUBLIC_SOLANA_WS,
     });
+
     const walletPublicKey = new PublicKey(address);
-    let [nativeAmount, tokenAmount] = await Promise.all([
-      connection.getBalance(walletPublicKey),
-      connection.getParsedTokenAccountsByOwner(walletPublicKey, {
-        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
-      })
-    ]);
+    const tokenAmount = await connection.getParsedTokenAccountsByOwner(walletPublicKey, {
+      programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+    });
 
     let entries: [string, string][] = solTokens.map((item) => {
-      let amount = nativeAmount.toString();
+      let amount = '0';
       if (item?.contractAddress) {
         const findAmount = tokenAmount.value.find(
           (token) => token.account.data.parsed.info.mint === item.contractAddress
         );
         if (findAmount) amount = findAmount.account.data.parsed.info.tokenAmount.amount;
-        else amount = '0';
       }
       return [item.denom, amount];
     });
