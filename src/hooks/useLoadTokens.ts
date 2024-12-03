@@ -23,10 +23,11 @@ import {
   EVM_BALANCE_RETRY_COUNT,
   ERC20__factory,
   getEvmAddress,
-  tronToEthAddress
+  tronToEthAddress,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { chainInfos, evmChains, solChainId } from 'config/chainInfos';
+import { chainInfos, evmChains } from 'config/chainInfos';
 import { network } from 'config/networks';
 import { ethers } from 'ethers';
 import axios from 'rest/request';

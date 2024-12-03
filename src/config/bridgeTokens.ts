@@ -1,6 +1,6 @@
 import flatten from 'lodash/flatten';
 import uniqBy from 'lodash/uniqBy';
-import { chainInfos, oraichainNetwork, solChainId } from './chainInfos';
+import { chainInfos, oraichainNetwork } from './chainInfos';
 import {
   CustomChainInfo,
   INJECTIVE_ORAICHAIN_DENOM,
@@ -8,7 +8,8 @@ import {
   MILKYBSC_ORAICHAIN_DENOM,
   TokenItemType,
   KWT_BSC_CONTRACT,
-  MILKY_BSC_CONTRACT
+  MILKY_BSC_CONTRACT,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -96,7 +97,7 @@ export const btcTokens = uniqBy(
 );
 
 export const solTokens = uniqBy(
-  flattenTokens.filter((token) => token.chainId === (solChainId as any)),
+  flattenTokens.filter((token) => token.chainId === solChainId),
   (c) => c.denom
 );
 

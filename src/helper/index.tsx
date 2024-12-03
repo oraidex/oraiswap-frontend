@@ -11,7 +11,9 @@ import {
   MULTIPLIER,
   TRON_SCAN,
   EVM_CHAIN_ID_COMMON,
-  WalletType as WalletCosmosType
+  SOL_SCAN,
+  WalletType as WalletCosmosType,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { network } from 'config/networks';
 import { serializeError } from 'serialize-error';
@@ -24,7 +26,7 @@ import { CustomChainInfo, EvmDenom, NetworkChainId, TokenItemType } from '@oraic
 import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { WalletType } from 'components/WalletManagement/walletConfig';
-import { chainIcons, chainInfos, chainInfosWithIcon, flattenTokensWithIcon, solChainId } from 'config/chainInfos';
+import { chainIcons, chainInfos, chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
@@ -109,7 +111,7 @@ export const getTransactionUrl = (chainId: NetworkChainId, transactionHash: stri
     case Networks.tron:
       return `${TRON_SCAN}/#/transaction/${transactionHash.replace(/^0x/, '')}`;
     case Number(solChainId):
-      return `https://solscan.io/tx/${transactionHash}`;
+      return `${SOL_SCAN}/tx/${transactionHash}`;
     default:
       // raw string
       switch (chainId) {

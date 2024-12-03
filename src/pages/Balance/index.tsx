@@ -10,7 +10,9 @@ import {
   toAmount,
   TokenItemType,
   calculateTimeoutTimestamp,
-  getCosmosGasPrice
+  getCosmosGasPrice,
+  solChainId,
+  ORAICHAIN_RELAYER_ADDRESS
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -27,7 +29,7 @@ import SearchInput from 'components/SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { flattenTokens, tokens } from 'config/bridgeTokens';
-import { chainInfos, solChainId } from 'config/chainInfos';
+import { chainInfos } from 'config/chainInfos';
 import { NomicContext } from 'context/nomic-context';
 import {
   assert,
@@ -462,7 +464,6 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
-    const ORAICHAIN_RELAYER_ADDRESS = 'orai1ehmhqcn8erf3dgavrca69zgp4rtxj5kqgtcnyd';
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
     const result = await window.client.sendTokens(
       oraiAddress,

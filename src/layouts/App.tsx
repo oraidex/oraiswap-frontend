@@ -239,10 +239,10 @@ const App = () => {
 
   const handleAddressSolOwallet = async () => {
     let solAddress;
-    if (walletByNetworks.solana === 'phantom' || mobileMode) {
-      if (solanaWallet.publicKey) {
-        solAddress = solanaWallet.publicKey.toBase58();
-        if (solAddress) setSolAddress(solAddress);
+    if (walletByNetworks.solana === 'owallet' || mobileMode) {
+      if (window.owalletSolana) {
+        const { publicKey } = await window.owalletSolana.connect();
+        if (publicKey) setSolAddress(publicKey.toBase58());
       }
     }
     return solAddress;

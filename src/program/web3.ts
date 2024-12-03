@@ -18,23 +18,24 @@ import * as anchor from '@coral-xyz/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import { BN, Program } from '@coral-xyz/anchor';
 import BigNumber from 'bignumber.js';
-import { toAmount, TokenItemType } from '@oraichain/oraidex-common';
+import {
+  toAmount,
+  TokenItemType,
+  SOL_RELAYER_ADDRESS,
+  SOLANA_RPC as DEFAULT_SOLANA_RPC,
+  SOLANA_WEBSOCKET as DEFAULT_SOLANA_WEBSOCKET,
+  MEMO_PROGRAM_ID
+} from '@oraichain/oraidex-common';
 
 export const commitmentLevel = 'confirmed';
 export const TOKEN_RESERVES = 1_000_000_000_000_000;
 export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
 
-export const SOL_RELAYER_ADDRESS = '4k7xvinq6nB221iBhcP9uMFCPFh29MxQ6LieMH7cqw45';
-export const DEFAULT_SOLANA_RPC = 'https://swr.xnftdata.com/rpc-proxy/';
-export const DEFAULT_SOLANA_WEBSOCKET = 'wss://go.getblock.io/52d75331a9b74f9fa4a0056f15a1c022';
-export const MEMO_PROGRAM_ID = 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr';
-
 export class Web3SolanaProgramInteraction {
   connection: Connection;
 
   constructor() {
-    console.log(SOL_RELAYER_ADDRESS, DEFAULT_SOLANA_RPC, DEFAULT_SOLANA_WEBSOCKET);
     this.connection = new Connection(DEFAULT_SOLANA_RPC, {
       commitment: commitmentLevel,
       wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
