@@ -408,6 +408,7 @@ export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwor
 export const getAddressTransfer = async (network: CustomChainInfo, walletByNetworks: WalletsByNetwork) => {
   try {
     let address = '';
+
     if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
     } else if (network.networkType == ('svm' as any)) {

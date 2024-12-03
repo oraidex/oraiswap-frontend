@@ -25,9 +25,9 @@ export const TOKEN_RESERVES = 1_000_000_000_000_000;
 export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
 
-export const SOL_RELAYER_ADDRESS = import.meta.env.VITE_APP_SOLANA_RELAYER_ADDRESS;
-export const DEFAULT_SOLANA_RPC = import.meta.env.VITE_APP_SOLANA_RPC;
-export const DEFAULT_SOLANA_WEBSOCKET = import.meta.env.VITE_APP_SOLANA_WEBSOCKET;
+export const SOL_RELAYER_ADDRESS = '4k7xvinq6nB221iBhcP9uMFCPFh29MxQ6LieMH7cqw45';
+export const DEFAULT_SOLANA_RPC = 'https://swr.xnftdata.com/rpc-proxy/';
+export const DEFAULT_SOLANA_WEBSOCKET = 'wss://go.getblock.io/52d75331a9b74f9fa4a0056f15a1c022';
 export const MEMO_PROGRAM_ID = 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr';
 
 export class Web3SolanaProgramInteraction {
