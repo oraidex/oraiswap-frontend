@@ -405,7 +405,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const checkTransfer = (fromChainId, toChainId) => {
     const isSoltoOraichain = fromChainId === solChainId && toChainId === 'Oraichain';
-    const isOraichainToSol = toChainId === 'Oraichain' && toChainId === solChainId;
+    const isOraichainToSol = fromChainId === 'Oraichain' && toChainId === solChainId;
     const isBTCtoOraichain = from.chainId === bitcoinChainId && to.chainId === 'Oraichain';
     const isOraichainToBTC = from.chainId === 'Oraichain' && to.chainId === bitcoinChainId;
     return [isSoltoOraichain, isOraichainToSol, isBTCtoOraichain, isBTCtoOraichain || isOraichainToBTC];
@@ -462,9 +462,10 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
+    const receiverAddress = import.meta.env.VITE_APP_ORAICHAIN_RELAYER_ADDRESS;
     const result = await window.client.sendTokens(
       oraiAddress,
-      oraiAddress,
+      receiverAddress,
       [
         {
           amount: toAmount(transferAmount, fromToken.decimals).toString(),

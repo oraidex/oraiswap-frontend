@@ -408,13 +408,14 @@ export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwor
 export const getAddressTransfer = async (network: CustomChainInfo, walletByNetworks: WalletsByNetwork) => {
   try {
     let address = '';
+
     if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
-    } else if (isConnectSpecificNetwork(walletByNetworks.cosmos)) {
-      address = await window.Keplr.getKeplrAddr(network.chainId);
     } else if (network.networkType == ('svm' as any)) {
       const { publicKey } = await window.solana.connect();
       address = publicKey.toBase58();
+    } else if (isConnectSpecificNetwork(walletByNetworks.cosmos)) {
+      address = await window.Keplr.getKeplrAddr(network.chainId);
     }
     return address;
   } catch (error) {
