@@ -99,9 +99,9 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
       selectType = 'OWallet';
     }
     await solanaWallet.select(selectType as any);
-
-    if (solanaWallet?.publicKey) {
-      setSolanaAddress(solanaWallet.publicKey.toBase58());
+    const solanaConnect = await window.solana.connect();
+    if (solanaConnect?.publicKey) {
+      setSolanaAddress(solanaConnect?.publicKey.toBase58());
     }
   };
 
