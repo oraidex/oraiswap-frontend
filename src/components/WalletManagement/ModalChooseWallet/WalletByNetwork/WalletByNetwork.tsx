@@ -93,16 +93,17 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
   };
 
   const handleConnectWalletInSolanaNetwork = async (walletType: WalletType) => {
-    let provider = window?.solana;
+    // let provider = window?.solana;
     let selectType = 'Phantom';
-    if (walletType === 'owallet') {
-      provider = window?.owalletSolana;
-      selectType = 'OWallet';
-    }
+    // if (walletType === 'owallet') {
+    //   provider = window?.owalletSolana;
+    //   selectType = 'OWallet';
+    // }
 
     solanaWallet.select(selectType as any);
     await solanaWallet.connect();
-    const { publicKey } = await provider.connect();
+    const publicKey = solanaWallet?.publicKey;
+    // const { publicKey } = await provider.connect();
     if (publicKey) {
       setSolanaAddress(publicKey.toBase58());
     }

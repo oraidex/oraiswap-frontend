@@ -248,6 +248,25 @@ const App = () => {
     return solAddress;
   };
 
+  useEffect(() => {
+    if (window?.solana) {
+      window.solana?.on('accountChanged', (publicKeySol: any) => {
+        if (publicKeySol) {
+          // Set new public key and continue as usual
+          console.log(`Switched to account ${publicKeySol.toBase58()}`);
+          setSolAddress(publicKeySol.toBase58());
+        } else {
+          // // Attempt to reconnect to Phantom
+          window.solana.connect().catch((error: any) => {
+            console.log({ errorSolAccountChanged: error });
+          });
+        }
+      });
+    }
+
+    return () => {};
+  }, []);
+
   const handleAddressTronOwallet = async () => {
     let tronAddress;
 
