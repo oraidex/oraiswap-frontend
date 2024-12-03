@@ -24,7 +24,7 @@ import { CustomChainInfo, EvmDenom, NetworkChainId, TokenItemType } from '@oraic
 import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { WalletType } from 'components/WalletManagement/walletConfig';
-import { chainIcons, chainInfos, chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
+import { chainIcons, chainInfos, chainInfosWithIcon, flattenTokensWithIcon, solChainId } from 'config/chainInfos';
 import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
@@ -108,6 +108,8 @@ export const getTransactionUrl = (chainId: NetworkChainId, transactionHash: stri
       return `${ETHEREUM_SCAN}/tx/${transactionHash}`;
     case Networks.tron:
       return `${TRON_SCAN}/#/transaction/${transactionHash.replace(/^0x/, '')}`;
+    case Number(solChainId):
+      return `https://solscan.io/tx/${transactionHash}`;
     default:
       // raw string
       switch (chainId) {
