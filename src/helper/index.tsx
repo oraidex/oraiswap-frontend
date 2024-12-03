@@ -410,11 +410,16 @@ export const getAddressTransfer = async (network: CustomChainInfo, walletByNetwo
     let address = '';
     if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
-    } else if (isConnectSpecificNetwork(walletByNetworks.cosmos)) {
-      address = await window.Keplr.getKeplrAddr(network.chainId);
     } else if (network.networkType == ('svm' as any)) {
-      const { publicKey } = await window.solana.connect();
+      let provider = window?.solana;
+      if (walletByNetworks.solana === 'owallet') {
+        provider = window?.owalletSolana;
+      }
+
+      const { publicKey } = await provider.connect();
       address = publicKey.toBase58();
+    } else if (!['evm', 'svm'].includes(network.networkType) && isConnectSpecificNetwork(walletByNetworks.cosmos)) {
+      address = await window.Keplr.getKeplrAddr(network.chainId);
     }
     return address;
   } catch (error) {

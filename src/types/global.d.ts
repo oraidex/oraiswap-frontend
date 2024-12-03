@@ -128,6 +128,7 @@ declare global {
     client: SigningCosmWasmClient;
     keplr: keplr;
     owallet: keplr;
+    owalletSolana: any;
     bitcoin: IBitcoin;
     browser: Browser;
     queryIfDatasetMinted({ tokenId: string }): Promise<boolean>;

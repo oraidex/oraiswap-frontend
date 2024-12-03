@@ -93,15 +93,13 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
   };
 
   const handleConnectWalletInSolanaNetwork = async (walletType: WalletType) => {
-    let selectType = 'Phantom';
+    let provider = window?.solana;
     if (walletType === 'owallet') {
-      // TODO: need check when use multi wallet support solana
-      selectType = 'OWallet';
+      provider = window?.owalletSolana;
     }
-    await solanaWallet.select(selectType as any);
-    const solanaConnect = await window.solana.connect();
-    if (solanaConnect?.publicKey) {
-      setSolanaAddress(solanaConnect?.publicKey.toBase58());
+    const { publicKey } = await provider.connect();
+    if (publicKey) {
+      setSolanaAddress(publicKey.toBase58());
     }
   };
 
@@ -181,7 +179,6 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         setBtcAddress(undefined);
         break;
       case 'solana':
-        await solanaWallet.disconnect();
         setSolanaAddress(undefined);
         break;
       default:
