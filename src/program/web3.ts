@@ -25,16 +25,19 @@ export const TOKEN_RESERVES = 1_000_000_000_000_000;
 export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
 
-export const SOL_RELAYER_ADDRESS = '8WHawEro2j7YQYnL1zjDpiJ4Qnf1AWz913Xmaj9mtqyz';
+export const SOL_RELAYER_ADDRESS = import.meta.env.VITE_APP_SOLANA_RELAYER_ADDRESS;
+export const DEFAULT_SOLANA_RPC = import.meta.env.VITE_APP_SOLANA_RPC;
+export const DEFAULT_SOLANA_WEBSOCKET = import.meta.env.VITE_APP_SOLANA_WEBSOCKET;
 export const MEMO_PROGRAM_ID = 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr';
 
 export class Web3SolanaProgramInteraction {
   connection: Connection;
 
-  constructor(solanaRpc: string) {
-    this.connection = new Connection(solanaRpc, {
+  constructor() {
+    console.log(SOL_RELAYER_ADDRESS, DEFAULT_SOLANA_RPC, DEFAULT_SOLANA_WEBSOCKET);
+    this.connection = new Connection(DEFAULT_SOLANA_RPC, {
       commitment: commitmentLevel,
-      wsEndpoint: 'wss://go.getblock.io/bed382d14bfd4f1999fb608b27794e8e'
+      wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
     });
   }
 
@@ -50,7 +53,9 @@ export class Web3SolanaProgramInteraction {
 
       const walletTokenAccount = getAssociatedTokenAddressSync(mintPubkey, wallet.publicKey);
       const relayerTokenAccount = getAssociatedTokenAddressSync(mintPubkey, relayerPubkey);
+      console.log(relayerTokenAccount.toBase58(), mintPubkey.toBase58(), relayerPubkey.toBase58());
       const accountInfo = await this.connection.getAccountInfo(relayerTokenAccount);
+      console.log('----accountInfo----', accountInfo);
       const lamports = accountInfo?.lamports || 0;
       // check the connection
       if (!wallet.publicKey || !this.connection) {
@@ -94,9 +99,6 @@ export class Web3SolanaProgramInteraction {
           preflightCommitment: 'confirmed',
           skipPreflight: false
         });
-        // return {
-        //   transaction: signature
-        // };
         const res = await this.connection.confirmTransaction(
           {
             signature,

@@ -445,7 +445,7 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
-    const web3Solana = new Web3SolanaProgramInteraction(fromToken.rpc);
+    const web3Solana = new Web3SolanaProgramInteraction();
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
     const transaction = response?.transaction;
     if (transaction) {

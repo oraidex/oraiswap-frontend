@@ -242,7 +242,7 @@ export const oraichainNetwork: CustomChainInfo = {
       coinDenom: 'MAX',
       coinGeckoId: 'max.clan' as any,
       coinMinimalDenom:
-        'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
+        'factory/orai17hyr3eg92fv34fdnkend48scu32hn26gqxw3hnwkfy904lk9r09qqzty42/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
       bridgeTo: [solChainId] as any,
       coinDecimals: 6,
       coinImageUrl:
