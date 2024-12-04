@@ -2,9 +2,7 @@ import classNames from 'classnames';
 import styles from './index.module.scss';
 import TokenBalance from 'components/TokenBalance';
 import TransferConvertToken from '../TransferConvertToken';
-import { TokenItemType } from '@oraichain/oraidex-common';
-
-import { tokensIcon } from 'config/chainInfos';
+import { TokenItemType, tokensIcon } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 
 export interface TokenItemProps {

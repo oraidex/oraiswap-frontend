@@ -1,11 +1,10 @@
-import { CW20_DECIMALS, CoinIcon, getSubAmountDetails, toAmount, toDisplay } from '@oraichain/oraidex-common';
+import { CW20_DECIMALS, getSubAmountDetails, toAmount, toDisplay, tokensIcon } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import StakeIcon from 'assets/icons/stake.svg';
 import WalletIcon from 'assets/icons/wallet-v3.svg';
 import cn from 'classnames/bind';
 import { Table, TableHeaderProps } from 'components/Table';
 import ToggleSwitch from 'components/ToggleSwitch';
-import { tokensIcon } from 'config/chainInfos';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { flattenTokens, tokenMap } from 'initCommon';
@@ -52,7 +51,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   }, [totalLpV3Info]);
 
   let listAsset: {
-    src?: CoinIcon;
+    src?: any;
     label?: string;
     balance?: number | string;
   }[] = [

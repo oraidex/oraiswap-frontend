@@ -15,10 +15,9 @@ import {
   TokenAmounts,
   calculateFee as wasmCalculateFee
 } from '@oraichain/oraiswap-v3';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { Position as PositionsNode } from 'gql/graphql';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { network, oraichainTokens } from 'initCommon';
+import { network, oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
 import SingletonOraiswapV3, { poolKeyToString } from 'libs/contractSingleton';
 import { PRICE_SCALE, printBigint } from '../components/PriceRangePlot/utils';
 import { extractAddress, getIconPoolData } from './format';

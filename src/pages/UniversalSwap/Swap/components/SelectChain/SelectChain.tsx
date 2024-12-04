@@ -1,7 +1,6 @@
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NetworkImg from 'assets/icons/network.svg';
 import cn from 'classnames/bind';
-import { chainIcons } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
 import { networks } from 'helper';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
@@ -10,6 +9,7 @@ import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import styles from './SelectChain.module.scss';
 import { tokenMap } from 'initCommon';
+import { chainIcons } from '@oraichain/oraidex-common';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {

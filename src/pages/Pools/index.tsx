@@ -1,7 +1,6 @@
 import { CW20_DECIMALS, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
 import Content from 'layouts/Content';
@@ -23,6 +22,7 @@ import {
   useGetRewardInfo
 } from './hooks';
 import styles from './index.module.scss';
+import { oraichainTokensWithIcon } from 'initCommon';
 
 export type PoolTableData = PoolInfoResponse & {
   reward: string[];

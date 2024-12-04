@@ -1,7 +1,6 @@
 import {
   BigDecimal,
   CW20_DECIMALS,
-  NetworkChainId,
   parseAssetInfo,
   toDisplay,
   TokenItemType
@@ -19,13 +18,12 @@ import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { TooltipIcon } from 'components/Tooltip';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { getTransactionUrl, handleErrorTransaction, minimize } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTheme from 'hooks/useTheme';
-import { network, oraichainTokens } from 'initCommon';
+import { network, oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
 import SingletonOraiswapV3, { fetchPositionAprInfo, poolKeyToString, PositionAprInfo } from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';
@@ -45,6 +43,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { printBigint } from '../PriceRangePlot/utils';
 import ZapOut from '../ZapOut';
 import styles from './index.module.scss';
+import { NetworkChainId } from "@oraichain/common";
 
 let intervalId = null;
 

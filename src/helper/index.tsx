@@ -3,31 +3,31 @@ import {
   BSC_SCAN,
   ChainIdEnum,
   COSMOS_CHAIN_ID_COMMON,
-  CosmosChainId,
   ETHEREUM_SCAN,
   KWT_SCAN,
   MULTIPLIER,
   TRON_SCAN,
   EVM_CHAIN_ID_COMMON,
-  WalletType as WalletCosmosType
+  WalletType as WalletCosmosType,
+  chainIcons
 } from '@oraichain/oraidex-common';
 import { serializeError } from 'serialize-error';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { bitcoinChainId, leapSnapId } from './constants';
 import { getSnap } from '@leapwallet/cosmos-snap-provider';
 import { Bech32Config } from '@keplr-wallet/types';
-import { CustomChainInfo, EvmDenom, NetworkChainId, TokenItemType } from '@oraichain/oraidex-common';
+import { EvmDenom, TokenItemType } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { WalletType } from 'components/WalletManagement/walletConfig';
-import { chainIcons, chainInfos, chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
 import { evmChainInfos } from 'config/evmChainInfos';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
-import { cosmosChains, evmChains, network } from 'initCommon';
+import { chainInfos, chainInfosWithIcon, cosmosChains, evmChains, flattenTokensWithIcon, network } from 'initCommon';
+import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common'
 
 export interface Tokens {
   denom?: string;
@@ -43,7 +43,7 @@ export interface InfoError {
 export type DecimalLike = string | number | bigint | BigDecimal;
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export const EVM_CHAIN_ID: NetworkChainId[] = evmChains.map((c) => c.chainId);
-export const networks = chainInfos.filter(
+export const networks = chainInfosWithIcon.filter(
   (c) => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
 );
 export const cosmosNetworks = chainInfos.filter(

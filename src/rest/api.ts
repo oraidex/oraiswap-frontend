@@ -39,10 +39,9 @@ import {
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
-import { tokens } from 'config/bridgeTokens';
 import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { network, oraichainTokens, tokenMap } from 'initCommon';
+import { network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
 import { BondLP, MiningLP, UnbondLP, WithdrawLP } from 'types/pool';
@@ -666,10 +665,11 @@ function generateMoveOraib2OraiMessages(
   fromAddress: string,
   toAddress: string
 ) {
-  const [, toTokens] = tokens;
+  // const [, toTokens] = tokens;
   let transferMsgs: MsgTransfer[] = [];
   for (const fromToken of remainingOraib) {
-    const toToken = toTokens.find((t) => t.chainId === 'Oraichain' && t.name === fromToken.name);
+    // FIXME: what type of token?
+    const toToken = tokens.find((t) => t.chainId === 'Oraichain' && t.name === fromToken.name);
     let ibcInfo: IBCInfo = ibcInfos[fromToken.chainId][toToken.chainId];
     // hardcode for MILKY & KWT because they use the old IBC channel
     if (fromToken.denom === MILKY_DENOM || fromToken.denom === KWT_DENOM)

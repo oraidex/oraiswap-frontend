@@ -1,14 +1,14 @@
-import { CoinIcon, TokenItemType } from '@oraichain/oraidex-common';
+import { TokenItemType } from '@oraichain/oraidex-common';
 import ArrowImg from 'assets/icons/arrow_new.svg';
 import cn from 'classnames/bind';
 import TokenBalance from 'components/TokenBalance';
 import NumberFormat from 'react-number-format';
 import { TokenInfo } from 'types/token';
 import styles from './InputSwap.module.scss';
-import { chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
 import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
 import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP } from 'helper/constants';
+import { chainInfosWithIcon, flattenTokensWithIcon } from 'initCommon';
 
 const cx = cn.bind(styles);
 

@@ -1,4 +1,4 @@
-import { CoinIcon, CustomChainInfo } from '@oraichain/oraidex-common';
+import { chainIcons, CustomChainInfo } from '@oraichain/oraidex-common';
 import ArrowImg from 'assets/icons/arrow_new.svg';
 import CheckImg from 'assets/icons/check.svg';
 import NetworkImg from 'assets/icons/network.svg';
@@ -10,15 +10,14 @@ import { useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from '../helpers';
 import styles from './TabsTxs.module.scss';
-import { chainIcons } from 'config/chainInfos';
 import { FROM_QUERY_KEY, TO_QUERY_KEY, TYPE_QUERY_TYPE } from '../Swap/hooks/useFillToken';
 
 const cx = cn.bind(styles);
 const ItemNetwork: React.FC<{
   theme: string;
   item: {
-    IconLight?: CoinIcon;
-    Icon?: CoinIcon;
+    IconLight?: any;
+    Icon?: any;
     chainName: string;
   };
   icons?: React.ReactElement;

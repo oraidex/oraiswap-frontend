@@ -2,28 +2,25 @@ import { CwIcs20LatestQueryClient, Uint128 } from '@oraichain/common-contracts-s
 import { AssetInfo, Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
   CoinGeckoId,
-  CoinIcon,
   IBC_WASM_CONTRACT,
-  NetworkChainId,
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
   TokenItemType,
   getTokenOnOraichain,
-  NetworkName,
   BigDecimal,
   toAmount,
-  COSMOS_CHAIN_ID_COMMON
+  COSMOS_CHAIN_ID_COMMON,
+  PAIRS_CHART
 } from '@oraichain/oraidex-common';
 import {
+  getSwapFromTokens,
+  getSwapToTokens,
   UniversalSwapHelper
   // swapFromTokens,
   // swapToTokens
 } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
-import { swapFromTokens, swapToTokens } from 'config/bridgeTokens';
-import { flattenTokensWithIcon, oraichainTokensWithIcon, tokensWithIcon } from 'config/chainInfos';
-import { PAIRS_CHART } from 'config/pools';
 import { networks } from 'helper';
 import { generateError } from 'libs/utils';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
@@ -32,7 +29,8 @@ import { formatDate, formatTimeWithPeriod } from 'pages/CoHarvest/helpers';
 import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
 import { FILTER_TIME_CHART, PairToken } from 'reducer/type';
 import { assets } from 'chain-registry';
-import { flattenTokens, oraichainTokens, tokenMap } from 'initCommon';
+import { flattenTokens, flattenTokensWithIcon, oraichainTokens, oraichainTokensWithIcon, tokenMap } from 'initCommon';
+import {NetworkChainId} from '@oraichain/common';
 
 export enum SwapDirection {
   From,
@@ -57,8 +55,8 @@ export const TYPE_TAB_HISTORY = {
 export interface NetworkFilter {
   label?: string;
   value?: string;
-  Icon?: CoinIcon;
-  IconLight?: CoinIcon;
+  Icon?: any;
+  IconLight?: any;
 }
 
 export const initNetworkFilter = { label: 'All networks', value: '', Icon: undefined, IconLight: undefined };
@@ -93,7 +91,7 @@ export function filterNonPoolEvmTokens(
   direction: SwapDirection // direction = to means we are filtering to tokens
 ) {
   // basic filter. Dont include itself & only collect tokens with searched letters
-  let listTokens = direction === SwapDirection.From ? swapFromTokens : swapToTokens;
+  let listTokens = direction === SwapDirection.From ? getSwapFromTokens(flattenTokens) : getSwapToTokens(flattenTokens);
   let filteredToTokens = listTokens.filter((token) => token.name.toLowerCase().includes(searchTokenName.toLowerCase()));
 
   // special case for tokens not having a pool on Oraichain
@@ -249,9 +247,9 @@ export const genCurrentChain = ({
   currentToChain
 }: {
   toToken: TokenItemType;
-  currentToChain: NetworkName | '';
-}): NetworkName | '' => {
-  let newCurrentToChain: NetworkName | '' = currentToChain;
+  currentToChain: string | '';
+}): string | '' => {
+  let newCurrentToChain: string | '' = currentToChain;
 
   newCurrentToChain = networks?.find((chain) => chain.chainId === toToken.chainId)?.chainName || '';
 

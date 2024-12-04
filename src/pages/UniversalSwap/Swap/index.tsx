@@ -1,12 +1,11 @@
 import {
   BigDecimal,
-  CosmosChainId,
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
-  NetworkChainId,
   TON_ORAICHAIN_DENOM,
   TRON_DENOM,
   TokenItemType,
+  chainIcons,
   getTokenOnOraichain,
   toAmount,
   toDisplay
@@ -26,7 +25,7 @@ import RefreshImg from 'assets/images/refresh.svg?react';
 import { assets } from 'chain-registry';
 import cn from 'classnames/bind';
 import styles from './index.module.scss';
-import { flattenTokens, oraichainTokens } from 'initCommon';
+import { flattenTokens, flattenTokensWithIcon, oraichainTokens } from 'initCommon';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
@@ -34,7 +33,6 @@ import Loader from 'components/Loader';
 import LoadingBox from 'components/LoadingBox';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import { ethers } from 'ethers';
 import {
@@ -86,6 +84,7 @@ import { useGetTransHistory } from './hooks';
 import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculateDataSwap';
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
+import { CosmosChainId, NetworkChainId } from "@oraichain/common";
 
 
 const cx = cn.bind(styles);
@@ -579,17 +578,16 @@ const SwapComponent: React.FC<{
         <div className={cx('ratio', getClassRatio())} onClick={() => isRoutersSwapData && setOpenRoutes(!openRoutes)}>
           <span className={cx('text')}>
             {waringImpactBiggerFive && <WarningIcon />}
-            {`1 ${originalFromToken.name} ≈ ${
-              averageRatio
+            {`1 ${originalFromToken.name} ≈ ${averageRatio
                 ? numberWithCommas(averageRatio.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
-                    maximumFractionDigits: 6
-                  })
+                  maximumFractionDigits: 6
+                })
                 : averageSimulateData
-                ? numberWithCommas(averageSimulateData?.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
+                  ? numberWithCommas(averageSimulateData?.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
                     maximumFractionDigits: 6
                   })
-                : '0'
-            }
+                  : '0'
+              }
       ${originalToToken.name}`}
           </span>
           {!!isRoutersSwapData && !isPreviousSimulate && !!routersSwapData?.routes.length && (

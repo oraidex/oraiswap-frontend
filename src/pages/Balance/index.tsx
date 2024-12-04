@@ -4,10 +4,8 @@ import { Decimal } from '@cosmjs/math';
 import { DeliverTxResponse, GasPrice, isDeliverTxFailure } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import {
-  CosmosChainId,
   getTokenOnOraichain,
   KWT_SCAN,
-  NetworkChainId,
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
   toAmount,
   TokenItemType,
@@ -16,7 +14,7 @@ import {
   getCosmosGasPrice,
   OraidexCommon
 } from '@oraichain/oraidex-common';
-import { flattenTokens } from 'initCommon';
+import { chainInfos, flattenTokens } from 'initCommon';
 import { isSupportedNoPoolSwapEvm, UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -67,7 +65,6 @@ import SearchInput from 'components/SearchInput';
 import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
 
 import TokenBalance from 'components/TokenBalance';
-import { chainInfos } from 'config/chainInfos';
 import { NomicContext } from 'context/nomic-context';
 import Content from 'layouts/Content';
 import { config } from 'libs/nomic/config';
@@ -94,8 +91,9 @@ import TokenItem, { TokenItemProps } from './TokenItem';
 import { TokenItemBtc } from './TokenItem/TokenItemBtc';
 import DepositBtcModalV2 from './DepositBtcModalV2';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
+import { NetworkChainId } from '@oraichain/common';
 
-interface BalanceProps {}
+interface BalanceProps { }
 
 export const isMaintainBridge = false;
 
@@ -535,7 +533,7 @@ const Balance: React.FC<BalanceProps> = () => {
       // remaining tokens, we override from & to of onClickTransfer on index.tsx of Balance based on the user's token destination choice
       // to is Oraibridge tokens
       // or other token that have same coingeckoId that show in at least 2 chain.
-      const cosmosAddress = await handleCheckAddress(from.cosmosBased ? (from.chainId as CosmosChainId) : 'Oraichain');
+      const cosmosAddress = await handleCheckAddress(from.cosmosBased ? (from.chainId) : 'Oraichain');
       const latestEvmAddress = await getLatestEvmAddress(toNetworkChainId);
       let amountsBalance = amounts;
       let simulateAmount = toAmount(fromAmount, from.decimals).toString();
@@ -582,7 +580,7 @@ const Balance: React.FC<BalanceProps> = () => {
       //-------------------------------------------------------
       // FIXME: need remove after fix ibc hooks
       if (from.cosmosBased && from.chainId !== 'noble-1' && to.chainId === 'Oraichain') {
-        const ibcInfo = UniversalSwapHelper.getIbcInfo(from.chainId as CosmosChainId, to.chainId);
+        const ibcInfo = UniversalSwapHelper.getIbcInfo(from.chainId, to.chainId);
         if (!ibcInfo)
           throw generateError(`Could not find the ibc info given the from token with coingecko id ${from.coinGeckoId}`);
 

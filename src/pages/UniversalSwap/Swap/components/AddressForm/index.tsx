@@ -27,8 +27,7 @@ import SelectInput from '../SelectInput';
 import styles from './index.module.scss';
 import { getTokenIcon } from 'pages/UniversalSwap/helpers';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
-import { flattenTokens } from 'initCommon';
+import { flattenTokens, oraichainTokensWithIcon } from 'initCommon';
 
 const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
   const theme = useTheme();

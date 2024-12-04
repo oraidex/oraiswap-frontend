@@ -4,7 +4,6 @@ import { DeliverTxResponse, GasPrice } from '@cosmjs/stargate';
 // import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import {
   BigDecimal,
-  CosmosChainId,
   GAS_ESTIMATION_BRIDGE_DEFAULT,
   IBCInfo,
   KWT,
@@ -20,7 +19,6 @@ import {
   toAmount,
   validateNumber
 } from '@oraichain/oraidex-common';
-import { chainInfos } from 'config/chainInfos';
 import { feeEstimate, getNetworkGasPrice } from 'helper';
 
 import { CwIcs20LatestClient } from '@oraichain/common-contracts-sdk';
@@ -35,7 +33,7 @@ import {
   bitcoinLcd,
   bitcoinLcdV2
 } from 'helper/constants';
-import { flattenTokens, kawaiiTokens, tokenMap, network } from 'initCommon';
+import { flattenTokens, kawaiiTokens, tokenMap, network, chainInfos } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import KawaiiverseJs from 'libs/kawaiiversejs';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
@@ -43,6 +41,7 @@ import { generateError } from 'libs/utils';
 import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMoveOraib2OraiMessages } from 'rest/api';
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
+import { CosmosChainId } from "@oraichain/common";
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;

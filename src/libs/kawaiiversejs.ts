@@ -12,8 +12,8 @@ import { collectWallet } from './cosmjs';
 
 import { Coin, StargateClient } from '@cosmjs/stargate';
 import { OfflineDirectSigner } from '@keplr-wallet/types';
-import { chainInfos } from 'config/chainInfos';
 import { calculateTimeoutTimestamp, getEvmAddress } from '@oraichain/oraidex-common';
+import { chainInfos, kawaiiTokens } from 'initCommon';
 
 async function getAccountInfo(accAddress: string) {
   const kawaiiInfo = chainInfos.find((c) => c.chainId === 'kawaii_6886-1');

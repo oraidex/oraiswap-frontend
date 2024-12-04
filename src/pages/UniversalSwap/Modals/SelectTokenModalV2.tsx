@@ -1,6 +1,7 @@
 import {
   CustomChainInfo,
   TokenItemType,
+  chainIcons,
   getSubAmountDetails,
   truncDecimals
 } from '@oraichain/oraidex-common';
@@ -11,7 +12,6 @@ import CheckImg from 'assets/icons/check.svg';
 import NetworkImg from 'assets/icons/network.svg';
 import cn from 'classnames/bind';
 import SearchInput from 'components/SearchInput';
-import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
 import { networks } from 'helper';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -19,7 +19,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { FC, useRef, useState } from 'react';
 import styles from './SelectTokenModalV2.module.scss';
-import { tokenMap } from 'initCommon';
+import { flattenTokensWithIcon, tokenMap } from 'initCommon';
 
 const cx = cn.bind(styles);
 

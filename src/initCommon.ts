@@ -16,5 +16,14 @@ export const {
     cw20TokenMap,
     cw20Tokens,
     assetInfoMap,
-    network
+    network,
+    celestiaNetwork,
+    chainConfig,
+    chainInfosCommon,
+    chainInfosWithIcon,
+    flattenTokensWithIcon, 
+    oraichainTokensWithIcon, 
+    otherTokensWithIcon, 
+    tokenConfig, 
+    tokensWithIcon
 } = oraidexCommon;

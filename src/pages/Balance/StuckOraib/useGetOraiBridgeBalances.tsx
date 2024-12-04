@@ -1,18 +1,16 @@
 import { Coin } from '@cosmjs/stargate';
-import { tokens } from 'config/bridgeTokens';
 import { ORAI_BRIDGE_UDENOM, TokenItemType } from '@oraichain/oraidex-common';
 import { toDisplay } from '@oraichain/oraidex-common';
 import uniqBy from 'lodash/uniqBy';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
-import { cosmosTokens } from 'initCommon';
+import { cosmosTokens, otherChainTokens } from 'initCommon';
 
 export type RemainingOraibTokenItem = TokenItemType & { amount: string };
 export default function useGetOraiBridgeBalances(moveOraib2OraiLoading: boolean) {
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const [remainingOraib, setRemainingOraib] = useState<RemainingOraibTokenItem[]>([]);
-  const [otherChainTokens] = tokens;
 
   const getBalanceOraibridge = async () => {
     try {

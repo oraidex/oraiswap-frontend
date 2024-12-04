@@ -3,14 +3,14 @@ import {
   TokenItemType,
   truncDecimals,
   HMSTR_ORAICHAIN_DENOM,
-  DOGE_BNB_ORAICHAIN_DENOM
+  DOGE_BNB_ORAICHAIN_DENOM,
+  chainIcons
 } from '@oraichain/oraidex-common';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import cn from 'classnames/bind';
 import SearchInput from 'components/SearchInput';
-import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
 import styles from './SelectToken.module.scss';
 import { Themes } from 'context/theme-context';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
@@ -19,6 +19,7 @@ import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
 import { getSubAmountDetails } from 'rest/api';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { flattenTokensWithIcon } from 'initCommon';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {

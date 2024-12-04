@@ -5,8 +5,7 @@ import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { FC } from 'react';
 import styles from './SelectTokenModal.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { CustomChainInfo, TokenItemType, getSubAmountDetails, truncDecimals } from '@oraichain/oraidex-common';
-import { chainIcons, tokensIcon } from 'config/chainInfos';
+import { CustomChainInfo, TokenItemType, chainIcons, getSubAmountDetails, tokensIcon, truncDecimals } from '@oraichain/oraidex-common';
 import { tokenMap } from 'initCommon';
 
 const cx = cn.bind(styles);

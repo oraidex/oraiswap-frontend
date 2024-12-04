@@ -3,7 +3,6 @@ import OpenNewWindowImg from 'assets/icons/open_new_window.svg';
 import cn from 'classnames/bind';
 import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { Table, TableHeaderProps } from 'components/Table';
-import { chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import useTheme from 'hooks/useTheme';
 import { TransactionHistory } from 'libs/duckdb';
 import { reduceString, timeSince } from 'libs/utils';
@@ -12,6 +11,7 @@ import { useState } from 'react';
 import { getExplorerScan } from '../helpers';
 import { useGetTransHistory } from '../Swap/hooks';
 import styles from './HistoryTab.module.scss';
+import { chainInfosWithIcon, flattenTokensWithIcon } from 'initCommon';
 
 const cx = cn.bind(styles);
 const RowsComponent: React.FC<{
