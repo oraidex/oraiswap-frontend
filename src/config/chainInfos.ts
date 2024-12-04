@@ -5,7 +5,8 @@ import {
   ChainIdEnum,
   BridgeAppCurrency,
   CustomChainInfo,
-  defaultBech32Config
+  defaultBech32Config,
+  solChainId
 } from '@oraichain/oraidex-common';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import OraiIcon from 'assets/icons/oraichain.svg?react';
@@ -150,15 +151,22 @@ export const OraiToken: BridgeAppCurrency = {
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
   currencies: [
-    ...customOraichainNetwork.currencies
-    // {
-    //   coinDenom: 'BTC V2',
-    //   coinGeckoId: 'bitcoin',
-    //   coinMinimalDenom: CWBitcoinFactoryDenom,
-    //   bridgeTo: ['bitcoin'] as any,
-    //   coinDecimals: 14 as any,
-    //   coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'
-    // }
+    ...customOraichainNetwork.currencies.map((cur) => {
+      if (cur.coinGeckoId === 'max.clan') {
+        return {
+          coinDenom: 'MAX',
+          coinGeckoId: 'max.clan',
+          coinMinimalDenom:
+            'factory/orai17hyr3eg92fv34fdnkend48scu32hn26gqxw3hnwkfy904lk9r09qqzty42/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
+          bridgeTo: [solChainId],
+          coinDecimals: 6,
+          coinImageUrl:
+            'https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2'
+        } as any;
+      }
+
+      return cur;
+    })
   ]
 };
 

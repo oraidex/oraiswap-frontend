@@ -11,8 +11,7 @@ import {
   TokenItemType,
   calculateTimeoutTimestamp,
   getCosmosGasPrice,
-  solChainId,
-  ORAICHAIN_RELAYER_ADDRESS
+  solChainId
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -90,6 +89,7 @@ import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Web3SolanaProgramInteraction } from 'program/web3';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
+import { ORAICHAIN_RELAYER_ADDRESS } from 'program/web3';
 
 interface BalanceProps {}
 
