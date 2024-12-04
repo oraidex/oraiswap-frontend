@@ -7,7 +7,7 @@ import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { network } from 'config/networks';
 import { ThemeProvider } from 'context/theme-context';
-import { getListAddressCosmos, interfaceRequestTron } from 'helper';
+import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
@@ -255,15 +255,18 @@ const App = () => {
     const provider = window?.solana;
     if (provider) {
       provider?.on('accountChanged', (publicKeySol: any) => {
-        if (publicKeySol) {
-          const solAddress = publicKeySol.toBase58();
-          setSolAddress(solAddress);
-          loadTokenAmounts({ solAddress });
-        } else {
-          // Attempt to reconnect to Phantom or Owallet
-          provider.connect().catch((error: any) => {
-            console.error({ errorSolAccountChanged: error });
-          });
+        const wallet = getWalletByNetworkFromStorage();
+        if (wallet.solana === 'phantom') {
+          if (publicKeySol) {
+            const solAddress = publicKeySol.toBase58();
+            setSolAddress(solAddress);
+            loadTokenAmounts({ solAddress });
+          } else {
+            // Attempt to reconnect to Phantom or Owallet
+            provider.connect().catch((error: any) => {
+              console.error({ errorSolAccountChanged: error });
+            });
+          }
         }
       });
     }
