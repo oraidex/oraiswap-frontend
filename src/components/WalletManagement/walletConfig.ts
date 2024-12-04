@@ -102,12 +102,12 @@ export const btcWallets: WalletNetwork[] = [
 ];
 
 export const solanaWallets: WalletNetwork[] = [
-  // {
-  //   icon: OwalletIcon,
-  //   name: 'Owallet',
-  //   nameRegistry: 'owallet',
-  //   isActive: true
-  // },
+  {
+    icon: OwalletIcon,
+    name: 'Owallet',
+    nameRegistry: 'owallet',
+    isActive: true
+  },
   {
     icon: PhantomIcon,
     name: 'Phantom',

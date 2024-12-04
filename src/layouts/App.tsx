@@ -242,23 +242,27 @@ const App = () => {
     if (walletByNetworks.solana === 'owallet' || mobileMode) {
       if (window.owalletSolana) {
         const { publicKey } = await window.owalletSolana.connect();
-        if (publicKey) setSolAddress(publicKey.toBase58());
+        if (publicKey) {
+          solAddress = publicKey.toBase58();
+          setSolAddress(solAddress);
+        }
       }
     }
     return solAddress;
   };
 
   useEffect(() => {
-    if (window?.solana) {
-      window.solana?.on('accountChanged', (publicKeySol: any) => {
+    const provider = window?.solana;
+    if (provider) {
+      provider?.on('accountChanged', (publicKeySol: any) => {
         if (publicKeySol) {
-          // Set new public key and continue as usual
-          console.log(`Switched to account ${publicKeySol.toBase58()}`);
-          setSolAddress(publicKeySol.toBase58());
+          const solAddress = publicKeySol.toBase58();
+          setSolAddress(solAddress);
+          loadTokenAmounts({ solAddress });
         } else {
-          // // Attempt to reconnect to Phantom
-          window.solana.connect().catch((error: any) => {
-            console.log({ errorSolAccountChanged: error });
+          // Attempt to reconnect to Phantom or Owallet
+          provider.connect().catch((error: any) => {
+            console.error({ errorSolAccountChanged: error });
           });
         }
       });
