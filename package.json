@@ -157,7 +157,7 @@
     "bitcoinjs-lib": "5.2.0",
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
-    "@oraichain/oraidex-common": "1.1.38"
+    "@oraichain/oraidex-common": "1.1.39"
   },
   "engines": {
     "node": "^18 || ^20"
