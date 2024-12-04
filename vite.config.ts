@@ -37,5 +37,8 @@ export default defineConfig({
     commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
     rollupOptions: {}
+  },
+  optimizeDeps: {
+    exclude: ['node_modules/.cache']
   }
 });
