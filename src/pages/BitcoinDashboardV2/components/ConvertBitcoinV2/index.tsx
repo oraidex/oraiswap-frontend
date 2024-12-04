@@ -20,10 +20,9 @@ import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { getStorageKey, handleErrorTransaction } from 'helper';
 import { useDepositFeesBitcoinV2, useGetWithdrawlFeesBitcoin } from 'pages/Balance/helpers';
 import { useRelayerFeeToken } from 'hooks/useTokenFee';
-import { btcTokens } from 'config/bridgeTokens';
 import { PendingWithdraws } from 'pages/BitcoinDashboard/components/PendingWithdraws';
 import { useGetPendingDeposits } from 'pages/BitcoinDashboardV2/hooks';
-import { oraichainTokens } from 'initCommon';
+import { btcTokens, oraichainTokens } from 'initCommon';
 
 export const BTC_TOKEN = oraichainTokens.find((e) => e.coinGeckoId === 'bitcoin');
 const ConvertBitcoinV2: React.FC<{}> = ({}) => {

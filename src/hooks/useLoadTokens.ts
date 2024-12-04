@@ -2,7 +2,7 @@ import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
-import { chainInfos, cosmosTokens, evmChains, evmTokens, network, oraichainTokens, tokenMap } from 'initCommon';
+import { btcTokens, chainInfos, cosmosTokens, evmChains, evmTokens, network, oraichainTokens, tokenMap } from 'initCommon';
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
 import { COSMOS_CHAIN_ID_COMMON } from '@oraichain/oraidex-common';

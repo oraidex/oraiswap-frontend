@@ -13,11 +13,10 @@ import { CheckpointStatus, DepositInfo, TransactionParsedInput } from '../../@ty
 import { useEffect } from 'react';
 import { useGetCheckpointData, useGetCheckpointQueue, useGetDepositFee } from 'pages/BitcoinDashboard/hooks';
 import { useRelayerFeeToken } from 'hooks/useTokenFee';
-import { btcTokens } from 'config/bridgeTokens';
 import TransactionsMobile from '../Checkpoint/Transactions/TransactionMobiles/TransactionMobile';
 import { isMobile } from '@walletconnect/browser-utils';
 import RenderIf from '../RenderIf/RenderIf';
-import { oraichainTokens } from 'initCommon';
+import { btcTokens, oraichainTokens } from 'initCommon';
 
 type Icons = {
   Light: any;

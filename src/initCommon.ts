@@ -25,5 +25,6 @@ export const {
     oraichainTokensWithIcon, 
     otherTokensWithIcon, 
     tokenConfig, 
-    tokensWithIcon
+    tokensWithIcon,
+    btcTokens
 } = oraidexCommon;

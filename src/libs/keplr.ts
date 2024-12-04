@@ -62,7 +62,7 @@ export default class Keplr extends CosmosWallet {
     if (isEnableKeplr) {
       if (!window.keplr) return;
       // TODO: hotfix add oraiBTC bridge network
-      const chainInfo = [...chainInfos, OraiBTCBridgeNetwork].find((chainInfo) => chainInfo.chainId === chainId);
+      const chainInfo = [...chainInfos].find((chainInfo) => chainInfo.chainId === chainId);
 
       // do nothing without chainInfo
       if (!chainInfo) return;
