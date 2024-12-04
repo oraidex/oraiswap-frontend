@@ -9,7 +9,7 @@ import { selectCurrentFromToken, selectCurrentToChain, selectCurrentToToken } fr
 import { FILTER_TIME_CHART, TAB_CHART_SWAP } from 'reducer/type';
 import { ChartTokenType } from '../hooks/useChartUsdPrice';
 import styles from './HeaderTab.module.scss';
-import { flattenTokensWithIcon } from 'initCommon';
+import { flattenTokens, flattenTokensWithIcon } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -133,22 +133,22 @@ export const HeaderTop = ({
   const currentToToken = useSelector(selectCurrentToToken);
 
   const mobileMode = isMobile();
-  let [ToTokenIcon, FromTokenIcon] = [DefaultIcon, DefaultIcon];
+  let [ToTokenIcon, FromTokenIcon] = [null, null];
 
   const generateIconTokenByTheme = (token) => {
-    return theme === 'light' ? token.IconLight : token.Icon;
+    return theme === 'light' ? (
+      <img src={token.iconLight} width={30} height={30} alt="token" />
+    ) : (
+      <img src={token.icon} alt="token" width={30} height={30} />
+    );
   };
 
   if (currentToToken) {
-    const tokenIcon = flattenTokensWithIcon.find(
-      (tokenWithIcon) => tokenWithIcon.coinGeckoId === currentToToken.coinGeckoId
-    );
+    const tokenIcon = flattenTokens.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === currentToToken.coinGeckoId);
     if (tokenIcon) ToTokenIcon = generateIconTokenByTheme(tokenIcon);
   }
   if (currentFromToken) {
-    const tokenIcon = flattenTokensWithIcon.find(
-      (tokenWithIcon) => tokenWithIcon.coinGeckoId === currentFromToken.coinGeckoId
-    );
+    const tokenIcon = flattenTokens.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === currentFromToken.coinGeckoId);
     if (tokenIcon) FromTokenIcon = generateIconTokenByTheme(tokenIcon);
   }
 
@@ -161,9 +161,7 @@ export const HeaderTop = ({
               ? currentToToken &&
                 currentToChain && (
                   <div className={cx('tokenInfo')}>
-                    <div>
-                      <ToTokenIcon />
-                    </div>
+                    {ToTokenIcon}
                     <span>{currentToToken?.name || currentToToken?.denom}</span>
                     <span className={cx('tokenName')}>{currentToChain}</span>
                   </div>
@@ -172,12 +170,8 @@ export const HeaderTop = ({
                 currentFromToken && (
                   <div className={cx('tokenInfo')}>
                     <div className={cx('icons')}>
-                      <div className={cx('formIcon')}>
-                        <FromTokenIcon />
-                      </div>
-                      <div className={cx('toIcon')}>
-                        <ToTokenIcon />
-                      </div>
+                      <div className={cx('formIcon')}>{FromTokenIcon}</div>
+                      <div className={cx('toIcon')}>{ToTokenIcon}</div>
                     </div>
                     <span>
                       {currentFromToken?.name || currentFromToken?.denom}/

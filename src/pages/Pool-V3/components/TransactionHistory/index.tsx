@@ -28,7 +28,7 @@ const TransactionHistory = ({
   const mobileMode = isMobile();
   const { data: prices } = useCoinGeckoPrices();
 
-  let [BaseTokenIcon, QuoteTokenIcon] = [DefaultIcon, DefaultIcon];
+  let [BaseTokenIcon, QuoteTokenIcon] = [null, null];
 
   const baseDenom = baseToken && parseTokenInfoRawDenom(baseToken);
   const quoteDenom = quoteToken && parseTokenInfoRawDenom(quoteToken);
@@ -58,9 +58,19 @@ const TransactionHistory = ({
                   const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
 
                   if (offerToken)
-                    BaseTokenIcon = theme === 'light' ? offerToken.IconLight || offerToken.Icon : offerToken.Icon;
+                    BaseTokenIcon =
+                      theme === 'light' ? (
+                        <img src={offerToken.iconLight} alt="icon" />
+                      ) : (
+                        <img src={offerToken.icon} alt="icon" />
+                      );
                   if (returnToken)
-                    QuoteTokenIcon = theme === 'light' ? returnToken.IconLight || returnToken.Icon : returnToken.Icon;
+                    QuoteTokenIcon =
+                      theme === 'light' ? (
+                        <img src={returnToken.iconLight} alt="icon" />
+                      ) : (
+                        <img src={returnToken.icon} alt="icon" />
+                      );
 
                   const returnUSD = item.volumeUSD;
                   const feeUSD = item.commissionAmount;
@@ -82,19 +92,6 @@ const TransactionHistory = ({
                               </a>
                             </div>
                           </div>
-                          {/* <div className={styles.addressWrapper}>
-                            <div className={styles.titleItem}>Address</div>
-                            <div className={styles.address}>
-                              <span className={styles.txt}>
-                                {!item.sender ? '-' : reduceString(item.sender || '', 5, 5)}
-                              </span>
-                              {!item.sender ? null : (
-                                <a href={getAccountUrl(item.sender || '')} target="_blank" rel="noopener noreferrer">
-                                  <LinkIcon />
-                                </a>
-                              )}
-                            </div>
-                          </div> */}
                           <div className={styles.time}>
                             <div>
                               <span>{formatDateV2(new Date(item.timestamp))}</span>
@@ -102,12 +99,6 @@ const TransactionHistory = ({
                             </div>
                           </div>
                         </div>
-                        {/* <div className={styles.time}>
-                          <div>
-                            <span>{formatDateV2(item.timestamp * 1000)}</span>
-                            <span>{formatTime(item.timestamp * 1000)}</span>
-                          </div>
-                        </div> */}
                       </div>
 
                       <div className={styles.divider}></div>
@@ -116,9 +107,7 @@ const TransactionHistory = ({
                         <div className={`${styles.pay}`}>
                           <div className={styles.titleItem}>Pay amount</div>
                           <div className={styles.amount}>
-                            <div>
-                              <BaseTokenIcon />
-                            </div>
+                            <div>{BaseTokenIcon}</div>
                             <span>
                               {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -129,9 +118,7 @@ const TransactionHistory = ({
                         <div className={`${styles.receive}`}>
                           <div className={styles.titleItem}>Receive amount</div>
                           <div className={styles.amount}>
-                            <div>
-                              <QuoteTokenIcon />
-                            </div>
+                            <div>{QuoteTokenIcon}</div>
                             <span>
                               {numberWithCommas(toDisplay(item.returnAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -205,9 +192,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.pay}`}>
                             <div className={styles.amount}>
-                              <div>
-                                <BaseTokenIcon />
-                              </div>
+                              <div>{BaseTokenIcon}</div>
                               <span>
                                 {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                               </span>
@@ -216,9 +201,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.receive}`}>
                             <div className={styles.amount}>
-                              <div>
-                                <QuoteTokenIcon />
-                              </div>
+                              <div>{QuoteTokenIcon}</div>
                               <span>
                                 {numberWithCommas(toDisplay(item.returnAmount), undefined, {
                                   maximumFractionDigits: 6

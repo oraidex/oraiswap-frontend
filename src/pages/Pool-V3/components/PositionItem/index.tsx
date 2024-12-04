@@ -1,10 +1,4 @@
-import {
-  BigDecimal,
-  CW20_DECIMALS,
-  parseAssetInfo,
-  toDisplay,
-  TokenItemType
-} from '@oraichain/oraidex-common';
+import { BigDecimal, CW20_DECIMALS, parseAssetInfo, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { Tick } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
 import BootsIcon from 'assets/icons/boost-icon.svg?react';
@@ -43,7 +37,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { printBigint } from '../PriceRangePlot/utils';
 import ZapOut from '../ZapOut';
 import styles from './index.module.scss';
-import { NetworkChainId } from "@oraichain/common";
+import { NetworkChainId } from '@oraichain/common';
 
 let intervalId = null;
 
@@ -168,7 +162,7 @@ const PositionItem = ({ position }) => {
       }
     })();
 
-    return () => { };
+    return () => {};
   }, [openCollapse, poolPrice]);
 
   useEffect(() => {
@@ -181,7 +175,7 @@ const PositionItem = ({ position }) => {
       setStatusRange(pool.current_tick_index >= lower_tick_index && pool.current_tick_index < upper_tick_index);
     })();
 
-    return () => { };
+    return () => {};
   }, [position, poolList]);
 
   useEffect(() => {
@@ -279,8 +273,8 @@ const PositionItem = ({ position }) => {
         <div className={styles.trigger} onClick={() => setCollapse(!openCollapse)}>
           <div className={styles.name}>
             <div className={classNames(styles.icons, styles[theme])}>
-              <position.tokenXIcon />
-              <position.tokenYIcon />
+              {position.tokenXIcon}
+              {position.tokenYIcon}
             </div>
             <span>
               {position.tokenXName} / {position.tokenYName}
@@ -385,14 +379,14 @@ const PositionItem = ({ position }) => {
                 </span>
                 <div className={classNames(styles.itemAsset, styles[theme])}>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenXIcon />
+                    {position.tokenXIcon}
                     {numberWithCommas(position.tokenXLiq, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
                     {position?.tokenX.name}
                   </span>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenYIcon />
+                    {position.tokenYIcon}
                     {numberWithCommas(position.tokenYLiq, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
@@ -423,21 +417,21 @@ const PositionItem = ({ position }) => {
                   </span>
                   <div className={classNames(styles.itemAsset, styles[theme])}>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenXIcon />
+                      {position.tokenXIcon}
                       {!principalAmountX
                         ? '--'
                         : numberWithCommas(toDisplay(principalAmountX || 0, tokenXDecimal), undefined, {
-                          maximumFractionDigits: 6
-                        })}{' '}
+                            maximumFractionDigits: 6
+                          })}{' '}
                       {position?.tokenX.name}
                     </span>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenYIcon />
+                      {position.tokenYIcon}
                       {!principalAmountY
                         ? '--'
                         : numberWithCommas(toDisplay(principalAmountY || 0, tokenYDecimal), undefined, {
-                          maximumFractionDigits: 6
-                        })}{' '}
+                            maximumFractionDigits: 6
+                          })}{' '}
                       {position?.tokenY.name}
                     </span>
                   </div>
@@ -476,14 +470,14 @@ const PositionItem = ({ position }) => {
                 </span>
                 <div className={classNames(styles.itemAsset, styles[theme])}>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenXIcon />
+                    {position.tokenXIcon}
                     {numberWithCommas(earnXDisplay, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
                     {position?.tokenX.name}
                   </span>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenYIcon />
+                    {position.tokenYIcon}
                     {numberWithCommas(earnYDisplay, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
@@ -521,11 +515,11 @@ const PositionItem = ({ position }) => {
                   </span>
                   <div className={classNames(styles.itemAsset, styles[theme])}>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenXIcon />
+                      {position.tokenXIcon}
                       {tokenXClaim} {position?.tokenX.name}
                     </span>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenYIcon />
+                      {position.tokenYIcon}
                       {tokenYClaim} {position?.tokenY.name}
                     </span>
                   </div>

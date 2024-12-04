@@ -7,7 +7,7 @@ import { Table, TableHeaderProps } from 'components/Table';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { flattenTokens, tokenMap } from 'initCommon';
+import { flattenTokens, flattenTokensWithIcon, tokenMap, tokensWithIcon } from 'initCommon';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { formatDisplayUsdt, toFixedIfNecessary } from 'pages/Pools/helpers';
@@ -55,12 +55,12 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     label?: string;
     balance?: number | string;
   }[] = [
-      {
-        src: WalletIcon,
-        label: 'Total balance',
-        balance: formatDisplayUsdt(totalUsd)
-      }
-    ];
+    {
+      src: WalletIcon,
+      label: 'Total balance',
+      balance: formatDisplayUsdt(totalUsd)
+    }
+  ];
 
   if (!networkFilter || networkFilter === 'Oraichain') {
     listAsset = [
@@ -95,12 +95,12 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
 
           if (checkShouldHide(value)) return result;
 
-          const tokenIcon = tokensIcon.find((tIcon) => tIcon.coinGeckoId === token.coinGeckoId);
+          const tokenIcon = flattenTokensWithIcon.find((tIcon) => tIcon.coinGeckoId === token.coinGeckoId);
           result.push({
             asset: token.name,
             chain: token.org,
-            icon: tokenIcon?.Icon,
-            iconLight: tokenIcon?.IconLight,
+            icon: tokenIcon?.icon,
+            iconLight: tokenIcon?.iconLight,
             price: tokenPrice,
             balance: toDisplay(totalAmount.toString(), token.decimals),
             denom: token.denom,
@@ -122,10 +122,15 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
         <div className={styles.assets}>
           <div className={styles.left}>
             {theme === 'light' ? (
+              <img src={data.icon} alt="icon" width={30} height={30} />
+            ) : (
+              <img className={cx('logo')} src={data.icon} alt="icon" width={30} height={30} />
+            )}
+            {/* {theme === 'light' ? (
               <data.iconLight className={styles.tokenIcon} />
             ) : (
               <data.icon className={styles.tokenIcon} />
-            )}
+            )} */}
           </div>
           <div className={styles.right}>
             <div className={styles.assetName}>{data.asset}</div>

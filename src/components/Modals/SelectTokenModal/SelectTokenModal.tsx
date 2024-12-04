@@ -5,8 +5,15 @@ import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { FC } from 'react';
 import styles from './SelectTokenModal.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { CustomChainInfo, TokenItemType, chainIcons, getSubAmountDetails, tokensIcon, truncDecimals } from '@oraichain/oraidex-common';
-import { tokenMap } from 'initCommon';
+import {
+  CustomChainInfo,
+  TokenItemType,
+  chainIcons,
+  getSubAmountDetails,
+  tokensIcon,
+  truncDecimals
+} from '@oraichain/oraidex-common';
+import { chainInfosWithIcon, tokenMap } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -47,6 +54,7 @@ export const SelectTokenModal: FC<ModalProps> = ({
           {items?.map((item: TokenItemType | CustomChainInfo) => {
             let key: string, title: string, balance: string;
             let tokenAndChainIcons;
+
             if (type === 'token') {
               const token = item as TokenItemType;
               key = token.denom;
@@ -62,23 +70,26 @@ export const SelectTokenModal: FC<ModalProps> = ({
                 sumAmount = toSumDisplay(sumAmountDetails);
               }
               tokenAndChainIcons = tokensIcon.find((tokenIcon) => tokenIcon.coinGeckoId === token.coinGeckoId);
+
               balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
             } else {
               const network = item as CustomChainInfo;
               key = network.chainId.toString();
               title = network.chainName;
               const subAmounts = Object.fromEntries(
-                Object.entries(amounts).filter(([denom]) => tokenMap[denom] && tokenMap[denom].chainId === network.chainId)
+                Object.entries(amounts).filter(
+                  ([denom]) => tokenMap[denom] && tokenMap[denom].chainId === network.chainId
+                )
               );
               const totalUsd = getTotalUsd(subAmounts, prices);
-              tokenAndChainIcons = chainIcons.find((chainIcon) => chainIcon.chainId === network.chainId);
+              tokenAndChainIcons = chainInfosWithIcon.find((chainIcon) => chainIcon.chainId === network.chainId);
               balance = '$' + (totalUsd > 0 ? totalUsd.toFixed(2) : '0');
             }
             const icon =
               tokenAndChainIcons && theme === 'light' ? (
-                <tokenAndChainIcons.IconLight className={cx('logo')} />
+                <img className={cx('logo')} src={tokenAndChainIcons.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
               ) : (
-                <tokenAndChainIcons.Icon className={cx('logo')} />
+                <img className={cx('logo')} src={tokenAndChainIcons.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
               );
 
             return (

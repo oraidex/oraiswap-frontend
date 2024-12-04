@@ -15,7 +15,7 @@ import {
   setCurrentToToken
 } from 'reducer/tradingSlice';
 import useFilteredTokens from './useFilteredTokens';
-import { tokenMap } from 'initCommon';
+import { cosmosChains, tokenMap } from 'initCommon';
 
 const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) => {
   const dispatch = useDispatch();
@@ -119,7 +119,8 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
     isValid: true
   };
 
-  if (isConnectedWallet) validAddress = checkValidateAddressWithNetwork(addressTransfer, originalToToken?.chainId);
+  if (isConnectedWallet)
+    validAddress = checkValidateAddressWithNetwork(addressTransfer, originalToToken?.chainId, cosmosChains);
 
   return {
     originalFromToken,

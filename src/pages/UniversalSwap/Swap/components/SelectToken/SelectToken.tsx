@@ -19,7 +19,7 @@ import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
 import { getSubAmountDetails } from 'rest/api';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { flattenTokensWithIcon } from 'initCommon';
+import { chainInfos, chainInfosWithIcon, flattenTokens, flattenTokensWithIcon } from 'initCommon';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {
@@ -44,18 +44,18 @@ interface GetIconInterface {
 
 const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
   if (type === 'token') {
-    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === coinGeckoId);
+    const foundToken = flattenTokens.find((token) => token.coinGeckoId === coinGeckoId);
     return isLightTheme ? (
-      <tokenIcon.IconLight className={cx('logo')} width={width} height={height} />
+      <img src={foundToken.icon} alt="icon" width={30} height={30} />
     ) : (
-      <tokenIcon.Icon className={cx('logo')} width={width} height={height} />
+      <img src={foundToken.icon} alt="icon" width={30} height={30} />
     );
   } else {
-    const networkIcon = chainIcons.find((chain) => chain.chainId === chainId);
+    const chainInfo = chainInfos.find((chain) => chain.chainId === chainId);
     return isLightTheme ? (
-      <networkIcon.IconLight className={cx('logo')} width={width} height={height} />
+      <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
     ) : (
-      <networkIcon.Icon className={cx('logo')} width={width} height={height} />
+      <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
     );
   }
 };

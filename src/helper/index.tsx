@@ -27,7 +27,7 @@ import { evmChainInfos } from 'config/evmChainInfos';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
 import { chainInfos, chainInfosWithIcon, cosmosChains, evmChains, flattenTokensWithIcon, network } from 'initCommon';
-import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common'
+import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common';
 
 export interface Tokens {
   denom?: string;
@@ -52,7 +52,7 @@ export const cosmosNetworks = chainInfos.filter(
 );
 
 export const bitcoinNetworks = chainInfos.filter((c) => c.chainId === bitcoinChainId);
-export const cosmosNetworksWithIcon = chainInfosWithIcon.filter(
+export const cosmosNetworksWithIcon = chainInfos.filter(
   (c) =>
     c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
 );

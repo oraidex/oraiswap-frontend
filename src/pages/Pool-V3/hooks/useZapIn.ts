@@ -1,11 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
-import {
-  BigDecimal,
-  MULTICALL_CONTRACT,
-  oraichainTokens,
-  TokenItemType,
-  ZAPPER_CONTRACT
-} from '@oraichain/oraidex-common';
+import { BigDecimal, MULTICALL_CONTRACT, TokenItemType, ZAPPER_CONTRACT } from '@oraichain/oraidex-common';
 import { ZapperQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { Pool, PoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import {
@@ -18,7 +12,7 @@ import {
 } from '@oraichain/oraiswap-v3';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { useDebounce } from 'hooks/useDebounce';
-import { network } from 'initCommon';
+import { network, oraichainTokens } from 'initCommon';
 import { fetchPositionAprInfo, PoolFeeAndLiquidityDaily } from 'libs/contractSingleton';
 import mixpanel from 'mixpanel-browser';
 import { useEffect, useState } from 'react';
@@ -33,7 +27,7 @@ const useZapIn = (
   toggleZap: boolean,
   minTick: number,
   maxTick: number,
-  feeDailyData: PoolFeeAndLiquidityDaily[],
+  feeDailyData: PoolFeeAndLiquidityDaily[]
 ) => {
   const [tokenZap, setTokenZap] = useState<TokenItemType>(oraichainTokens.find((token) => token.name === 'USDT'));
   const [zapAmount, setZapAmount] = useState<number>(0);
@@ -73,7 +67,6 @@ const useZapIn = (
     (async () => {
       if (!zapInResponse) return;
       if (pool && poolKey && tokenX && tokenY) {
-
         const apr = await fetchPositionAprInfo(
           {
             pool,

@@ -11,10 +11,9 @@ import {
   TokenItemType,
   tronToEthAddress,
   calculateTimeoutTimestamp,
-  getCosmosGasPrice,
-  OraidexCommon
+  getCosmosGasPrice
 } from '@oraichain/oraidex-common';
-import { chainInfos, flattenTokens } from 'initCommon';
+import { chainInfos, flattenTokens, flattenTokensWithIcon, oraidexCommon } from 'initCommon';
 import { isSupportedNoPoolSwapEvm, UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -93,7 +92,7 @@ import DepositBtcModalV2 from './DepositBtcModalV2';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
 import { NetworkChainId } from '@oraichain/common';
 
-interface BalanceProps { }
+interface BalanceProps {}
 
 export const isMaintainBridge = false;
 
@@ -169,7 +168,9 @@ const Balance: React.FC<BalanceProps> = () => {
   useEffect(() => {
     if (!tokenUrl) return setTokens([oraichainTokens, otherChainTokens]);
     const _tokenUrl = tokenUrl.toUpperCase();
-    setTokens([oraichainTokens, otherChainTokens].map((childTokens) => childTokens.filter((t) => t.name.includes(_tokenUrl))));
+    setTokens(
+      [oraichainTokens, otherChainTokens].map((childTokens) => childTokens.filter((t) => t.name.includes(_tokenUrl)))
+    );
   }, [tokenUrl]);
 
   useEffect(() => {
@@ -533,7 +534,7 @@ const Balance: React.FC<BalanceProps> = () => {
       // remaining tokens, we override from & to of onClickTransfer on index.tsx of Balance based on the user's token destination choice
       // to is Oraibridge tokens
       // or other token that have same coingeckoId that show in at least 2 chain.
-      const cosmosAddress = await handleCheckAddress(from.cosmosBased ? (from.chainId) : 'Oraichain');
+      const cosmosAddress = await handleCheckAddress(from.cosmosBased ? from.chainId : 'Oraichain');
       const latestEvmAddress = await getLatestEvmAddress(toNetworkChainId);
       let amountsBalance = amounts;
       let simulateAmount = toAmount(fromAmount, from.decimals).toString();
@@ -641,7 +642,7 @@ const Balance: React.FC<BalanceProps> = () => {
             isIbcWasm: false
           }
         },
-        OraidexCommon.instance
+        oraidexCommon
       );
 
       result = await universalSwapHandler.processUniversalSwap();
@@ -655,7 +656,8 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
-    return [...otherChainTokens, ...oraichainTokens]
+    // return [...otherChainTokens, ...oraichainTokens]
+    return flattenTokensWithIcon
       .filter((token) => {
         // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
         if (!token.bridgeTo && !token.contractAddress) return false;
@@ -712,13 +714,9 @@ const Balance: React.FC<BalanceProps> = () => {
                   <div className={styles.search_flex}>
                     <div className={styles.search_logo}>
                       {theme === 'light' ? (
-                        network.IconLight ? (
-                          <network.IconLight />
-                        ) : (
-                          <network.Icon />
-                        )
+                        <img width={30} height={30} src={network.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                       ) : (
-                        <network.Icon />
+                        <img width={30} height={30} src={network.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                       )}
                     </div>
                     <span className={classNames(styles.search_text, styles[theme])}>{network.chainName}</span>

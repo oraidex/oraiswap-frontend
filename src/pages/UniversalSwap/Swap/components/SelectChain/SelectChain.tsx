@@ -8,7 +8,7 @@ import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import styles from './SelectChain.module.scss';
-import { tokenMap } from 'initCommon';
+import { chainInfos, chainInfosWithIcon, tokenMap } from 'initCommon';
 import { chainIcons } from '@oraichain/oraidex-common';
 
 const cx = cn.bind(styles);
@@ -88,7 +88,7 @@ export default function SelectChain({
               })
               .sort((a, b) => Number(b.totalUsd || 0) - Number(a.totalUsd || 0))
               .map((item) => {
-                const networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
+                const chainInfo = chainInfos.find((chainIcon) => chainIcon.chainId === item.chainId);
                 const key = item.chainId.toString();
                 const title = item.chainName;
                 const balance = '$' + (item.totalUsd > 0 ? item.totalUsd.toFixed(2) : '0');
@@ -103,9 +103,17 @@ export default function SelectChain({
                   >
                     <div className={styles.selectChainItemLeft}>
                       {theme === 'light' ? (
-                        <networkIcon.IconLight className={styles.selectChainItemLogo} />
+                        <img
+                          className={styles.selectChainItemLogo}
+                          src={chainInfo?.chainSymbolImageUrl}
+                          alt="chain-logo"
+                        />
                       ) : (
-                        <networkIcon.Icon className={styles.selectChainItemLogo} />
+                        <img
+                          className={styles.selectChainItemLogo}
+                          src={chainInfo?.chainSymbolImageUrl}
+                          alt="chain-logo"
+                        />
                       )}
                       <div className={styles.selectChainItemTitle}>
                         <div>{title}</div>

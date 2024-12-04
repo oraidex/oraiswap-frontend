@@ -30,7 +30,7 @@ import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
 import { FILTER_TIME_CHART, PairToken } from 'reducer/type';
 import { assets } from 'chain-registry';
 import { flattenTokens, flattenTokensWithIcon, oraichainTokens, oraichainTokensWithIcon, tokenMap } from 'initCommon';
-import {NetworkChainId} from '@oraichain/common';
+import { NetworkChainId } from '@oraichain/common';
 
 export enum SwapDirection {
   From,
@@ -57,6 +57,7 @@ export interface NetworkFilter {
   value?: string;
   Icon?: any;
   IconLight?: any;
+  chainSymbolImageUrl?: string;
 }
 
 export const initNetworkFilter = { label: 'All networks', value: '', Icon: undefined, IconLight: undefined };
@@ -82,7 +83,6 @@ export const getTokenOnSpecificChainId = (coingeckoId: CoinGeckoId, chainId: str
   return flattenTokens.find((t) => t.coinGeckoId === coingeckoId && t.chainId === chainId);
 };
 
-
 export function filterNonPoolEvmTokens(
   chainId: string,
   coingeckoId: CoinGeckoId,
@@ -101,7 +101,11 @@ export function filterNonPoolEvmTokens(
 
     // tokens that dont have a pool on Oraichain like WETH or WBNB cannot be swapped from a token on Oraichain
     if (direction === SwapDirection.To)
-      return [...new Set(filteredTokens.concat(filteredTokens.map((token) => getTokenOnOraichain(token.coinGeckoId, oraichainTokens))))];
+      return [
+        ...new Set(
+          filteredTokens.concat(filteredTokens.map((token) => getTokenOnOraichain(token.coinGeckoId, oraichainTokens)))
+        )
+      ];
     filteredToTokens = filteredTokens;
   }
   // special case filter. Tokens on networks other than supported evm cannot swap to tokens, so we need to remove them
