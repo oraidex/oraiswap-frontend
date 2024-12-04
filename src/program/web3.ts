@@ -30,8 +30,8 @@ export const commitmentLevel = 'confirmed';
 export const TOKEN_RESERVES = 1_000_000_000_000_000;
 export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
-export const SOL_RELAYER_ADDRESS = 'Ej1Gp4XrujjR1Hjng4oYXu2wSYj3uqJZMwALkEjxrBjw';
-export const ORAICHAIN_RELAYER_ADDRESS = 'orai103hs35s556n0f8r69j036wvhya6ttz450u4jra';
+export const SOL_RELAYER_ADDRESS = 'HGPezSRSzZNXiBhzEXPw1gwCqsdbW7Psy5TjeyB78x8j';
+export const ORAICHAIN_RELAYER_ADDRESS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
 
 export class Web3SolanaProgramInteraction {
   connection: Connection;
