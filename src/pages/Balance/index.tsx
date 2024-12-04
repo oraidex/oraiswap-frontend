@@ -11,7 +11,8 @@ import {
   TokenItemType,
   calculateTimeoutTimestamp,
   getCosmosGasPrice,
-  solChainId
+  solChainId,
+  SOLANA_RPC
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -90,6 +91,9 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { Web3SolanaProgramInteraction } from 'program/web3';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
 import { ORAICHAIN_RELAYER_ADDRESS } from 'program/web3';
+
+import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import { getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
 
 interface BalanceProps {}
 
@@ -533,6 +537,23 @@ const Balance: React.FC<BalanceProps> = () => {
 
       if (isSolToOraichain || isOraichainToSol) {
         if (isOraichainToSol) {
+          const connection = new Connection(SOLANA_RPC, 'confirmed');
+          const tokenAccountPubkey = new PublicKey(solAddress);
+          console.log({
+            newToToken: newToToken.contractAddress,
+            solAddress
+          });
+
+          const tokenAccount = await getAssociatedTokenAddress(
+            new PublicKey(newToToken.contractAddress),
+            tokenAccountPubkey
+          );
+
+          const getTokenAccount = await connection.getAccountInfo(tokenAccount);
+          if ((getTokenAccount?.lamports || 0) === 0) {
+            throw generateError('The destination token account is not initalized! Please try with an active account!');
+          }
+
           return handleTransferOraichainToSol({ fromToken: from, transferAmount: fromAmount });
         }
 

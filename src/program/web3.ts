@@ -37,10 +37,13 @@ export class Web3SolanaProgramInteraction {
   connection: Connection;
 
   constructor() {
-    this.connection = new Connection(DEFAULT_SOLANA_RPC, {
-      commitment: commitmentLevel,
-      wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
-    });
+    this.connection = new Connection(
+      'https://alien-stylish-road.solana-mainnet.quiknode.pro/4a5144638133c97e486d36e03fa4a82ea99c9add/',
+      {
+        commitment: commitmentLevel,
+        wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
+      }
+    );
   }
 
   bridgeSolToOrai = async (
