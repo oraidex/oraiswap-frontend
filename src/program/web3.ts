@@ -21,19 +21,17 @@ import BigNumber from 'bignumber.js';
 import {
   toAmount,
   TokenItemType,
-  SOL_RELAYER_ADDRESS as STAGING_SOL_RELAYER_ADDRESS,
   SOLANA_RPC as DEFAULT_SOLANA_RPC,
   SOLANA_WEBSOCKET as DEFAULT_SOLANA_WEBSOCKET,
-  MEMO_PROGRAM_ID,
-  ORAICHAIN_RELAYER_ADDRESS as STAGING_ORAICHAIN_RELAYER_ADDRESS
+  MEMO_PROGRAM_ID
 } from '@oraichain/oraidex-common';
 
 export const commitmentLevel = 'confirmed';
 export const TOKEN_RESERVES = 1_000_000_000_000_000;
 export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
-export const SOL_RELAYER_ADDRESS = STAGING_SOL_RELAYER_ADDRESS;
-export const ORAICHAIN_RELAYER_ADDRESS = STAGING_ORAICHAIN_RELAYER_ADDRESS;
+export const SOL_RELAYER_ADDRESS = 'Ej1Gp4XrujjR1Hjng4oYXu2wSYj3uqJZMwALkEjxrBjw';
+export const ORAICHAIN_RELAYER_ADDRESS = 'orai103hs35s556n0f8r69j036wvhya6ttz450u4jra';
 
 export class Web3SolanaProgramInteraction {
   connection: Connection;
