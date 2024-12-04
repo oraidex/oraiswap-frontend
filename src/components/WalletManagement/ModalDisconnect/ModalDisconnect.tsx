@@ -22,6 +22,7 @@ export const ModalDisconnect: React.FC<{
   const [oraiAddress, setOraiAddress] = useConfigReducer('address');
   const [tronAddress, setTronAddress] = useConfigReducer('tronAddress');
   const [btcAddress, setBtcAddress] = useConfigReducer('btcAddress');
+  const [solAddress, setSolAddress] = useConfigReducer('solAddress');
   const [metamaskAddress, setMetamaskAddress] = useConfigReducer('metamaskAddress');
   const { isCopied, copiedValue, handleCopy } = useCopyClipboard();
 
@@ -46,6 +47,9 @@ export const ModalDisconnect: React.FC<{
         break;
       case 'tron':
         choosedAddressDisplayByNetwork = tronAddress;
+        break;
+      case 'solana':
+        choosedAddressDisplayByNetwork = solAddress;
         break;
       default:
         break;
@@ -74,6 +78,9 @@ export const ModalDisconnect: React.FC<{
         break;
       case 'tron':
         setTronAddress(undefined);
+        break;
+      case 'solana':
+        setSolAddress(undefined);
         break;
       default:
         break;

@@ -5,7 +5,8 @@ import {
   ChainIdEnum,
   BridgeAppCurrency,
   CustomChainInfo,
-  defaultBech32Config
+  defaultBech32Config,
+  solChainId
 } from '@oraichain/oraidex-common';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import OraiIcon from 'assets/icons/oraichain.svg?react';
@@ -121,7 +122,11 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
-export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
+export const chainInfosWithIcon = mapListWithIcon(
+  [...customChainInfos, bitcoinMainnet, oraibtcNetwork],
+  chainIcons,
+  'chainId'
+);
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
 
@@ -145,17 +150,7 @@ export const OraiToken: BridgeAppCurrency = {
 
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
-  currencies: [
-    ...customOraichainNetwork.currencies
-    // {
-    //   coinDenom: 'BTC V2',
-    //   coinGeckoId: 'bitcoin',
-    //   coinMinimalDenom: CWBitcoinFactoryDenom,
-    //   bridgeTo: ['bitcoin'] as any,
-    //   coinDecimals: 14 as any,
-    //   coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'
-    // }
-  ]
+  currencies: [...customOraichainNetwork.currencies]
 };
 
 export const OraiBTCBridgeNetwork = {
@@ -220,4 +215,4 @@ export const evmChains = chainInfos.filter(
   (c) => c.networkType === 'evm' && c.bip44.coinType === 60 && c.chainId !== '0x1ae6'
 );
 
-export const btcChains = chainInfos.filter((c) => c.networkType === ('bitcoin' as any));
+export const btcChains = chainInfos.filter((c) => c.networkType === 'bitcoin');

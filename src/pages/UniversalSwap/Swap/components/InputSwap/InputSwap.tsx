@@ -9,6 +9,7 @@ import { chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
 import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
 import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP } from 'helper/constants';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 
 const cx = cn.bind(styles);
 
@@ -53,7 +54,15 @@ export default function InputSwap({
   loadingSimulate,
   impactWarning
 }: InputSwapProps) {
-  const chainInfo = chainInfosWithIcon.find((chain) => chain.chainId === selectChain);
+  let chainInfo = chainInfosWithIcon.find((chain) => chain.chainId === selectChain);
+  console.log({ selectChain });
+
+  if (!chainInfo) {
+    chainInfo = {
+      Icon: DefaultIcon,
+      IconLight: DefaultIcon
+    };
+  }
   const tokenInfo = flattenTokensWithIcon.find((flattenToken) => flattenToken.coinGeckoId === token.coinGeckoId);
   const isLightMode = theme === 'light';
 
@@ -66,7 +75,7 @@ export default function InputSwap({
               {isLightMode ? <chainInfo.IconLight className={cx('logo')} /> : <chainInfo.Icon className={cx('logo')} />}
             </div>
             <div className={cx('section')}>
-              <div className={cx('name')}>{chainInfo.chainName}</div>
+              <div className={cx('name')}>{chainInfo?.chainName}</div>
             </div>
             <img src={ArrowImg} alt="arrow" />
           </div>

@@ -7,7 +7,7 @@ import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { network } from 'config/networks';
 import { ThemeProvider } from 'context/theme-context';
-import { getListAddressCosmos, interfaceRequestTron } from 'helper';
+import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
@@ -28,12 +28,15 @@ import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
+import { SolanaWalletProvider } from 'context/solana-content';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
   const [, setTronAddress] = useConfigReducer('tronAddress');
   const [, setMetamaskAddress] = useConfigReducer('metamaskAddress');
   const [, setBtcAddress] = useConfigReducer('btcAddress');
+  const [, setSolAddress] = useConfigReducer('solAddress');
   const [, setStatusChangeAccount] = useConfigReducer('statusChangeAccount');
   const loadTokenAmounts = useLoadTokens();
   const [persistVersion, setPersistVersion] = useConfigReducer('persistVersion');
@@ -45,6 +48,7 @@ const App = () => {
   const ethOwallet = window.eth_owallet;
 
   const dispatch = useDispatch();
+  const solanaWallet = useWallet();
 
   useTronEventListener();
 
@@ -233,6 +237,43 @@ const App = () => {
     return btcAddress;
   };
 
+  const handleAddressSolOwallet = async () => {
+    let solAddress;
+    if (walletByNetworks.solana === 'owallet' || mobileMode) {
+      if (window.owalletSolana) {
+        const { publicKey } = await window.owalletSolana.connect();
+        if (publicKey) {
+          solAddress = publicKey.toBase58();
+          setSolAddress(solAddress);
+        }
+      }
+    }
+    return solAddress;
+  };
+
+  useEffect(() => {
+    const provider = window?.solana;
+    if (provider) {
+      provider?.on('accountChanged', (publicKeySol: any) => {
+        const wallet = getWalletByNetworkFromStorage();
+        if (wallet.solana === 'phantom') {
+          if (publicKeySol) {
+            const solAddress = publicKeySol.toBase58();
+            setSolAddress(solAddress);
+            loadTokenAmounts({ solAddress });
+          } else {
+            // Attempt to reconnect to Phantom or Owallet
+            provider.connect().catch((error: any) => {
+              console.error({ errorSolAccountChanged: error });
+            });
+          }
+        }
+      });
+    }
+
+    return () => {};
+  }, []);
+
   const handleAddressTronOwallet = async () => {
     let tronAddress;
 
@@ -255,12 +296,14 @@ const App = () => {
       const metamaskAddress = await handleAddressEvmOwallet();
       const btcAddress = await handleAddressBtcOwallet();
       const tronAddress = await handleAddressTronOwallet();
+      const solAddress = await handleAddressSolOwallet();
 
       loadTokenAmounts({
         oraiAddress,
         metamaskAddress,
         tronAddress,
-        btcAddress
+        btcAddress,
+        solAddress
       });
     } catch (error) {
       console.log('Error: ', error.message);
@@ -274,18 +317,20 @@ const App = () => {
   const [openBanner, setOpenBanner] = useState(false);
 
   return (
-    <ThemeProvider>
-      <div className={`app ${theme}`}>
-        {/* <button data-featurebase-feedback>Open Widget</button> */}
-        <Menu />
-        <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
-        {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
-        <div className="main">
-          <Sidebar />
-          <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
+    <SolanaWalletProvider>
+      <ThemeProvider>
+        <div className={`app ${theme}`}>
+          {/* <button data-featurebase-feedback>Open Widget</button> */}
+          <Menu />
+          <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
+          {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
+          <div className="main">
+            <Sidebar />
+            <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
+          </div>
         </div>
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </SolanaWalletProvider>
   );
 };
 

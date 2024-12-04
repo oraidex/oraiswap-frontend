@@ -11,7 +11,9 @@ import {
   MULTIPLIER,
   TRON_SCAN,
   EVM_CHAIN_ID_COMMON,
-  WalletType as WalletCosmosType
+  SOL_SCAN,
+  WalletType as WalletCosmosType,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { network } from 'config/networks';
 import { serializeError } from 'serialize-error';
@@ -69,6 +71,9 @@ export const evmNetworksIconWithoutTron = chainInfosWithIcon.filter(
 export const tronNetworks = chainInfos.filter((c) => c.chainId === '0x2b6653dc');
 export const tronNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === '0x2b6653dc');
 export const btcNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === bitcoinChainId);
+export const solanaNetworksWithIcon = chainInfosWithIcon.filter(
+  (c) => c.chainId === 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'
+);
 
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
@@ -105,6 +110,8 @@ export const getTransactionUrl = (chainId: NetworkChainId, transactionHash: stri
       return `${ETHEREUM_SCAN}/tx/${transactionHash}`;
     case Networks.tron:
       return `${TRON_SCAN}/#/transaction/${transactionHash.replace(/^0x/, '')}`;
+    case Number(solChainId):
+      return `${SOL_SCAN}/tx/${transactionHash}`;
     default:
       // raw string
       switch (chainId) {
@@ -403,9 +410,18 @@ export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwor
 export const getAddressTransfer = async (network: CustomChainInfo, walletByNetworks: WalletsByNetwork) => {
   try {
     let address = '';
+
     if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
-    } else if (isConnectSpecificNetwork(walletByNetworks.cosmos)) {
+    } else if (network.networkType == ('svm' as any)) {
+      let provider = window?.solana;
+      if (walletByNetworks.solana === 'owallet') {
+        provider = window?.owalletSolana;
+      }
+
+      const { publicKey } = await provider.connect();
+      address = publicKey.toBase58();
+    } else if (!['evm', 'svm'].includes(network.networkType) && isConnectSpecificNetwork(walletByNetworks.cosmos)) {
       address = await window.Keplr.getKeplrAddr(network.chainId);
     }
     return address;

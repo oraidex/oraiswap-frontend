@@ -29,6 +29,7 @@ import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
 import SolanaIcon from 'assets/icons/solana.svg?react';
+import MaxIcon from 'assets/icons/max.svg?react';
 import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -175,6 +176,11 @@ export const tokensIconInfos: TokenIcon[] = [
     coinGeckoId: 'solana',
     Icon: SolanaIcon,
     IconLight: SolanaIcon
+  },
+  {
+    coinGeckoId: 'max.clan' as any,
+    Icon: MaxIcon,
+    IconLight: MaxIcon
   }
 ];
 
@@ -248,6 +254,11 @@ export const chainIconsInfos: ChainIcon[] = [
     chainId: 'celestia',
     Icon: CelestiaIcon,
     IconLight: CelestiaIcon
+  },
+  {
+    chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp' as any,
+    Icon: SolanaIcon,
+    IconLight: SolanaIcon
   }
 ];
 

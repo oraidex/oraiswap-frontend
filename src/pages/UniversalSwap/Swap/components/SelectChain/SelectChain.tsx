@@ -9,6 +9,7 @@ import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import styles from './SelectChain.module.scss';
 
 const cx = cn.bind(styles);
@@ -88,7 +89,14 @@ export default function SelectChain({
               })
               .sort((a, b) => Number(b.totalUsd || 0) - Number(a.totalUsd || 0))
               .map((item) => {
-                const networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
+                let networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
+                if (!networkIcon) {
+                  networkIcon = {
+                    ...item,
+                    Icon: DefaultIcon,
+                    IconLight: DefaultIcon
+                  };
+                }
                 const key = item.chainId.toString();
                 const title = item.chainName;
                 const balance = '$' + (item.totalUsd > 0 ? item.totalUsd.toFixed(2) : '0');
