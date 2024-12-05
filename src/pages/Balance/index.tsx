@@ -12,7 +12,8 @@ import {
   calculateTimeoutTimestamp,
   getCosmosGasPrice,
   solChainId,
-  SOLANA_RPC
+  SOLANA_RPC,
+  toDisplay
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -88,12 +89,13 @@ import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
 import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Web3SolanaProgramInteraction } from 'program/web3';
+import { SOL_RELAYER_ADDRESS, Web3SolanaProgramInteraction } from 'program/web3';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
 import { ORAICHAIN_RELAYER_ADDRESS } from 'program/web3';
 
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
-import { getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
+import { getAccount, getAssociatedTokenAddress, NATIVE_MINT } from '@solana/spl-token';
+import { BN } from '@coral-xyz/anchor';
 
 interface BalanceProps {}
 
@@ -452,6 +454,17 @@ const Balance: React.FC<BalanceProps> = () => {
     transferAmount: number;
   }) => {
     const web3Solana = new Web3SolanaProgramInteraction();
+    console.log('from token address: ', fromToken.contractAddress);
+    const bridgeBalance =
+      fromToken.contractAddress === NATIVE_MINT.toBase58()
+        ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
+        : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, fromToken.contractAddress);
+    console.log('token balance to oraichain: ', bridgeBalance, fromToken.contractAddress);
+    if (bridgeBalance < transferAmount) {
+      throw new Error(
+        `Transfer ${fromToken.denom} to Oraichain failed. The bridge balance only has ${bridgeBalance}${fromToken.denom}, wanted ${transferAmount}${fromToken.denom}`
+      );
+    }
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
     const transaction = response?.transaction;
     if (transaction) {
@@ -469,6 +482,20 @@ const Balance: React.FC<BalanceProps> = () => {
     transferAmount: number;
   }) => {
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
+    const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
+    console.log(
+      'Current bridge balance transfer to sol: ',
+      toDisplay(currentBridgeBalance.amount, fromToken.decimals),
+      fromToken.denom
+    );
+    if (toDisplay(currentBridgeBalance.amount, fromToken.decimals) < transferAmount) {
+      throw new Error(
+        `Transfer ${fromToken.denom} to Solana failed. The bridge balance only has ${toDisplay(
+          currentBridgeBalance.amount,
+          fromToken.decimals
+        )}${currentBridgeBalance.denom.toUpperCase()}, wanted ${transferAmount}${currentBridgeBalance.denom.toUpperCase()}`
+      );
+    }
     const result = await window.client.sendTokens(
       oraiAddress,
       receiverAddress,
