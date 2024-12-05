@@ -8,8 +8,7 @@ import {
   MULTIPLIER,
   TRON_SCAN,
   EVM_CHAIN_ID_COMMON,
-  WalletType as WalletCosmosType,
-  chainIcons
+  WalletType as WalletCosmosType
 } from '@oraichain/oraidex-common';
 import { serializeError } from 'serialize-error';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
@@ -26,7 +25,15 @@ import { WalletsByNetwork } from 'reducer/wallet';
 import { evmChainInfos } from 'config/evmChainInfos';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
-import { chainInfos, chainInfosWithIcon, cosmosChains, evmChains, flattenTokensWithIcon, network } from 'initCommon';
+import {
+  chainInfos,
+  chainInfosWithIcon,
+  cosmosChains,
+  evmChains,
+  flattenTokens,
+  flattenTokensWithIcon,
+  network
+} from 'initCommon';
 import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common';
 
 export interface Tokens {
@@ -620,23 +627,23 @@ export function formatMoney(num) {
 
 export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
   if (type === 'token') {
-    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === coinGeckoId);
+    const tokenIcon = flattenTokens.find((token) => token.coinGeckoId === coinGeckoId);
     if (tokenIcon) {
       return isLightTheme ? (
-        <tokenIcon.IconLight width={width} height={height} />
+        <img src={tokenIcon.iconLight} alt="" width={width} height={height} />
       ) : (
-        <tokenIcon.Icon width={width} height={height} />
+        <img src={tokenIcon.icon} alt="" width={width} height={height} />
       );
     }
 
     return <DefaultIcon />;
   } else {
-    const networkIcon = chainIcons.find((chain) => chain.chainId === chainId);
+    const networkIcon = chainInfos.find((chain) => chain.chainId === chainId);
     if (networkIcon) {
       return isLightTheme ? (
-        <networkIcon.IconLight width={width} height={height} />
+        <img src={networkIcon.chainSymbolImageUrl} alt="" width={width} height={height} />
       ) : (
-        <networkIcon.Icon width={width} height={height} />
+        <img src={networkIcon.chainSymbolImageUrl} alt="" width={width} height={height} />
       );
     }
 

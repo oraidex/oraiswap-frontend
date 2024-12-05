@@ -1,4 +1,4 @@
-import { WalletType as WalletCosmosType } from '@oraichain/oraidex-common';
+import { OraiIcon, WalletType as WalletCosmosType } from '@oraichain/oraidex-common';
 import { Button } from 'components/Button';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import type { WalletNetwork, WalletProvider, WalletType } from 'components/WalletManagement/walletConfig';
@@ -255,11 +255,11 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
 
   const renderNetworkIcons = () => {
     return networks.map((network, index) => {
-      let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
-      if (!NetworkIcon) NetworkIcon = DefaultIcon;
+      let NetworkIcon = theme === 'dark' ? network.chainSymbolImageUrl : network.chainSymbolImageUrl;
+      if (!NetworkIcon) NetworkIcon = OraiIcon;
       return (
         <div className={styles.networkIcon} key={network.chainName + index}>
-          <NetworkIcon width={20} height={20} />
+          <img src={NetworkIcon} alt="NetworkIcon" width={20} height={20} />
         </div>
       );
     });

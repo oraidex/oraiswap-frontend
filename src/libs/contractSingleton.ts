@@ -192,7 +192,7 @@ export default class SingletonOraiswapV3 {
     return this._cosmwasmClient;
   }
 
-  private constructor() { }
+  private constructor() {}
 
   public static async load(signingClient: SigningCosmWasmClient, sender: string) {
     if (!this._cosmwasmClient) {
@@ -902,7 +902,7 @@ export async function fetchPoolAprInfo(
           const token = oraichainTokens.find(
             (token) => extractAddress(token) === parseAssetInfo(incentive.reward_token)
           );
-          return token.denom.toUpperCase();
+          return token.name.toUpperCase();
         })
         .filter((incentive) => incentive !== null),
       swapFee: {

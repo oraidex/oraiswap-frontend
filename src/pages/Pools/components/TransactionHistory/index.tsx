@@ -1,4 +1,4 @@
-import { TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
+import { OraiIcon, TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import LinkIcon from 'assets/icons/link.svg?react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
@@ -20,7 +20,7 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
   const mobileMode = isMobile();
   const { data: prices } = useCoinGeckoPrices();
 
-  let [BaseTokenIcon, QuoteTokenIcon] = [DefaultIcon, DefaultIcon];
+  let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
 
   const baseDenom = baseToken && parseTokenInfoRawDenom(baseToken);
   const quoteDenom = quoteToken && parseTokenInfoRawDenom(quoteToken);
@@ -50,13 +50,12 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                   const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
 
                   if (offerToken)
-                    BaseTokenIcon = theme === 'light' ? offerToken.IconLight || offerToken.Icon : offerToken.Icon;
+                    BaseTokenIcon = theme === 'light' ? offerToken.iconLight || offerToken.icon : offerToken.icon;
                   if (returnToken)
-                    QuoteTokenIcon = theme === 'light' ? returnToken.IconLight || returnToken.Icon : returnToken.Icon;
+                    QuoteTokenIcon = theme === 'light' ? returnToken.iconLight || returnToken.icon : returnToken.icon;
 
                   const returnUSD = getUsd(item.returnAmount, returnToken, prices);
                   const feeUSD = getUsd(item.commissionAmount, returnToken, prices);
-
                   return (
                     <div className={styles.item} key={index}>
                       <div className={styles.info}>
@@ -109,7 +108,7 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                           <div className={styles.titleItem}>Pay amount</div>
                           <div className={styles.amount}>
                             <div>
-                              <BaseTokenIcon />
+                              <img width={20} height={20} src={BaseTokenIcon} alt="" />
                             </div>
                             <span>
                               {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
@@ -122,7 +121,7 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                           <div className={styles.titleItem}>Receive amount</div>
                           <div className={styles.amount}>
                             <div>
-                              <QuoteTokenIcon />
+                              <img width={20} height={20} src={QuoteTokenIcon} alt="" />
                             </div>
                             <span>
                               {numberWithCommas(toDisplay(item.returnAmount), undefined, { maximumFractionDigits: 6 })}
@@ -169,10 +168,10 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                       const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
 
                       if (offerToken)
-                        BaseTokenIcon = theme === 'light' ? offerToken.IconLight || offerToken.Icon : offerToken.Icon;
+                        BaseTokenIcon = theme === 'light' ? offerToken.iconLight || offerToken.icon : offerToken.icon;
                       if (returnToken)
                         QuoteTokenIcon =
-                          theme === 'light' ? returnToken.IconLight || returnToken.Icon : returnToken.Icon;
+                          theme === 'light' ? returnToken.iconLight || returnToken.icon : returnToken.icon;
 
                       const returnUSD = getUsd(item.returnAmount, returnToken, prices);
                       const feeUSD = getUsd(item.commissionAmount, returnToken, prices);
@@ -198,7 +197,7 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                           <td className={`${styles.pay}`}>
                             <div className={styles.amount}>
                               <div>
-                                <BaseTokenIcon />
+                                <img src={BaseTokenIcon} width={20} height={20} alt="" />
                               </div>
                               <span>
                                 {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
@@ -214,7 +213,7 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                           <td className={`${styles.receive}`}>
                             <div className={styles.amount}>
                               <div>
-                                <QuoteTokenIcon />
+                                <img src={QuoteTokenIcon} width={20} height={20} alt="" />
                               </div>
                               <span>
                                 {numberWithCommas(toDisplay(item.returnAmount), undefined, {

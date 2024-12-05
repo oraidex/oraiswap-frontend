@@ -200,7 +200,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
                   <div className={styles.assetEarning} key={idx}>
                     <div className={styles.title}>
                       {generateIcon(pendingReward)}
-                      <span>{pendingReward.denom.toUpperCase()} Earning</span>
+                      <span>{pendingReward.name.toUpperCase()} Earning</span>
                     </div>
                     <div className={styles.amountWrapper}>
                       <div className={styles.amount}>
@@ -219,7 +219,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
                         <TokenBalance
                           balance={{
                             amount: pendingReward.amount,
-                            denom: pendingReward?.denom.toUpperCase(),
+                            denom: pendingReward?.name.toUpperCase(),
                             decimals: 6
                           }}
                           decimalScale={6}

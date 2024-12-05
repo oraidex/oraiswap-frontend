@@ -1,4 +1,4 @@
-import { BTC_CONTRACT, CW20_DECIMALS, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
+import { BTC_CONTRACT, CW20_DECIMALS, fetchRetry, OraiIcon, toDisplay } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import classNames from 'classnames';
 import TokenBalance from 'components/TokenBalance';
@@ -27,9 +27,9 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
   const isLight = theme === 'light';
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
 
-  let [BaseTokenIcon, QuoteTokenIcon] = [DefaultIcon, DefaultIcon];
-  if (token1) BaseTokenIcon = theme === 'light' ? token1.IconLight || token1.Icon : token1.Icon;
-  if (token2) QuoteTokenIcon = theme === 'light' ? token2.IconLight || token2.Icon : token2.Icon;
+  let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
+  if (token1) BaseTokenIcon = theme === 'light' ? token1.iconLight || token1.icon : token1.icon;
+  if (token2) QuoteTokenIcon = theme === 'light' ? token2.iconLight || token2.icon : token2.icon;
 
   const aprBoost = Number(poolDetailData.info?.aprBoost || 0).toFixed(2);
   const isApproximatelyZero = Number(aprBoost) === 0;
@@ -99,24 +99,24 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
           {listBTCAddresses.includes(token2.denom) || listBTCAddresses.includes(token2.contractAddress) ? (
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {BaseTokenIcon && <BaseTokenIcon />}
+                <img src={BaseTokenIcon} alt="" />
                 <span className={styles.value}>{oraiBtcAllocation.oraiBalanceDisplay}</span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {QuoteTokenIcon && <QuoteTokenIcon />}
+                <img src={QuoteTokenIcon} alt="" />
                 <span className={styles.value}>{oraiBtcAllocation.btcBalanceDisplay}</span>
               </div>
             </div>
           ) : (
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {BaseTokenIcon && <BaseTokenIcon />}
+                <img src={BaseTokenIcon} alt="" />
                 <span className={styles.value}>
                   {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0'), false)}
                 </span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {QuoteTokenIcon && <QuoteTokenIcon />}
+                <img src={QuoteTokenIcon} alt="" />
                 <span className={styles.value}>
                   {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0'), false)}
                 </span>

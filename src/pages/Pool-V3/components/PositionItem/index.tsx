@@ -527,7 +527,7 @@ const PositionItem = ({ position }) => {
                 {incentives && <div style={{ height: 8 }} />}
                 {incentives &&
                   Object.keys(incentives).map((incent, i) => {
-                    const tokenIncentive = oraichainTokensWithIcon.find((orai) =>
+                    const tokenIncentive = oraichainTokens.find((orai) =>
                       [orai.denom, orai.contractAddress].includes(incent)
                     );
 
@@ -537,7 +537,11 @@ const PositionItem = ({ position }) => {
                         <div className={classNames(styles.itemAsset, styles[theme])}>
                           <span className={classNames(styles.token, styles[theme])}></span>
                           <span className={classNames(styles.token, styles[theme])}>
-                            {theme === 'light' ? <tokenIncentive.IconLight /> : <tokenIncentive.Icon />}
+                            {theme === 'light' ? (
+                              <img src={tokenIncentive.iconLight} alt="tokenIncentive" width={20} height={20} />
+                            ) : (
+                              <img src={tokenIncentive.icon} alt="tokenIncentive" width={20} height={20} />
+                            )}
                             {toDisplay(incentives[incent].toString())} {tokenIncentive?.name}
                           </span>
                         </div>

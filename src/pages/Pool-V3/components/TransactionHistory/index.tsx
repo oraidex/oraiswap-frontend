@@ -1,4 +1,4 @@
-import { TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
+import { OraiIcon, TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import LinkIcon from 'assets/icons/link.svg?react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
@@ -28,7 +28,7 @@ const TransactionHistory = ({
   const mobileMode = isMobile();
   const { data: prices } = useCoinGeckoPrices();
 
-  let [BaseTokenIcon, QuoteTokenIcon] = [null, null];
+  let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
 
   const baseDenom = baseToken && parseTokenInfoRawDenom(baseToken);
   const quoteDenom = quoteToken && parseTokenInfoRawDenom(quoteToken);
@@ -57,20 +57,8 @@ const TransactionHistory = ({
                   const offerToken = item.offerDenom === baseDenom ? baseToken : quoteToken;
                   const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
 
-                  if (offerToken)
-                    BaseTokenIcon =
-                      theme === 'light' ? (
-                        <img src={offerToken.iconLight} alt="icon" />
-                      ) : (
-                        <img src={offerToken.icon} alt="icon" />
-                      );
-                  if (returnToken)
-                    QuoteTokenIcon =
-                      theme === 'light' ? (
-                        <img src={returnToken.iconLight} alt="icon" />
-                      ) : (
-                        <img src={returnToken.icon} alt="icon" />
-                      );
+                  if (offerToken) BaseTokenIcon = theme === 'light' ? offerToken.iconLight : offerToken.icon;
+                  if (returnToken) QuoteTokenIcon = theme === 'light' ? returnToken.iconLight : returnToken.icon;
 
                   const returnUSD = item.volumeUSD;
                   const feeUSD = item.commissionAmount;
@@ -107,7 +95,7 @@ const TransactionHistory = ({
                         <div className={`${styles.pay}`}>
                           <div className={styles.titleItem}>Pay amount</div>
                           <div className={styles.amount}>
-                            <div>{BaseTokenIcon}</div>
+                            <img src={BaseTokenIcon} alt="" width={20} height={20} />
                             <span>
                               {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -118,7 +106,7 @@ const TransactionHistory = ({
                         <div className={`${styles.receive}`}>
                           <div className={styles.titleItem}>Receive amount</div>
                           <div className={styles.amount}>
-                            <div>{QuoteTokenIcon}</div>
+                            <img src={QuoteTokenIcon} alt="" width={20} height={20} />
                             <span>
                               {numberWithCommas(toDisplay(item.returnAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -192,7 +180,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.pay}`}>
                             <div className={styles.amount}>
-                              <div>{BaseTokenIcon}</div>
+                              <img src={BaseTokenIcon} alt="" width={20} height={20} />
                               <span>
                                 {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                               </span>
@@ -201,7 +189,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.receive}`}>
                             <div className={styles.amount}>
-                              <div>{QuoteTokenIcon}</div>
+                              <img src={QuoteTokenIcon} width={20} height={20} alt="" />
                               <span>
                                 {numberWithCommas(toDisplay(item.returnAmount), undefined, {
                                   maximumFractionDigits: 6
