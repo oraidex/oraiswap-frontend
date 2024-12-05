@@ -8,6 +8,7 @@
   "type": "module",
   "dependencies": {
     "@babel/plugin-proposal-import-wasm-source": "^7.24.7",
+    "@coral-xyz/anchor": "^0.30.1",
     "@cosmjs/cosmwasm-stargate": "^0.32.4",
     "@cosmjs/proto-signing": "^0.32.4",
     "@cosmjs/stargate": "^0.32.4",
@@ -23,7 +24,7 @@
     "@oraichain/ethereum-multicall": "^1.0.2",
     "@oraichain/kawaiiverse-txs": "^0.0.3",
     "@oraichain/orai-bitcoin": "2.0.0",
-    "@oraichain/oraidex-common": "2.0.0-beta.15",
+    "@oraichain/oraidex-common": "2.0.0-beta.17",
     "@oraichain/oraidex-common-ui": "1.0.11",
     "@oraichain/oraidex-contracts-sdk": "1.0.55",
     "@oraichain/oraidex-universal-swap": "1.2.0-beta15",
@@ -31,6 +32,12 @@
     "@react-spring/web": "^9.7.5",
     "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "7.99.0",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.35",
+    "@solana/wallet-adapter-wallets": "^0.19.32",
+    "@solana/web3.js": "^1.95.5",
     "@tanstack/react-query": "^4.32.6",
     "@tharsis/proto": "^0.1.17",
     "@tippyjs/react": "^4.2.0",
@@ -151,7 +158,8 @@
     "bitcoinjs-lib": "5.2.0",
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
-    "@cosmjs/amino": "0.32.4"
+    "@cosmjs/amino": "0.32.4",
+    "@oraichain/oraidex-common": "2.0.0-beta.17"
   },
   "engines": {
     "node": "^18 || ^20"

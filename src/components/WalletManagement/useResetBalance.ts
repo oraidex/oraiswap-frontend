@@ -1,9 +1,9 @@
 import { EVM_CHAIN_ID_COMMON, WalletType } from '@oraichain/oraidex-common';
-import { btcTokens, cosmosTokens, flattenTokens } from 'initCommon';
+import { btcTokens, cosmosTokens, flattenTokens, solTokens } from 'initCommon';
 import { useDispatch } from 'react-redux';
 import { updateAmounts } from 'reducer/token';
 
-export type Wallet = WalletType | 'metamask' | 'tron' | 'bitcoin';
+export type Wallet = WalletType | 'metamask' | 'tron' | 'bitcoin' | 'phantom';
 export const useResetBalance = () => {
   const dispatch = useDispatch();
 
@@ -36,6 +36,9 @@ export const useResetBalance = () => {
       case 'tron':
         updatedAmounts = resetBalanceTron();
         break;
+      case 'phantom':
+        updatedAmounts = resetBalanceSol();
+        break;
       default:
         break;
     }
@@ -61,6 +64,10 @@ export const useResetBalance = () => {
   const resetBalanceTron = () => {
     const tronTokens = flattenTokens.filter((token) => token.chainId === EVM_CHAIN_ID_COMMON.TRON_CHAIN_ID);
     return Object.fromEntries(tronTokens.map((t) => [t.denom, '0']));
+  };
+
+  const resetBalanceSol = () => {
+    return Object.fromEntries(solTokens.map((t) => [t.denom, '0']));
   };
 
   return { handleResetBalance };

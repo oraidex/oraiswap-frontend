@@ -23,6 +23,7 @@ export const WalletManagement: FC<{}> = () => {
   const [oraiAddress] = useConfigReducer('address');
   const [tronAddress] = useConfigReducer('tronAddress');
   const [btcAddress] = useConfigReducer('btcAddress');
+  const [solAddress] = useConfigReducer('solAddress');
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const { handleResetBalance } = useResetBalance();
@@ -85,7 +86,7 @@ export const WalletManagement: FC<{}> = () => {
 
   // load balance every time change address
   useEffect(() => {
-    const addresses = { oraiAddress, tronAddress, metamaskAddress, btcAddress };
+    const addresses = { oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress };
     const filteredAddresses = {};
 
     for (const key in addresses) {
@@ -97,20 +98,21 @@ export const WalletManagement: FC<{}> = () => {
       loadTokenAmounts(filteredAddresses);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress]);
+  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress]);
 
   // reset balance when disconnect
   useEffect(() => {
-    if (!metamaskAddress || !tronAddress || !oraiAddress || !btcAddress) {
+    if (!metamaskAddress || !tronAddress || !oraiAddress || !btcAddress || !solAddress) {
       let arrResetBalance: WalletResetType[] = [];
       if (!metamaskAddress) arrResetBalance.push('metamask');
       if (!tronAddress) arrResetBalance.push('tron');
       if (!oraiAddress) arrResetBalance.push('keplr');
       if (!btcAddress) arrResetBalance.push('bitcoin');
+      if (!solAddress) arrResetBalance.push('phantom');
       arrResetBalance.length && handleResetBalance(arrResetBalance);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress]);
+  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress]);
 
   const isAnyWalletConnected = Object.values(walletByNetworks).some((wallet) => wallet !== null);
   useEffect(() => {

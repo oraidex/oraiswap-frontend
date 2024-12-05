@@ -677,7 +677,7 @@ const SwapComponent: React.FC<{
                     loadingRefresh,
                     setLoadingRefresh,
                     // TODO: need add bitcoinAddress when universal swap support bitcoin
-                    { metamaskAddress, tronAddress, oraiAddress },
+                    { metamaskAddress, tronAddress, oraiAddress, btcAddress: undefined, solAddress: undefined },
                     loadTokenAmounts
                   )
                 }

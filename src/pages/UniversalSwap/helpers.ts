@@ -295,13 +295,13 @@ export const getTokenIcon = (token: TokenItemType, theme: string) => {
 export const refreshBalances = async (
   loadingRefresh: boolean,
   setLoadingRefresh: (boolean) => void,
-  { metamaskAddress, tronAddress, oraiAddress },
+  { metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress },
   callback
 ) => {
   try {
     if (loadingRefresh) return;
     setLoadingRefresh(true);
-    await callback({ metamaskAddress, tronAddress, oraiAddress });
+    await callback({ metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress });
   } catch (err) {
     console.log({ err });
   } finally {
@@ -395,7 +395,7 @@ export const getProtocolsSmartRoute = (
 ) => {
   const protocols = ['Oraidex', 'OraidexV3'];
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
-  if (fromToken.chainId === 'noble-1' || toToken.chainId === 'noble-1') return protocols;
+  if (fromToken.chainId === 'noble-1' || toToken?.chainId === 'noble-1') return protocols;
 
   const allowOsmosisProtocols = ['injective-1', 'Neutaro-1', 'noble-1', 'osmosis-1', 'cosmoshub-4', 'celestia'];
   const isAllowOsmosisProtocol =

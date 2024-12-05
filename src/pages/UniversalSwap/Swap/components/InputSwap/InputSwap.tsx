@@ -8,7 +8,7 @@ import styles from './InputSwap.module.scss';
 import { Themes } from 'context/theme-context';
 import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
 import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP } from 'helper/constants';
-import { chainInfosWithIcon, flattenTokens, flattenTokensWithIcon } from 'initCommon';
+import { chainInfos, flattenTokens } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -53,8 +53,8 @@ export default function InputSwap({
   loadingSimulate,
   impactWarning
 }: InputSwapProps) {
-  const chainInfo = chainInfosWithIcon.find((chain) => chain.chainId === selectChain);
   const tokenInfo = flattenTokens.find((flattenToken) => flattenToken.coinGeckoId === token.coinGeckoId);
+  let chainInfo = chainInfos.find((chain) => chain.chainId === selectChain);
   const isLightMode = theme === 'light';
 
   return (
@@ -70,7 +70,7 @@ export default function InputSwap({
               )}
             </div>
             <div className={cx('section')}>
-              <div className={cx('name')}>{chainInfo.chainName}</div>
+              <div className={cx('name')}>{chainInfo?.chainName}</div>
             </div>
             <img src={ArrowImg} alt="arrow" />
           </div>

@@ -15,6 +15,8 @@ import { useInactiveConnect } from 'hooks/useMetamask';
 import Metamask from 'libs/metamask';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { ChainEnableByNetwork, triggerUnlockOwalletInEvmNetwork } from 'components/WalletManagement/wallet-helper';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 export type ConnectStatus = 'init' | 'confirming-switch' | 'confirming-disconnect' | 'loading' | 'failed' | 'success';
 export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProvider }) => {
@@ -26,9 +28,13 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
   const [, setTronAddress] = useConfigReducer('tronAddress');
   const [, setBtcAddress] = useConfigReducer('btcAddress');
   const [, setMetamaskAddress] = useConfigReducer('metamaskAddress');
+  const [solAddress, setSolanaAddress] = useConfigReducer('solAddress');
   const [, setCosmosAddress] = useConfigReducer('cosmosAddress');
   const [walletByNetworks, setWalletByNetworks] = useWalletReducer('walletsByNetwork');
   const connect = useInactiveConnect();
+
+  const solanaWallet = useWallet();
+  const { visible, setVisible } = useWalletModal();
 
   const handleConfirmSwitch = async () => {
     setConnectStatus('loading');
@@ -86,6 +92,22 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     setBtcAddress(btcAddress);
   };
 
+  const handleConnectWalletInSolanaNetwork = async (walletType: WalletType) => {
+    let provider = window?.solana;
+    let selectType = 'Phantom';
+    if (walletType === 'owallet') {
+      provider = window?.owalletSolana;
+      selectType = 'OWallet';
+    }
+
+    solanaWallet.select(selectType as any);
+    await solanaWallet.connect();
+    const { publicKey } = await provider.connect();
+    if (publicKey) {
+      setSolanaAddress(publicKey.toBase58());
+    }
+  };
+
   const handleConnectWalletByNetwork = async (wallet: WalletNetwork) => {
     try {
       setConnectStatus('loading');
@@ -101,6 +123,9 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
           break;
         case 'bitcoin':
           await handleConnectWalletInBtcNetwork(wallet.nameRegistry);
+          break;
+        case 'solana':
+          await handleConnectWalletInSolanaNetwork(wallet.nameRegistry);
           break;
         default:
           setConnectStatus('init');
@@ -157,6 +182,9 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         break;
       case 'bitcoin':
         setBtcAddress(undefined);
+        break;
+      case 'solana':
+        setSolanaAddress(undefined);
         break;
       default:
         break;

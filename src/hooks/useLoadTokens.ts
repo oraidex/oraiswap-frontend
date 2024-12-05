@@ -2,17 +2,29 @@ import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
-import { btcTokens, chainInfos, cosmosTokens, evmChains, evmTokens, network, oraichainTokens, tokenMap } from 'initCommon';
+import {
+  btcTokens,
+  chainInfos,
+  cosmosTokens,
+  evmChains,
+  evmTokens,
+  network,
+  oraichainTokens,
+  tokenMap,
+  solTokens
+} from 'initCommon';
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
 import { COSMOS_CHAIN_ID_COMMON } from '@oraichain/oraidex-common';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import {
+  CustomChainInfo,
   EVM_BALANCE_RETRY_COUNT,
   ERC20__factory,
   getEvmAddress,
-  tronToEthAddress
+  tronToEthAddress,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { ethers } from 'ethers';
 import { reduce } from 'lodash';
@@ -28,7 +40,7 @@ import {
   handleErrorRateLimit
 } from 'helper';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { CustomChainInfo } from '@oraichain/common';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 export type LoadTokenParams = {
   refresh?: boolean;
@@ -36,6 +48,7 @@ export type LoadTokenParams = {
   oraiAddress?: string;
   tronAddress?: string;
   btcAddress?: string;
+  solAddress?: string;
 };
 
 async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo: { chainId: string; rpc: string }) {
@@ -68,7 +81,7 @@ const timer = {};
 
 async function loadTokens(
   dispatch: Dispatch,
-  { oraiAddress, metamaskAddress, tronAddress, btcAddress }: LoadTokenParams
+  { oraiAddress, metamaskAddress, tronAddress, btcAddress, solAddress }: LoadTokenParams
 ) {
   try {
     if (oraiAddress) {
@@ -116,6 +129,7 @@ async function loadTokens(
         );
       }, 2000);
     }
+
     if (btcAddress) {
       clearTimeout(timer[btcAddress]);
       timer[btcAddress] = setTimeout(() => {
@@ -124,6 +138,17 @@ async function loadTokens(
           btcAddress,
           // TODO: hardcode check bitcoinTestnet need update later
           chainInfos.filter((c) => c.chainId == bitcoinChainId)
+        );
+      }, 2000);
+    }
+
+    if (solAddress) {
+      clearTimeout(timer[solAddress]);
+      timer[solAddress] = setTimeout(() => {
+        loadSolAmounts(
+          dispatch,
+          solAddress,
+          chainInfos.filter((c) => c.chainId == solChainId)
         );
       }, 2000);
     }
@@ -308,6 +333,41 @@ async function loadBtcEntries(
   }
 }
 
+async function loadSolEntries(
+  address: string,
+  chain: CustomChainInfo,
+  retryCount?: number
+): Promise<[string, string][]> {
+  try {
+    const connection = new Connection(chain.rpc, {
+      commitment: 'confirmed'
+    });
+
+    const walletPublicKey = new PublicKey(address);
+    const tokenAmount = await connection.getParsedTokenAccountsByOwner(walletPublicKey, {
+      programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+    });
+
+    let entries: [string, string][] = solTokens.map((item) => {
+      let amount = '0';
+      if (item?.contractAddress) {
+        const findAmount = tokenAmount.value.find(
+          (token) => token.account.data.parsed.info.mint === item.contractAddress
+        );
+        if (findAmount) amount = findAmount.account.data.parsed.info.tokenAmount.amount;
+      }
+      return [item.denom, amount];
+    });
+    return entries;
+  } catch (error) {
+    console.log('error querying BTC balance: ', error);
+    let retry = retryCount ? retryCount + 1 : 1;
+    if (retry >= EVM_BALANCE_RETRY_COUNT) throw generateError(`Cannot query BTC balance with error: ${error}`);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    return loadBtcEntries(address, chain, retry);
+  }
+}
+
 async function loadEvmAmounts(dispatch: Dispatch, evmAddress: string, chains: CustomChainInfo[]) {
   console.log('---', chains);
   const amountDetails = Object.fromEntries(
@@ -321,6 +381,18 @@ async function loadBtcAmounts(dispatch: Dispatch, btcAddress: string, chains: Cu
   try {
     const amountDetails = Object.fromEntries(
       flatten(await Promise.all(chains.map((chain) => loadBtcEntries(btcAddress, chain))))
+    );
+
+    dispatch(updateAmounts(amountDetails));
+  } catch (error) {
+    console.log('error: loadBtcAmounts', error);
+  }
+}
+
+async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: CustomChainInfo[]) {
+  try {
+    const amountDetails = Object.fromEntries(
+      flatten(await Promise.all(chains.map((chain) => loadSolEntries(solAddress, chain))))
     );
 
     dispatch(updateAmounts(amountDetails));

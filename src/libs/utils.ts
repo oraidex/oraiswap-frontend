@@ -73,7 +73,7 @@ export const toSumDisplay = (amounts: AmountDetails): number => {
     // update later
     const balance = amounts[denom];
     if (!balance) continue;
-    amount += toDisplay(balance, tokenMap[denom].decimals);
+    amount += toDisplay(balance, tokenMap[denom]?.decimals);
   }
   return amount;
 };

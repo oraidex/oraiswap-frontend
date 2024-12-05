@@ -4,12 +4,11 @@ import cn from 'classnames/bind';
 import { Themes } from 'context/theme-context';
 import { networks } from 'helper';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { chainInfos, tokenMap } from 'initCommon';
 import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import styles from './SelectChain.module.scss';
-import { chainInfos, chainInfosWithIcon, tokenMap } from 'initCommon';
-import { chainIcons } from '@oraichain/oraidex-common';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {

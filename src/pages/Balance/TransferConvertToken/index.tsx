@@ -101,8 +101,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const onTransferConvert = async (event: React.MouseEvent) => {
     event.stopPropagation();
     try {
-      const isValid = checkValidAmount();
-      if (!isValid) return;
+      // const isValid = checkValidAmount();
+      // if (!isValid) return;
       setTransferLoading(true);
 
       // if on the same kwt network => we convert between native & erc20 tokens
