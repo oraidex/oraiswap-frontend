@@ -12,7 +12,7 @@ import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import CosmJs from 'libs/cosmjs';
 import { getUsd, toSumDisplay } from 'libs/utils';
-import { estimateShare } from 'pages/Pools/helpers';
+import { canStake, estimateShare } from 'pages/Pools/helpers';
 import { useGetPoolDetail } from 'pages/Pools/hooks';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useTokenAllowance } from 'pages/Pools/hooks/useTokenAllowance';
@@ -51,6 +51,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
   const amounts = useSelector((state: RootState) => state.token.amounts);
 
   const poolDetail = useGetPoolDetail({ pairDenoms });
+  const stakeStatus = canStake(poolDetail.info.rewardPerSec);
   const { token1, token2, info: pairInfoData } = poolDetail;
   const { lpTokenInfoData, pairAmountInfoData } = useGetPairInfo(poolDetail);
   const totalBaseAmount = BigInt(pairAmountInfoData?.token1Amount ?? 0);
@@ -368,7 +369,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
                 <div className={cx('btn-group')}>
                   <Button
                     onClick={() => handleAddLiquidity(baseAmount, quoteAmount)}
-                    type="secondary"
+                    type="primary"
                     disabled={disabled}
                   >
                     {actionLoading && <Loader width={22} height={22} />}
@@ -377,7 +378,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
                   <Button
                     onClick={() => handleDepositAndStakeAll(baseAmount, quoteAmount)}
                     type="primary"
-                    disabled={disabled}
+                    disabled={!stakeStatus}
                   >
                     {actionAllLoading && <Loader width={22} height={22} />}
                     {'Deposit & Stake All'}
