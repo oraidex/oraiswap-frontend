@@ -109,7 +109,7 @@ const Sidebar: React.FC<{}> = React.memo(() => {
             {renderLink(`/pools`, 'Pools', setLink, <PoolV3Icon />)}
             {renderLink('/staking', 'Staking', setLink, <StakingIcon />)}
             {renderLink('/co-harvest', 'Co-Harvest', setLink, <CohavestIcon />)}
-            {renderLink('/bitcoin-dashboard', 'BTC Dashboard', setLink, <BtcDashboardIcon />)}
+            {/* {renderLink('/bitcoin-dashboard', 'BTC Dashboard', setLink, <BtcDashboardIcon />)} */}
             {renderLink('/bitcoin-dashboard-v2', 'BTC V2', setLink, <BtcDashboardIcon />)}
             {!isBeta && renderLink('https://beta.oraidex.io', 'OraiDEX Beta', setLink, <OraidexBetaIcon />, true)}
           </div>
