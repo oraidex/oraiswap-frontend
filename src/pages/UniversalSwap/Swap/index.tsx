@@ -630,7 +630,7 @@ const SwapComponent: React.FC<{
         <div key={ind} className={cx('smart-router-item')}>
           <div className={cx('smart-router-item-volumn')}>{volumn.toFixed(0)}%</div>
           {route.paths.map((path, i, acc) => {
-            const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, chainInfosWithIcon, assets);
+            const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, assets);
             return (
               <React.Fragment key={i}>
                 <div className={cx('smart-router-item-line')}>
@@ -638,8 +638,12 @@ const SwapComponent: React.FC<{
                 </div>
                 <div className={cx('smart-router-item-pool')} onClick={() => setOpenSmartRoute(!openSmartRoute)}>
                   <div className={cx('smart-router-item-pool-wrap')} onClick={() => setIndSmartRoute([ind, i])}>
-                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkFromIcon />}</div>
-                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkToIcon />}</div>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>
+                      <img src={NetworkFromIcon} alt="NetworkFromIcon" />
+                    </div>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>
+                      <img src={NetworkToIcon} alt="NetworkToIcon" />
+                    </div>
                   </div>
                 </div>
                 {i === acc.length - 1 && (
@@ -915,7 +919,7 @@ const SwapComponent: React.FC<{
               [routersSwapData?.routes[indSmartRoute[0]]?.paths[indSmartRoute[1]]].map((path) => {
                 if (!path) return null;
                 // TODO: chainIcons => chainInfosWithIcon to get correct icon
-                const { NetworkFromIcon, NetworkToIcon, pathChainId } = getPathInfo(path, chainIcons, assets);
+                const { NetworkFromIcon, NetworkToIcon, pathChainId } = getPathInfo(path, assets);
                 const flattenSmartRouters = UniversalSwapHelper.flattenSmartRouters([
                   {
                     swapAmount: '0',

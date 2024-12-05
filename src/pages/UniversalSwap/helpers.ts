@@ -11,7 +11,8 @@ import {
   BigDecimal,
   toAmount,
   COSMOS_CHAIN_ID_COMMON,
-  PAIRS_CHART
+  PAIRS_CHART,
+  OraiIcon
 } from '@oraichain/oraidex-common';
 import {
   getSwapFromTokens,
@@ -29,7 +30,14 @@ import { formatDate, formatTimeWithPeriod } from 'pages/CoHarvest/helpers';
 import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
 import { FILTER_TIME_CHART, PairToken } from 'reducer/type';
 import { assets } from 'chain-registry';
-import { flattenTokens, flattenTokensWithIcon, oraichainTokens, oraichainTokensWithIcon, tokenMap } from 'initCommon';
+import {
+  chainInfos,
+  flattenTokens,
+  flattenTokensWithIcon,
+  oraichainTokens,
+  oraichainTokensWithIcon,
+  tokenMap
+} from 'initCommon';
 import { NetworkChainId } from '@oraichain/common';
 
 export enum SwapDirection {
@@ -460,28 +468,20 @@ export const transformSwapInfo = (data) => {
   return transformedData;
 };
 
-export const getPathInfo = (path, chainIcons, assets) => {
-  let [NetworkFromIcon, NetworkToIcon] = [DefaultIcon, DefaultIcon];
+export const getPathInfo = (path, assets) => {
+  let [NetworkFromIcon, NetworkToIcon] = [null, null];
 
   const pathChainId = path.chainId.split('-')[0].toLowerCase();
-  // const pathTokenOut = path.tokenOutChainId.split('-')[0].toLowerCase();
 
   if (path.chainId) {
-    const chainFrom = chainIcons.find((cosmos) => cosmos.chainId === path.chainId);
-    NetworkFromIcon = chainFrom ? chainFrom.Icon : DefaultIcon;
+    const chainFrom = chainInfos.find((cosmos) => cosmos.chainId === path.chainId);
+    NetworkFromIcon = chainFrom ? chainFrom.chainSymbolImageUrl : OraiIcon;
   }
 
   if (path.tokenOutChainId) {
-    const chainTo = chainIcons.find((cosmos) => cosmos.chainId === path.tokenOutChainId);
-    NetworkToIcon = chainTo ? chainTo.Icon : DefaultIcon;
+    const chainTo = chainInfos.find((cosmos) => cosmos.chainId === path.tokenOutChainId);
+    NetworkToIcon = chainTo ? chainTo.chainSymbolImageUrl : OraiIcon;
   }
-
-  // const getAssetsByChainName = (chainName) => assets.find(({ chain_name }) => chain_name === chainName)?.assets || [];
-
-  // const assetList = {
-  //   assets: [...getAssetsByChainName(pathChainId), ...getAssetsByChainName(pathTokenOut)]
-  // };
-
   return { NetworkFromIcon, NetworkToIcon, pathChainId };
 };
 
