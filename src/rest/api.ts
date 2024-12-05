@@ -25,6 +25,7 @@ import {
 } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
+  CoharvestBidPoolQueryClient,
   OraiswapFactoryQueryClient,
   OraiswapOracleQueryClient,
   OraiswapPairQueryClient,
@@ -34,17 +35,13 @@ import {
   OraiswapStakingTypes,
   OraiswapTokenQueryClient,
   OraiswapTokenTypes,
-  PairInfo,
-  CoharvestBidPoolQueryClient,
-  CoharvestBidPoolTypes
+  PairInfo
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
-import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
-import { oraichainTokens, tokenMap, tokens } from 'config/bridgeTokens';
-import { network } from 'config/networks';
 import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
+import { network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
 import { BondLP, MiningLP, UnbondLP, WithdrawLP } from 'types/pool';
@@ -107,7 +104,7 @@ function parsePoolAmount(poolInfo: OraiswapPairTypes.PoolResponse, trueAsset: As
         (asset) =>
           'native_token' in asset.info &&
           asset.info.native_token.denom ===
-            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+          'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
       )?.amount || '0'
     );
   }
@@ -668,10 +665,11 @@ function generateMoveOraib2OraiMessages(
   fromAddress: string,
   toAddress: string
 ) {
-  const [, toTokens] = tokens;
+  // const [, toTokens] = tokens;
   let transferMsgs: MsgTransfer[] = [];
   for (const fromToken of remainingOraib) {
-    const toToken = toTokens.find((t) => t.chainId === 'Oraichain' && t.name === fromToken.name);
+    // FIXME: what type of token?
+    const toToken = tokens.find((t) => t.chainId === 'Oraichain' && t.name === fromToken.name);
     let ibcInfo: IBCInfo = ibcInfos[fromToken.chainId][toToken.chainId];
     // hardcode for MILKY & KWT because they use the old IBC channel
     if (fromToken.denom === MILKY_DENOM || fromToken.denom === KWT_DENOM)
@@ -722,24 +720,20 @@ async function getPairAmountInfo(
 }
 
 export {
-  fetchCachedPairInfo,
-  fetchPairInfo,
+  fetchCachedPairInfo, fetchLpBalance, fetchPairInfo,
   fetchPoolInfoAmount,
   fetchRelayerFee,
-  fetchRewardPerSecInfo,
-  fetchStakingPoolInfo,
+  fetchRewardPerSecInfo, fetchRoundBid, fetchStakingPoolInfo,
   fetchTaxRate,
   fetchTokenAllowance,
   fetchTokenInfo,
-  fetchTokenInfos,
-  fetchLpBalance,
-  generateContractMessages,
+  fetchTokenInfos, generateContractMessages,
   generateConvertCw20Erc20Message,
   generateConvertErc20Cw20Message,
   generateConvertMsgs,
   generateMiningMsgs,
   generateMoveOraib2OraiMessages,
   getPairAmountInfo,
-  getSubAmountDetails,
-  fetchRoundBid
+  getSubAmountDetails
 };
+

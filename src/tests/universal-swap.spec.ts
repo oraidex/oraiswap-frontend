@@ -1,11 +1,11 @@
 import {
-  CoinGeckoId,
-  NetworkChainId,
-  GAS_ESTIMATION_SWAP_DEFAULT,
-  GAS_ESTIMATION_BRIDGE_DEFAULT,
   AIRI_BSC_CONTRACT,
-  flattenTokens
+  CoinGeckoId,
+  GAS_ESTIMATION_BRIDGE_DEFAULT,
+  GAS_ESTIMATION_SWAP_DEFAULT,
+  NetworkChainId,
 } from '@oraichain/oraidex-common';
+import { flattenTokens } from 'initCommon';
 import { calcMaxAmount } from 'pages/Balance/helpers';
 import {
   SwapDirection,
@@ -14,6 +14,7 @@ import {
   filterNonPoolEvmTokens,
   getSwapType
 } from 'pages/UniversalSwap/helpers';
+import { describe, expect, it } from 'vitest';
 
 describe('universal-swap', () => {
   it.skip.each<[string, CoinGeckoId, string, string, SwapDirection, number]>([

@@ -1,4 +1,4 @@
-import { PAIRS_CHART } from 'config/pools';
+import { PAIRS_CHART } from '@oraichain/oraidex-common';
 import { useEffect, useState } from 'react';
 
 const checkIsPairOfPool = ({ fromName, toName }: { fromName: string; toName: string }) => {

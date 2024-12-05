@@ -21,14 +21,11 @@ import IconOrderbookHLW from 'assets/icons/halloween/ic_orderbook_hlw.svg';
 import MenuIcon from 'assets/icons/menu.svg?react';
 import LogoFullImgDark from 'assets/images/OraiDEX_full_dark.svg';
 import LogoFullImgLight from 'assets/images/OraiDEX_full_light.svg';
-
 import LogoFullImgDarkBeta from 'assets/images/OraiDEX_logo_dark.svg';
 import LogoFullImgLightBeta from 'assets/images/OraiDEX_logo_light.svg';
-
 import PoolV3Lottie from 'assets/lottie/poolv3-beta.json';
 import classNames from 'classnames';
 import TooltipContainer from 'components/WalletManagement/TooltipContainer';
-import { WalletManagement } from 'components/WalletManagement/WalletManagement';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import { ThemeContext } from 'context/theme-context';
 import useOnClickOutside from 'hooks/useOnClickOutside';
@@ -36,9 +33,10 @@ import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import Lottie from 'lottie-react';
 import React, { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import BuyOraiModal from './BuyOraiModal';
 import styles from './Menu.module.scss';
+import BuyOraiModal from './BuyOraiModal';
 import { EVENT_ENUM } from 'reducer/temporaryConfig';
+import { WalletManagement } from 'components/WalletManagement/WalletManagement';
 
 const Menu: React.FC = () => {
   const location = useLocation();

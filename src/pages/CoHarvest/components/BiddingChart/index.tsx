@@ -1,4 +1,5 @@
-import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
+import { oraichainTokens } from 'initCommon';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { getUsd } from 'libs/utils';

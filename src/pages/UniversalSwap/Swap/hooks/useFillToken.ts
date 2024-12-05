@@ -1,4 +1,4 @@
-import { tokenMap } from '@oraichain/oraidex-common';
+import { tokenMap } from 'initCommon';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 

@@ -1,9 +1,8 @@
-import TokenBalance from 'components/TokenBalance';
 import { useState } from 'react';
 import NumberFormat from 'react-number-format';
 import styles from './index.module.scss';
 
-import { toAmount, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
 import { ORAIX_DECIMAL } from 'pages/CoHarvest/constants';
 import { numberWithCommas } from 'pages/Pools/helpers';
 

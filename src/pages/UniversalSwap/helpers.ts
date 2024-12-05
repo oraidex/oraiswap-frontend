@@ -2,29 +2,26 @@ import { CwIcs20LatestQueryClient, Uint128 } from '@oraichain/common-contracts-s
 import { AssetInfo, Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
   CoinGeckoId,
-  CoinIcon,
   IBC_WASM_CONTRACT,
-  NetworkChainId,
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
   TokenItemType,
   getTokenOnOraichain,
-  getTokenOnSpecificChainId,
-  NetworkName,
   BigDecimal,
   toAmount,
-  COSMOS_CHAIN_ID_COMMON
+  COSMOS_CHAIN_ID_COMMON,
+  PAIRS_CHART,
+  OraiIcon
 } from '@oraichain/oraidex-common';
 import {
+  getSwapFromTokens,
+  getSwapToTokens,
   UniversalSwapHelper
   // swapFromTokens,
   // swapToTokens
 } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
-import { swapFromTokens, swapToTokens, tokenMap } from 'config/bridgeTokens';
-import { flattenTokensWithIcon, oraichainTokensWithIcon, tokensWithIcon } from 'config/chainInfos';
-import { PAIRS_CHART } from 'config/pools';
 import { networks } from 'helper';
 import { generateError } from 'libs/utils';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
@@ -33,6 +30,15 @@ import { formatDate, formatTimeWithPeriod } from 'pages/CoHarvest/helpers';
 import { endOfMonth, endOfWeek } from 'pages/Pools/helpers';
 import { FILTER_TIME_CHART, PairToken } from 'reducer/type';
 import { assets } from 'chain-registry';
+import {
+  chainInfos,
+  flattenTokens,
+  flattenTokensWithIcon,
+  oraichainTokens,
+  oraichainTokensWithIcon,
+  tokenMap
+} from 'initCommon';
+import { NetworkChainId } from '@oraichain/common';
 
 export enum SwapDirection {
   From,
@@ -57,8 +63,9 @@ export const TYPE_TAB_HISTORY = {
 export interface NetworkFilter {
   label?: string;
   value?: string;
-  Icon?: CoinIcon;
-  IconLight?: CoinIcon;
+  Icon?: any;
+  IconLight?: any;
+  chainSymbolImageUrl?: string;
 }
 
 export const initNetworkFilter = { label: 'All networks', value: '', Icon: undefined, IconLight: undefined };
@@ -79,6 +86,11 @@ export const getTransferTokenFee = async ({ remoteTokenDenom }): Promise<Ratio |
   }
 };
 
+// FIXME: hard code function for test compatibility
+export const getTokenOnSpecificChainId = (coingeckoId: CoinGeckoId, chainId: string): TokenItemType | undefined => {
+  return flattenTokens.find((t) => t.coinGeckoId === coingeckoId && t.chainId === chainId);
+};
+
 export function filterNonPoolEvmTokens(
   chainId: string,
   coingeckoId: CoinGeckoId,
@@ -87,7 +99,7 @@ export function filterNonPoolEvmTokens(
   direction: SwapDirection // direction = to means we are filtering to tokens
 ) {
   // basic filter. Dont include itself & only collect tokens with searched letters
-  let listTokens = direction === SwapDirection.From ? swapFromTokens : swapToTokens;
+  let listTokens = direction === SwapDirection.From ? getSwapFromTokens(flattenTokens) : getSwapToTokens(flattenTokens);
   let filteredToTokens = listTokens.filter((token) => token.name.toLowerCase().includes(searchTokenName.toLowerCase()));
 
   // special case for tokens not having a pool on Oraichain
@@ -97,7 +109,11 @@ export function filterNonPoolEvmTokens(
 
     // tokens that dont have a pool on Oraichain like WETH or WBNB cannot be swapped from a token on Oraichain
     if (direction === SwapDirection.To)
-      return [...new Set(filteredTokens.concat(filteredTokens.map((token) => getTokenOnOraichain(token.coinGeckoId))))];
+      return [
+        ...new Set(
+          filteredTokens.concat(filteredTokens.map((token) => getTokenOnOraichain(token.coinGeckoId, oraichainTokens)))
+        )
+      ];
     filteredToTokens = filteredTokens;
   }
   // special case filter. Tokens on networks other than supported evm cannot swap to tokens, so we need to remove them
@@ -243,9 +259,9 @@ export const genCurrentChain = ({
   currentToChain
 }: {
   toToken: TokenItemType;
-  currentToChain: NetworkName | '';
-}): NetworkName | '' => {
-  let newCurrentToChain: NetworkName | '' = currentToChain;
+  currentToChain: string | '';
+}): string | '' => {
+  let newCurrentToChain: string | '' = currentToChain;
 
   newCurrentToChain = networks?.find((chain) => chain.chainId === toToken.chainId)?.chainName || '';
 
@@ -309,10 +325,10 @@ export const getFromToToken = (
   });
   const fromToken = isEvmSwap
     ? tokenMap[fromTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId) ?? tokenMap[fromTokenDenomSwap];
+    : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[fromTokenDenomSwap];
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId) ?? tokenMap[toTokenDenomSwap];
+    : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[toTokenDenomSwap];
 
   return { fromToken, toToken };
 };
@@ -452,28 +468,20 @@ export const transformSwapInfo = (data) => {
   return transformedData;
 };
 
-export const getPathInfo = (path, chainIcons, assets) => {
-  let [NetworkFromIcon, NetworkToIcon] = [DefaultIcon, DefaultIcon];
+export const getPathInfo = (path, assets) => {
+  let [NetworkFromIcon, NetworkToIcon] = [null, null];
 
   const pathChainId = path.chainId.split('-')[0].toLowerCase();
-  // const pathTokenOut = path.tokenOutChainId.split('-')[0].toLowerCase();
 
   if (path.chainId) {
-    const chainFrom = chainIcons.find((cosmos) => cosmos.chainId === path.chainId);
-    NetworkFromIcon = chainFrom ? chainFrom.Icon : DefaultIcon;
+    const chainFrom = chainInfos.find((cosmos) => cosmos.chainId === path.chainId);
+    NetworkFromIcon = chainFrom ? chainFrom.chainSymbolImageUrl : OraiIcon;
   }
 
   if (path.tokenOutChainId) {
-    const chainTo = chainIcons.find((cosmos) => cosmos.chainId === path.tokenOutChainId);
-    NetworkToIcon = chainTo ? chainTo.Icon : DefaultIcon;
+    const chainTo = chainInfos.find((cosmos) => cosmos.chainId === path.tokenOutChainId);
+    NetworkToIcon = chainTo ? chainTo.chainSymbolImageUrl : OraiIcon;
   }
-
-  // const getAssetsByChainName = (chainName) => assets.find(({ chain_name }) => chain_name === chainName)?.assets || [];
-
-  // const assetList = {
-  //   assets: [...getAssetsByChainName(pathChainId), ...getAssetsByChainName(pathTokenOut)]
-  // };
-
   return { NetworkFromIcon, NetworkToIcon, pathChainId };
 };
 

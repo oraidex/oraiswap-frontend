@@ -1,11 +1,4 @@
-import {
-  BigDecimal,
-  // flattenTokens
-  NetworkChainId,
-  toDisplay,
-  TokenItemType,
-  BTC_CONTRACT
-} from '@oraichain/oraidex-common';
+import { BigDecimal, toDisplay, TokenItemType, BTC_CONTRACT } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
@@ -16,8 +9,6 @@ import Loader from 'components/Loader';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
-import { btcChains, evmChains } from 'config/chainInfos';
 import copy from 'copy-to-clipboard';
 import { filterChainBridge, getAddressTransfer, networks } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -39,6 +30,8 @@ import styles from './index.module.scss';
 import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
+import { btcChains, cosmosTokens, evmChains, flattenTokens, tokenMap } from 'initCommon';
+import { NetworkChainId } from '@oraichain/common';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -294,13 +287,9 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <div className={styles.search_logo}>
                         {theme === 'light' ? (
-                          toNetwork.IconLight ? (
-                            <toNetwork.IconLight width={44} height={44} />
-                          ) : (
-                            <toNetwork.Icon width={44} height={44} />
-                          )
+                          <img width={44} height={44} src={toNetwork.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                         ) : (
-                          <toNetwork.Icon width={44} height={44} />
+                          <img width={44} height={44} src={toNetwork.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                         )}
                       </div>
                       <span className={classNames(styles.search_text, styles[theme])}>{toNetwork.chainName}</span>
@@ -331,7 +320,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                             {net && (
                               <div className={classNames(styles.items_chain)}>
                                 <div>
-                                  <net.Icon width={44} height={44} />
+                                  <img width={44} height={44} src={net.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                                 </div>
                                 <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
                               </div>

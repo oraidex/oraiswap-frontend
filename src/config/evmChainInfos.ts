@@ -1,3 +1,4 @@
+// TODO: move to oraichainSDK
 export const evmChainInfos = [
   {
     chainId: '0x38',

@@ -1,5 +1,4 @@
 import { TokenItemType } from '@oraichain/oraidex-common';
-import { AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { Type } from 'rest/api';
 
 export type PairInfoData = {

@@ -1,15 +1,14 @@
-import { CoinIcon, TokenItemType } from '@oraichain/oraidex-common';
+import { TokenItemType } from '@oraichain/oraidex-common';
 import ArrowImg from 'assets/icons/arrow_new.svg';
 import cn from 'classnames/bind';
 import TokenBalance from 'components/TokenBalance';
 import NumberFormat from 'react-number-format';
 import { TokenInfo } from 'types/token';
 import styles from './InputSwap.module.scss';
-import { chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
 import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
 import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP } from 'helper/constants';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
+import { chainInfos, flattenTokens } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -54,16 +53,8 @@ export default function InputSwap({
   loadingSimulate,
   impactWarning
 }: InputSwapProps) {
-  let chainInfo = chainInfosWithIcon.find((chain) => chain.chainId === selectChain);
-  console.log({ selectChain });
-
-  if (!chainInfo) {
-    chainInfo = {
-      Icon: DefaultIcon,
-      IconLight: DefaultIcon
-    };
-  }
-  const tokenInfo = flattenTokensWithIcon.find((flattenToken) => flattenToken.coinGeckoId === token.coinGeckoId);
+  const tokenInfo = flattenTokens.find((flattenToken) => flattenToken.coinGeckoId === token.coinGeckoId);
+  let chainInfo = chainInfos.find((chain) => chain.chainId === selectChain);
   const isLightMode = theme === 'light';
 
   return (
@@ -72,7 +63,11 @@ export default function InputSwap({
         <div className={cx('select-chain')}>
           <div className={cx('left')} onClick={() => setIsSelectChain(true)}>
             <div className={cx('icon')}>
-              {isLightMode ? <chainInfo.IconLight className={cx('logo')} /> : <chainInfo.Icon className={cx('logo')} />}
+              {theme === 'light' ? (
+                <img className={cx('logo')} src={chainInfo?.chainSymbolImageUrl} alt="chain-logo" />
+              ) : (
+                <img className={cx('logo')} src={chainInfo?.chainSymbolImageUrl} alt="chain-logo" />
+              )}
             </div>
             <div className={cx('section')}>
               <div className={cx('name')}>{chainInfo?.chainName}</div>
@@ -80,16 +75,7 @@ export default function InputSwap({
             <img src={ArrowImg} alt="arrow" />
           </div>
         </div>
-        <div
-          className={cx('show-balance')}
-          // className={cx('show-balance', type === 'from' && 'is-enable-coeff')}
-          // onClick={(event) => {
-          //   if (type === 'from') {
-          //     event.stopPropagation();
-          //     onChangePercentAmount(1);
-          //   }
-          // }}
-        >
+        <div className={cx('show-balance')}>
           <div className={cx('bal')}>
             <span className={cx('prefix')}>Balance:&nbsp;</span>
             <TokenBalance
@@ -124,7 +110,11 @@ export default function InputSwap({
         <div className={cx('box-select')} onClick={() => setIsSelectToken(true)}>
           <div className={cx('left')}>
             <div className={cx('icon')}>
-              {isLightMode ? <tokenInfo.IconLight className={cx('logo')} /> : <tokenInfo.Icon className={cx('logo')} />}
+              {isLightMode ? (
+                <img src={tokenInfo.icon} alt="icon" width={30} height={30} />
+              ) : (
+                <img className={cx('logo')} src={tokenInfo.icon} alt="icon" width={30} height={30} />
+              )}
             </div>
 
             <div className={cx('section')}>

@@ -1,8 +1,6 @@
-import OraiBtc from 'assets/icons/btc-icon.svg';
-import { config } from '../config';
-import Orai from 'assets/icons/btc-icon.svg';
-import { network } from 'config/networks';
 import { BTC_CONTRACT } from '@oraichain/oraidex-common';
+import { default as Orai, default as OraiBtc } from 'assets/icons/btc-icon.svg';
+import { config } from '../config';
 
 export interface ChainInfo {
   name: string;

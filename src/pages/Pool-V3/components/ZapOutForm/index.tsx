@@ -1,7 +1,7 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import {
   MULTICALL_CONTRACT,
-  oraichainTokens,
+  NetworkChainId,
   toDisplay,
   TokenItemType,
   USDT_CONTRACT,
@@ -26,7 +26,6 @@ import Loader from 'components/Loader';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TooltipHover from 'components/TooltipHover';
 import ZappingText from 'components/Zapping';
-import { network } from 'config/networks';
 import { getIcon, getTransactionUrl } from 'helper';
 import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -34,6 +33,7 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
+import { network, oraichainTokens } from 'initCommon';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import mixpanel from 'mixpanel-browser';
@@ -227,7 +227,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
       client = await CosmWasmClient.connect(network.rpc);
       const zap = new ZapperQueryClient(client, ZAPPER_CONTRACT);
       zapFee = Number((await zap.protocolFee()).percent);
-    } catch (error) {}
+    } catch (error) { }
 
     try {
       const zapper = new ZapConsumer({
@@ -447,7 +447,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
                   disabled={true}
                   type="text"
                   value={amountFrom}
-                  onChange={() => {}}
+                  onChange={() => { }}
                   isAllowed={(values) => {
                     const { floatValue } = values;
                     // allow !floatValue to let user can clear their input
@@ -621,7 +621,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
 
                   if (transactionHash) {
                     displayToast(TToastType.TX_SUCCESSFUL, {
-                      customLink: getTransactionUrl(network.chainId, transactionHash)
+                      customLink: getTransactionUrl(network.chainId as NetworkChainId, transactionHash)
                     });
                     onCloseModal();
                     // navigate(`/pools?type=positions`);

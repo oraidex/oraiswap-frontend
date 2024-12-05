@@ -5,7 +5,6 @@ import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import classNames from 'classnames';
 import SearchInput from 'components/SearchInput';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { getIcon } from 'helper';
 import { formatDisplayUsdt } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -16,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './index.module.scss';
+import { oraichainTokensWithIcon } from 'initCommon';
 
 const SelectToken = ({
   token,

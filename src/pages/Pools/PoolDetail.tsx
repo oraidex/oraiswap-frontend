@@ -1,11 +1,18 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { BTC_CONTRACT, fetchRetry, OraiIcon, toDisplay } from '@oraichain/oraidex-common';
 import { useQueryClient } from '@tanstack/react-query';
+import { isMobile } from '@walletconnect/browser-utils';
+import AddIcon from 'assets/icons/Add.svg?react';
 import BackIcon from 'assets/icons/ic_back.svg?react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { network } from 'config/networks';
+import classNames from 'classnames';
+import { Button } from 'components/Button';
+import Tabs from 'components/TabCustom';
+import { formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
+import { network, oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
 import Content from 'layouts/Content';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -13,7 +20,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { updateLpPools } from 'reducer/token';
 import { PoolInfoResponse } from 'types/pool';
 import styles from './PoolDetail.module.scss';
-import ChartDetailSection from './components/ChartDetailSection';
+import { AddLiquidityModal } from './components/AddLiquidityModal';
 import { Earning } from './components/Earning';
 import { MyPoolInfo } from './components/MyPoolInfo/MyPoolInfo';
 import { OverviewPool } from './components/OverviewPool';
@@ -21,16 +28,6 @@ import TransactionHistory from './components/TransactionHistory';
 import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools, useGetPriceChange } from './hooks';
 import { useGetLpBalance } from './hooks/useGetLpBalance';
 import { useGetPairInfo } from './hooks/useGetPairInfo';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
-import classNames from 'classnames';
-import Tabs from 'components/TabCustom';
-import { isMobile } from '@walletconnect/browser-utils';
-import { Button } from 'components/Button';
-import AddIcon from 'assets/icons/Add.svg?react';
-import { parseAssetOnlyDenom } from './helpers';
-import { AddLiquidityModal } from './components/AddLiquidityModal';
-import { formatNumberKMB, numberWithCommas } from 'helper/format';
-import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 
 const PoolDetail: React.FC = () => {
   const theme = useTheme();
@@ -101,22 +98,22 @@ const PoolDetail: React.FC = () => {
   const baseToken = (token1?.contractAddress || token1?.denom) === params.base_denom ? token1 : token2;
   const quoteToken = (token2?.contractAddress || token2?.denom) === params.base_denom ? token1 : token2;
 
-  let BaseTokenIcon = DefaultIcon;
-  let QuoteTokenIcon = DefaultIcon;
-  const BaseTokenInOraichain = oraichainTokensWithIcon.find(
+  let BaseTokenIcon = OraiIcon;
+  let QuoteTokenIcon = OraiIcon;
+  const BaseTokenInOraichain = oraichainTokens.find(
     (oraiTokens) =>
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.contractAddress) ||
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.denom)
   );
-  const QuoteTokenInOraichain = oraichainTokensWithIcon.find(
+  const QuoteTokenInOraichain = oraichainTokens.find(
     (oraiTokens) =>
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.contractAddress) ||
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.denom)
   );
   if (BaseTokenInOraichain)
-    BaseTokenIcon = theme === 'light' ? BaseTokenInOraichain.IconLight : BaseTokenInOraichain.Icon;
+    BaseTokenIcon = theme === 'light' ? BaseTokenInOraichain.iconLight : BaseTokenInOraichain.icon;
   if (QuoteTokenInOraichain)
-    QuoteTokenIcon = theme === 'light' ? QuoteTokenInOraichain.IconLight : QuoteTokenInOraichain.Icon;
+    QuoteTokenIcon = theme === 'light' ? QuoteTokenInOraichain.iconLight : QuoteTokenInOraichain.icon;
 
   const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
 
@@ -162,8 +159,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  {BaseTokenIcon && <BaseTokenIcon />}
-                  {QuoteTokenIcon && <QuoteTokenIcon />}
+                  <img src={BaseTokenIcon} alt="icon" width={30} height={30} />
+                  <img src={QuoteTokenIcon} alt="icon" width={30} height={30} />
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} /{' '}
@@ -222,11 +219,6 @@ const PoolDetail: React.FC = () => {
             }}
           />
         </div>
-        {/* <div className={styles.summary}>
-          <div className={styles.chart}>
-            <ChartDetailSection pair={pair} symbol={poolDetailData?.info?.symbols} />
-          </div>
-        </div> */}
 
         <Tabs
           tabKey="tab"

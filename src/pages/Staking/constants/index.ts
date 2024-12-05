@@ -1,4 +1,4 @@
-import { oraichainTokens } from '@oraichain/oraidex-common/build/token';
+import { oraichainTokens } from "initCommon";
 
 export const TIMER = {
   HAFT_MILLISECOND: 500,

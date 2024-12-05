@@ -50,8 +50,8 @@ const PoolItemTData = ({
       <td>
         <div className={styles.name} onClick={() => navigate(url)}>
           <div className={classNames(styles.icons, styles[theme])}>
-            <FromTokenIcon />
-            <ToTokenIcon />
+            {FromTokenIcon}
+            {ToTokenIcon}
           </div>
           <span className={styles.title}>
             {tokenXinfo?.name} / {isOraiBtcPoolV2 ? 'BTC' : tokenYinfo?.name}

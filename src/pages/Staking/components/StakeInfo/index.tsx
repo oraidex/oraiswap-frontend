@@ -1,29 +1,27 @@
-import { CW20_STAKING_CONTRACT, ORAI, calculateMinReceive, toDisplay, BigDecimal } from '@oraichain/oraidex-common';
+import { CW20_STAKING_CONTRACT, ORAI, calculateMinReceive, toDisplay } from '@oraichain/oraidex-common';
 import OraiXIcon from 'assets/icons/oraix.svg?react';
 import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
 import UsdcIcon from 'assets/icons/usd_coin.svg?react';
-
 import useConfigReducer from 'hooks/useConfigReducer';
-
 import { Cw20StakingClient, OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { Type, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
 import { handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
+import { flattenTokens, network, oraichainTokens } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { getUsd } from 'libs/utils';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import { ORAIX_TOKEN_INFO, USDC_TOKEN_INFO } from 'pages/Staking/constants';
 import { useGetLockInfo, useGetMyStakeRewardInfo } from 'pages/Staking/hooks';
+import { getRouterConfig } from 'pages/UniversalSwap/Swap/hooks';
 import { useEffect, useState } from 'react';
 import { generateContractMessages, generateMiningMsgs } from 'rest/api';
-import styles from './index.module.scss';
 import CompoundModal from '../CompoundModal';
-import { getRouterConfig } from 'pages/UniversalSwap/Swap/hooks';
+import styles from './index.module.scss';
 
 const StakeInfo = () => {
   const [theme] = useConfigReducer('theme');
@@ -51,6 +49,8 @@ const StakeInfo = () => {
   useEffect(() => {
     (async () => {
       const simulateData = await UniversalSwapHelper.handleSimulateSwap({
+        flattenTokens: flattenTokens,
+        oraichainTokens: oraichainTokens,
         originalFromInfo: USDC_TOKEN_INFO,
         originalToInfo: ORAIX_TOKEN_INFO,
         originalAmount: toDisplay(reward),
@@ -108,6 +108,8 @@ const StakeInfo = () => {
 
       const [averageRatioData] = await Promise.all([
         UniversalSwapHelper.handleSimulateSwap({
+          flattenTokens: flattenTokens,
+          oraichainTokens: oraichainTokens,
           originalFromInfo: USDC_TOKEN_INFO,
           originalToInfo: ORAIX_TOKEN_INFO,
           originalAmount: 1,

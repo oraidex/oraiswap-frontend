@@ -2,10 +2,9 @@ import classNames from 'classnames';
 import styles from './index.module.scss';
 import TokenBalance from 'components/TokenBalance';
 import TransferConvertToken from '../TransferConvertToken';
-import { TokenItemType } from '@oraichain/oraidex-common';
-
-import { tokensIcon } from 'config/chainInfos';
+import { OraiIcon, TokenItemType, tokensIcon } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
+import { flattenTokens, flattenTokensWithIcon, tokensWithIcon } from 'initCommon';
 
 export interface TokenItemProps {
   token: TokenItemType;
@@ -41,12 +40,13 @@ const TokenItem: React.FC<TokenItemProps> = ({
   isFastMode,
   setIsFastMode
 }) => {
-  let tokenIcon = tokensIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
+  // TODO: chain tokensIcon to tokensWithIcon
+  let tokenIcon = flattenTokens.find((tok) => tok.coinGeckoId === token.coinGeckoId);
   if (!tokenIcon) {
     tokenIcon = {
       coinGeckoId: token.coinGeckoId,
-      Icon: DefaultIcon,
-      IconLight: DefaultIcon
+      icon: OraiIcon,
+      iconLight: OraiIcon
     };
   }
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
@@ -61,9 +61,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
       <div className={styles.balanceAmountInfo}>
         <div className={styles.token}>
           {theme === 'light' ? (
-            <tokenIcon.IconLight className={styles.tokenIcon} />
+            <img width={44} height={44} src={tokenIcon?.iconLight} alt="icon-light" />
           ) : (
-            <tokenIcon.Icon className={styles.tokenIcon} />
+            <img width={44} height={44} src={tokenIcon?.icon} alt="icon-light" />
           )}
           <div className={styles.tokenInfo}>
             <div className={classNames(styles.tokenName, styles[theme])}>{token.name}</div>

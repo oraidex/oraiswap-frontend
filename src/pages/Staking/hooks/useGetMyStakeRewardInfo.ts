@@ -1,6 +1,6 @@
 import { Cw20StakingQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { network } from 'config/networks';
+import { network } from 'initCommon';
 
 export const useGetMyStakeRewardInfo = (stakingToken, stakerAddr) => {
   const getRewardAmount = async () => {

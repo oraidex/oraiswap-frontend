@@ -4,10 +4,10 @@ import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { network } from 'config/networks';
 import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { useGetMyStake, useGetPools, useGetRewardInfo, useGetTotalClaimable } from 'pages/Pools/hooks';
 import { FC, useEffect, useState } from 'react';
@@ -26,11 +26,11 @@ export const useGetOraiPrice = () => {
       (pool) =>
         pool.firstAssetInfo === JSON.stringify(ORAI_INFO) &&
         pool.secondAssetInfo ===
-          JSON.stringify({
-            token: {
-              contract_addr: USDT_CONTRACT
-            }
-          })
+        JSON.stringify({
+          token: {
+            contract_addr: USDT_CONTRACT
+          }
+        })
     );
     if (!oraiUsdtPool) return;
 
@@ -99,11 +99,11 @@ export const Header: FC<{ dataSource: PoolInfoResponse[] }> = ({ dataSource }) =
         .filter((rewardInfo) => rewardInfo.pending_reward !== '0' || rewardInfo.pending_withdraw?.length > 0)
         .map(
           (rewardInfo) =>
-            ({
-              contractAddress: network.staking,
-              msg: { withdraw: { staking_token: rewardInfo.staking_token } },
-              funds: null
-            } as ExecuteInstruction)
+          ({
+            contractAddress: network.staking,
+            msg: { withdraw: { staking_token: rewardInfo.staking_token } },
+            funds: null
+          } as ExecuteInstruction)
         );
 
       const result = await CosmJs.executeMultiple({

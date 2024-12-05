@@ -1,11 +1,11 @@
 import { PoolKey, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { poolKeyToString } from 'libs/contractSingleton';
 import { TokenItemType } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { PoolInfoResponse } from 'types/pool';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { POOL_TYPE } from '../index';
+import { oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {
   FromTokenIcon: React.FunctionComponent<
@@ -36,12 +36,21 @@ export const getTokenInfo = (address, isLight) => {
 };
 
 export const getIconPoolData = (tokenX, tokenY, isLight) => {
-  let [FromTokenIcon, ToTokenIcon] = [DefaultIcon, DefaultIcon];
+  let [FromTokenIcon, ToTokenIcon] = [null, null];
   const tokenXinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
   const tokenYinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
-
-  if (tokenXinfo) FromTokenIcon = isLight ? tokenXinfo.IconLight : tokenXinfo.Icon;
-  if (tokenYinfo) ToTokenIcon = isLight ? tokenYinfo.IconLight : tokenYinfo.Icon;
+  if (tokenXinfo)
+    FromTokenIcon = isLight ? (
+      <img src={tokenXinfo.iconLight} alt="iconlight" />
+    ) : (
+      <img src={tokenXinfo.icon} alt="iconlight" />
+    );
+  if (tokenYinfo)
+    ToTokenIcon = isLight ? (
+      <img src={tokenYinfo.iconLight} alt="iconlight" />
+    ) : (
+      <img src={tokenYinfo.icon} alt="iconlight" />
+    );
   return { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo };
 };
 

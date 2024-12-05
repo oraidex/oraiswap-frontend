@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import NumberFormat from 'react-number-format';
 import styles from './index.module.scss';
-
 import { toAmount, toDisplay } from '@oraichain/oraidex-common';
 import OraiXIcon from 'assets/icons/oraix.svg?react';
 import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';

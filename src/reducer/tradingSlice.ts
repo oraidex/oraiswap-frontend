@@ -1,7 +1,6 @@
-import { NetworkName, TokenItemType } from '@oraichain/oraidex-common';
+import { PAIRS_CHART, TokenItemType } from '@oraichain/oraidex-common';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { PAIRS_CHART } from 'config/pools';
 import { RootState } from 'store/configure';
 import { PairToken, TradingState } from './type';
 
@@ -20,7 +19,7 @@ const tradingSlice = createSlice({
     setCurrentToken: (state, action: PayloadAction<PairToken>) => {
       state.currentToken = action.payload;
     },
-    setCurrentToChain: (state, action: PayloadAction<NetworkName | ''>) => {
+    setCurrentToChain: (state, action: PayloadAction<string | ''>) => {
       state.currentToChain = action.payload;
     },
     setCurrentToToken: (state, action: PayloadAction<TokenItemType | null>) => {
@@ -40,7 +39,7 @@ export const { setCurrentToken, setChartTimeFrame, setCurrentToChain, setCurrent
   tradingSlice.actions;
 
 export const selectCurrentToken = (state: RootState): PairToken => state.trading.currentToken;
-export const selectCurrentToChain = (state: RootState): NetworkName | '' => state.trading.currentToChain;
+export const selectCurrentToChain = (state: RootState): string | '' => state.trading.currentToChain;
 export const selectCurrentToToken = (state: RootState): TokenItemType | null => state.trading.currentToToken;
 export const selectCurrentFromToken = (state: RootState): TokenItemType | null => state.trading.currentFromToken;
 export const selectChartTimeFrame = (state: RootState): number => state.trading.chartTimeFrame;

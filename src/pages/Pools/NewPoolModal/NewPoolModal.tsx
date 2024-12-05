@@ -4,8 +4,7 @@ import cn from 'classnames/bind';
 import Modal from 'components/Modal';
 import Pie from 'components/Pie';
 import TokenBalance from 'components/TokenBalance';
-import { TokenItemType } from '@oraichain/oraidex-common';
-import { getPoolTokens } from 'config/pools';
+import { getPoolTokens, TokenItemType } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { toDisplay } from '@oraichain/oraidex-common';
 import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
@@ -15,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './NewPoolModal.module.scss';
+import { assetInfoMap } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -34,15 +34,15 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [isSelectingToken, setIsSelectingToken] = useState<'token1' | 'token2' | null>(null);
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
-  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(getPoolTokens());
-  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(getPoolTokens());
+  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(getPoolTokens(assetInfoMap));
+  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(getPoolTokens(assetInfoMap));
   const [supplyToken1, setSupplyToken1] = useState(0);
   const [supplyToken2, setSupplyToken2] = useState(0);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
   const amounts = useSelector((state: RootState) => state.token.amounts);
-  const tokenObj1 = getPoolTokens().find((token) => token?.denom === token1);
-  const tokenObj2 = getPoolTokens().find((token) => token?.denom === token2);
+  const tokenObj1 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token1);
+  const tokenObj2 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token2);
 
   const { data: token1InfoData } = useQuery(['token-info', token1], () => fetchTokenInfo(tokenObj1!), {
     enabled: !!tokenObj1

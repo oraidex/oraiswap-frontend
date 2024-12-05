@@ -1,16 +1,16 @@
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { BigDecimal, oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { BigDecimal, toDisplay } from '@oraichain/oraidex-common';
 import { CoharvestBidPoolQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { Bid, BiddingInfoResponse } from '@oraichain/oraidex-contracts-sdk/build/CoharvestBidPool.types';
 import { useQuery } from '@tanstack/react-query';
-import { network } from 'config/networks';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { network, oraichainTokens } from 'initCommon';
 import { getUsd } from 'libs/utils';
 import { useEffect, useState } from 'react';
 import { fetchRoundBid } from 'rest/api';
 import { BidStatus, TIMER } from '../constants';
-import { Bid, BiddingInfo, BiddingInfoResponse } from '@oraichain/oraidex-contracts-sdk/build/CoharvestBidPool.types';
 
 export const getDateNowToSecond = () => {
   return Math.floor(Date.now() / TIMER.MILLISECOND);

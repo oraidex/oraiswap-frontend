@@ -1,15 +1,13 @@
-import AprIcon from 'assets/icons/ic_apr.svg?react';
-import BoostIconDark from 'assets/icons/boost-icon-dark.svg?react';
-import BoostIconLight from 'assets/icons/boost-icon.svg?react';
+import { CW20_DECIMALS, ORAI, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
+import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { cw20TokenMap, tokenMap } from 'config/bridgeTokens';
-import { network } from 'config/networks';
 import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
+import { cw20TokenMap, network, tokenMap } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { getUsd } from 'libs/utils';
 import { isEqual } from 'lodash';
@@ -17,10 +15,8 @@ import { useGetMyStake, useGetPoolDetail, useGetRewardInfoDetail, xOCH_PRICE } f
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Type, fetchTokenInfo, generateMiningMsgs } from 'rest/api';
-import styles from './Earning.module.scss';
-import { TokenItemType, ORAI, toDisplay, CW20_DECIMALS } from '@oraichain/oraidex-common';
 import { WithdrawLP } from 'types/pool';
-import classNames from 'classnames';
+import styles from './Earning.module.scss';
 
 type TokenItemTypeExtended = TokenItemType & {
   amount: bigint;
@@ -91,7 +87,8 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
               rpc: '',
               decimals: 0,
               coinGeckoId: 'scatom',
-              cosmosBased: undefined
+              cosmosBased: undefined,
+              icon: undefined
             });
 
             token = {
@@ -203,7 +200,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
                   <div className={styles.assetEarning} key={idx}>
                     <div className={styles.title}>
                       {generateIcon(pendingReward)}
-                      <span>{pendingReward.denom.toUpperCase()} Earning</span>
+                      <span>{pendingReward.name.toUpperCase()} Earning</span>
                     </div>
                     <div className={styles.amountWrapper}>
                       <div className={styles.amount}>
@@ -222,7 +219,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
                         <TokenBalance
                           balance={{
                             amount: pendingReward.amount,
-                            denom: pendingReward?.denom.toUpperCase(),
+                            denom: pendingReward?.name.toUpperCase(),
                             decimals: 6
                           }}
                           decimalScale={6}

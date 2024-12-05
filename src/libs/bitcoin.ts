@@ -1,17 +1,16 @@
 import { Key } from '@keplr-wallet/types';
 
-import { ChainIdEnum } from '@oraichain/oraidex-common';
-import { network } from 'config/networks';
 import { bitcoinChainId } from 'helper/constants';
-import {BitcoinUnit} from "bitcoin-units";
+import { network } from 'initCommon';
+import { BitcoinUnit } from 'bitcoin-units';
 export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 // import { CosmosChainId, BitcoinWallet } from '@oraichain/oraidex-common';
 type BitcoinChainId = 'bitcoin' | 'bitcoinTestnet';
 export enum TransactionBtcType {
-  Legacy = "legacy",
-  Bech32 = "bech32",
-  TapRoot = "tap-root",
-  Segwit = "segwit",
+  Legacy = 'legacy',
+  Bech32 = 'bech32',
+  TapRoot = 'tap-root',
+  Segwit = 'segwit'
 }
 export interface UnsignedBtcTransaction {
   amount: string;
@@ -37,12 +36,7 @@ export interface IBitcoin {
   }>;
   getKey(chainId: string): Promise<Key>;
   sendTx(chainId: string, signedTx: string): Promise<string>;
-  sign(
-      chainId: string,
-      signer: string,
-      data: string | Uint8Array,
-      type: TransactionBtcType
-  ): Promise<string>;
+  sign(chainId: string, signer: string, data: string | Uint8Array, type: TransactionBtcType): Promise<string>;
 }
 
 export default class Bitcoin {
@@ -85,24 +79,24 @@ export default class Bitcoin {
         throw new Error('Bitcoin wallet not found.');
       }
       //Sign for new keyring
-      if(bitcoin.sign && bitcoin.sendTx){
+      if (bitcoin.sign && bitcoin.sendTx) {
         const amount = new BitcoinUnit(data.msgs.amount, 'satoshi').to('BTC').toString();
-        const unsignedTx:UnsignedBtcTransaction = {
+        const unsignedTx: UnsignedBtcTransaction = {
           chainId: chainId,
-          to:data.msgs.address,
-          amount:amount,
-          coinMinimalDenom: "segwit:btc",
-          memo:data.memo || '',
-          sender:data.address,
-        }
+          to: data.msgs.address,
+          amount: amount,
+          coinMinimalDenom: 'segwit:btc',
+          memo: data.memo || '',
+          sender: data.address
+        };
         const signedTx = await bitcoin.sign(
-            chainId,
-            data.address,
-            JSON.stringify(unsignedTx),
-            TransactionBtcType.Bech32
+          chainId,
+          data.address,
+          JSON.stringify(unsignedTx),
+          TransactionBtcType.Bech32
         );
         const txHash = await bitcoin.sendTx(chainId, signedTx);
-        return {rawTxHex:txHash};
+        return { rawTxHex: txHash };
       }
 
       //TODO: Default sign by legacy

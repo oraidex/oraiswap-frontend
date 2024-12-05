@@ -1,5 +1,5 @@
-import { EVM_CHAIN_ID_COMMON, WalletType, cosmosTokens, flattenTokens } from '@oraichain/oraidex-common';
-import { btcTokens, solTokens } from 'config/bridgeTokens';
+import { EVM_CHAIN_ID_COMMON, WalletType } from '@oraichain/oraidex-common';
+import { btcTokens, cosmosTokens, flattenTokens, solTokens } from 'initCommon';
 import { useDispatch } from 'react-redux';
 import { updateAmounts } from 'reducer/token';
 

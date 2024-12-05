@@ -4,21 +4,21 @@ import { AggregateResult } from '@oraichain/common-contracts-sdk/build/Multicall
 import { toDisplay } from '@oraichain/oraidex-common';
 import { OraiswapStakingQueryClient, OraiswapStakingTypes } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { cw20TokenMap, oraichainTokens, tokenMap } from 'config/bridgeTokens';
-import { network } from 'config/networks';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { getUsd } from 'libs/utils';
+import { cw20TokenMap, network, oraichainTokens, tokenMap } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateLpPools } from 'reducer/token';
-import { fetchTokenInfo, fetchRewardPerSecInfo } from 'rest/api';
 import axios from 'rest/request';
-import { RootState } from 'store/configure';
-import { PoolInfoResponse } from 'types/pool';
-import { PoolTableData } from '..';
+
+
+import { getUsd } from 'libs/utils';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
+import { updateLpPools } from 'reducer/token';
+import { fetchRewardPerSecInfo, fetchTokenInfo } from 'rest/api';
+import { RootState } from 'store/configure';
+import { PoolInfoResponse } from 'types/pool';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -174,7 +174,7 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
     const { totalSupply, totalLiquidity } = pool;
     const myStakedLP = pool.liquidityAddr
       ? totalRewardInfoData?.reward_infos.find((item) => isEqual(item.staking_token, pool.liquidityAddr))
-          ?.bond_amount || '0'
+        ?.bond_amount || '0'
       : 0;
 
     const lpPrice = Number(totalSupply) ? totalLiquidity / Number(totalSupply) : 0;
@@ -185,9 +185,9 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
 
   const totalEarned = myStakes
     ? myStakes.reduce((total, current) => {
-        total += current.earnAmountInUsdt;
-        return total;
-      }, 0)
+      total += current.earnAmountInUsdt;
+      return total;
+    }, 0)
     : 0;
 
   return {
@@ -331,7 +331,8 @@ export const getClaimableInfoByPool = ({ pool, totalRewardInfoData }) => {
             rpc: '',
             decimals: 0,
             coinGeckoId: 'scatom',
-            cosmosBased: undefined
+            cosmosBased: undefined,
+            icon: undefined
           });
 
           token = {

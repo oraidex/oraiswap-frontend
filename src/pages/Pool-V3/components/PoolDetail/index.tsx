@@ -184,8 +184,8 @@ const PoolV3Detail = () => {
           </div>
           <div className={styles.info}>
             <div className={classNames(styles.icons, styles[theme])}>
-              {FromTokenIcon && <FromTokenIcon />}
-              {ToTokenIcon && <ToTokenIcon />}
+              {FromTokenIcon}
+              {ToTokenIcon}
             </div>
             <span>
               {tokenXinfo?.name?.toUpperCase()} / {tokenYinfo?.name?.toUpperCase()}
@@ -251,12 +251,12 @@ const PoolV3Detail = () => {
             </div> */}
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {FromTokenIcon && <FromTokenIcon />}
+                {FromTokenIcon}
                 {/* <span>{tokenXinfo?.name?.toUpperCase()}</span> */}
                 <span className={styles.value}>{formatNumberKMB(balanceX, false)}</span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {ToTokenIcon && <ToTokenIcon />}
+                {ToTokenIcon}
                 {/* <span>{tokenYinfo?.name?.toUpperCase()}</span> */}
                 <span className={styles.value}>{formatNumberKMB(balanceY, false)}</span>
               </div>

@@ -1,12 +1,12 @@
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { OraiswapRouterReadOnlyInterface } from '@oraichain/oraidex-contracts-sdk';
-import { UniversalSwapHelper, RouterConfigSmartRoute } from '@oraichain/oraidex-universal-swap';
+import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { TokenInfo } from 'types/token';
 import { useDebounce } from 'hooks/useDebounce';
-import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { handleErrorRateLimit } from 'helper';
+import { flattenTokens, oraichainTokens } from 'initCommon';
 
 export const getRouterConfig = (options?: {
   path?: string;
@@ -62,6 +62,8 @@ export const useSimulate = (
     async () => {
       try {
         const res = await UniversalSwapHelper.handleSimulateSwap({
+          flattenTokens: flattenTokens,
+          oraichainTokens: oraichainTokens,
           originalFromInfo: originalFromTokenInfo,
           originalToInfo: originalToTokenInfo,
           originalAmount: debouncedFromAmount,

@@ -1,17 +1,15 @@
 import {
   BigDecimal,
-  CosmosChainId,
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
-  NetworkChainId,
   TON_ORAICHAIN_DENOM,
   TRON_DENOM,
   TokenItemType,
+  chainIcons,
   getTokenOnOraichain,
   toAmount,
   toDisplay
 } from '@oraichain/oraidex-common';
-import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import BookIcon from 'assets/icons/book_icon.svg?react';
 import DownArrowIcon from 'assets/icons/down-arrow-v2.svg';
 import FeeIcon from 'assets/icons/fee.svg?react';
@@ -26,12 +24,15 @@ import WarningIcon from 'assets/icons/warning_icon.svg?react';
 import RefreshImg from 'assets/images/refresh.svg?react';
 import { assets } from 'chain-registry';
 import cn from 'classnames/bind';
+import styles from './index.module.scss';
+import { chainInfosWithIcon, flattenTokens, flattenTokensWithIcon, oraichainTokens, oraidexCommon } from 'initCommon';
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import Loader from 'components/Loader';
 import LoadingBox from 'components/LoadingBox';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { flattenTokens } from 'config/bridgeTokens';
-import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import { ethers } from 'ethers';
 import {
@@ -65,8 +66,6 @@ import {
   isAllowIBCWasm,
   refreshBalances
 } from 'pages/UniversalSwap/helpers';
-import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentAddressBookStep, setCurrentAddressBookStep } from 'reducer/addressBook';
 import { AddressManagementStep } from 'reducer/type';
 import { RootState } from 'store/configure';
@@ -78,13 +77,14 @@ import AddressBook from './components/AddressBook';
 import InputCommon from './components/InputCommon';
 import InputSwap from './components/InputSwap/InputSwap';
 import SwapDetail from './components/SwapDetail';
+
 import TokenAndChainSelectors from './components/TokenAndChainSelectors';
 import { TooltipSwapBridge } from './components/TooltipSwapBridge';
 import { useGetTransHistory } from './hooks';
 import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculateDataSwap';
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
-import styles from './index.module.scss';
+import { CosmosChainId, NetworkChainId } from '@oraichain/common';
 
 const cx = cn.bind(styles);
 
@@ -288,8 +288,8 @@ const SwapComponent: React.FC<{
       );
 
       if (isSpecialFromCoingecko && originalFromToken.chainId === 'Oraichain') {
-        const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
-        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, true);
+        const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId, oraichainTokens);
+        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, oraichainTokens, true);
         const [nativeAmount, cw20Amount] = await Promise.all([
           window.client.getBalance(oraiAddress, fromTokenInOrai.denom),
           window.client.queryContractSmart(tokenInfo.contractAddress, {
@@ -336,17 +336,20 @@ const SwapComponent: React.FC<{
       };
 
       // @ts-ignore
-      const univeralSwapHandler = new UniversalSwapHandler(swapData, {
-        cosmosWallet: window.Keplr,
-        evmWallet: new Metamask(window.tronWebDapp),
-        swapOptions: {
-          isAlphaIbcWasm: useAlphaIbcWasm,
-          isIbcWasm: useIbcWasm,
-
-          // FIXME: hardcode with case celestia not check balance
-          isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
-        }
-      });
+      const univeralSwapHandler = new UniversalSwapHandler(
+        swapData,
+        {
+          cosmosWallet: window.Keplr,
+          evmWallet: new Metamask(window.tronWebDapp),
+          swapOptions: {
+            isAlphaIbcWasm: useAlphaIbcWasm,
+            isIbcWasm: useIbcWasm,
+            // FIXME: hardcode with case celestia not check balance
+            isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
+          }
+        },
+        oraidexCommon
+      );
 
       const { transactionHash } = await univeralSwapHandler.processUniversalSwap();
       if (transactionHash) {
@@ -627,7 +630,7 @@ const SwapComponent: React.FC<{
         <div key={ind} className={cx('smart-router-item')}>
           <div className={cx('smart-router-item-volumn')}>{volumn.toFixed(0)}%</div>
           {route.paths.map((path, i, acc) => {
-            const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, chainIcons, assets);
+            const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, assets);
             return (
               <React.Fragment key={i}>
                 <div className={cx('smart-router-item-line')}>
@@ -635,8 +638,12 @@ const SwapComponent: React.FC<{
                 </div>
                 <div className={cx('smart-router-item-pool')} onClick={() => setOpenSmartRoute(!openSmartRoute)}>
                   <div className={cx('smart-router-item-pool-wrap')} onClick={() => setIndSmartRoute([ind, i])}>
-                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkFromIcon />}</div>
-                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkToIcon />}</div>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>
+                      <img src={NetworkFromIcon} alt="NetworkFromIcon" />
+                    </div>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>
+                      <img src={NetworkToIcon} alt="NetworkToIcon" />
+                    </div>
                   </div>
                 </div>
                 {i === acc.length - 1 && (
@@ -911,7 +918,8 @@ const SwapComponent: React.FC<{
             {openSmartRoute &&
               [routersSwapData?.routes[indSmartRoute[0]]?.paths[indSmartRoute[1]]].map((path) => {
                 if (!path) return null;
-                const { NetworkFromIcon, NetworkToIcon, pathChainId } = getPathInfo(path, chainIcons, assets);
+                // TODO: chainIcons => chainInfosWithIcon to get correct icon
+                const { NetworkFromIcon, NetworkToIcon, pathChainId } = getPathInfo(path, assets);
                 const flattenSmartRouters = UniversalSwapHelper.flattenSmartRouters([
                   {
                     swapAmount: '0',

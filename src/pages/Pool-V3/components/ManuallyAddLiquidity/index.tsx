@@ -1,5 +1,5 @@
 import styles from './index.module.scss';
-import { BigDecimal, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { FC } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';

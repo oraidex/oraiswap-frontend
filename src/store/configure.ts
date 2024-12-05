@@ -7,7 +7,7 @@ import walletReducer from '../reducer/wallet';
 import chartReducer from '../reducer/chartSlice';
 import AddressBookReducer from '../reducer/addressBook';
 import TemporaryConfigReducer from '../reducer/temporaryConfig';
-import poolDetailV3Reducer from 'reducer/poolDetailV3';
+import poolDetailV3Reducer from '../reducer/poolDetailV3';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import { PERSIST_CONFIG_KEY } from './constants';
