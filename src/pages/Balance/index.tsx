@@ -537,23 +537,6 @@ const Balance: React.FC<BalanceProps> = () => {
 
       if (isSolToOraichain || isOraichainToSol) {
         if (isOraichainToSol) {
-          const connection = new Connection(SOLANA_RPC, 'confirmed');
-          const tokenAccountPubkey = new PublicKey(solAddress);
-          console.log({
-            newToToken: newToToken.contractAddress,
-            solAddress
-          });
-
-          const tokenAccount = await getAssociatedTokenAddress(
-            new PublicKey(newToToken.contractAddress),
-            tokenAccountPubkey
-          );
-
-          const getTokenAccount = await connection.getAccountInfo(tokenAccount);
-          if ((getTokenAccount?.lamports || 0) === 0) {
-            throw generateError('The destination token account is not initalized! Please try with an active account!');
-          }
-
           return handleTransferOraichainToSol({ fromToken: from, transferAmount: fromAmount });
         }
 
