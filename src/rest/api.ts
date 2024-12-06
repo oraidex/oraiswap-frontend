@@ -43,7 +43,6 @@ import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.type
 import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
 import { oraichainTokens, tokenMap, tokens } from 'config/bridgeTokens';
 import { network } from 'config/networks';
-import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
@@ -685,7 +684,8 @@ function generateMoveOraib2OraiMessages(
       sender: fromAddress,
       receiver: toAddress,
       memo: '',
-      timeoutTimestamp: Long.fromString(calculateTimeoutTimestamp(ibcInfo.timeout))
+      timeoutHeight: undefined,
+      timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout))
     });
   }
   return transferMsgs;

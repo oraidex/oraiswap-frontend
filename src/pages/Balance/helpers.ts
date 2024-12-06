@@ -29,7 +29,6 @@ import { cosmosNetworks, feeEstimate, getNetworkGasPrice } from 'helper';
 import { CwIcs20LatestClient } from '@oraichain/common-contracts-sdk';
 import { TransferBackMsg } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { OraiswapRouterQueryClient, OraiswapTokenClient } from '@oraichain/oraidex-contracts-sdk';
-import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import KawaiiverseJs from 'libs/kawaiiversejs';
@@ -73,7 +72,7 @@ export const transferIBC = async (data: {
     sender: fromAddress,
     receiver: toAddress,
     memo,
-    timeoutTimestamp: Long.fromString(calculateTimeoutTimestamp(ibcInfo.timeout)),
+    timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout)),
     timeoutHeight: undefined
   };
   let feeDenom = fromToken.denom;
@@ -191,10 +190,15 @@ export const transferIBCMultiple = async (
   }));
   const offlineSigner = await collectWallet(fromChainId);
   // Initialize the gaia api with the offline signer that is injected by Keplr extension.
-  const client = await connectWithSigner(rpc, offlineSigner, fromChainId === 'injective-1' ? 'injective' : 'cosmwasm', {
-    gasPrice: GasPrice.fromString(`${await getNetworkGasPrice(fromChainId)}${feeDenom}`),
-    broadcastPollIntervalMs: 600
-  });
+  const client = await connectWithSigner(
+    rpc,
+    offlineSigner as any,
+    fromChainId === 'injective-1' ? 'injective' : 'cosmwasm',
+    {
+      gasPrice: GasPrice.fromString(`${await getNetworkGasPrice(fromChainId)}${feeDenom}`),
+      broadcastPollIntervalMs: 600
+    }
+  );
   // hardcode fix bug osmosis
   let fee: 'auto' | number = 'auto';
   if (fromChainId === 'osmosis-1') fee = 3;
@@ -236,7 +240,7 @@ export const transferTokenErc20Cw20Map = async ({
       sender: fromAddress,
       receiver: toAddress,
       memo: ibcMemo,
-      timeoutTimestamp: calculateTimeoutTimestamp(ibcInfo.timeout)
+      timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout))
     })
   };
 
