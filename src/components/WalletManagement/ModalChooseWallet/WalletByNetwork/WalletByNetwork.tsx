@@ -2,7 +2,7 @@ import { WalletType as WalletCosmosType } from '@oraichain/oraidex-common';
 import { Button } from 'components/Button';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import type { WalletNetwork, WalletProvider, WalletType } from 'components/WalletManagement/walletConfig';
-import { getListAddressCosmos, setStorageKey, switchWalletTron } from 'helper';
+import { getListAddressCosmos, retry, setStorageKey, switchWalletTron } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
 import useWalletReducer from 'hooks/useWalletReducer';
@@ -101,11 +101,23 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     }
 
     solanaWallet.select(selectType as any);
-    await solanaWallet.connect();
-    const { publicKey } = await provider.connect();
-    if (publicKey) {
-      setSolanaAddress(publicKey.toBase58());
-    }
+    await retry(
+      async () => {
+        try {
+          await solanaWallet.connect();
+        } catch (err) {
+          console.log('err', err);
+        }
+        const { publicKey } = await provider.connect();
+        if (publicKey) {
+          setSolanaAddress(publicKey.toBase58());
+        } else {
+          throw new Error('Cannot connect to Solana wallet');
+        }
+      },
+      3,
+      1000
+    );
   };
 
   const handleConnectWalletByNetwork = async (wallet: WalletNetwork) => {

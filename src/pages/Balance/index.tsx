@@ -453,6 +453,10 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
+    if (!oraiAddress) {
+      throw new Error('Please connect to Oraichain wallet');
+    }
+
     const web3Solana = new Web3SolanaProgramInteraction();
     console.log('from token address: ', fromToken.contractAddress);
     const bridgeBalance =
@@ -481,6 +485,10 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
+    if (!solAddress) {
+      throw new Error('Please connect to Solana wallet');
+    }
+
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
     const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
     console.log(
