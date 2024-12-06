@@ -12,7 +12,7 @@ import {
 } from '@oraichain/oraiswap-v3';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { useDebounce } from 'hooks/useDebounce';
-import { network, oraichainTokens } from 'initCommon';
+import { network, oraichainTokens, oraidexCommon } from 'initCommon';
 import { fetchPositionAprInfo, PoolFeeAndLiquidityDaily } from 'libs/contractSingleton';
 import mixpanel from 'mixpanel-browser';
 import { useEffect, useState } from 'react';
@@ -170,7 +170,8 @@ const useZapIn = (
             protocols: ['OraidexV3'],
             maxSplits: 1
           }
-        }
+        },
+        oraidexCommon: oraidexCommon
       });
 
       const amountIn = Math.round(amountAfterFee * 10 ** tokenZap.decimals).toString();
