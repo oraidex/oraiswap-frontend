@@ -13,7 +13,9 @@ import {
   getCosmosGasPrice,
   solChainId,
   SOLANA_RPC,
-  toDisplay
+  toDisplay,
+  MAX_ORAICHAIN_DENOM,
+  MAX_SOL_CONTRACT_ADDRESS
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -459,16 +461,19 @@ const Balance: React.FC<BalanceProps> = () => {
 
     const web3Solana = new Web3SolanaProgramInteraction();
     console.log('from token address: ', fromToken.contractAddress);
-    const bridgeBalance =
-      fromToken.contractAddress === NATIVE_MINT.toBase58()
-        ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
-        : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, fromToken.contractAddress);
-    console.log('token balance to oraichain: ', bridgeBalance, fromToken.contractAddress);
-    if (bridgeBalance < transferAmount) {
-      throw new Error(
-        `Transfer ${fromToken.denom} to Oraichain failed. The bridge balance only has ${bridgeBalance}${fromToken.denom}, wanted ${transferAmount}${fromToken.denom}`
-      );
+    if (fromToken.contractAddress !== MAX_SOL_CONTRACT_ADDRESS) {
+      const bridgeBalance =
+        fromToken.contractAddress === NATIVE_MINT.toBase58()
+          ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
+          : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, fromToken.contractAddress);
+      console.log('token balance to oraichain: ', bridgeBalance, fromToken.contractAddress);
+      if (bridgeBalance < transferAmount) {
+        throw new Error(
+          `Transfer ${fromToken.denom} to Oraichain failed. The bridge balance only has ${bridgeBalance}${fromToken.denom}, wanted ${transferAmount}${fromToken.denom}`
+        );
+      }
     }
+
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
     const transaction = response?.transaction;
     if (transaction) {
@@ -490,20 +495,24 @@ const Balance: React.FC<BalanceProps> = () => {
     }
 
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
-    const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
-    console.log(
-      'Current bridge balance transfer to sol: ',
-      toDisplay(currentBridgeBalance.amount, fromToken.decimals),
-      fromToken.denom
-    );
-    if (toDisplay(currentBridgeBalance.amount, fromToken.decimals) < transferAmount) {
-      throw new Error(
-        `Transfer ${fromToken.denom} to Solana failed. The bridge balance only has ${toDisplay(
-          currentBridgeBalance.amount,
-          fromToken.decimals
-        )}${currentBridgeBalance.denom.toUpperCase()}, wanted ${transferAmount}${currentBridgeBalance.denom.toUpperCase()}`
+
+    if (fromToken.denom !== MAX_ORAICHAIN_DENOM) {
+      const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
+      console.log(
+        'Current bridge balance transfer to sol: ',
+        toDisplay(currentBridgeBalance.amount, fromToken.decimals),
+        fromToken.denom
       );
+      if (toDisplay(currentBridgeBalance.amount, fromToken.decimals) < transferAmount) {
+        throw new Error(
+          `Transfer ${fromToken.denom} to Solana failed. The bridge balance only has ${toDisplay(
+            currentBridgeBalance.amount,
+            fromToken.decimals
+          )}${currentBridgeBalance.denom.toUpperCase()}, wanted ${transferAmount}${currentBridgeBalance.denom.toUpperCase()}`
+        );
+      }
     }
+
     const result = await window.client.sendTokens(
       oraiAddress,
       receiverAddress,
