@@ -760,7 +760,7 @@ export function simulateIncentiveAprPosition(
 
   // calculate APR for the best, position liquidity is 10% of total liquidity
   let sumMaxIncentivesApr = 0;
-  const positionLiquidity = 10 ** 24;
+  const positionLiquidity = Number(pool.liquidity);
   // const totalPositionLiquidity = (totalLiquidity * 0.5) / 100;
   const tick_spacing = poolKey.fee_tier.tick_spacing;
 
@@ -792,7 +792,7 @@ export function simulateIncentiveAprPosition(
 
   // calculate APR for the worst, position liquidity is 2% of total liquidity
   let sumMinIncentivesApr = 0;
-  const positionLiquidity2 = 10 ** 24;
+  const positionLiquidity2 = Number(pool.liquidity);
 
   const res2 = calculateAmountDelta(
     pool.current_tick_index,

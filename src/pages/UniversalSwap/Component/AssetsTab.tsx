@@ -40,12 +40,12 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     stakerAddress: address
   });
   let totalUsd: number = getTotalUsd(amounts, prices);
-  // if (networkFilter) {
-  //   const subAmounts = Object.fromEntries(
-  //     Object.entries(amounts).filter(([denom]) => tokenMap?.[denom]?.chainId === networkFilter)
-  //   );
-  //   totalUsd = getTotalUsd(subAmounts, prices);
-  // }
+  if (networkFilter) {
+    const subAmounts = Object.fromEntries(
+      Object.entries(amounts).filter(([denom]) => tokenMap?.[denom]?.chainId === networkFilter)
+    );
+    totalUsd = getTotalUsd(subAmounts, prices);
+  }
 
   useEffect(() => {
     dispatch(updateTotalLpv3(totalLpV3Info || 0));
@@ -60,12 +60,12 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     label?: string;
     balance?: number | string;
   }[] = [
-      {
-        src: WalletIcon,
-        label: 'Total balance',
-        balance: formatDisplayUsdt(totalUsd)
-      }
-    ];
+    {
+      src: WalletIcon,
+      label: 'Total balance',
+      balance: formatDisplayUsdt(totalUsd)
+    }
+  ];
 
   if (!networkFilter || networkFilter === 'Oraichain') {
     listAsset = [
