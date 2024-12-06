@@ -7,6 +7,7 @@ export type WalletsByNetwork = {
   tron: 'owallet' | 'tronLink' | null;
   bitcoin: 'owallet' | null;
   solana: 'phantom' | 'owallet' | null;
+  ton: 'ton' | null;
 };
 
 export interface WalletState {
@@ -19,7 +20,8 @@ const initialState: WalletState = {
     evm: null,
     tron: null,
     bitcoin: null,
-    solana: null
+    solana: null,
+    ton: null
   }
 };
 

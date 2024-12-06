@@ -19,11 +19,7 @@ import { persistor, store } from 'store/configure';
 import './index.scss';
 import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
-
-// const client = new Client({
-//   url: 'http://10.10.20.72:3000/',
-//   exchanges: [cacheExchange, fetchExchange]
-// });
+import { TonProvider } from 'context/ton-provider';
 
 const queryClient = new QueryClient();
 
@@ -73,7 +69,9 @@ const initApp = async () => {
           <Router>
             <ScrollToTop />
             <QueryClientProvider client={queryClient}>
-              <App />
+              <TonProvider>
+                <App />
+              </TonProvider>
             </QueryClientProvider>
           </Router>
           <ToastContext.Consumer>

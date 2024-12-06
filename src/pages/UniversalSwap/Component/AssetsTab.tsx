@@ -51,17 +51,21 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     dispatch(updateTotalLpv3(totalLpV3Info || 0));
   }, [totalLpV3Info]);
 
+  useEffect(() => {
+    dispatch(updateTotalLpv3(totalLpV3Info || 0));
+  }, [totalLpV3Info]);
+
   let listAsset: {
     src?: CoinIcon;
     label?: string;
     balance?: number | string;
   }[] = [
-      {
-        src: WalletIcon,
-        label: 'Total balance',
-        balance: formatDisplayUsdt(totalUsd)
-      }
-    ];
+    {
+      src: WalletIcon,
+      label: 'Total balance',
+      balance: formatDisplayUsdt(totalUsd)
+    }
+  ];
 
   if (!networkFilter || networkFilter === 'Oraichain') {
     listAsset = [

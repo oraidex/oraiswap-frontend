@@ -8,6 +8,7 @@ import styles from './ModalDisconnect.module.scss';
 import useWalletReducer from 'hooks/useWalletReducer';
 import { reduceString } from 'libs/utils';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
+import useTonConnectAddress from 'hooks/useTonConnectAddress';
 import SuccessIcon from 'assets/icons/toast_success.svg?react';
 
 const cx = cn.bind(styles);
@@ -21,10 +22,12 @@ export const ModalDisconnect: React.FC<{
   const [walletByNetworks, setWalletByNetworks] = useWalletReducer('walletsByNetwork');
   const [oraiAddress, setOraiAddress] = useConfigReducer('address');
   const [tronAddress, setTronAddress] = useConfigReducer('tronAddress');
+  const [tonAddress, setTonAddress] = useConfigReducer('tonAddress');
   const [btcAddress, setBtcAddress] = useConfigReducer('btcAddress');
   const [solAddress, setSolAddress] = useConfigReducer('solAddress');
   const [metamaskAddress, setMetamaskAddress] = useConfigReducer('metamaskAddress');
   const { isCopied, copiedValue, handleCopy } = useCopyClipboard();
+  const { handleDisconnectTon } = useTonConnectAddress();
 
   const chains =
     walletProvider.find((provider) => provider.networkType === currentDisconnectingNetwork)?.networks || [];
@@ -50,6 +53,9 @@ export const ModalDisconnect: React.FC<{
         break;
       case 'solana':
         choosedAddressDisplayByNetwork = solAddress;
+        break;
+      case 'ton':
+        choosedAddressDisplayByNetwork = tonAddress;
         break;
       default:
         break;
@@ -81,6 +87,9 @@ export const ModalDisconnect: React.FC<{
         break;
       case 'solana':
         setSolAddress(undefined);
+        break;
+      case 'ton':
+        handleDisconnectTon();
         break;
       default:
         break;
