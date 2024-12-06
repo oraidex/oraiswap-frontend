@@ -54,6 +54,8 @@ import {
   btcNetwork
 } from 'helper/constants';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
+import { getAccount, getMint } from '@solana/spl-token';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
