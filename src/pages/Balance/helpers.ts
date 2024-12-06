@@ -386,9 +386,17 @@ export const transferIbcCustom = async (
 
 export const findDefaultToToken = (from: TokenItemType) => {
   if (!from.bridgeTo) return;
-  return flattenTokens.find(
-    (t) => from.bridgeTo.includes(t.chainId) && from.name.includes(t.name) && from.chainId !== t.chainId
-  );
+
+  const defaultToken = flattenTokens.find((t) => {
+    const defaultChain = from.bridgeTo[0];
+    return defaultChain === t.chainId && from.coinGeckoId === t.coinGeckoId && from.chainId !== t.chainId;
+  });
+
+  return defaultToken;
+
+  // return flattenTokens.find(
+  //   (t) => from.bridgeTo.includes(t.chainId) && from.name.includes(t.name) && from.chainId !== t.chainId
+  // );
 };
 
 export const convertKwt = async (transferAmount: number, fromToken: TokenItemType): Promise<DeliverTxResponse> => {
@@ -492,9 +500,9 @@ export const calcMaxAmount = ({
   if (!token) return maxAmount;
 
   let finalAmount = maxAmount;
+  if (token.chainId === 'ton') return finalAmount;
 
   const feeCurrencyOfToken = token.feeCurrencies?.find((e) => e.coinMinimalDenom === token.denom);
-
   if (feeCurrencyOfToken) {
     const useFeeEstimate = feeEstimate(token, gas);
 

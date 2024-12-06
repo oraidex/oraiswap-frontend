@@ -66,11 +66,11 @@ const initialState: PoolDetailV3State = {
   tokenY: null,
   isXToY: true,
   historicalRange: '7d',
-  cache7Day: [],
-  cache1Month: [],
-  cache3Month: [],
-  cache1Year: [],
-  historicalChartData: [],
+  cache7Day: null,
+  cache1Month: null,
+  cache3Month: null,
+  cache1Year: null,
+  historicalChartData: null,
   fullRange: false,
   xRange: null,
   yRange: null,
@@ -329,7 +329,7 @@ export const fetchHistoricalPriceData3M = createAsyncThunk(
 export const fetchHistoricalPriceData7D = createAsyncThunk(
   'poolDetailV3/fetchHistoricalPriceData7D',
   async (poolId: string) => {
-    return await getHistoricalPriceDataInDay(poolId, '7d');
+    return await getHistoricalPriceDataInHour(poolId, '7d');
   }
 );
 

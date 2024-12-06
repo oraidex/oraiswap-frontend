@@ -760,7 +760,7 @@ export function simulateIncentiveAprPosition(
 
   // calculate APR for the best, position liquidity is 10% of total liquidity
   let sumMaxIncentivesApr = 0;
-  const positionLiquidity = Number(pool.liquidity);
+  const positionLiquidity = 10 ** 24;
   // const totalPositionLiquidity = (totalLiquidity * 0.5) / 100;
   const tick_spacing = poolKey.fee_tier.tick_spacing;
 
@@ -792,7 +792,7 @@ export function simulateIncentiveAprPosition(
 
   // calculate APR for the worst, position liquidity is 2% of total liquidity
   let sumMinIncentivesApr = 0;
-  const positionLiquidity2 = Number(pool.liquidity);
+  const positionLiquidity2 = 10 ** 24;
 
   const res2 = calculateAmountDelta(
     pool.current_tick_index,
@@ -898,11 +898,15 @@ export async function fetchPoolAprInfo(
         min: res.min + (minSwapApr ? minSwapApr : 0),
         max: res.max + (maxSwapApr ? maxSwapApr : 0)
       },
-      incentives: pool.incentives.map((incentive) => {
-        if (incentive.remaining === '0') return null;
-        const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
-        return token.denom.toUpperCase();
-      }).filter((incentive) => incentive !== null),
+      incentives: pool.incentives
+        .map((incentive) => {
+          if (incentive.remaining === '0') return null;
+          const token = oraichainTokens.find(
+            (token) => extractAddress(token) === parseAssetInfo(incentive.reward_token)
+          );
+          return token.denom.toUpperCase();
+        })
+        .filter((incentive) => incentive !== null),
       swapFee: {
         min: minSwapApr,
         max: maxSwapApr

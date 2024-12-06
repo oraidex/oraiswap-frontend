@@ -84,6 +84,10 @@ export default function SelectToken({
       (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
   );
 
+  console.log({
+    listItems
+  });
+
   return (
     <>
       <div className={`${styles.selectToken} ${isSelectToken ? styles.active : ''}`}>

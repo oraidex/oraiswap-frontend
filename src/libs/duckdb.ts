@@ -1,7 +1,24 @@
 import { NetworkChainId } from '@oraichain/oraidex-common';
 import * as duckdb from '@duckdb/duckdb-wasm';
+import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
+import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
+import duckdb_wasm_next from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
+import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
 import { get, set } from 'idb-keyval';
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
+
+const MANUAL_BUNDLES = {
+  mvp: {
+    mainModule: duckdb_wasm,
+    mainWorker: mvp_worker
+  },
+  eh: {
+    mainModule: duckdb_wasm_next,
+    // mainWorker: new URL('@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js', import.meta.url).toString(),
+    mainWorker: eh_worker
+  }
+};
+// Select a bundle based on browser checks
+const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
 
 export type TransactionHistory = {
   initialTxHash: string;
@@ -47,6 +64,9 @@ const decompress = async (buf: Uint8Array) => {
     return buf;
   }
 };
+
+const worker = new Worker(bundle.mainWorker);
+const logger = import.meta.env.NODE_ENV === 'development' ? new duckdb.ConsoleLogger() : new duckdb.VoidLogger();
 
 export class DuckDb {
   static instance: DuckDb;
