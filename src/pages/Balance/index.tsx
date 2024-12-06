@@ -12,7 +12,15 @@ import {
   solChainId,
   SOLANA_RPC
 } from '@oraichain/oraidex-common';
-import { chainInfos, flattenTokens, flattenTokensWithIcon, oraidexCommon } from 'initCommon';
+import {
+  chainInfos,
+  flattenTokens,
+  flattenTokensWithIcon,
+  oraidexCommon,
+  tokens,
+  oraichainTokens as oraichainTokensCommon,
+  otherChainTokens as otherChainTokenCommon
+} from 'initCommon';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -165,10 +173,11 @@ const Balance: React.FC<BalanceProps> = () => {
   useGetFeeConfig();
 
   useEffect(() => {
-    if (!tokenUrl) return setTokens([oraichainTokens, otherChainTokens]);
-    const _tokenUrl = tokenUrl.toUpperCase();
+    if (!tokenUrl) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
     setTokens(
-      [oraichainTokens, otherChainTokens].map((childTokens) => childTokens.filter((t) => t.name.includes(_tokenUrl)))
+      [otherChainTokens, oraichainTokens].map((childTokens) =>
+        childTokens.filter((t) => t.name.includes(tokenUrl.toUpperCase()))
+      )
     );
   }, [tokenUrl]);
 
@@ -664,8 +673,7 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
-    // return [...otherChainTokens, ...oraichainTokens]
-    return flattenTokensWithIcon
+    return [...otherChainTokens, ...oraichainTokens]
       .filter((token) => {
         // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
         if (!token.bridgeTo && !token.contractAddress) return false;

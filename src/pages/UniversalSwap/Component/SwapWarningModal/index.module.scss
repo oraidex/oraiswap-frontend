@@ -69,6 +69,7 @@
       @include theme {
         color: theme-get('neutral-text-text-token-name');
       }
+
       font-size: 20px;
       font-weight: 600;
       line-height: 150%;
@@ -102,6 +103,7 @@
       @include theme {
         color: theme-get('neutral-text-text-token-name');
       }
+
       font-size: 16px;
       font-weight: 400;
       line-height: 150%;
@@ -148,6 +150,7 @@
           font-size: 12px;
           height: 30px;
         }
+
         width: 100%;
       }
     }

@@ -42,15 +42,15 @@ const RowsComponent: React.FC<{
           <div className={styles.list}>
             <div className={styles.img}>
               {theme === 'light' ? (
-                <fromToken.IconLight width={26} height={26} />
+                <img src={fromToken.iconLight} alt="" width={26} height={26} />
               ) : (
-                <fromToken.Icon width={26} height={26} />
+                <img src={fromToken.icon} alt="" width={26} height={26} />
               )}
               <div className={styles.imgChain}>
                 {theme === 'light' ? (
-                  <fromChain.IconLight width={14} height={14} />
+                  <img src={fromChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 ) : (
-                  <fromChain.Icon width={14} height={14} />
+                  <img src={fromChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 )}
               </div>
             </div>
@@ -71,15 +71,15 @@ const RowsComponent: React.FC<{
           <div className={styles.list}>
             <div className={styles.img}>
               {theme === 'light' ? (
-                <toToken.IconLight width={26} height={26} />
+                <img src={toToken.iconLight} alt="" width={26} height={26} />
               ) : (
-                <toToken.Icon width={26} height={26} />
+                <img src={toToken.icon} alt="" width={26} height={26} />
               )}
               <div className={styles.imgChain}>
                 {theme === 'light' ? (
-                  <toChain.IconLight width={14} height={14} />
+                  <img src={toChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 ) : (
-                  <toChain.Icon width={14} height={14} />
+                  <img src={toChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 )}
               </div>
             </div>

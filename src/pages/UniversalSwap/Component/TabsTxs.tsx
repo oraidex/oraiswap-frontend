@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from '../helpers';
 import styles from './TabsTxs.module.scss';
 import { FROM_QUERY_KEY, TO_QUERY_KEY, TYPE_QUERY_TYPE } from '../Swap/hooks/useFillToken';
+import { chainInfos } from 'initCommon';
 
 const cx = cn.bind(styles);
 const ItemNetwork: React.FC<{
@@ -61,7 +62,7 @@ const TabsNetwork: React.FC<{
       <div className={cx('options')}>
         {networks &&
           networks.map((item: CustomChainInfo) => {
-            const networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
+            const networkIcon = chainInfos.find((chainIcon) => chainIcon.chainId === item.chainId);
             return (
               <div key={item.chainName}>
                 <ItemNetwork
@@ -69,16 +70,16 @@ const TabsNetwork: React.FC<{
                     setNetworkFilter({
                       label: item.chainName,
                       value: item.chainId,
-                      Icon: networkIcon.Icon,
-                      IconLight: networkIcon.IconLight,
+                      Icon: networkIcon.chainSymbolImageUrl,
+                      IconLight: networkIcon.chainSymbolImageUrl,
                       chainSymbolImageUrl: item.chainSymbolImageUrl
                     });
                     setIsNetwork(false);
                   }}
                   item={{
                     ...item,
-                    Icon: networkIcon.Icon,
-                    IconLight: networkIcon.IconLight
+                    Icon: networkIcon.chainSymbolImageUrl,
+                    IconLight: networkIcon.chainSymbolImageUrl
                   }}
                   theme={theme}
                   isCheck={networkFilter === item.chainName}

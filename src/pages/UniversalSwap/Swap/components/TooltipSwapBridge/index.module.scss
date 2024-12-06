@@ -34,7 +34,8 @@
           padding: 2px;
         }
 
-        svg {
+        svg,
+        img {
           width: 30px;
           height: 30px;
         }
@@ -46,7 +47,7 @@
           z-index: 1;
           border-radius: 50%;
 
-          svg {
+          img {
             width: 20px;
             height: 20px;
             border-radius: 50%;

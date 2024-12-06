@@ -18,10 +18,10 @@ export const TooltipSwapBridge = ({
       <div className={styles.tooltipUniversalSwapRoutes}>
         <div className={styles.tooltipUniversalSwapRoute}>
           <div className={styles.tooltipUniversalSwapRouteImg}>
-            <TokenInIcon width={40} height={40} />
+            <img src={TokenInIcon} alt="" width={40} height={40} />
             <div className={styles.tooltipUniversalSwapRouteImgAbs}>
               <div>
-                <NetworkFromIcon />
+                <img src={NetworkFromIcon} alt="" />
               </div>
             </div>
           </div>
@@ -32,9 +32,9 @@ export const TooltipSwapBridge = ({
         </div>
         <div className={styles.tooltipUniversalSwapRoute}>
           <div className={styles.tooltipUniversalSwapRouteImg}>
-            <TokenOutIcon width={40} height={40} />
+            <img src={TokenOutIcon} alt="" width={40} height={40} />
             <div className={styles.tooltipUniversalSwapRouteImgAbs}>
-              <div>{type === 'Swap' ? <NetworkFromIcon /> : <NetworkToIcon />}</div>
+              <div>{type === 'Swap' ? <img src={NetworkFromIcon} alt="" /> : <img src={NetworkToIcon} alt="" />}</div>
             </div>
           </div>
           <div>{symbolOut}</div>

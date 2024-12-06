@@ -469,7 +469,7 @@ export const transformSwapInfo = (data) => {
 };
 
 export const getPathInfo = (path, assets) => {
-  let [NetworkFromIcon, NetworkToIcon] = [null, null];
+  let [NetworkFromIcon, NetworkToIcon] = [OraiIcon, OraiIcon];
 
   const pathChainId = path.chainId.split('-')[0].toLowerCase();
 

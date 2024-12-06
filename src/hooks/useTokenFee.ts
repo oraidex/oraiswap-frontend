@@ -1,6 +1,5 @@
 import {
   BigDecimal,
-  NetworkChainId,
   ORAI_BRIDGE_EVM_DENOM_PREFIX,
   ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
   TokenItemType,
@@ -11,7 +10,7 @@ import {
   PEPE_BSC_CONTRACT,
   PEPE_ETH_CONTRACT
 } from '@oraichain/oraidex-common';
-
+import { NetworkChainId } from '@oraichain/common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { useQuery } from '@tanstack/react-query';
@@ -23,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateFeeConfig } from 'reducer/token';
 import { fetchFeeConfig } from 'rest/api';
 import { RootState } from 'store/configure';
-import { network, oraichainTokens } from 'initCommon';
+import { network, oraichainTokens, flattenTokens } from 'initCommon';
 
 export default function useTokenFee(
   remoteTokenDenom: string,
@@ -86,6 +85,8 @@ export const useRelayerFeeToken = (originalFromToken: TokenItemType, originalToT
       const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
       const oraiToken = oraichainTokens.find((token) => token.coinGeckoId === 'oraichain-token');
       return UniversalSwapHelper.handleSimulateSwap({
+        flattenTokens,
+        oraichainTokens,
         originalFromInfo: oraiToken,
         originalToInfo: originalToToken,
         originalAmount: relayerFeeInOrai,
@@ -147,6 +148,8 @@ export const useUsdtToBtc = (amount) => {
     ['convert-btc-to-usdt', originalFromToken, originalToToken],
     () => {
       return UniversalSwapHelper.handleSimulateSwap({
+        flattenTokens,
+        oraichainTokens,
         originalFromInfo: originalToToken,
         originalToInfo: originalFromToken,
         originalAmount: amount,
