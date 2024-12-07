@@ -19,7 +19,7 @@ export function getPubkeyFromEthSignatures(rawMsg: Uint8Array, sigResult: string
   // On ETHland pubkeys are recovered from signatures, so we're going to:
   // 1. sign something
   // 2. recover the pubkey from the signature
-  // 3. derive a secret address from the the pubkey
+  // 3. derive a secret address from the pubkey
 
   // strip leading 0x and extract recovery id
   const sig = fromHex(sigResult.slice(2, -2));

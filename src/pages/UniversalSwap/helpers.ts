@@ -347,7 +347,7 @@ export const getDisableSwap = ({
     swapLoading ||
     !fromAmountToken ||
     !toAmountToken ||
-    fromAmountTokenBalance > fromTokenBalance || // insufficent fund
+    fromAmountTokenBalance > fromTokenBalance || // insufficient fund
     !addressTransfer ||
     !validAddress.isValid ||
     isLoadingSimulate ||
