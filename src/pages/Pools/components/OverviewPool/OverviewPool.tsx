@@ -3,7 +3,6 @@ import DefaultIcon from 'assets/icons/tokens.svg?react';
 import classNames from 'classnames';
 import TokenBalance from 'components/TokenBalance';
 import useTheme from 'hooks/useTheme';
-import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useEffect, useState } from 'react';
 import { PoolDetail } from 'types/pool';

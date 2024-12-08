@@ -218,3 +218,14 @@ export const formatTimeDataChart = (
       return formatDate(fmtTime) + ' - ' + formatDate(endOfMonth(date));
   }
 };
+
+export const canStake = (rewardPerSec: string) => {
+  if (!rewardPerSec) return false;
+  const rewardPerSecJSON = JSON.parse(rewardPerSec) as {
+    assets: {
+      amount: string;
+    }[]
+  };
+
+  return rewardPerSecJSON.assets.some((asset) => asset.amount !== '0');
+}
