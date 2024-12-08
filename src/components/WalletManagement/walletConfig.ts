@@ -158,13 +158,13 @@ export const walletProvider: WalletProvider[] = [
     wallets: btcWallets
   },
   {
-    networkType: 'solana',
-    networks: solanaNetworksWithIcon,
-    wallets: solanaWallets
-  },
-  {
     networkType: 'ton',
     networks: tonNetworksWithIcon,
     wallets: tonWallets
+  },
+  {
+    networkType: 'solana',
+    networks: solanaNetworksWithIcon,
+    wallets: solanaWallets
   }
 ];

@@ -239,7 +239,11 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         content = (
           <div
             className={`${styles.wallets} ${
-              networkType === 'cosmos' ? styles.flexJustifyStart : styles.flexJustifyBetween
+              networkType === 'cosmos'
+                ? styles.flexJustifyStart
+                : ['ton', 'bitcoin'].includes(networkType)
+                ? styles.flexJustifyOne
+                : styles.flexJustifyBetween
             }`}
           >
             {wallets.map((w) => {
@@ -327,10 +331,16 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     });
   };
 
+  const baseClasses = `${styles.walletByNetwork} ${styles[theme]}`;
+  const networkClass =
+    networkType === 'cosmos'
+      ? styles.fullWitdth
+      : ['ton', 'bitcoin'].includes(networkType) && connectStatus !== 'confirming-disconnect'
+      ? styles.oneQuarter
+      : '';
+
   return (
-    <div
-      className={`${styles.walletByNetwork} ${styles[theme]} ${networkType === 'cosmos' ? styles.fullWitdth : null}`}
-    >
+    <div className={`${baseClasses} ${networkClass}`}>
       <div className={styles.header}>
         <div className={styles.networkIcons}>{renderNetworkIcons()}</div>
       </div>
