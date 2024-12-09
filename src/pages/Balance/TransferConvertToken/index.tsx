@@ -5,7 +5,8 @@ import {
   NetworkChainId,
   toDisplay,
   TokenItemType,
-  BTC_CONTRACT
+  BTC_CONTRACT,
+  tonNetworkMainnet
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -18,7 +19,7 @@ import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
-import { btcChains, evmChains, OsmosisTokenList, tonNetworkMainnet } from 'config/chainInfos';
+import { btcChains, evmChains } from 'config/chainInfos';
 import copy from 'copy-to-clipboard';
 import { filterChainBridge, findChainByChainId, getAddressTransfer, networks } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
