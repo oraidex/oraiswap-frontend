@@ -11,7 +11,12 @@ import {
   HMSTR_ORAICHAIN_DENOM,
   TON_ALL_OSMOSIS_CONTRACT,
   TON_OSMOSIS_CONTRACT,
-  solChainId
+  solChainId,
+  tonNetworkMainnet,
+  TON_CONTRACT,
+  TON20_USDT_CONTRACT,
+  jUSDC_TON_CONTRACT as jUSDC_TON_CONTRACT_COMMON,
+  HMSTR_TON_CONTRACT as HMSTR_TON_CONTRACT_COMMON
 } from '@oraichain/oraidex-common';
 import HamsterIcon from 'assets/icons/hmstr.svg?react';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
@@ -30,10 +35,10 @@ import { CWBitcoinFactoryDenom } from 'helper/constants';
 export const tokensIcon = tokensIconInfos;
 export const chainIcons = chainIconsInfos;
 
-export const TON_ZERO_ADDRESS = 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c';
-export const USDT_TON_CONTRACT = 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs';
-export const jUSDC_TON_CONTRACT = 'EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728';
-export const HMSTR_TON_CONTRACT = 'EQAJ8uWd7EBqsmpSWaRdf_I-8R8-XHwh3gsNKhy-UrdrPcUo';
+export const TON_ZERO_ADDRESS = TON_CONTRACT;
+export const USDT_TON_CONTRACT = TON20_USDT_CONTRACT;
+export const jUSDC_TON_CONTRACT = jUSDC_TON_CONTRACT_COMMON;
+export const HMSTR_TON_CONTRACT = HMSTR_TON_CONTRACT_COMMON;
 
 const [otherChainTokens, oraichainTokens] = tokens;
 const OraiBTCToken: BridgeAppCurrency = {
@@ -97,86 +102,6 @@ export const OsmosisTokenList = [
     alloyedToken: true
   }
 ];
-
-export const tonNetworkMainnet: CustomChainInfo = {
-  rest: 'https://toncenter.com/api/v2/jsonRPC',
-  rpc: 'https://toncenter.com/api/v2/jsonRPC',
-  chainId: TonChainId,
-  chainName: 'TON' as any,
-  bip44: {
-    coinType: 607 as any
-  },
-  coinType: 607,
-  Icon: TonIcon,
-  IconLight: TonIcon,
-  stakeCurrency: {
-    coinDenom: 'TON',
-    coinMinimalDenom: 'ton',
-    coinDecimals: 9,
-    coinGeckoId: 'the-open-network',
-    coinImageUrl: 'https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png'
-  },
-  bech32Config: defaultBech32Config('bc'),
-  networkType: 'ton' as any,
-  currencies: [
-    {
-      coinDenom: 'TON',
-      coinMinimalDenom: 'ton',
-      coinDecimals: 9,
-      bridgeTo: ['Oraichain', 'osmosis-1'],
-      prefixToken: 'ton20_',
-      contractAddress: TON_ZERO_ADDRESS,
-      Icon: TonIcon,
-      coinGeckoId: 'the-open-network',
-      coinImageUrl: 'https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png',
-      gasPriceStep: {
-        low: 0,
-        average: 0,
-        high: 0
-      }
-    },
-    {
-      coinDenom: 'USDT',
-      coinMinimalDenom: 'ton20_usdt',
-      coinDecimals: 6,
-      Icon: UsdtIcon,
-      bridgeTo: ['Oraichain'],
-      contractAddress: USDT_TON_CONTRACT,
-      prefixToken: 'ton20_',
-      coinGeckoId: 'tether'
-    },
-    {
-      coinDenom: 'HMSTR',
-      coinMinimalDenom: 'ton20_hamster_kombat',
-      coinDecimals: 9,
-      Icon: HamsterIcon,
-      bridgeTo: ['Oraichain'],
-      contractAddress: HMSTR_TON_CONTRACT,
-      prefixToken: 'ton20_',
-      coinGeckoId: 'hamster-kombat'
-    },
-    {
-      coinDenom: 'jUSDC',
-      coinMinimalDenom: 'ton20_usdc',
-      coinDecimals: 6,
-      Icon: UsdcIcon,
-      bridgeTo: ['Oraichain'],
-      contractAddress: jUSDC_TON_CONTRACT,
-      prefixToken: 'ton20_',
-      coinGeckoId: 'usd-coin'
-    }
-  ],
-  get feeCurrencies() {
-    return this.currencies;
-  },
-  // features: ['isBtc'],
-
-  txExplorer: {
-    name: 'BlockStream',
-    txUrl: `${TON_SCAN}/transaction/{txHash}`,
-    accountUrl: `${TON_SCAN}/{address}`
-  }
-};
 
 const oraibtcNetwork = {
   rpc: 'https://btc.rpc.orai.io',
@@ -275,21 +200,6 @@ export const tonNetworkTokens = getTokensFromNetwork(tonNetworkMainnet);
 export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];
 export const flattenTokensWithIcon = flatten(tokensWithIcon);
 
-export const OraiToken: BridgeAppCurrency = {
-  coinDenom: 'ORAI',
-  coinMinimalDenom: 'orai',
-  coinDecimals: 6,
-  coinGeckoId: 'oraichain-token',
-  Icon: OraiIcon,
-  IconLight: OraiLightIcon,
-  bridgeTo: ['0x38', '0x01', 'injective-1'],
-  gasPriceStep: {
-    low: 0.003,
-    average: 0.005,
-    high: 0.007
-  }
-};
-
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
   currencies: [...customOraichainNetwork.currencies]
@@ -349,12 +259,7 @@ export const OraiBTCBridgeNetwork = {
   }
 };
 
-export const chainInfosWithSdk = [
-  ...customChainInfos,
-  bitcoinMainnet,
-  oraibtcNetwork
-  // tonNetworkMainnet
-];
+export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 
 // exclude kawaiverse subnet and other special evm that has different cointype
