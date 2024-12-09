@@ -76,9 +76,7 @@ export const evmNetworksIconWithoutTron = chainInfosWithIcon.filter(
 export const tronNetworks = chainInfos.filter((c) => c.chainId === '0x2b6653dc');
 export const tronNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === '0x2b6653dc');
 export const btcNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === bitcoinChainId);
-export const solanaNetworksWithIcon = chainInfosWithIcon.filter(
-  (c) => c.chainId === 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'
-);
+export const solanaNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === solChainId);
 export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === TonChainId);
 
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
