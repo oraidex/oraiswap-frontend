@@ -24,10 +24,11 @@ import {
   ERC20__factory,
   getEvmAddress,
   tronToEthAddress,
-  solChainId
+  solChainId,
+  tonNetworkMainnet
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { chainInfos, evmChains, TON_ZERO_ADDRESS, tonNetworkMainnet } from 'config/chainInfos';
+import { chainInfos, evmChains, TON_ZERO_ADDRESS } from 'config/chainInfos';
 import { network } from 'config/networks';
 import { ethers } from 'ethers';
 import axios from 'rest/request';
