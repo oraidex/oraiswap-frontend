@@ -51,10 +51,6 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     dispatch(updateTotalLpv3(totalLpV3Info || 0));
   }, [totalLpV3Info]);
 
-  useEffect(() => {
-    dispatch(updateTotalLpv3(totalLpV3Info || 0));
-  }, [totalLpV3Info]);
-
   let listAsset: {
     src?: CoinIcon;
     label?: string;
