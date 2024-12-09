@@ -1,6 +1,5 @@
-import { BigDecimal, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { BigDecimal, toDisplay, TokenItemType, tonNetworkMainnet } from '@oraichain/oraidex-common';
 import { TonbridgeBridgeClient } from '@oraichain/tonbridge-contracts-sdk';
-import { tonNetworkMainnet } from 'config/chainInfos';
 import { network } from 'config/networks';
 import { TonChainId } from 'context/ton-provider';
 import useConfigReducer from 'hooks/useConfigReducer';
