@@ -56,12 +56,12 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     label?: string;
     balance?: number | string;
   }[] = [
-      {
-        src: WalletIcon,
-        label: 'Total balance',
-        balance: formatDisplayUsdt(totalUsd)
-      }
-    ];
+    {
+      src: WalletIcon,
+      label: 'Total balance',
+      balance: formatDisplayUsdt(totalUsd)
+    }
+  ];
 
   if (!networkFilter || networkFilter === 'Oraichain') {
     listAsset = [

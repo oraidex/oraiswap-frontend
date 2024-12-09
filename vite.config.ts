@@ -40,5 +40,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['node_modules/.cache']
+  },
+  esbuild: {
+    supported: {
+      'top-level-await': true //browsers can handle top-level-await features
+    }
   }
 });

@@ -1,74 +1,77 @@
 .walletItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  .loadingIcon {
+    flex: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    gap: 8px;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
+    justify-content: center;
 
-    .loadingIcon {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        div {
-            background-color: #aee67f;
-            padding: 8px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-        }
+    div {
+      background-color: #aee67f;
+      padding: 8px;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
     }
+  }
 
-    &:hover {
-        background-color: #DFE0DE;
-    }
+  &:hover {
+    background-color: #dfe0de;
+  }
 
-    &>button {
-        padding: 5px 10px;
-        font-size: 14px;
-    }
+  & > button {
+    padding: 5px 10px;
+    font-size: 14px;
+  }
 
-    .walletIcon {
-        display: flex;
-        width: 40px;
-        height: 40px;
-    }
+  .walletIcon {
+    display: flex;
+    width: 40px;
+    height: 40px;
 
-    .walletName {
-        color: #232521;
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 150%;
-        text-align: center;
+    svg {
+      width: 40px;
+      height: 40px;
     }
+  }
+
+  .walletName {
+    color: #232521;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 150%;
+    text-align: center;
+  }
 }
 
 .dark {
-    &:hover {
-        background-color: #494949;
-    }
+  &:hover {
+    background-color: #494949;
+  }
 
-    .walletName {
-        color: #f7f7f7;
-    }
+  .walletName {
+    color: #f7f7f7;
+  }
 }
 
 .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .connecting {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-
-
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
