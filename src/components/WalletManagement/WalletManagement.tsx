@@ -22,6 +22,7 @@ export const WalletManagement: FC<{}> = () => {
   const [theme] = useConfigReducer('theme');
   const [oraiAddress] = useConfigReducer('address');
   const [tronAddress] = useConfigReducer('tronAddress');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [btcAddress] = useConfigReducer('btcAddress');
   const [solAddress] = useConfigReducer('solAddress');
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
@@ -66,6 +67,9 @@ export const WalletManagement: FC<{}> = () => {
         case 'bitcoin':
           isActive = isCheckOwallet;
           break;
+        case 'ton':
+          isActive = true;
+          break;
       }
       return { ...wallet, isActive };
     }
@@ -86,7 +90,7 @@ export const WalletManagement: FC<{}> = () => {
 
   // load balance every time change address
   useEffect(() => {
-    const addresses = { oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress };
+    const addresses = { oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress, tonAddress };
     const filteredAddresses = {};
 
     for (const key in addresses) {
@@ -98,7 +102,7 @@ export const WalletManagement: FC<{}> = () => {
       loadTokenAmounts(filteredAddresses);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress]);
+  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress, tonAddress]);
 
   // reset balance when disconnect
   useEffect(() => {
@@ -109,10 +113,11 @@ export const WalletManagement: FC<{}> = () => {
       if (!oraiAddress) arrResetBalance.push('keplr');
       if (!btcAddress) arrResetBalance.push('bitcoin');
       if (!solAddress) arrResetBalance.push('phantom');
+      if (!tonAddress) arrResetBalance.push('ton');
       arrResetBalance.length && handleResetBalance(arrResetBalance);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress]);
+  }, [oraiAddress, tronAddress, metamaskAddress, btcAddress, solAddress, tonAddress]);
 
   const isAnyWalletConnected = Object.values(walletByNetworks).some((wallet) => wallet !== null);
   useEffect(() => {

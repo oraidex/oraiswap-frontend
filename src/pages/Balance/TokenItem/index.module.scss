@@ -70,7 +70,9 @@
   font-size: 14px;
   line-height: 150%;
   text-align: center;
-  color: #777e90;
+  @include theme() {
+    color: theme-get('neutral-8');
+  }
   align-self: flex-start;
   margin: 8px 8px 8px 0;
 }
@@ -87,13 +89,13 @@
 }
 
 .tokenWrapper:hover {
-  background: #2b2d3b;
+  background: #232521a5;
   box-sizing: border-box;
 }
 
 .tokenWrapper.light:hover {
   background-color: #fcfcfc;
-  border: 1px solid $blue-color;
+  border: 1px solid $primary-surface-default-light;
 }
 
 .tokenWrapper {
@@ -127,11 +129,11 @@
   }
 
   &.active {
-    background: #191b21;
+    background: #131412;
     &.light {
-      background-color: #fcfcfc;
+      background-color: #f7f7f7;
     }
-    border: 1px solid #a871df;
+    border: 1px solid #2f5711;
     box-sizing: border-box;
     border-radius: 12px;
 
@@ -187,7 +189,10 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 100%;
-  color: #777e90;
+
+  @include theme {
+    color: theme-get('neutral-8');
+  }
 
   &.token {
     align-self: flex-end;
@@ -208,24 +213,39 @@
 
   .balanceBtn {
     cursor: pointer;
-    background: #191b21;
     border-radius: 8px;
     padding: 8px;
     margin-left: 4px;
     margin-right: 4px;
-    color: #a871df;
+
+    @include theme {
+      border: 1px solid transparent;
+      background: theme-get('primary-surface-default-subtle');
+      color: theme-get('primary-surface-default-dark-3');
+    }
+
+    &:hover {
+      @include theme {
+        border: 1px solid theme-get('primary-surface-default-dark-3');
+      }
+    }
   }
 }
 
 .amount {
   text-align: right;
-  background: #1e1e21;
   border-radius: 8px;
   height: 48px;
   width: 180px;
   padding: 12px;
   box-sizing: border-box;
-  color: #505665;
+  // background: #1e1e21;
+  // color: #505665;
+
+  @include theme {
+    background: theme-get('neutral-surface-bg-box');
+    color: theme-get('colors-neutral-text-text-token-name');
+  }
   font-weight: 600;
   font-size: 24px;
 

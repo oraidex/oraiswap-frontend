@@ -898,11 +898,15 @@ export async function fetchPoolAprInfo(
         min: res.min + (minSwapApr ? minSwapApr : 0),
         max: res.max + (maxSwapApr ? maxSwapApr : 0)
       },
-      incentives: pool.incentives.map((incentive) => {
-        if (incentive.remaining === '0') return null;
-        const token = oraichainTokens.find((token) => extractAddress(token) === parseAssetInfo(incentive.reward_token));
-        return token.denom.toUpperCase();
-      }).filter((incentive) => incentive !== null),
+      incentives: pool.incentives
+        .map((incentive) => {
+          if (incentive.remaining === '0') return null;
+          const token = oraichainTokens.find(
+            (token) => extractAddress(token) === parseAssetInfo(incentive.reward_token)
+          );
+          return token.denom.toUpperCase();
+        })
+        .filter((incentive) => incentive !== null),
       swapFee: {
         min: minSwapApr,
         max: maxSwapApr

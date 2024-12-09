@@ -8,7 +8,7 @@ import useTheme from 'hooks/useTheme';
 import useWalletReducer from 'hooks/useWalletReducer';
 import Keplr from 'libs/keplr';
 import { initClient } from 'libs/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { WalletItem } from '../WalletItem';
 import styles from './WalletByNetwork.module.scss';
 import { useInactiveConnect } from 'hooks/useMetamask';
@@ -17,6 +17,8 @@ import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { ChainEnableByNetwork, triggerUnlockOwalletInEvmNetwork } from 'components/WalletManagement/wallet-helper';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react';
+import useTonConnectAddress from 'hooks/useTonConnectAddress';
 
 export type ConnectStatus = 'init' | 'confirming-switch' | 'confirming-disconnect' | 'loading' | 'failed' | 'success';
 export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProvider }) => {
@@ -27,6 +29,7 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
   const [, setOraiAddress] = useConfigReducer('address');
   const [, setTronAddress] = useConfigReducer('tronAddress');
   const [, setBtcAddress] = useConfigReducer('btcAddress');
+  const [, setTonAddress] = useConfigReducer('tonAddress');
   const [, setMetamaskAddress] = useConfigReducer('metamaskAddress');
   const [solAddress, setSolanaAddress] = useConfigReducer('solAddress');
   const [, setCosmosAddress] = useConfigReducer('cosmosAddress');
@@ -35,6 +38,7 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
 
   const solanaWallet = useWallet();
   const { visible, setVisible } = useWalletModal();
+  const { handleConnectTon, handleDisconnectTon } = useTonConnectAddress();
 
   const handleConfirmSwitch = async () => {
     setConnectStatus('loading');
@@ -120,6 +124,14 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     );
   };
 
+  const handleConnectWalletInTONNetwork = async (walletType: WalletType) => {
+    if (walletType === 'owallet') {
+      // TODO: need check when use multi wallet support bitcoin
+    }
+
+    handleConnectTon();
+  };
+
   const handleConnectWalletByNetwork = async (wallet: WalletNetwork) => {
     try {
       setConnectStatus('loading');
@@ -139,14 +151,20 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         case 'solana':
           await handleConnectWalletInSolanaNetwork(wallet.nameRegistry);
           break;
+        case 'ton':
+          await handleConnectWalletInTONNetwork(wallet.nameRegistry);
+          break;
         default:
           setConnectStatus('init');
           break;
       }
-      setWalletByNetworks({
-        ...walletByNetworks,
-        [networkType]: wallet.nameRegistry
-      });
+
+      if (networkType !== 'ton') {
+        setWalletByNetworks({
+          ...walletByNetworks,
+          [networkType]: wallet.nameRegistry
+        });
+      }
       setCurrentWalletConnecting(null);
       setConnectStatus('init');
     } catch (error) {
@@ -198,6 +216,10 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
       case 'solana':
         setSolanaAddress(undefined);
         break;
+      case 'ton':
+        setTonAddress(undefined);
+        handleDisconnectTon();
+        break;
       default:
         break;
     }
@@ -217,7 +239,11 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
         content = (
           <div
             className={`${styles.wallets} ${
-              networkType === 'cosmos' ? styles.flexJustifyStart : styles.flexJustifyBetween
+              networkType === 'cosmos'
+                ? styles.flexJustifyStart
+                : ['ton', 'bitcoin'].includes(networkType)
+                ? styles.flexJustifyOne
+                : styles.flexJustifyBetween
             }`}
           >
             {wallets.map((w) => {
@@ -305,10 +331,16 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     });
   };
 
+  const baseClasses = `${styles.walletByNetwork} ${styles[theme]}`;
+  const networkClass =
+    networkType === 'cosmos'
+      ? styles.fullWitdth
+      : ['ton', 'bitcoin'].includes(networkType) && connectStatus !== 'confirming-disconnect'
+      ? styles.oneQuarter
+      : '';
+
   return (
-    <div
-      className={`${styles.walletByNetwork} ${styles[theme]} ${networkType === 'cosmos' ? styles.fullWitdth : null}`}
-    >
+    <div className={`${baseClasses} ${networkClass}`}>
       <div className={styles.header}>
         <div className={styles.networkIcons}>{renderNetworkIcons()}</div>
       </div>
