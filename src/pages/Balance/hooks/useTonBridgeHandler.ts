@@ -426,7 +426,7 @@ const useTonBridgeHandler = ({
       });
 
       const tx = await tonConnectUI.sendTransaction({
-        validUntil: TON_MESSAGE_VALID_UNTIL,
+        validUntil: Date.now() + 5 * 60 * 1000,
         messages: [
           {
             address: toAddress, // dia chi token
