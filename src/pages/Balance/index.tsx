@@ -440,23 +440,9 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const checkTransferTon = async (toNetworkChainId: string) => {
-    const isFromTon = from.chainId === TonChainId && !!toNetworkChainId;
-    const isFromCosmosToTON = !!from.chainId && toNetworkChainId === TonChainId;
-    const isBridgeWithOraiAndOsmo =
-      [from.chainId, to.chainId].includes('Oraichain') && [from.chainId, to.chainId].includes('osmosis-1');
-
-    const isFromCosmos = isFromCosmosToTON || isBridgeWithOraiAndOsmo;
-
-    if (isFromCosmos || isFromTon) {
-      return {
-        isTonBridge: true,
-        isFromTon
-      };
-    }
-    return {
-      isTonBridge: false,
-      isFromTon
-    };
+    const isFromTonToCosmos = from.chainId === TonChainId && toNetworkChainId !== TonChainId;
+    const isFromCosmosToTON = from.cosmosBased && toNetworkChainId === TonChainId;
+    return { isFromTonToCosmos, isFromCosmosToTON };
   };
 
   const handleTransferTon = async ({ isTonToCosmos, transferAmount }) => {
@@ -608,11 +594,11 @@ const Balance: React.FC<BalanceProps> = () => {
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
-      // check transfer TON <=> ORAICHAIN
-      const { isTonBridge, isFromTon } = await checkTransferTon(toNetworkChainId);
-      if (isTonBridge) {
+      // check transfer TON <=> ORAICHAIN,Osmosis
+      const { isFromTonToCosmos, isFromCosmosToTON } = await checkTransferTon(toNetworkChainId);
+      if (isFromTonToCosmos || isFromCosmosToTON) {
         return await handleTransferTon({
-          isTonToCosmos: isFromTon,
+          isTonToCosmos: isFromTonToCosmos,
           transferAmount: fromAmount
         });
       }
