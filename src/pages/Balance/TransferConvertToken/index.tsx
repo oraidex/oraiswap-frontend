@@ -44,6 +44,7 @@ import { CWBitcoinFactoryDenom } from 'helper/constants';
 import useGetFee from '../hooks/useGetFee';
 import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
 import { TonChainId } from 'context/ton-provider';
+import { network } from 'config/networks';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -64,11 +65,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   isFastMode,
   setIsFastMode
 }) => {
-  // const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
-  const bridgeNetworks = [...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
-    const net = findChainByChainId(chainId);
-    return net;
-  });
+  const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
   const [transferLoading, setTransferLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -302,6 +299,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
 
+  console.log({ networks });
+
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
       <div className={styles.tokenSubAmouts}>
@@ -380,29 +379,31 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {isOpen && (
                 <div>
                   <ul className={classNames(styles.items, styles[theme])}>
-                    {[...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
-                      const net = findChainByChainId(chainId);
-                      return (
-                        <li
-                          key={net.chainId}
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            const address = await getAddressTransfer(net, walletByNetworks);
-                            setAddressTransfer(address);
-                            setIsOpen(false);
-                          }}
-                        >
-                          {net && (
-                            <div className={classNames(styles.items_chain)}>
-                              <div>
-                                <net.Icon width={44} height={44} />
+                    {networks
+                      .filter((item) => filterChainBridge(token, item))
+                      .map((net) => {
+                        return (
+                          <li
+                            key={net.chainId}
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              const address = await getAddressTransfer(net, walletByNetworks);
+                              setAddressTransfer(address);
+                              setToNetworkChainId(net.chainId);
+                              setIsOpen(false);
+                            }}
+                          >
+                            {net && (
+                              <div className={classNames(styles.items_chain)}>
+                                <div>
+                                  <net.Icon width={44} height={44} />{' '}
+                                </div>
+                                <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
                               </div>
-                              <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
-                            </div>
-                          )}
-                        </li>
-                      );
-                    })}
+                            )}
+                          </li>
+                        );
+                      })}
                   </ul>
                 </div>
               )}
