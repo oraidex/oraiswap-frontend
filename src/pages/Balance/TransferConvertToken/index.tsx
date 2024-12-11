@@ -54,6 +54,7 @@ interface TransferConvertProps {
   subAmounts?: object;
   isFastMode?: boolean;
   setIsFastMode?: Function;
+  setToNetwork: Function;
 }
 
 const TransferConvertToken: FC<TransferConvertProps> = ({
@@ -63,7 +64,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   onClickTransfer,
   subAmounts,
   isFastMode,
-  setIsFastMode
+  setIsFastMode,
+  setToNetwork
 }) => {
   const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
@@ -90,6 +92,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         const address = await getAddressTransfer(findNetwork, walletByNetworks);
         setAddressTransfer(address);
         setToNetworkChainId(defaultToChainId);
+        setToNetwork(defaultToChainId);
       }
     })();
   }, [token.chainId]);
@@ -390,6 +393,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                               const address = await getAddressTransfer(net, walletByNetworks);
                               setAddressTransfer(address);
                               setToNetworkChainId(net.chainId);
+                              setToNetwork(net.chainId);
                               setIsOpen(false);
                             }}
                           >

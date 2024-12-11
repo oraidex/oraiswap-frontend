@@ -442,12 +442,16 @@ const Balance: React.FC<BalanceProps> = () => {
   const checkTransferTon = async (toNetworkChainId: string) => {
     const isFromTonToCosmos = from.chainId === TonChainId && toNetworkChainId !== TonChainId;
     const isFromCosmosToTON = from.cosmosBased && toNetworkChainId === TonChainId;
-    return { isFromTonToCosmos, isFromCosmosToTON };
+    const findToNetwork = flattenTokens.find((flat) => flat.chainId === toNetworkChainId);
+    const isFromCosmosToCosmos = from.cosmosBased && findToNetwork.cosmosBased;
+    return { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos };
   };
 
-  const handleTransferTon = async ({ isTonToCosmos, transferAmount }) => {
-    const tonAddress = window.Ton.account?.address;
-    if (!tonAddress) throw Error('Not found your ton address!');
+  const handleTransferTon = async ({ isTonToCosmos, transferAmount, isFromCosmosToCosmos, toNetworkChainId }) => {
+    if (!isFromCosmosToCosmos) {
+      const tonAddress = window.Ton.account?.address;
+      if (!tonAddress) throw Error('Not found your ton address!');
+    }
     if (isTonToCosmos) {
       return await handleBridgeFromTon(transferAmount);
     }
@@ -595,10 +599,12 @@ const Balance: React.FC<BalanceProps> = () => {
       }
 
       // check transfer TON <=> ORAICHAIN,Osmosis
-      const { isFromTonToCosmos, isFromCosmosToTON } = await checkTransferTon(toNetworkChainId);
-      if (isFromTonToCosmos || isFromCosmosToTON) {
+      const { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos } = await checkTransferTon(toNetworkChainId);
+      if (isFromCosmosToCosmos || isFromTonToCosmos || isFromCosmosToTON) {
         return await handleTransferTon({
           isTonToCosmos: isFromTonToCosmos,
+          isFromCosmosToCosmos,
+          toNetworkChainId,
           transferAmount: fromAmount
         });
       }
@@ -926,6 +932,7 @@ const Balance: React.FC<BalanceProps> = () => {
                       }}
                       isFastMode={isFastMode}
                       setIsFastMode={setIsFastMode}
+                      setToNetworkChainId={setToNetworkChainId}
                     />
                   </div>
                 );

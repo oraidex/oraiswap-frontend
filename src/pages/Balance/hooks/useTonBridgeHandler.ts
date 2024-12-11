@@ -460,19 +460,18 @@ const useTonBridgeHandler = ({
     try {
       if (!oraiAddress) throw 'Please connect OWallet or Kelpr!';
 
-      if (!tonAddress) throw 'Please connect Ton Wallet';
-
       if (!token || !amount) throw 'Not valid!';
-
       // setLoading(true);
       const isFromOsmosisToOraichain = fromNetwork === 'osmosis-1' && toNetwork === 'Oraichain';
       const isFromOraichainToOsmosis = fromNetwork === 'Oraichain' && toNetwork === 'osmosis-1';
       const isFromOsmosisToTon = fromNetwork === 'osmosis-1' && toNetwork === TonChainId;
+      const isCosmosToCosmos = isFromOsmosisToOraichain || isFromOraichainToOsmosis;
+      if (!isCosmosToCosmos && !tonAddress) throw 'Please connect Ton Wallet';
 
       // Osmosis <-> Oraichain
       // Oraichain <-> Osmosis
       // Osmosis -> Ton
-      if (isFromOsmosisToOraichain || isFromOraichainToOsmosis || isFromOsmosisToTon) {
+      if (isCosmosToCosmos || isFromOsmosisToTon) {
         if (isFromOsmosisToTon) {
           console.log('470', token, amount, bridgeFee, token, fromNetwork, toNetwork);
           validatePrice(token, Number(amount));
