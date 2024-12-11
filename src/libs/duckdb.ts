@@ -1,7 +1,7 @@
 import { NetworkChainId } from '@oraichain/oraidex-common';
 import * as duckdb from '@duckdb/duckdb-wasm';
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
 import { get, set } from 'idb-keyval';
+import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
 
 export type TransactionHistory = {
   initialTxHash: string;

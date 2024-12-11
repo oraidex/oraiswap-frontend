@@ -725,11 +725,6 @@ const Balance: React.FC<BalanceProps> = () => {
       }
       //-------------------------------------------------------
 
-      console.log({
-        from,
-        newToToken
-      });
-
       const universalSwapHandler = new UniversalSwapHandler(
         {
           sender: { cosmos: cosmosAddress, evm: latestEvmAddress, tron: tronAddress },

@@ -380,7 +380,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {isOpen && (
                 <div>
                   <ul className={classNames(styles.items, styles[theme])}>
-                    {networks.map((chainId) => {
+                    {[...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
                       const net = findChainByChainId(chainId);
                       return (
                         <li
