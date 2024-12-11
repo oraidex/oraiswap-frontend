@@ -443,7 +443,8 @@ const Balance: React.FC<BalanceProps> = () => {
     const isFromTonToCosmos = from.chainId === TonChainId && toNetworkChainId !== TonChainId;
     const isFromCosmosToTON = from.cosmosBased && toNetworkChainId === TonChainId;
     const findToNetwork = flattenTokens.find((flat) => flat.chainId === toNetworkChainId);
-    const isFromCosmosToCosmos = from.cosmosBased && findToNetwork.cosmosBased;
+    const isFromCosmosToCosmos =
+      from.cosmosBased && findToNetwork.cosmosBased && from.coinGeckoId === 'the-open-network';
     return { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos };
   };
 
@@ -600,6 +601,8 @@ const Balance: React.FC<BalanceProps> = () => {
 
       // check transfer TON <=> ORAICHAIN,Osmosis
       const { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos } = await checkTransferTon(toNetworkChainId);
+      console.log({ isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos });
+
       if (isFromCosmosToCosmos || isFromTonToCosmos || isFromCosmosToTON) {
         return await handleTransferTon({
           isTonToCosmos: isFromTonToCosmos,
