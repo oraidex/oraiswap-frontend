@@ -85,6 +85,7 @@ import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculate
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
+import TonWallet from '@oraichain/tonbridge-sdk/build/wallet';
 
 const cx = cn.bind(styles);
 
@@ -97,6 +98,7 @@ const SwapComponent: React.FC<{
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [tronAddress] = useConfigReducer('tronAddress');
   const [oraiAddress] = useConfigReducer('address');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const [theme] = useConfigReducer('theme');
   const isLightMode = theme === 'light';
@@ -320,8 +322,25 @@ const SwapComponent: React.FC<{
       const isCustomRecipient = validAddress.isValid && addressTransfer !== initAddressTransfer;
       const alphaSmartRoutes = simulateData?.routes;
 
+      let tonWallet = undefined;
+      if ([originalFromToken.chainId, originalToToken.chainId].includes('ton') && !!walletByNetworks.ton) {
+        tonWallet = await TonWallet.create('mainnet', {
+          mnemonicData: {
+            mnemonic: undefined,
+            tonWalletVersion: 'V4'
+          },
+          tonConnector: window?.Ton as any
+        });
+      }
+
+      const tonAddress = tonWallet?.sender?.address?.toString();
       const swapData = {
-        sender: { cosmos: cosmosAddress, evm: checksumMetamaskAddress, tron: tronAddress },
+        sender: {
+          cosmos: cosmosAddress,
+          evm: checksumMetamaskAddress,
+          tron: tronAddress,
+          ton: tonAddress
+        },
         originalFromToken,
         originalToToken,
         fromAmount: fromAmountToken,
@@ -339,6 +358,7 @@ const SwapComponent: React.FC<{
       const univeralSwapHandler = new UniversalSwapHandler(swapData, {
         cosmosWallet: window.Keplr,
         evmWallet: new Metamask(window.tronWebDapp),
+        tonWallet,
         swapOptions: {
           isAlphaIbcWasm: useAlphaIbcWasm,
           isIbcWasm: useIbcWasm,
@@ -348,12 +368,14 @@ const SwapComponent: React.FC<{
         }
       });
 
-      const { transactionHash } = await univeralSwapHandler.processUniversalSwap();
+      const result = await univeralSwapHandler.processUniversalSwap();
+      let transactionHash = result?.transactionHash;
+
       if (transactionHash) {
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl(originalFromToken.chainId, transactionHash)
         });
-        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress });
+        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress, tonAddress });
         setSwapLoading(false);
 
         // save to duckdb
@@ -424,16 +446,16 @@ const SwapComponent: React.FC<{
     setCoe(coeff);
   };
 
-  const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth', TON_ORAICHAIN_DENOM];
+  const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth'];
   const supportedChainFunc = () => {
     if (unSupportSimulateToken.includes(originalFromToken?.denom)) {
       return ['Oraichain'];
     }
 
-    const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
-    if (isOraichainDenom) {
-      return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
-    }
+    // const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
+    // if (isOraichainDenom) {
+    //   return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
+    // }
 
     if (originalFromToken.chainId === 'injective-1') {
       return networks.filter((chainInfo) => chainInfo.chainId === 'Oraichain').map((chain) => chain.chainId);
@@ -670,7 +692,14 @@ const SwapComponent: React.FC<{
                     loadingRefresh,
                     setLoadingRefresh,
                     // TODO: need add bitcoinAddress when universal swap support bitcoin
-                    { metamaskAddress, tronAddress, oraiAddress, btcAddress: undefined, solAddress: undefined },
+                    {
+                      metamaskAddress,
+                      tronAddress,
+                      oraiAddress,
+                      tonAddress,
+                      btcAddress: undefined,
+                      solAddress: undefined
+                    },
                     loadTokenAmounts
                   )
                 }

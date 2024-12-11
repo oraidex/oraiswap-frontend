@@ -30,8 +30,9 @@ import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
 import SolanaIcon from 'assets/icons/solana.svg?react';
 import MaxIcon from 'assets/icons/max.svg?react';
-import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
+import { CustomChainInfo, TokenItemType, solChainId } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
+import { TonChainId } from 'context/ton-provider';
 
 export type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
 export type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight'>;
@@ -256,9 +257,14 @@ export const chainIconsInfos: ChainIcon[] = [
     IconLight: CelestiaIcon
   },
   {
-    chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp' as any,
+    chainId: solChainId,
     Icon: SolanaIcon,
     IconLight: SolanaIcon
+  },
+  {
+    chainId: TonChainId,
+    Icon: TonIcon,
+    IconLight: TonIcon
   }
 ];
 

@@ -684,7 +684,7 @@ export const getHistoricalPriceDataInDay = async (
       default:
         dayIndex = currentIndex - 7;
     }
-    
+
     // create array of chunkOffset: [dayIndex, dayIndex + CHUNK_QUERY, ...] to current Index
     const length = Math.ceil((currentIndex - dayIndex) / CHUNK_QUERY);
     const chunkOffset = Array.from({ length }, (_, i) => dayIndex + i * CHUNK_QUERY);

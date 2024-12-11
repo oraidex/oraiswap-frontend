@@ -2,94 +2,101 @@
 @import 'src/styles/themes';
 
 .walletByNetwork {
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    border-radius: 12px;
-    width: 47%;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  width: 48%;
 
-    .header {
-        background-color: #dfe0de;
-        padding: 6px;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        display: flex;
-        justify-content: center;
+  .header {
+    background-color: #dfe0de;
+    padding: 6px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
+    justify-content: center;
 
-        .networkIcons {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+    .networkIcons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
 
-            .networkIcon {
-                display: flex;
-                align-items: center;
-            }
-
-        }
-    }
-
-    .content {
-        padding: 16px 8px;
-        background-color: #F7F7F7;
-        border-bottom-left-radius: 12px;
-        border-bottom-right-radius: 12px;
-        min-height: 170px;
+      .networkIcon {
         display: flex;
         align-items: center;
-        justify-content: center;
-
-        .swithWallet {
-            padding-left: 4px;
-            padding-right: 4px;
-            width: 100%;
-
-            .switchText {
-                font-size: 14px;
-            }
-
-            .groupBtns {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 20px;
-
-                &>button {
-                    width: 48%;
-                    font-size: 15px;
-                }
-            }
-
-        }
-
-        .wallets {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 8px;
-            padding-left: 4px;
-            padding-right: 4px;
-            width: 100%;
-        }
-
-        .flexJustifyBetween {
-            justify-content: space-between;
-
-            &>div {
-                width: 47%;
-            }
-        }
+      }
     }
+  }
+
+  .content {
+    padding: 16px 8px;
+    background-color: #f7f7f7;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .swithWallet {
+      padding-left: 4px;
+      padding-right: 4px;
+      width: 100%;
+
+      .switchText {
+        font-size: 14px;
+      }
+
+      .groupBtns {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+
+        & > button {
+          width: 48%;
+          font-size: 15px;
+        }
+      }
+    }
+
+    .wallets {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      padding-left: 4px;
+      padding-right: 4px;
+      width: 100%;
+    }
+
+    .flexJustifyOne {
+      & > div {
+        width: 100%;
+      }
+    }
+
+    .flexJustifyBetween {
+      justify-content: center;
+      & > div {
+        width: 48%;
+      }
+    }
+  }
 }
 
 .fullWitdth {
-    width: 100%;
+  width: 100%;
+}
+
+.oneQuarter {
+  width: 22%;
 }
 
 .dark {
-    .header {
-        background-color: #494949;
-    }
+  .header {
+    background-color: #494949;
+  }
 
-    .content {
-        background-color: #232521;
-    }
+  .content {
+    background-color: #232521;
+  }
 }

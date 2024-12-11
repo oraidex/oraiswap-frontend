@@ -44,6 +44,10 @@ export default function SelectChain({
     return acc + totalUsd;
   }, 0);
 
+  const listChains = [...networks]
+    .filter((net) => !isAllowChainId(net.chainId) && (!filterChainId.length || filterChainId.includes(net.chainId)))
+    .filter((n) => !isMaintainBridge || (isMaintainBridge && n.networkType === 'cosmos' && n.chainId !== 'noble-1'));
+
   return (
     <>
       {/* <div className={cx('selectChainWrap', isSelectToken ? 'active' : '')}> */}
@@ -69,13 +73,7 @@ export default function SelectChain({
 
         <div className={styles.selectChainList}>
           <div className={styles.selectChainItems}>
-            {[...networks]
-              .filter(
-                (net) => !isAllowChainId(net.chainId) && (!filterChainId.length || filterChainId.includes(net.chainId))
-              )
-              .filter(
-                (n) => !isMaintainBridge || (isMaintainBridge && n.networkType === 'cosmos' && n.chainId !== 'noble-1')
-              )
+            {listChains
               .map((n) => {
                 const subAmounts = Object.fromEntries(
                   Object.entries(amounts).filter(([denom]) => tokenMap[denom] && tokenMap[denom].chainId === n.chainId)
