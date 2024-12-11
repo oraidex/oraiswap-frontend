@@ -684,56 +684,6 @@ const Balance: React.FC<BalanceProps> = () => {
       );
 
       if (findRelayerFee) relayerFee.relayerAmount = findRelayerFee.amount;
-
-      //-------------------------------------------------------
-      // FIXME: need remove after fix ibc hooks
-      if (from.cosmosBased && from.chainId !== 'noble-1' && to.chainId === 'Oraichain') {
-        const ibcInfo = UniversalSwapHelper.getIbcInfo(from.chainId as CosmosChainId, to.chainId);
-        if (!ibcInfo)
-          throw generateError(`Could not find the ibc info given the from token with coingecko id ${from.coinGeckoId}`);
-
-        const offlineSigner = await collectWallet(from.chainId);
-        const client = await connectWithSigner(
-          from.rpc,
-          offlineSigner as any,
-          from.chainId === 'injective-1' ? 'injective' : 'cosmwasm',
-          {
-            gasPrice: GasPrice.fromString(
-              `${getCosmosGasPrice(from.gasPriceStep)}${from.feeCurrencies[0].coinMinimalDenom}`
-            ),
-            broadcastPollIntervalMs: 600
-          }
-        );
-
-        const receiver = await handleCheckAddress(to.chainId);
-        const msgTransferObj = {
-          sourcePort: ibcInfo.source,
-          receiver,
-          sourceChannel: ibcInfo.channel,
-          token: coin(toAmount(fromAmount, from.decimals).toString(), from.denom),
-          sender: cosmosAddress,
-          memo: '',
-          timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout))
-        };
-
-        let msgTransfer: any = MsgTransfer.fromPartial(msgTransferObj);
-        if (from.chainId === 'injective-1') {
-          msgTransfer = MsgTransferInjective.fromPartial({
-            ...msgTransferObj,
-            timeoutTimestamp: calculateTimeoutTimestamp(ibcInfo.timeout)
-          });
-        }
-
-        const msgTransferEncodeObj = {
-          typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-          value: msgTransfer
-        };
-
-        result = await client.signAndBroadcast(cosmosAddress, [msgTransferEncodeObj], 'auto');
-        return processTxResult(from.rpc, result, getTransactionUrl(from.chainId, result.transactionHash));
-      }
-      //-------------------------------------------------------
-
       const universalSwapHandler = new UniversalSwapHandler(
         {
           sender: { cosmos: cosmosAddress, evm: latestEvmAddress, tron: tronAddress },
