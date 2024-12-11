@@ -1,24 +1,7 @@
 import { NetworkChainId } from '@oraichain/oraidex-common';
 import * as duckdb from '@duckdb/duckdb-wasm';
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
-import duckdb_wasm_next from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
 import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
 import { get, set } from 'idb-keyval';
-
-const MANUAL_BUNDLES = {
-  mvp: {
-    mainModule: duckdb_wasm,
-    mainWorker: mvp_worker
-  },
-  eh: {
-    mainModule: duckdb_wasm_next,
-    // mainWorker: new URL('@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js', import.meta.url).toString(),
-    mainWorker: eh_worker
-  }
-};
-// Select a bundle based on browser checks
-const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
 
 export type TransactionHistory = {
   initialTxHash: string;
@@ -65,15 +48,16 @@ const decompress = async (buf: Uint8Array) => {
   }
 };
 
-const worker = new Worker(bundle.mainWorker);
-const logger = import.meta.env.NODE_ENV === 'development' ? new duckdb.ConsoleLogger() : new duckdb.VoidLogger();
-
 export class DuckDb {
   static instance: DuckDb;
 
   protected constructor(public readonly conn: duckdb.AsyncDuckDBConnection, public readonly db: duckdb.AsyncDuckDB) {}
 
   static async create() {
+    console.log({
+      DuckDb: DuckDb.instance
+    });
+
     if (!DuckDb.instance) {
       // Select a bundle based on browser checks
       // Instantiate the asynchronus version of DuckDB-Wasm
@@ -83,6 +67,8 @@ export class DuckDb {
       );
       await db.instantiate(eh_worker);
       const conn = await db.connect();
+      console.log({ conn });
+
       DuckDb.instance = new DuckDb(conn, db);
     }
     return DuckDb.instance;

@@ -53,7 +53,6 @@ interface TransferConvertProps {
   subAmounts?: object;
   isFastMode?: boolean;
   setIsFastMode?: Function;
-  setToNetwork: Function;
 }
 
 const TransferConvertToken: FC<TransferConvertProps> = ({
@@ -63,8 +62,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   onClickTransfer,
   subAmounts,
   isFastMode,
-  setIsFastMode,
-  setToNetwork
+  setIsFastMode
 }) => {
   // const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
   const bridgeNetworks = [...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
@@ -95,7 +93,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         const address = await getAddressTransfer(findNetwork, walletByNetworks);
         setAddressTransfer(address);
         setToNetworkChainId(defaultToChainId);
-        setToNetwork(defaultToChainId);
       }
     })();
   }, [token.chainId]);
@@ -393,7 +390,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                             const address = await getAddressTransfer(net, walletByNetworks);
                             setAddressTransfer(address);
                             setToNetworkChainId(net.chainId);
-                            setToNetwork(net.chainId);
                             setIsOpen(false);
                           }}
                         >
@@ -492,9 +488,19 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             evmChains.find((chain) => chain.chainId === token.chainId) ||
             btcChains.find((chain) => chain.chainId !== token.chainId)
           ) {
+            const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
+            const isDisabled =
+              transferLoading ||
+              !addressTransfer ||
+              receivedAmount < 0 ||
+              isBTCLegacy ||
+              !convertAmount ||
+              convertAmount < 0 ||
+              isValidateFeeTon;
+
             return (
               <button
-                disabled={transferLoading || !addressTransfer || receivedAmount < 0 || isBTCLegacy || convertAmount < 0}
+                disabled={isDisabled}
                 className={classNames(styles.tfBtn, styles[theme])}
                 onClick={onTransferConvert}
               >

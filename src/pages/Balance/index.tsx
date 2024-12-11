@@ -704,11 +704,15 @@ const Balance: React.FC<BalanceProps> = () => {
           token: coin(toAmount(fromAmount, from.decimals).toString(), from.denom),
           sender: cosmosAddress,
           memo: '',
-          timeoutTimestamp: calculateTimeoutTimestamp(ibcInfo.timeout)
+          timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout))
         };
-        let msgTransfer: any = MsgTransfer.fromPartial(msgTransferObj as any);
+
+        let msgTransfer: any = MsgTransfer.fromPartial(msgTransferObj);
         if (from.chainId === 'injective-1') {
-          msgTransfer = MsgTransferInjective.fromPartial(msgTransferObj);
+          msgTransfer = MsgTransferInjective.fromPartial({
+            ...msgTransferObj,
+            timeoutTimestamp: calculateTimeoutTimestamp(ibcInfo.timeout)
+          });
         }
 
         const msgTransferEncodeObj = {
@@ -721,6 +725,11 @@ const Balance: React.FC<BalanceProps> = () => {
       }
       //-------------------------------------------------------
 
+      console.log({
+        from,
+        newToToken
+      });
+
       const universalSwapHandler = new UniversalSwapHandler(
         {
           sender: { cosmos: cosmosAddress, evm: latestEvmAddress, tron: tronAddress },
@@ -731,7 +740,8 @@ const Balance: React.FC<BalanceProps> = () => {
           userSlippage: 0,
           bridgeFee: 1,
           amounts: amountsBalance,
-          simulateAmount
+          simulateAmount,
+          simulatePrice: '1000000'
         },
         {
           cosmosWallet: window.Keplr,
@@ -755,13 +765,9 @@ const Balance: React.FC<BalanceProps> = () => {
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
     return [...otherChainTokens, ...oraichainTokens]
       .filter((token) => {
-        // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
-        if (!token.bridgeTo && !token.contractAddress) return false;
-        if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) {
-          return false;
-        }
+        if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) return false;
         if (UniversalSwapHelper.isSupportedNoPoolSwapEvm(token.coinGeckoId)) return false;
-        return token.chainId === chainId;
+        return token.bridgeTo && token.chainId === chainId;
       })
       .sort((a, b) => {
         return toTotalDisplay(amounts, b) * prices[b.coinGeckoId] - toTotalDisplay(amounts, a) * prices[a.coinGeckoId];
