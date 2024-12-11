@@ -380,7 +380,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {isOpen && (
                 <div>
                   <ul className={classNames(styles.items, styles[theme])}>
-                    {[...(token?.bridgeTo || ['Oraichain'])].map((chainId) => {
+                    {networks.map((chainId) => {
                       const net = findChainByChainId(chainId);
                       return (
                         <li
@@ -389,7 +389,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                             e.stopPropagation();
                             const address = await getAddressTransfer(net, walletByNetworks);
                             setAddressTransfer(address);
-                            setToNetworkChainId(net.chainId);
                             setIsOpen(false);
                           }}
                         >

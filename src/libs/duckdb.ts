@@ -54,10 +54,6 @@ export class DuckDb {
   protected constructor(public readonly conn: duckdb.AsyncDuckDBConnection, public readonly db: duckdb.AsyncDuckDB) {}
 
   static async create() {
-    console.log({
-      DuckDb: DuckDb.instance
-    });
-
     if (!DuckDb.instance) {
       // Select a bundle based on browser checks
       // Instantiate the asynchronus version of DuckDB-Wasm
@@ -67,8 +63,6 @@ export class DuckDb {
       );
       await db.instantiate(eh_worker);
       const conn = await db.connect();
-      console.log({ conn });
-
       DuckDb.instance = new DuckDb(conn, db);
     }
     return DuckDb.instance;
