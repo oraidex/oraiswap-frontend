@@ -95,7 +95,7 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
     walletByNetworks.ton,
     window?.ethereumDapp,
     window?.tronWebDapp,
-    window?.Ton
+    window?.Ton?.account
   ]);
 
   useEffect(() => {

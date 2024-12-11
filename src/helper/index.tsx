@@ -423,9 +423,12 @@ export const getAddressTransfer = async (network: CustomChainInfo, walletByNetwo
   try {
     let address = '';
     if (network.networkType === 'ton') {
-      address = JSON.parse(JSON.parse(localStorage.getItem('persist:root'))?.config)?.tonAddress;
+      address =
+        JSON.parse(JSON.parse(localStorage.getItem('persist:root'))?.config)?.tonAddress ||
+        toUserFriendlyAddress(window.Ton?.account?.address);
+
+      console.log('addressTON', address);
       // address = useTonAddress();
-      // address = toUserFriendlyAddress(window.Ton?.account?.address);
     } else if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
     } else if (network.networkType == ('svm' as any)) {

@@ -462,7 +462,7 @@ const loadAllBalanceTonToken = async (dispatch: Dispatch, tonAddress: string, li
   });
 
   const fullData = await Promise.all(
-    allTokens.map(async (item) => {
+    (allTokens || []).map(async (item) => {
       if (item.contractAddress === TON_ZERO_ADDRESS) {
         // native token: TON
         const balance = await client.getBalance(Address.parse(tonAddress));
@@ -474,7 +474,6 @@ const loadAllBalanceTonToken = async (dispatch: Dispatch, tonAddress: string, li
         };
       }
       const jettonMinter = JettonMinter.createFromAddress(Address.parse(item.contractAddress));
-
       const jettonMinterContract = client.open(jettonMinter);
 
       const jettonWalletAddress = await jettonMinterContract.getWalletAddress(Address.parse(tonAddress));
