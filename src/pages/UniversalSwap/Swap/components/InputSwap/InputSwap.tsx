@@ -55,7 +55,6 @@ export default function InputSwap({
   impactWarning
 }: InputSwapProps) {
   let chainInfo = chainInfosWithIcon.find((chain) => chain.chainId === selectChain);
-  console.log({ selectChain });
 
   if (!chainInfo) {
     chainInfo = {

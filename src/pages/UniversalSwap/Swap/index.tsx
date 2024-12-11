@@ -446,16 +446,16 @@ const SwapComponent: React.FC<{
     setCoe(coeff);
   };
 
-  const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth', TON_ORAICHAIN_DENOM];
+  const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth'];
   const supportedChainFunc = () => {
     if (unSupportSimulateToken.includes(originalFromToken?.denom)) {
       return ['Oraichain'];
     }
 
-    const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
-    if (isOraichainDenom) {
-      return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
-    }
+    // const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
+    // if (isOraichainDenom) {
+    //   return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
+    // }
 
     if (originalFromToken.chainId === 'injective-1') {
       return networks.filter((chainInfo) => chainInfo.chainId === 'Oraichain').map((chain) => chain.chainId);
