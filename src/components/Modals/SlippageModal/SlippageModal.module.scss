@@ -1,9 +1,9 @@
-@import "src/styles/mixins";
+@import 'src/styles/mixins';
 
 .setting {
   border-radius: 8px;
   padding: 20px 24px 24px;
-  border: 1px solid #A871DF;
+  border: 1px solid #a871df;
 
   .header {
     display: flex;
@@ -21,7 +21,7 @@
       line-height: 100%;
       /* identical to box height, or 18px */
       text-align: center;
-      color: #F0B90B;
+      color: #f0b90b;
 
       img {
         margin-right: 10px;
@@ -34,14 +34,13 @@
       height: 18px;
 
       path {
-        fill: #777E91;
+        fill: #777e91;
       }
     }
   }
 
-
   .subtitle {
-    color: #A871DF;
+    color: #a871df;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -70,7 +69,7 @@
       border-radius: 4px;
       padding: 6px 14px;
       margin: 0 4px;
-      color: #A871DF;
+      color: #a871df;
 
       .input {
         max-width: 40px;
@@ -88,7 +87,7 @@
     }
 
     .isChosen {
-      border: 1px solid #A871DF;
+      border: 1px solid #a871df;
       opacity: 1;
     }
   }
@@ -115,22 +114,22 @@
 }
 
 .light-modal {
-  background-color: #FCFCFC;
+  background-color: #fcfcfc;
   box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.05);
 
   .options {
     .item {
-      background: #EEE7FF;
+      background: #eee7ff;
     }
   }
 }
 
 .dark-modal {
-  background-color: #2B2D3B;
+  background-color: #232521;
 
   .options {
     .item {
-      background: #423A56;
+      background: #423a56;
     }
   }
 }

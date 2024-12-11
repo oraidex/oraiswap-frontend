@@ -202,7 +202,7 @@ const useCreatePositionForm = (
       data.push({
         time: Date.now(),
         price: currentPrice
-      })
+      });
 
       const padding = 0.1;
 
@@ -319,13 +319,13 @@ const useCreatePositionForm = (
     const higherTick = Math.max(
       Number(getMinTick(Number(poolKey.fee_tier.tick_spacing))),
       Number(pool.current_tick_index) +
-      Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
+        Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
     );
 
     const lowerTick = Math.min(
       Number(getMaxTick(Number(poolKey.fee_tier.tick_spacing))),
       Number(pool.current_tick_index) -
-      Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
+        Number(poolKey.fee_tier.tick_spacing) * TICK_SPACING_TO_RANGE[poolKey.fee_tier.tick_spacing]
     );
 
     const minPrice = calcPrice(lowerTick, isXToY, tokenX.decimals, tokenY.decimals);
