@@ -6,7 +6,8 @@ import {
   toDisplay,
   TokenItemType,
   BTC_CONTRACT,
-  tonNetworkMainnet
+  tonNetworkMainnet,
+  solChainId
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -492,8 +493,10 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             evmChains.find((chain) => chain.chainId === token.chainId) ||
             btcChains.find((chain) => chain.chainId !== token.chainId)
           ) {
+            const isBridgeOraichainToSolana = toNetworkChainId === solChainId;
             const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
             const isDisabled =
+              isBridgeOraichainToSolana ||
               transferLoading ||
               !addressTransfer ||
               receivedAmount < 0 ||
