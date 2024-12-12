@@ -24,11 +24,12 @@
     "@oraichain/ethereum-multicall": "^1.0.2",
     "@oraichain/kawaiiverse-txs": "^0.0.3",
     "@oraichain/orai-bitcoin": "2.0.0",
-    "@oraichain/oraidex-common": "2.0.0-beta.17",
+    "@oraichain/orai-token-inspector": "^0.1.1",
+    "@oraichain/oraidex-common": "2.0.0-beta.22",
     "@oraichain/oraidex-common-ui": "1.0.11",
     "@oraichain/oraidex-contracts-sdk": "1.0.55",
-    "@oraichain/oraidex-universal-swap": "1.2.0-beta15",
-    "@oraichain/oraiswap-v3": "1.2.0-beta15",
+    "@oraichain/oraidex-universal-swap": "1.2.0-beta22",
+    "@oraichain/oraiswap-v3": "1.2.0-beta22",
     "@react-spring/web": "^9.7.5",
     "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "7.99.0",
@@ -80,7 +81,8 @@
     "tronweb": "^5.1.0",
     "urql": "^4.1.0",
     "vite-plugin-svgr": "^4.2.0",
-    "vite-tsconfig-paths": "^5.0.1"
+    "vite-tsconfig-paths": "^5.0.1",
+    "@ton/crypto": "^3.3.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -159,7 +161,7 @@
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
     "@cosmjs/amino": "0.32.4",
-    "@oraichain/oraidex-common": "2.0.0-beta.17"
+    "@oraichain/oraidex-common": "2.0.0-beta.22"
   },
   "engines": {
     "node": "^18 || ^20"

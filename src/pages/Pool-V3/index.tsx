@@ -14,6 +14,9 @@ import styles from './index.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
 import BannerNoticePool from './components/BannerNoticePool';
 import useOnClickOutside from 'hooks/useOnClickOutside';
+import NewPoolModal from 'pages/Pools/NewPoolModal/NewPoolModal';
+import { Button } from 'components/Button';
+import NewTokenModal from 'pages/Pools/NewTokenModal/NewTokenModal';
 
 export enum PoolV3PageType {
   POOL = 'pools',
@@ -52,6 +55,8 @@ const PoolV3 = () => {
   const [poolType, setPoolType] = useState<POOL_TYPE>(POOL_TYPE.ALL);
   const bgUrl = theme === 'light' ? SearchLightSvg : SearchSvg;
   const { poolList } = useGetPoolList(prices);
+  const [isOpenNewPoolModal, setIsOpenNewPoolModal] = useState(false);
+  const [isOpenNewTokenModal, setIsOpenNewTokenModal] = useState(false);
 
   useEffect(() => {
     if (!listTab.includes(type)) {
@@ -131,6 +136,18 @@ const PoolV3 = () => {
                 />
               </div>
               <CreateNewPool pools={poolList} />
+              <div className={styles.btnAdd}>
+                <Button type="primary-sm" onClick={() => setIsOpenNewPoolModal(true)}>
+                  New Pool V2
+                </Button>
+              </div>
+              <div className={styles.btnAdd}>
+                <Button type="primary-sm" onClick={() => setIsOpenNewTokenModal(true)}>
+                  New Token
+                </Button>
+              </div>
+              <NewPoolModal open={() => setIsOpenNewPoolModal(true)} close={() => setIsOpenNewPoolModal(false)} isOpen={isOpenNewPoolModal} />
+                <NewTokenModal open={() => setIsOpenNewTokenModal(true)} close={() => setIsOpenNewTokenModal(false)} isOpen={isOpenNewTokenModal}/>
             </div>
           )}
         </div>

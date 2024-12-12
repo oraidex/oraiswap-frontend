@@ -8,6 +8,7 @@ import chartReducer from '../reducer/chartSlice';
 import AddressBookReducer from '../reducer/addressBook';
 import TemporaryConfigReducer from '../reducer/temporaryConfig';
 import poolDetailV3Reducer from '../reducer/poolDetailV3';
+import onchainTokensReducer from '../reducer/onchainTokens';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import { PERSIST_CONFIG_KEY } from './constants';
@@ -27,7 +28,8 @@ const rootReducer = combineReducers({
   chartSlice: chartReducer,
   addressBook: AddressBookReducer,
   temporaryConfig: TemporaryConfigReducer,
-  poolDetailV3: poolDetailV3Reducer
+  poolDetailV3: poolDetailV3Reducer,
+  onchainTokens: onchainTokensReducer
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);

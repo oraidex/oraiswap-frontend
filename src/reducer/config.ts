@@ -1,3 +1,4 @@
+import { TokenItemType } from '@oraichain/oraidex-common';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { Themes } from 'context/theme-context';

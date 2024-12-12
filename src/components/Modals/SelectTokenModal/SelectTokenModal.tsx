@@ -14,6 +14,7 @@ import {
   truncDecimals
 } from '@oraichain/oraidex-common';
 import { chainInfosWithIcon, tokenMap } from 'initCommon';
+import { getIcon } from 'helper';
 
 const cx = cn.bind(styles);
 
@@ -85,12 +86,14 @@ export const SelectTokenModal: FC<ModalProps> = ({
               tokenAndChainIcons = chainInfosWithIcon.find((chainIcon) => chainIcon.chainId === network.chainId);
               balance = '$' + (totalUsd > 0 ? totalUsd.toFixed(2) : '0');
             }
-            const icon =
-              tokenAndChainIcons && theme === 'light' ? (
-                <img className={cx('logo')} src={tokenAndChainIcons.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
-              ) : (
-                <img className={cx('logo')} src={tokenAndChainIcons.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
-              );
+            const icon = getIcon({
+              isLightTheme: theme === 'light',
+              type: 'token',
+              chainId: tokenAndChainIcons?.chainId,
+              coinGeckoId: tokenAndChainIcons?.coinGeckoId,
+              width: 30,
+              height: 30
+            })
 
             return (
               <div

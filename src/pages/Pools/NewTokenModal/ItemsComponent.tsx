@@ -7,12 +7,20 @@ import Input from 'components/Input';
 import { tokenMap } from 'initCommon';
 import NumberFormat from 'react-number-format';
 import styles from './NewTokenModal.module.scss';
+import { getIcon } from 'helper';
 
 const cx = cn.bind(styles);
 
 export const RewardItems = ({ item, ind, selectedReward, setSelectedReward, setRewardTokens, rewardTokens, theme }) => {
   const originalFromToken = tokenMap?.[item?.denom];
-  let Icon = theme === 'light' ? originalFromToken?.IconLight ?? originalFromToken?.Icon : originalFromToken?.Icon;
+  let Icon = getIcon({
+    isLightTheme: theme === 'light',
+    type: 'token',
+    chainId: originalFromToken?.chainId,
+    coinGeckoId: originalFromToken?.coinGeckoId, 
+    width: 30,
+    height: 30
+  })
   return (
     <div className={cx('orai')}>
       <CheckBox
@@ -24,7 +32,7 @@ export const RewardItems = ({ item, ind, selectedReward, setSelectedReward, setR
         }}
       />
       <div className={cx('orai_label')}>
-        {Icon ? <Icon className={cx('logo')} /> : <TokensIcon className={cx('logo')} />}
+        {Icon ? Icon : <TokensIcon className={cx('logo')} />}
         <div className={cx('per')}>
           <span>{item?.name}</span> /s
         </div>
@@ -60,7 +68,8 @@ export const InitBalancesItems = ({
   item,
   setInitBalances,
   initBalances,
-  theme
+  theme,
+  decimals
 }) => {
   return (
     <div>
@@ -113,11 +122,11 @@ export const InitBalancesItems = ({
           thousandSeparator
           decimalScale={6}
           type="text"
-          value={toDisplay(item.amount)}
+          value={toDisplay(item.amount, decimals)}
           onValueChange={({ floatValue }) =>
             setInitBalances(
               initBalances.map((ba, index) => {
-                return ind === index ? { ...ba, amount: toAmount(floatValue) } : ba;
+                return ind === index ? { ...ba, amount: toAmount(floatValue, decimals) } : ba;
               })
             )
           }

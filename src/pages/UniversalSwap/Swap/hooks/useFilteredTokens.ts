@@ -1,14 +1,16 @@
-import { SwapDirection } from '@oraichain/oraidex-universal-swap';
+import { filterNonPoolEvmTokens, getSwapFromTokens, getSwapToTokens, SwapDirection,  } from '@oraichain/oraidex-universal-swap';
 import { useEffect, useState } from 'react';
 import { TokenItemType, BTC_CONTRACT } from '@oraichain/oraidex-common';
-import { filterNonPoolEvmTokens } from 'pages/UniversalSwap/helpers';
+import { flattenTokens, oraichainTokens } from 'initCommon';
+// import { filterNonPoolEvmTokens } from 'pages/UniversalSwap/helpers';
 
 const useFilteredTokens = (
   originalFromToken: TokenItemType,
   originalToToken: TokenItemType,
   searchTokenName: string,
   fromTokenDenomSwap: string,
-  toTokenDenomSwap: string
+  toTokenDenomSwap: string,
+  onchainTokens: TokenItemType[]
 ) => {
   const [filteredToTokens, setFilteredToTokens] = useState<TokenItemType[]>([]);
   const [filteredFromTokens, setFilteredFromTokens] = useState<TokenItemType[]>([]);
@@ -22,8 +24,10 @@ const useFilteredTokens = (
       originalFromToken.denom,
       searchTokenName,
       SwapDirection.To,
-      // swapFromTokens,
-      // swapToTokens
+      getSwapFromTokens(flattenTokens),
+      getSwapToTokens(flattenTokens),
+      oraichainTokens,
+      flattenTokens
     );
     setFilteredToTokens(filteredToTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT));
 
@@ -34,8 +38,10 @@ const useFilteredTokens = (
       originalToToken.denom,
       searchTokenName,
       SwapDirection.From,
-      // swapFromTokens,
-      // swapToTokens
+      getSwapFromTokens(flattenTokens),
+      getSwapToTokens(flattenTokens),
+      oraichainTokens,
+      flattenTokens
     );
     setFilteredFromTokens(filteredFromTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT));
   }, [originalFromToken, originalToToken, searchTokenName, toTokenDenomSwap, fromTokenDenomSwap]);

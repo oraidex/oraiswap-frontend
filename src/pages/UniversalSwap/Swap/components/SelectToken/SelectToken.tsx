@@ -19,7 +19,11 @@ import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
 import { getSubAmountDetails } from 'rest/api';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { chainInfos, chainInfosWithIcon, flattenTokens, flattenTokensWithIcon } from 'initCommon';
+import { oraidexCommon, chainInfos, chainInfosWithIcon, flattenTokens, flattenTokensWithIcon } from 'initCommon';
+import { tokenInspector } from 'initTokenInspector';
+import useOnchainTokensReducer from 'hooks/useOnchainTokens';
+import { useDispatch } from 'react-redux';
+import { inspectToken } from 'reducer/onchainTokens';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {
@@ -34,21 +38,29 @@ interface InputSwapProps {
 }
 
 interface GetIconInterface {
-  type: 'token' | 'network';
+  type: 'token' | 'network' | 'onchain-token';
   chainId?: string;
   coinGeckoId?: string;
   isLightTheme: boolean;
   width?: number;
   height?: number;
+  onchainToken?: TokenItemType;
 }
 
-const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
+const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height, onchainToken }: GetIconInterface) => {
   if (type === 'token') {
     const foundToken = flattenTokens.find((token) => token.coinGeckoId === coinGeckoId);
     return isLightTheme ? (
       <img src={foundToken.icon} alt="icon" width={30} height={30} />
     ) : (
       <img src={foundToken.icon} alt="icon" width={30} height={30} />
+    );
+  } else if (type === 'onchain-token') {
+    console.log(onchainToken);
+    return isLightTheme ? (
+      <img src={onchainToken.icon} alt="icon" width={30} height={30} />
+    ) : (
+      <img src={onchainToken.icon} alt="icon" width={30} height={30} />
     );
   } else {
     const chainInfo = chainInfos.find((chain) => chain.chainId === chainId);
@@ -74,16 +86,38 @@ export default function SelectToken({
   const [textSearch, setTextSearch] = useState('');
   const isLightTheme = theme === 'light';
   const [tokenRank = {}] = useConfigReducer('tokenRank');
+  const [isTokenOnchain, setIsTokenOnchain] = useState(false);
+
+  const onchainTokens = useOnchainTokensReducer('tokens');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (selectChain && selectChain !== textChain) setTextChain(selectChain);
   }, [selectChain]);
 
-  const listItems = items.filter(
-    (item) =>
-      (textChain ? item.chainId === textChain : true) &&
-      (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
-  );
+  useEffect(() => {
+    if (listItems.length === 0 && textSearch && textChain && selectChain === 'Oraichain') {
+      dispatch<any>(inspectToken(textSearch));
+      setIsTokenOnchain(true);
+    }
+
+    if (listItems.length > 0) {
+      setIsTokenOnchain(false);
+    }
+  }, [textSearch]);
+
+  const listItems = items
+    .filter(
+      (item) =>
+        (textChain ? item.chainId === textChain : true) &&
+        ((textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true) || (textSearch ? item.contractAddress?.toLowerCase().includes(textSearch.toLowerCase()) : true))
+    )
+    .reduce((unique, item) => {
+      if (!unique.some((uniqueItem) => uniqueItem.denom === item.denom)) {
+        unique.push(item);
+      }
+      return unique;
+    }, []);
 
   return (
     <>
@@ -108,20 +142,21 @@ export default function SelectToken({
         <div className={styles.selectTokenAll}>
           <div className={styles.selectTokenTitle}>Select token</div>
           <div className={styles.selectTokenList}>
-            {!listItems.length && (
+            {![...listItems, ...onchainTokens].length && (
               <div className={styles.selectTokenListNoResult}>
                 {isLightTheme ? <NoResultLight /> : <NoResultDark />}
               </div>
             )}
 
-            {listItems
+            {[...listItems, ...onchainTokens]
               .map((token) => {
                 const tokenIcon = getIcon({
                   isLightTheme,
-                  type: 'token',
+                  type: isTokenOnchain ? 'onchain-token' : 'token',
                   coinGeckoId: token.coinGeckoId,
                   width: 30,
-                  height: 30
+                  height: 30,
+                  onchainToken: isTokenOnchain ? onchainTokens[0] : undefined
                 });
 
                 const networkIcon = getIcon({
@@ -174,7 +209,9 @@ export default function SelectToken({
                   <div
                     key={key}
                     className={styles.selectTokenItem}
-                    onClick={() => handleChangeToken(token as TokenItemType)}
+                    onClick={() => {
+                      handleChangeToken(token as TokenItemType)
+                    }}
                   >
                     <div className={styles.selectTokenItemLeft}>
                       <div>

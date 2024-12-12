@@ -1,8 +1,9 @@
 @import 'src/styles/mixins';
+@import 'src/styles/themes';
 @import 'src/styles/variables';
 
 .modal {
-  max-width: 900px;
+  max-width: 600px;
   .container {
     background: #17181c;
     border-radius: 24px;
@@ -41,7 +42,7 @@
       }
 
       .box {
-        width: 50%;
+        width: 100%;
         background-color: #17181c;
         border: 1px solid rgba(225, 240, 255, 0.2027);
         &.light {
@@ -96,7 +97,7 @@
             }
             .input {
               width: 250px;
-              height: 48px;
+              // height: 48px;
               background-color: #1e1e21;
               &.light {
                 background-color: rgba(246, 246, 246, 1);

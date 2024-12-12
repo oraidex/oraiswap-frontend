@@ -60,7 +60,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
   const getBalanceValue = (tokenSymbol: string | undefined, amount: number | string) => {
     if (!tokenSymbol) return 0;
-    const coingeckoId = getPoolTokens().find((token) => token.name === tokenSymbol)?.coinGeckoId;
+    const coingeckoId = getPoolTokens(assetInfoMap).find((token) => token.name === tokenSymbol)?.coinGeckoId;
     const pricePer = prices[coingeckoId!] ?? 0;
 
     return pricePer * +amount;
@@ -406,7 +406,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         prices={prices}
         setToken={(token1: string) => {
           setToken1(token1);
-          setListToken2Option(getPoolTokens().filter((t) => t.denom !== token1));
+          setListToken2Option(getPoolTokens(assetInfoMap).filter((t) => t.denom !== token1));
         }}
         amounts={amounts}
         items={listToken1Option}
@@ -419,7 +419,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         amounts={amounts}
         setToken={(token2: string) => {
           setToken2(token2);
-          setListToken1Option(getPoolTokens().filter((t) => t.denom !== token2));
+          setListToken1Option(getPoolTokens(assetInfoMap).filter((t) => t.denom !== token2));
         }}
         items={listToken2Option}
       />

@@ -315,7 +315,8 @@ export const getFromToToken = (
   originalFromToken: TokenItemType,
   originalToToken: TokenItemType,
   fromTokenDenomSwap: string,
-  toTokenDenomSwap: string
+  toTokenDenomSwap: string,
+  onchainTokens: TokenItemType[]
 ) => {
   const isEvmSwap = UniversalSwapHelper.isEvmSwappable({
     fromChainId: originalFromToken?.chainId,
@@ -323,12 +324,14 @@ export const getFromToToken = (
     fromContractAddr: originalFromToken?.contractAddress,
     toContractAddr: originalToToken?.contractAddress
   });
-  const fromToken = isEvmSwap
+  const fromToken = (isEvmSwap
     ? tokenMap[fromTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[fromTokenDenomSwap];
-  const toToken = isEvmSwap
+    : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[fromTokenDenomSwap]) ||
+    onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
+  const toToken = (isEvmSwap
     ? tokenMap[toTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[toTokenDenomSwap];
+    : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[toTokenDenomSwap])
+    || onchainTokens.find((token) => token.denom === toTokenDenomSwap);
 
   return { fromToken, toToken };
 };

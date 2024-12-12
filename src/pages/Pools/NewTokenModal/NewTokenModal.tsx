@@ -23,7 +23,10 @@ import NumberFormat from 'react-number-format';
 import { InitBalancesItems, RewardItems } from './ItemsComponent';
 import { ModalDelete, ModalListToken } from './ModalComponent';
 import styles from './NewTokenModal.module.scss';
+import ImageInput from 'components/DragDropImage';
 const cx = cn.bind(styles);
+
+const TOKEN_FACTORY_CONTRACT = 'orai1wuh4g3euvs3u4vlmn3lljh363wl25t6n9fcydawtlykpw3jgp0kqg83vcc';
 
 interface ModalProps {
   className?: string;
@@ -36,24 +39,28 @@ interface ModalProps {
 const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [theme] = useConfigReducer('theme');
   const [tokenName, setTokenName] = useState('');
-  const [pairAssetType, setPairAssetType] = useState(false); // 0.token - 1.native_token
-  const [pairAssetAddress, setPairAssetAddress] = useState(''); // address / denom pair asset
-  const [targetedAssetType, setTargetedAssetType] = useState(false); // 0.token - 1.native_token
-  const [targetedAssetInfo, setTargetedAssetInfo] = useState(''); // address / denom pair asset
-  const [isMinter, setIsMinter] = useState(false);
-  const [isMintNewToken, setIsMintNewToken] = useState(true);
-  const [minter, setMinter] = useState('');
-
-  const [name, setName] = useState('');
-  const [marketing, setMarketing] = useState({
-    description: null,
-    logo: null,
-    marketing: null,
-    project: null
-  });
-
-  const [selectedReward, setSelectedReward] = useState([]);
+  const [tokenSymbol, setTokenSymbol] = useState('');
+  const [tokenDecimal, setTokenDecimal] = useState(6);
+  const [description, setDescription] = useState('');
+  const [projectUrl, setProjectUrl] = useState('');
+  const [tokenLogoUrl, setTokenLogoUrl] = useState('');
   const [selectedInitBalances, setSelectedInitBalances] = useState([]);
+
+  /**
+   * 
+  pub description: Option<String>, // yes
+    /// denom_units represents the list of DenomUnit's for a given coin
+    pub denom_units: Vec<DenomUnit>, // yes
+    /// base represents the base denom (should be the DenomUnit with exponent = 0).
+    pub base: Option<String>, // yes -> exp 0
+    /// display indicates the suggested denom that should be displayed in clients.
+    pub display: Option<String>, // yes -> exp max 
+    /// name defines the name of the token (eg: Cosmos Atom)
+    pub name: Option<String>, // yes
+    /// symbol is the token symbol usually shown on exchanges (eg: ATOM). This can
+    /// be the same as the display.
+    pub symbol: Option<String>, // yes
+   */
 
   const [typeDelete, setTypeDelete] = useState('');
 
@@ -68,17 +75,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [isAddListToken, setIsAddListToken] = useState(false);
   const [cap, setCap] = useState(BigInt(0));
   const [isLoading, setIsLoading] = useState(false);
-  const [tokensNew, setTokensNew] = useState([]);
-  const [rewardTokens, setRewardTokens] = useState([
-    {
-      name: 'orai',
-      denom: 'orai',
-      value: BigInt(1e6),
-      contract_addr: ''
-    }
-  ]);
 
-  const allRewardSelect = rewardTokens.map((item) => item['denom']);
   const handleOutsideClick = () => {
     if (isAddListToken) setIsAddListToken(false);
     if (typeDelete) setTypeDelete('');
@@ -88,10 +85,11 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   useOnClickOutside(ref, () => handleOutsideClick());
 
   const handleCreateToken = async () => {
-    if (isMintNewToken && !checkRegex(tokenName))
-      return displayToast(TToastType.TX_FAILED, {
-        message: 'Token name is required and must be letter (3 to 12 characters)'
-      });
+    // TODO: 
+    // if (!checkRegex(tokenName))
+    //   return displayToast(TToastType.TX_FAILED, {
+    //     message: 'Token name is required and must be letter (3 to 12 characters)'
+    //   });
     const { client, defaultAddress: address } = await getCosmWasmClient({
       chainId: network.chainId
     });
@@ -100,7 +98,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         message: 'Wallet address does not exist!'
       });
 
-    if (isMintNewToken && !tokenName)
+    if (!tokenName)
       return displayToast(TToastType.TX_FAILED, {
         message: 'Empty token symbol!'
       });
@@ -115,99 +113,73 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       });
     }
 
-    if (isMinter && !minter)
-      return displayToast(TToastType.TX_FAILED, {
-        message: 'Wrong minter format!'
-      });
-
-    if (minter && !validateAddressCosmos(minter, 'orai'))
-      return displayToast(TToastType.TX_FAILED, {
-        message: 'Invalid Address Minter!'
-      });
-
-    if (isMinter && isInitBalances && cap) {
-      const amountAllInit = sumBy(initBalances, 'amount');
-      if (amountAllInit > cap) {
-        return displayToast(TToastType.TX_FAILED, {
-          message: 'Cap need bigger init balances!'
-        });
-      }
-    }
     await signFrontierListToken(client, address);
   };
 
   const signFrontierListToken = async (client: SigningCosmWasmClient, address: AccountData) => {
     try {
       setIsLoading(true);
-      // const liquidityPoolRewardAssets = rewardTokens.map((isReward) => {
-      //   return {
-      //     amount: isReward?.value.toString(),
-      //     info: getInfoLiquidityPool(isReward)
-      //   };
-      // });
-      // const oraidexListing = new OraidexListingContractClient(client, address.address, network.oraidex_listing);
-      // // TODO: add more options for users like name, marketing, additional token rewards
-      // const mint = isMinter
-      //   ? {
-      //       minter,
-      //       cap: !!cap ? cap.toString() : null
-      //     }
-      //   : undefined;
+      const msgs = [];
 
-      // const initialBalances = isInitBalances
-      //   ? initBalances.map((e) => ({ ...e, amount: e?.amount.toString() }))
-      //   : undefined;
+      const createDenomMsg = {
+        contractAddress: TOKEN_FACTORY_CONTRACT,
+        msg: {
+          create_denom: {
+            extended_info: {
+              logo: {
+                url: tokenLogoUrl,
+              },
+              project: projectUrl,
+            },
+            metadata: {
+              base: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
+              denom_units: [
+                {
+                  denom: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
+                  exponent: 0,
+                  aliases: []
+                },
+                {
+                  denom: tokenSymbol,
+                  exponent: tokenDecimal,
+                  aliases: []
+                }
+              ],
+              description: description,
+              display: tokenSymbol,
+              name: tokenName,
+              symbol: tokenSymbol,
+            },
+            subdenom: tokenSymbol
+          }
+        },
+        funds: [{
+          denom: "orai",
+          amount: "1"
+        }],
+      }
 
-      // const pairAssetInfo = getInfoLiquidityPool({
-      //   contract_addr: !pairAssetType && pairAssetAddress,
-      //   denom: pairAssetType && pairAssetAddress
-      // });
+      const initBalanceMsg = initBalances.map((init) => {
+        return {
+          contractAddress: TOKEN_FACTORY_CONTRACT,
+          msg: {
+            mint_tokens: {
+              amount: init.amount.toString(),
+              denom: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
+              mint_to_address: init.address
+            }
+          },
+          funds: []
+        }
+      });
 
-      // console.log('targeted asset info: ', targetedAssetInfo);
+      msgs.push(createDenomMsg);
+      msgs.push(...initBalanceMsg);
 
-      // let msg = generateMsgFrontierAddToken({
-      //   marketing,
-      //   symbol: tokenName,
-      //   liquidityPoolRewardAssets,
-      //   name,
-      //   initialBalances,
-      //   mint,
-      //   pairAssetInfo,
-      //   targetedAssetInfo: targetedAssetInfo
-      //     ? getInfoLiquidityPool({
-      //         contract_addr: !targetedAssetType && targetedAssetInfo,
-      //         denom: targetedAssetType && targetedAssetInfo
-      //       })
-      //     : undefined
-      // });
-      // // if users use their existing tokens to list, then we allow them to
-      // console.log('msg: ', msg);
+      const res = await client.executeMultiple(address.address, msgs, 'auto');
 
-      // const result = await oraidexListing.listToken(msg);
-      // if (result) {
-      //   const wasmAttributes = result.logs?.[0]?.events.filter((e) => e.type === 'wasm').flatMap((e) => e.attributes);
-      //   const cw20Address = wasmAttributes?.find((w) => w.key === 'cw20_address')?.value;
-      //   const lpAddress = wasmAttributes?.find((w) => w.key === 'liquidity_token_address')?.value;
-      //   const pairAddress = wasmAttributes?.find((w) => w.key === '"pair_contract_address"')?.value;
-      //   displayToast(
-      //     TToastType.TX_SUCCESSFUL,
-      //     cw20Address
-      //       ? {
-      //           customLink: `${network.explorer}/txs/${result.transactionHash}`,
-      //           linkCw20Token: `${network.explorer}/smart-contract/${cw20Address}`,
-      //           cw20Address: `${cw20Address}`
-      //         }
-      //       : {
-      //           customLink: `${network.explorer}/txs/${result.transactionHash}`,
-      //           linkLpAddress: `${network.explorer}/smart-contract/${lpAddress}`,
-      //           linkPairAddress: `${network.explorer}/smart-contract/${pairAddress}`
-      //         },
-      //     {
-      //       autoClose: 100000000
-      //     }
-      //   );
-      //   close();
-      // }
+      console.log(res);
+
     } catch (error) {
       console.log('error listing token: ', error);
       handleErrorTransaction(error);
@@ -228,6 +200,14 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
     }
   };
 
+  const deleteSelectedItem = () => {
+    // if (typeDelete === 'Init Balances') {
+    const newInitBalances = initBalances.filter((_, i) => !selectedInitBalances.includes(i));
+    setInitBalances(newInitBalances);
+    setSelectedInitBalances([]);
+    // }
+  }
+
   const generateOverlay = () => {
     return isAddListToken || typeDelete ? <div className={cx('overlay')} /> : null;
   };
@@ -238,302 +218,188 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       <div className={cx('container', theme)}>
         <div className={cx('container-inner')}>
           <RewardIcon />
-          <div className={cx('title', theme)}>List a new token</div>
+          <div className={cx('title', theme)}>Create a new token</div>
         </div>
         <div className={cx('content')} ref={ref}>
           <div className={cx('box', theme)}>
             <div className={cx('token')}>
-              <div className={cx('row', 'pt-16')}>
-                <div className={cx('label')}>Listing option</div>
-                <div>
-                  <CheckBox
-                    radioBox
-                    label="Create new CW20"
-                    checked={isMintNewToken}
-                    onCheck={() => {
-                      console.log('set is mint token true');
-                      setIsMintNewToken(true);
-                    }}
-                  />
-                </div>
-                <div>
-                  <CheckBox
-                    radioBox
-                    label="Use existing"
-                    checked={!isMintNewToken}
-                    onCheck={() => {
-                      console.log('set is mint token false');
-                      setIsMintNewToken(false);
-                    }}
-                  />
-                </div>
-              </div>
-              {!isMintNewToken && (
-                <div>
-                  <div className={cx('row', 'pt-16')}>
-                    <div className={cx('label')}>Base token</div>
+              <div>
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Token name</div>
+                  <div className={cx('input', theme)}>
                     <div>
-                      <CheckBox
-                        radioBox
-                        label="Token"
-                        checked={!targetedAssetType}
-                        onCheck={() => {
-                          setTargetedAssetType(false);
-                          setTargetedAssetInfo('');
+                      <Input
+                        value={tokenName}
+                        style={{
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
                         }}
-                      />
-                    </div>
-                    <div>
-                      <CheckBox
-                        radioBox
-                        label="Native Token"
-                        checked={targetedAssetType}
-                        onCheck={() => {
-                          setTargetedAssetType(true);
-                          setTargetedAssetInfo('');
-                        }}
+                        onChange={(e) => setTokenName(e?.target?.value)}
+                        placeholder="Oraichain Token"
                       />
                     </div>
                   </div>
-                  <div className={cx('row', 'pt-16')}>
-                    <div className={cx('label')}>{!targetedAssetType ? 'Contract Address' : 'Denom'}</div>
-                    <Input
-                      className={cx('input', theme)}
-                      value={targetedAssetInfo}
-                      style={{
-                        color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                      }}
-                      onChange={(e) => setTargetedAssetInfo(e?.target?.value)}
-                      placeholder={!targetedAssetType ? 'oraixxxxxxxx.....xxxxxxx' : 'orai'}
-                    />
+                </div>
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Token Symbol</div>
+                  <div className={cx('input', theme)}>
+                    <div>
+                      <Input
+                        value={tokenSymbol}
+                        style={{
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                        }}
+                        onChange={(e) => setTokenSymbol(e?.target?.value)}
+                        placeholder="ORAI"
+                      />
+                    </div>
                   </div>
                 </div>
-              )}
-              {isMintNewToken && (
-                <div>
-                  <div className={cx('row', 'pt-16')}>
-                    <div className={cx('label')}>Token name</div>
-                    <div className={cx('input', theme)}>
-                      <div>
-                        <Input
-                          value={tokenName}
-                          style={{
-                            color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                          }}
-                          onChange={(e) => setTokenName(e?.target?.value)}
-                          placeholder="ORAICHAIN"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className={cx('option')}>
-                    <CheckBox label="Minter (Optional)" checked={isMinter} onCheck={setIsMinter} />
-                  </div>
-                  {isMinter && (
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Token Decimals</div>
+                  <div className={cx('input', theme)}>
                     <div>
-                      <div className={cx('row', 'pt-16')}>
-                        <div className={cx('label')}>Minter</div>
-                        <Input
-                          className={cx('input', theme)}
-                          value={minter}
-                          style={{
-                            color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                          }}
-                          onChange={(e) => setMinter(e?.target?.value)}
-                          placeholder="MINTER"
-                        />
-                      </div>
-                      <div className={cx('row', 'pt-16')}>
-                        <div className={cx('label')}>Cap (Optional)</div>
-                        <NumberFormat
-                          placeholder="0"
-                          className={cx('input', theme)}
-                          style={{
-                            color: theme === 'light' ? 'rgba(126, 92, 197, 1)' : 'rgb(255, 222, 91)'
-                          }}
-                          thousandSeparator
-                          decimalScale={6}
-                          type="text"
-                          value={toDisplay(cap)}
-                          onValueChange={({ floatValue }) => {
-                            setCap(toAmount(floatValue));
-                          }}
-                        />
-                      </div>
+                      <Input
+                        type='number'
+                        value={tokenDecimal}
+                        style={{
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                        }}
+                        onChange={(e) => setTokenDecimal(Number(e?.target?.value))}
+                        placeholder="6"
+                      />
                     </div>
-                  )}
-                  <hr />
+                  </div>
+                </div>
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Token Description</div>
+                  <div className={cx('input', theme)}>
+                    <div>
+                      <textarea
+                        value={description}
+                        style={{
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                        }}
+                        rows={3}
+                        onChange={(e) => setDescription(e?.target?.value)}
+                        placeholder="Orai is the best token"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Project Url</div>
+                  <div className={cx('input', theme)}>
+                    <div>
+                      <Input
+                        value={projectUrl}
+                        style={{
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                        }}
+                        onChange={(e) => setProjectUrl(e?.target?.value)}
+                        placeholder="(Optional) https://orai.io"
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Token Image</div>
+                  <div className={cx('input', theme)}>
+                    <div>
+                      <ImageInput />
+                    </div>
+                  </div>
+                </div> */}
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Token Logo Url</div>
+                  <div className={cx('input', theme)}>
+                    <div>
+                      <Input
+                        value={tokenLogoUrl}
+                        style={{
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                        }}
+                        onChange={(e) => setTokenLogoUrl(e?.target?.value)}
+                        placeholder="(Optional) https://orai.io"
+                      />
+                      {tokenLogoUrl && <img src={tokenLogoUrl} alt="Logo" width={150} height={150}/>}
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                <div>
+                  <CheckBox
+                    label="Initial Balances (Optional)"
+                    checked={isInitBalances}
+                    onCheck={setIsInitBalances}
+                  />
+                </div>
+                {isInitBalances && (
                   <div>
-                    <CheckBox
-                      label="Initial Balances (Optional)"
-                      checked={isInitBalances}
-                      onCheck={setIsInitBalances}
-                    />
-                  </div>
-                  {isInitBalances && (
-                    <div>
-                      {isInitBalances && (
+                    {isInitBalances && (
+                      <div
+                        className={cx('btn-add-init', theme)}
+                        onClick={() =>
+                          setInitBalances([
+                            ...initBalances,
+                            {
+                              address: '',
+                              amount: BigInt(1e6)
+                            }
+                          ])
+                        }
+                      >
+                        <PlusIcon />
+                        <span>Add</span>
+                      </div>
+                    )}
+
+                    {isInitBalances && (
+                      <div className={cx('header-init')}>
+                        <CheckBox
+                          label={`Select All(${selectedInitBalances.length})`}
+                          checked={initBalances.length && selectedInitBalances.length === initBalances.length}
+                          onCheck={() => handleOnCheck(selectedInitBalances, setSelectedInitBalances, initBalances)}
+                        />
                         <div
-                          className={cx('btn-add-init', theme)}
-                          onClick={() =>
-                            setInitBalances([
-                              ...initBalances,
-                              {
-                                address: '',
-                                amount: BigInt(1e6)
-                              }
-                            ])
-                          }
+                          className={cx('trash')}
+                          onClick={() => selectedInitBalances.length && deleteSelectedItem()}
                         >
-                          <PlusIcon />
-                          <span>Add</span>
+                          <TrashIcon />
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {isInitBalances && (
-                        <div className={cx('header-init')}>
-                          <CheckBox
-                            label={`Select All(${selectedInitBalances.length})`}
-                            checked={initBalances.length && selectedInitBalances.length === initBalances.length}
-                            onCheck={() => handleOnCheck(selectedInitBalances, setSelectedInitBalances, initBalances)}
-                          />
-                          <div
-                            className={cx('trash')}
-                            onClick={() => selectedInitBalances.length && setTypeDelete('Init Balances')}
-                          >
-                            <TrashIcon />
+                    <div style={{ height: 10 }} />
+
+                    {isInitBalances &&
+                      initBalances.map((item, ind) => {
+                        return (
+                          <div key={ind}>
+                            <InitBalancesItems
+                              item={item}
+                              ind={ind}
+                              selectedInitBalances={selectedInitBalances}
+                              setSelectedInitBalances={setSelectedInitBalances}
+                              setInitBalances={setInitBalances}
+                              initBalances={initBalances}
+                              theme={theme}
+                              decimals={tokenDecimal}
+                            />
                           </div>
-                        </div>
-                      )}
-
-                      <div style={{ height: 10 }} />
-
-                      {isInitBalances &&
-                        initBalances.map((item, ind) => {
-                          return (
-                            <div key={ind}>
-                              <InitBalancesItems
-                                item={item}
-                                ind={ind}
-                                selectedInitBalances={selectedInitBalances}
-                                setSelectedInitBalances={setSelectedInitBalances}
-                                setInitBalances={setInitBalances}
-                                initBalances={initBalances}
-                                theme={theme}
-                              />
-                            </div>
-                          );
-                        })}
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className={cx('row', 'pt-16')}>
-                <div className={cx('label')}>Quote token</div>
-                <div>
-                  <CheckBox
-                    radioBox
-                    label="Token"
-                    checked={!pairAssetType}
-                    onCheck={() => {
-                      setPairAssetType(false);
-                      setPairAssetAddress('');
-                    }}
-                  />
-                </div>
-                <div>
-                  <CheckBox
-                    radioBox
-                    label="Native Token"
-                    checked={pairAssetType}
-                    onCheck={() => {
-                      setPairAssetType(true);
-                      setPairAssetAddress('');
-                    }}
-                  />
-                </div>
-              </div>
-              <div className={cx('row', 'pt-16')}>
-                <div className={cx('label')}>{!pairAssetType ? 'Contract Address' : 'Denom'}</div>
-                <Input
-                  className={cx('input', theme)}
-                  value={pairAssetAddress}
-                  style={{
-                    color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                  }}
-                  onChange={(e) => setPairAssetAddress(e?.target?.value)}
-                  placeholder={!pairAssetType ? 'oraixxxxxxxx.....xxxxxxx' : 'orai'}
-                />
-              </div>
-            </div>
-          </div>
-          <div className={cx('box', theme)}>
-            <div className={cx('add-reward-btn')} onClick={() => setIsAddListToken(true)}>
-              <PlusIcon />
-              <span>Add a new pool reward token</span>
-            </div>
-            <div className={cx('rewards')}>
-              <div className={cx('rewards-list')}>
-                <CheckBox
-                  label={`Select All(${selectedReward.length})`}
-                  checked={rewardTokens.length && selectedReward.length === rewardTokens.length}
-                  onCheck={() => handleOnCheck(selectedReward, setSelectedReward, rewardTokens)}
-                />
-                <div className={cx('trash')} onClick={() => selectedReward.length && setTypeDelete('Reward')}>
-                  <TrashIcon />
-                </div>
-              </div>
-              <div style={{ height: 24 }} />
-              {rewardTokens?.map((item, index) => {
-                return (
-                  <div key={index}>
-                    <RewardItems
-                      rewardTokens={rewardTokens}
-                      selectedReward={selectedReward}
-                      setRewardTokens={setRewardTokens}
-                      setSelectedReward={setSelectedReward}
-                      ind={index}
-                      item={item}
-                      theme={theme}
-                    />
+                        );
+                      })}
                   </div>
-                );
-              })}
+                )}
+              </div>
             </div>
           </div>
-          {isAddListToken ? (
-            <ModalListToken
-              tokensNew={tokensNew}
-              setTokensNew={setTokensNew}
-              setRewardTokens={setRewardTokens}
-              rewardTokens={rewardTokens}
-              allRewardSelect={allRewardSelect}
-              theme={theme}
-              setIsAddListToken={setIsAddListToken}
-            />
-          ) : null}
-          {typeDelete ? (
-            <ModalDelete
-              rewardTokens={rewardTokens}
-              typeDelete={typeDelete}
-              setTypeDelete={setTypeDelete}
-              selectedReward={selectedReward}
-              setSelectedReward={setSelectedReward}
-              setRewardTokens={setRewardTokens}
-              initBalances={initBalances}
-              setInitBalances={setInitBalances}
-              selectedInitBalances={selectedInitBalances}
-              setSelectedInitBalances={setSelectedInitBalances}
-              theme={theme}
-            />
-          ) : null}
         </div>
         <div
           className={cx(
             'create-btn',
-            (isLoading || (!tokenName && !targetedAssetInfo) || !rewardTokens.length) && 'disable-btn'
+            (isLoading || (!tokenName)) && 'disable-btn'
           )}
-          onClick={() => !isLoading && (tokenName || targetedAssetInfo) && rewardTokens.length && handleCreateToken()}
+          onClick={() => !isLoading && (tokenName) && handleCreateToken()}
         >
           {isLoading && <Loader width={20} height={20} />}
           {isLoading && <div style={{ width: 8 }}></div>}

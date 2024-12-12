@@ -10,12 +10,15 @@ import { formatDisplayUsdt } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useTheme from 'hooks/useTheme';
 import { toSumDisplay } from 'libs/utils';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './index.module.scss';
 import { oraichainTokensWithIcon } from 'initCommon';
+import { tokenInspector } from 'initTokenInspector';
+import useOnchainTokensReducer from 'hooks/useOnchainTokens';
+import { inspectToken } from 'reducer/onchainTokens';
 
 const SelectToken = ({
   token,
@@ -34,6 +37,15 @@ const SelectToken = ({
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
   const isLightTheme = theme === 'light';
+
+  const onchainTokens = useOnchainTokensReducer('tokens');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (listItems.length === 0 && textSearch) {
+      dispatch<any>(inspectToken(textSearch));
+    }
+  }, [textSearch]);
 
   const listItems = oraichainTokensWithIcon.filter(
     (item) =>
@@ -93,13 +105,13 @@ const SelectToken = ({
 
           {!isOpen ? null : (
             <div className={styles.selectTokenList}>
-              {!listItems.length && (
+              {![...listItems, ...onchainTokens].length && (
                 <div className={styles.selectTokenListNoResult}>
                   {isLightTheme ? <NoResultLight /> : <NoResultDark />}
                 </div>
               )}
 
-              {listItems
+              {[...listItems, ...onchainTokens]
                 .map((token) => {
                   const tokenIcon = getIcon({
                     isLightTheme,
