@@ -422,21 +422,18 @@ export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwor
 export const getAddressTransfer = async (network: CustomChainInfo, walletByNetworks: WalletsByNetwork) => {
   try {
     let address = '';
-    if (network.networkType === 'ton') {
+    if (network.networkType === 'ton' && walletByNetworks.ton) {
       address =
         JSON.parse(JSON.parse(localStorage.getItem('persist:root'))?.config)?.tonAddress ||
         toUserFriendlyAddress(window.Ton?.account?.address);
-
-      console.log('addressTON', address);
       // address = useTonAddress();
     } else if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
-    } else if (network.networkType == ('svm' as any)) {
+    } else if (network.networkType == 'svm' && walletByNetworks.solana) {
       let provider = window?.solana;
       if (walletByNetworks.solana === 'owallet') {
         provider = window?.owalletSolana;
       }
-
       const { publicKey } = await provider.connect();
       address = publicKey.toBase58();
     } else if (!['evm', 'svm'].includes(network.networkType) && isConnectSpecificNetwork(walletByNetworks.cosmos)) {
