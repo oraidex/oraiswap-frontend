@@ -2,7 +2,7 @@ import cn from 'classnames/bind';
 import Modal from 'components/Modal';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import styles from './SelectTokenModal.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
 import {
@@ -13,8 +13,12 @@ import {
   tokensIcon,
   truncDecimals
 } from '@oraichain/oraidex-common';
-import { chainInfosWithIcon, tokenMap } from 'initCommon';
+import { chainInfosWithIcon, oraichainTokensWithIcon, tokenMap } from 'initCommon';
 import { getIcon } from 'helper';
+import SearchInput from 'components/SearchInput';
+import useOnchainTokensReducer from 'hooks/useOnchainTokens';
+import { useDispatch } from 'react-redux';
+import { inspectToken } from 'reducer/onchainTokens';
 
 const cx = cn.bind(styles);
 
@@ -26,7 +30,7 @@ interface ModalProps {
   isCloseBtn?: boolean;
   amounts: AmountDetails;
   prices: CoinGeckoPrices<string>;
-  items?: TokenItemType[] | CustomChainInfo[];
+  items?: TokenItemType[];
   setToken: (denom: string, contract_addr?: string) => void;
   type?: 'token' | 'network';
   setSymbol?: (symbol: string) => void;
@@ -44,6 +48,21 @@ export const SelectTokenModal: FC<ModalProps> = ({
   setSymbol
 }) => {
   const [theme] = useConfigReducer('theme');
+  const [textSearch, setTextSearch] = useState('');
+
+  const onchainTokens = useOnchainTokensReducer('tokens');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (listItems.length === 0 && textSearch) {
+      dispatch<any>(inspectToken(textSearch));
+    }
+  }, [textSearch]);
+
+  const listItems = items.filter(
+    (item) =>
+      item.decimals !== 18 && (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
+  );
 
   return (
     <Modal theme={theme} isOpen={isOpen} close={close} open={open} isCloseBtn={true}>
@@ -51,8 +70,18 @@ export const SelectTokenModal: FC<ModalProps> = ({
         <div className={cx('title', theme)}>
           <div>{type === 'token' ? 'Select a token' : 'Select a network'}</div>
         </div>
+
+        <SearchInput
+          placeholder="Find token by name or address"
+          className={styles.selectTokenSearchInput}
+          onSearch={(text) => {
+            setTextSearch(text);
+          }}
+          theme={theme}
+        />
+
         <div className={cx('options')}>
-          {items?.map((item: TokenItemType | CustomChainInfo) => {
+          {[...listItems, ...onchainTokens]?.map((item: TokenItemType | CustomChainInfo) => {
             let key: string, title: string, balance: string;
             let tokenAndChainIcons;
 

@@ -14,7 +14,10 @@ import { useSelector } from 'react-redux';
 import { fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './NewPoolModal.module.scss';
-import { assetInfoMap } from 'initCommon';
+import { assetInfoMap, network } from 'initCommon';
+import SelectToken from 'pages/Pool-V3/components/SelectToken';
+import useOnchainTokensReducer from 'hooks/useOnchainTokens';
+import { getCosmWasmClient } from 'libs/cosmjs';
 
 const cx = cn.bind(styles);
 
@@ -26,7 +29,9 @@ interface ModalProps {
   isCloseBtn?: boolean;
 }
 
-const steps = ['Set token ratio', 'Add Liquidity', 'Confirm'];
+const steps = ['Add Liquidity', 'Confirm'];
+
+const FACTORY_POOL_V2 = "";
 
 const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const { data: prices } = useCoinGeckoPrices();
@@ -36,13 +41,14 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [token2, setToken2] = useState<string | null>(null);
   const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(getPoolTokens(assetInfoMap));
   const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(getPoolTokens(assetInfoMap));
-  const [supplyToken1, setSupplyToken1] = useState(0);
-  const [supplyToken2, setSupplyToken2] = useState(0);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
   const amounts = useSelector((state: RootState) => state.token.amounts);
-  const tokenObj1 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token1);
-  const tokenObj2 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token2);
+
+  const onchainTokens = useOnchainTokensReducer('tokens');
+
+  const tokenObj1 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token1) || onchainTokens.find((token) => token?.denom === token1);
+  const tokenObj2 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token2) || onchainTokens.find((token) => token?.denom === token2);
 
   const { data: token1InfoData } = useQuery(['token-info', token1], () => fetchTokenInfo(tokenObj1!), {
     enabled: !!tokenObj1
@@ -55,6 +61,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const token1Balance = BigInt(amounts[tokenObj1?.denom] ?? '0');
   const token2Balance = BigInt(amounts[tokenObj2?.denom] ?? '0');
 
+  // TODO: ICON CREATE POOL V2
   const Token1Icon = tokenObj1?.Icon;
   const Token2Icon = tokenObj2?.Icon;
 
@@ -66,11 +73,52 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
     return pricePer * +amount;
   };
 
+  const handleCreatePool = async () => {
+    try {
+      const { client, defaultAddress: address } = await getCosmWasmClient({
+        chainId: network.chainId
+      });
+      const msgs = [];
+
+      const createPairMsg = {
+        
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const step1Component = (
     <>
       <div className={cx('supply')}>
-        <div className={cx('header')}>
-          <div className={cx('title')}>Supply</div>
+        <div className={cx('balance')}>
+          <TokenBalance
+            balance={{
+              amount: token1Balance,
+              decimals: token1InfoData?.decimals,
+              denom: token1InfoData?.symbol
+            }}
+            prefix="Balance: "
+            decimalScale={2}
+          />
+          <div
+            className={cx('btn')}
+            onClick={() => setAmountToken1(toDisplay(token1Balance, token1InfoData?.decimals))}
+          >
+            MAX
+          </div>
+          <div
+            className={cx('btn')}
+            onClick={() => setAmountToken1(toDisplay(token1Balance / BigInt(2), token1InfoData?.decimals))}
+          >
+            HALF
+          </div>
+          <TokenBalance
+            balance={getBalanceValue(token1InfoData?.symbol ?? '', toDisplay(token1Balance, token1InfoData?.decimals))}
+            style={{ flexGrow: 1, textAlign: 'right' }}
+            decimalScale={2}
+          />
         </div>
         <div className={cx('input')}>
           <div className={cx('token')} onClick={() => setIsSelectingToken('token1')}>
@@ -101,18 +149,43 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               thousandSeparator
               decimalScale={6}
               type="text"
-              value={supplyToken1 ? supplyToken1 : ''}
+              value={amountToken1 ? amountToken1 : ''}
               onValueChange={({ floatValue }) => {
-                setSupplyToken1(floatValue ?? 0);
+                setAmountToken1(floatValue ?? 0);
               }}
             />
-            <span>%</span>
           </div>
         </div>
       </div>
+
       <div className={cx('supply')}>
-        <div className={cx('header')}>
-          <div className={cx('title')}>Supply</div>
+        <div className={cx('balance')}>
+          <TokenBalance
+            balance={{
+              amount: token2Balance,
+              decimals: token2InfoData?.decimals,
+              denom: token2InfoData?.symbol
+            }}
+            prefix="Balance: "
+            decimalScale={2}
+          />
+          <div
+            className={cx('btn')}
+            onClick={() => setAmountToken2(toDisplay(token2Balance, token2InfoData?.decimals))}
+          >
+            MAX
+          </div>
+          <div
+            className={cx('btn')}
+            onClick={() => setAmountToken2(toDisplay(token2Balance / BigInt(2), token2InfoData?.decimals))}
+          >
+            HALF
+          </div>
+          <TokenBalance
+            balance={getBalanceValue(token2InfoData?.symbol ?? '', toDisplay(token2Balance, token2InfoData?.decimals))}
+            style={{ flexGrow: 1, textAlign: 'right' }}
+            decimalScale={2}
+          />
         </div>
         <div className={cx('input')}>
           <div className={cx('token')} onClick={() => setIsSelectingToken('token2')}>
@@ -143,138 +216,19 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               thousandSeparator
               decimalScale={6}
               type="text"
-              value={supplyToken2 ? supplyToken2 : ''}
+              value={amountToken2 ? amountToken2 : ''}
               onValueChange={({ floatValue }) => {
-                setSupplyToken2(floatValue ?? 0);
+                setAmountToken2(floatValue ?? 0);
               }}
             />
-            <span>%</span>
           </div>
-        </div>
-      </div>
-      <div className={cx('swap-btn')} onClick={() => setStep(2)}>
-        Next
-      </div>
-    </>
-  );
-
-  const step2Component = (
-    <>
-      <div className={cx('supply')}>
-        <div className={cx('header')}>
-          <div className={cx('title')}>Supply</div>
-          <div className={cx('percent')}>{supplyToken1}%</div>
-        </div>
-        <div className={cx('balance')}>
-          <TokenBalance
-            balance={{
-              amount: token1Balance,
-              denom: token1InfoData?.symbol
-            }}
-            prefix="Balance: "
-            decimalScale={6}
-          />
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken1(toDisplay(token1Balance, token1InfoData?.decimals))}
-          >
-            MAX
-          </div>
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken1(toDisplay(token1Balance / BigInt(2), token1InfoData?.decimals))}
-          >
-            HALF
-          </div>
-          <TokenBalance
-            balance={getBalanceValue(token1InfoData?.symbol ?? '', toDisplay(token1Balance, token1InfoData?.decimals))}
-            style={{ flexGrow: 1, textAlign: 'right' }}
-            decimalScale={2}
-          />
-        </div>
-        <div className={cx('input')}>
-          <div className={cx('token')}>
-            {Token1Icon && <Token1Icon className={cx('logo')} />}
-            <div className={cx('title')}>
-              <div>{token1InfoData?.symbol}</div>
-              <div className={cx('des')}>Cosmos Hub</div>
-            </div>
-          </div>
-          <NumberFormat
-            placeholder="0"
-            className={cx('amount')}
-            thousandSeparator
-            decimalScale={6}
-            type="text"
-            value={!!amountToken1 ? amountToken1 : ''}
-            onValueChange={({ floatValue }) => {
-              setAmountToken1(floatValue);
-            }}
-          />
-        </div>
-      </div>
-
-      <div className={cx('supply')}>
-        <div className={cx('header')}>
-          <div className={cx('title')}>Supply</div>
-          <div className={cx('percent')}>{supplyToken2}%</div>
-        </div>
-        <div className={cx('balance')}>
-          <TokenBalance
-            balance={{
-              amount: token2Balance,
-              denom: token2InfoData?.symbol
-            }}
-            prefix="Balance: "
-            decimalScale={6}
-          />
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken2(toDisplay(token2Balance, token2InfoData?.decimals))}
-          >
-            MAX
-          </div>
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken2(toDisplay(token2Balance / BigInt(2), token2InfoData?.decimals))}
-          >
-            HALF
-          </div>
-          <TokenBalance
-            balance={getBalanceValue(token2InfoData?.symbol ?? '', toDisplay(token2Balance, token2InfoData?.decimals))}
-            style={{ flexGrow: 1, textAlign: 'right' }}
-            decimalScale={2}
-          />
-        </div>
-        <div className={cx('input')}>
-          <div className={cx('token')}>
-            {Token2Icon && <Token2Icon className={cx('logo')} />}
-            <div className={cx('title')}>
-              <div>{token2InfoData?.symbol}</div>
-              <div className={cx('highlight')}>Cosmos Hub</div>
-            </div>
-          </div>
-          <NumberFormat
-            placeholder="0"
-            className={cx('amount')}
-            thousandSeparator
-            decimalScale={6}
-            type="text"
-            value={!!amountToken2 ? amountToken2 : ''}
-            onValueChange={({ floatValue }) => {
-              setAmountToken2(floatValue);
-            }}
-          />
         </div>
       </div>
       <div style={{ display: 'flex', gap: '10px' }}>
-        <div className={cx('back-btn')} onClick={() => setStep(1)}>
-          Back
-        </div>
         <div
           className={cx('swap-btn')}
           onClick={() => {
-            setStep(3);
+            setStep(2);
           }}
         >
           Next
@@ -283,18 +237,17 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
     </>
   );
 
-  const step3Component = (
+  const step2Component = (
     <>
       <div className={cx('stat')}>
         <Pie percent={50}>
-          {token1InfoData?.symbol}/${token2InfoData?.symbol}
+          {token1InfoData?.symbol}/{token2InfoData?.symbol}
         </Pie>
         <div className={cx('stats_info')}>
           <div className={cx('stats_info_row')}>
             <div className={cx('stats_info_cl')} style={{ background: '#612FCA' }} />
             {Token1Icon && <Token1Icon className={cx('stats_info_lg')} />}
             <div className={cx('stats_info_name')}>{token1InfoData?.symbol}</div>
-            <div className={cx('stats_info_percent')}>{supplyToken1}%</div>
             <div className={cx('stats_info_value_amount')}>{amountToken1}</div>
           </div>
           <div className={cx('stats_info_row')}>
@@ -308,7 +261,6 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
             <div className={cx('stats_info_cl')} style={{ background: '#FFD5AE' }} />
             {Token2Icon && <Token2Icon className={cx('stats_info_lg')} />}
             <div className={cx('stats_info_name')}>{token2InfoData?.symbol}</div>
-            <div className={cx('stats_info_percent')}>{supplyToken2}%</div>
             <div className={cx('stats_info_value_amount')}>{amountToken2}</div>
           </div>
           <div className={cx('stats_info_row')}>
@@ -331,29 +283,29 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               thousandSeparator
               decimalScale={6}
               type="text"
-              // value={supplyToken2 ? supplyToken2 : ''}
-              // onValueChange={({ floatValue }) => {
-              //   setSupplyToken2(floatValue);
-              // }}
+            // value={supplyToken2 ? supplyToken2 : ''}
+            // onValueChange={({ floatValue }) => {
+            //   setSupplyToken2(floatValue);
+            // }}
             />
             <span>%</span>
           </div>
         </div>
       </div>
-      <div className={cx('detail')}>
+      {/* <div className={cx('detail')}>
         <div className={cx('row')}>
           <div className={cx('row-title')}>
             <span>Pool Creation Fee</span>
-            {/* <TooltipIcon /> */}
+            <TooltipIcon />
           </div>
-          <span>50 ORAI</span>
+          <span>0 ORAI</span>
         </div>
-      </div>
+      </div> */}
       <div style={{ display: 'flex', gap: '10px' }}>
-        <div className={cx('back-btn')} onClick={() => setStep(2)}>
+        <div className={cx('back-btn')} onClick={() => setStep(1)}>
           Back
         </div>
-        <div className={cx('swap-btn')} onClick={() => {}}>
+        <div className={cx('swap-btn')} onClick={() => { }}>
           Create
         </div>
       </div>
@@ -396,9 +348,9 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         {(() => {
           if (step === 1) return step1Component;
           if (step === 2) return step2Component;
-          if (step === 3) return step3Component;
         })()}
       </div>
+
       <SelectTokenModal
         isOpen={isSelectingToken === 'token1'}
         open={() => setIsSelectingToken('token1')}

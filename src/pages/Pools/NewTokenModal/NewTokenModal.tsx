@@ -24,9 +24,10 @@ import { InitBalancesItems, RewardItems } from './ItemsComponent';
 import { ModalDelete, ModalListToken } from './ModalComponent';
 import styles from './NewTokenModal.module.scss';
 import ImageInput from 'components/DragDropImage';
+import { sha256 } from '@injectivelabs/sdk-ts';
 const cx = cn.bind(styles);
 
-const TOKEN_FACTORY_CONTRACT = 'orai1wuh4g3euvs3u4vlmn3lljh363wl25t6n9fcydawtlykpw3jgp0kqg83vcc';
+const TOKEN_FACTORY_CONTRACT = 'orai1v5kjdl8et3kkpg78mjscelccrtf6ze6vufqnlvrf5xh5k2c6zxksuwge4u';
 
 interface ModalProps {
   className?: string;
@@ -42,7 +43,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [tokenSymbol, setTokenSymbol] = useState('');
   const [tokenDecimal, setTokenDecimal] = useState(6);
   const [description, setDescription] = useState('');
-  const [projectUrl, setProjectUrl] = useState('');
+  // const [projectUrl, setProjectUrl] = useState('');
   const [tokenLogoUrl, setTokenLogoUrl] = useState('');
   const [selectedInitBalances, setSelectedInitBalances] = useState([]);
 
@@ -121,16 +122,13 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       setIsLoading(true);
       const msgs = [];
 
+      const uint8Array = new TextEncoder().encode(tokenLogoUrl);
+      const hash = Buffer.from(sha256(uint8Array)).toString('hex');
+
       const createDenomMsg = {
         contractAddress: TOKEN_FACTORY_CONTRACT,
         msg: {
           create_denom: {
-            extended_info: {
-              logo: {
-                url: tokenLogoUrl,
-              },
-              project: projectUrl,
-            },
             metadata: {
               base: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
               denom_units: [
@@ -149,6 +147,8 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               display: tokenSymbol,
               name: tokenName,
               symbol: tokenSymbol,
+              uri: tokenLogoUrl,
+              uri_hash: hash
             },
             subdenom: tokenSymbol
           }
@@ -159,7 +159,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         }],
       }
 
-      const initBalanceMsg = initBalances.map((init) => {
+      const initBalanceMsg = isInitBalances ? initBalances.map((init) => {
         return {
           contractAddress: TOKEN_FACTORY_CONTRACT,
           msg: {
@@ -171,10 +171,15 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
           },
           funds: []
         }
-      });
+      }) : [];
 
       msgs.push(createDenomMsg);
-      msgs.push(...initBalanceMsg);
+      
+      if (initBalances.length > 0) {
+        msgs.push(...initBalanceMsg);
+      }
+
+      console.log(msgs);
 
       const res = await client.executeMultiple(address.address, msgs, 'auto');
 
@@ -286,7 +291,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                     </div>
                   </div>
                 </div>
-                <div className={cx('row', 'pt-16')}>
+                {/* <div className={cx('row', 'pt-16')}>
                   <div className={cx('label')}>Project Url</div>
                   <div className={cx('input', theme)}>
                     <div>
@@ -300,7 +305,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
                 {/* <div className={cx('row', 'pt-16')}>
                   <div className={cx('label')}>Token Image</div>
                   <div className={cx('input', theme)}>
@@ -321,7 +326,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                         onChange={(e) => setTokenLogoUrl(e?.target?.value)}
                         placeholder="(Optional) https://orai.io"
                       />
-                      {tokenLogoUrl && <img src={tokenLogoUrl} alt="Logo" width={150} height={150}/>}
+                      {tokenLogoUrl && <img src={tokenLogoUrl} alt="Logo" width={150} height={150} />}
                     </div>
                   </div>
                 </div>
