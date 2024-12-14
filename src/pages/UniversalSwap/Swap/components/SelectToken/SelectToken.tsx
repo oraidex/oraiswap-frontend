@@ -56,7 +56,7 @@ const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height, onch
       <img src={foundToken.icon} alt="icon" width={30} height={30} />
     );
   } else if (type === 'onchain-token') {
-    console.log(onchainToken);
+    if (!onchainToken) return null;
     return isLightTheme ? (
       <img src={onchainToken.icon} alt="icon" width={30} height={30} />
     ) : (
@@ -110,7 +110,8 @@ export default function SelectToken({
     .filter(
       (item) =>
         (textChain ? item.chainId === textChain : true) &&
-        ((textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true) || (textSearch ? item.contractAddress?.toLowerCase().includes(textSearch.toLowerCase()) : true))
+        ((textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true) ||
+          (textSearch ? item.contractAddress?.toLowerCase().includes(textSearch.toLowerCase()) : true))
     )
     .reduce((unique, item) => {
       if (!unique.some((uniqueItem) => uniqueItem.denom === item.denom)) {
@@ -210,7 +211,7 @@ export default function SelectToken({
                     key={key}
                     className={styles.selectTokenItem}
                     onClick={() => {
-                      handleChangeToken(token as TokenItemType)
+                      handleChangeToken(token as TokenItemType);
                     }}
                   >
                     <div className={styles.selectTokenItemLeft}>
