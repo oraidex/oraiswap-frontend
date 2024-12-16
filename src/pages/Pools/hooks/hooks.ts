@@ -18,6 +18,8 @@ import { updateLpPools } from 'reducer/token';
 import { fetchRewardPerSecInfo, fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
+import { tokenInspector } from 'initTokenInspector';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -213,14 +215,35 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
     enabled: !!pairDenoms
   });
 
-  const pairRawData = pairDenoms.split('_');
-  const tokenTypes = pairRawData.map((raw) =>
-    oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
-  );
+  const [[token1, token2], setTokens] = useState([{}, {}]);
+
+  useEffect(() => {
+    if (!pairDenoms) return;
+    (async function fetchTokens() {
+      const pairRawData = pairDenoms.split('_');
+      const tokenTypes = pairRawData.map((raw) =>
+        oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
+      );
+
+      let token1 = tokenTypes[0];
+      let token2 = tokenTypes[1];
+
+      if (!tokenTypes[0]) {
+        const inspectedToken1 = await tokenInspector.inspectToken({ tokenId: pairRawData[0], getOffChainData: true });
+        token1 = onChainTokenToTokenItem(inspectedToken1);
+      }
+      if (!tokenTypes[1]) {
+        const inspectedToken2 = await tokenInspector.inspectToken({ tokenId: pairRawData[1], getOffChainData: true });
+        token2 = onChainTokenToTokenItem(inspectedToken2);
+      }
+      setTokens([token1, token2]);
+    })();
+  }, [pairDenoms]);
+
   return {
     info: poolDetail,
-    token1: tokenTypes[0],
-    token2: tokenTypes[1],
+    token1,
+    token2,
     isLoading
   };
 };

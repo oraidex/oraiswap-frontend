@@ -86,6 +86,7 @@ export default function SelectToken({
   const [textSearch, setTextSearch] = useState('');
   const isLightTheme = theme === 'light';
   const [tokenRank = {}] = useConfigReducer('tokenRank');
+  const [address] = useConfigReducer('address');
   const [isTokenOnchain, setIsTokenOnchain] = useState(false);
 
   const onchainTokens = useOnchainTokensReducer('tokens');
@@ -97,14 +98,14 @@ export default function SelectToken({
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch && textChain && selectChain === 'Oraichain') {
-      dispatch<any>(inspectToken(textSearch));
+      dispatch<any>(inspectToken({ tokenId: textSearch, address }));
       setIsTokenOnchain(true);
     }
 
     if (listItems.length > 0) {
       setIsTokenOnchain(false);
     }
-  }, [textSearch]);
+  }, [textSearch, address]);
 
   const listItems = items
     .filter(

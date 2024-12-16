@@ -63,7 +63,7 @@ export const inspectToken = createAsyncThunk(
   }> => {
     const token = await tokenInspector.inspectToken({
       tokenId,
-      getOffChainData: false
+      getOffChainData: true
     });
 
     const client = await CosmWasmClient.connect(network.rpc);

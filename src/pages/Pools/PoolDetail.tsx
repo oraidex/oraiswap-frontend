@@ -102,23 +102,6 @@ const PoolDetail: React.FC = () => {
   const baseToken = (token1?.contractAddress || token1?.denom) === params.base_denom ? token1 : token2;
   const quoteToken = (token2?.contractAddress || token2?.denom) === params.base_denom ? token1 : token2;
 
-  let BaseTokenIcon = OraiIcon;
-  let QuoteTokenIcon = OraiIcon;
-  const BaseTokenInOraichain = oraichainTokens.find(
-    (oraiTokens) =>
-      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.contractAddress) ||
-      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.denom)
-  );
-  const QuoteTokenInOraichain = oraichainTokens.find(
-    (oraiTokens) =>
-      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.contractAddress) ||
-      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.denom)
-  );
-  if (BaseTokenInOraichain)
-    BaseTokenIcon = theme === 'light' ? BaseTokenInOraichain.iconLight : BaseTokenInOraichain.icon;
-  if (QuoteTokenInOraichain)
-    QuoteTokenIcon = theme === 'light' ? QuoteTokenInOraichain.iconLight : QuoteTokenInOraichain.icon;
-
   const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
 
   const listBTCAddresses = [
@@ -128,6 +111,7 @@ const PoolDetail: React.FC = () => {
   useEffect(() => {
     if (!poolDetailData) return;
     const { token2 } = poolDetailData;
+    if (!token2) return;
     async function getOraiBtcAllocation() {
       const res = await fetchRetry(
         'https://lcd.orai.io/cosmos/bank/v1beta1/balances/orai1fv5kwdv4z0gvp75ht378x8cg2j7prlywa0g35qmctez9q8u4xryspn6lrd'
@@ -163,8 +147,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  <img src={BaseTokenIcon} alt="icon" width={30} height={30} />
-                  <img src={QuoteTokenIcon} alt="icon" width={30} height={30} />
+                  {/* <img src={BaseTokenIcon} alt="icon" width={30} height={30} />
+                  <img src={QuoteTokenIcon} alt="icon" width={30} height={30} /> */}
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} /{' '}
@@ -217,9 +201,7 @@ const PoolDetail: React.FC = () => {
         <div className={styles.overview}>
           <OverviewPool
             poolDetailData={{
-              ...poolDetailData,
-              token1: BaseTokenInOraichain,
-              token2: QuoteTokenInOraichain
+              ...poolDetailData
             }}
           />
         </div>
@@ -244,7 +226,8 @@ const PoolDetail: React.FC = () => {
             {
               id: 'txs',
               value: 'Transactions',
-              content: <TransactionHistory baseToken={BaseTokenInOraichain} quoteToken={QuoteTokenInOraichain} />
+              content: null
+              // content: <TransactionHistory baseToken={BaseTokenInOraichain} quoteToken={QuoteTokenInOraichain} />
             }
           ]}
         />

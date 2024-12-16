@@ -46,7 +46,7 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from 'store/configure';
 import SelectToken from '../SelectToken';
 import styles from './index.module.scss';
-import { NetworkChainId } from "@oraichain/common";
+import { NetworkChainId } from '@oraichain/common';
 
 const cx = cn.bind(styles);
 
@@ -227,7 +227,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
       client = await CosmWasmClient.connect(network.rpc);
       const zap = new ZapperQueryClient(client, ZAPPER_CONTRACT);
       zapFee = Number((await zap.protocolFee()).percent);
-    } catch (error) { }
+    } catch (error) {}
 
     try {
       const zapper = new ZapConsumer({
@@ -235,7 +235,9 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
         deviation: 0,
         dexV3Address: network.pool_v3,
         multiCallAddress: MULTICALL_CONTRACT,
-        routerApi: 'https://osor.oraidex.io/smart-router/alpha-router',
+        // routerApi: 'https://osor.oraidex.io/smart-router/alpha-router',
+        // TODO: update to prod later
+        routerApi: 'https://osor-staging.oraidex.io/smart-router/alpha-router',
         smartRouteConfig: {
           swapOptions: {
             protocols: ['OraidexV3']
@@ -448,7 +450,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
                   disabled={true}
                   type="text"
                   value={amountFrom}
-                  onChange={() => { }}
+                  onChange={() => {}}
                   isAllowed={(values) => {
                     const { floatValue } = values;
                     // allow !floatValue to let user can clear their input

@@ -36,20 +36,20 @@ export const getTokenInfo = (address, isLight) => {
   return { Icon, tokenInfo };
 };
 
-export const getIconPoolData = async (tokenX, tokenY, isLight) => {
-  console.log({ tokenX, tokenY });
-  if (!tokenX || !tokenY) {
-    console.trace('getIconPoolData');
-  }
-
+export const getIconPoolData = async (tokenX: string, tokenY: string, isLight: boolean) => {
   let [FromTokenIcon, ToTokenIcon] = [null, null];
   let tokenXinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
   let tokenYinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
-  if (!tokenXinfo) {
-    tokenXinfo = await tokenInspector.inspectToken(tokenX);
+  if (!tokenXinfo && tokenX) {
+    try {
+      tokenXinfo = await tokenInspector.inspectToken({ tokenId: tokenX, getOffChainData: true });
+    } catch (error) {
+      console.log({ error });
+      console.log({ tokenX });
+    }
   }
-  if (!tokenYinfo) {
-    tokenYinfo = await tokenInspector.inspectToken(tokenY);
+  if (!tokenYinfo && tokenY) {
+    tokenYinfo = await tokenInspector.inspectToken({ tokenId: tokenY, getOffChainData: true });
   }
 
   if (tokenXinfo)
@@ -68,6 +68,7 @@ export const getIconPoolData = async (tokenX, tokenY, isLight) => {
 };
 
 export const formatPoolData = async (p: PoolWithPoolKey | PoolInfoResponse, isLight: boolean = false) => {
+  // pools v2
   if ('liquidityAddr' in p) {
     const { firstAssetInfo, secondAssetInfo } = p;
     const [baseDenom, quoteDenom] = [
@@ -94,6 +95,9 @@ export const formatPoolData = async (p: PoolWithPoolKey | PoolInfoResponse, isLi
   }
 
   const [tokenX, tokenY] = [p?.pool_key.token_x, p?.pool_key.token_y];
+  if (!tokenX || !tokenY) {
+    console.log({ tokenX, tokenY });
+  }
   const feeTier = p?.pool_key.fee_tier.fee || 0;
   const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = await getIconPoolData(tokenX, tokenY, isLight);
   const spread = p?.pool_key.fee_tier.tick_spacing || 100;

@@ -53,6 +53,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
   useEffect(() => {
     if (!poolDetailData) return;
     const { token2 } = poolDetailData;
+    if (!token2) return;
     async function getOraiBtcAllocation() {
       const res = await fetchRetry(
         'https://lcd.orai.io/cosmos/bank/v1beta1/balances/orai1fv5kwdv4z0gvp75ht378x8cg2j7prlywa0g35qmctez9q8u4xryspn6lrd'

@@ -18,14 +18,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const [loading, setLoading] = useState(false);
   const [dataPool, setDataPool] = useState([...Array(0)]);
 
-  const formatPoolDataCallback = useCallback(
-    (p) => {
-      const isLight = theme === 'light';
-      return formatPoolData(p, isLight);
-    },
-    [theme]
-  );
-
   const {
     data: poolList,
     refetch: refetchPoolList,
@@ -74,8 +66,8 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     (async function formatListPools() {
-      const listPools = (poolList || []).map(formatPoolDataCallback);
-      console.log({ listPools });
+      const listPools = (poolList || []).map((p) => formatPoolData(p));
+
       const fmtPools = (await Promise.all(listPools)).filter((e) => e.isValid);
       console.log({ fmtPools });
       // const fmtPools = (poolList || []).map(formatPoolDataCallback).filter(async (e) => (await e).isValid);
