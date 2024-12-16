@@ -56,10 +56,12 @@ export const SelectTokenModal: FC<ModalProps> = ({
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch) {
-      dispatch<any>(inspectToken({
-        tokenId: textSearch,
-        address
-      }));
+      dispatch<any>(
+        inspectToken({
+          tokenId: textSearch,
+          address
+        })
+      );
     }
   }, [textSearch]);
 

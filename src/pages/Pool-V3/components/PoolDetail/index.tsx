@@ -29,6 +29,7 @@ import CreateNewPosition from '../CreateNewPosition';
 import PositionItem from '../PositionItem';
 import TransactionHistory from '../TransactionHistory';
 import styles from './index.module.scss';
+import { usePoolIcons } from 'pages/Pool-V3/hooks/usePoolIcons';
 
 const PoolV3Detail = () => {
   const [address] = useConfigReducer('address');
@@ -52,7 +53,7 @@ const PoolV3Detail = () => {
   const isLight = theme === 'light';
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
 
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(tokenX, tokenY, isLight);
+  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = usePoolIcons(tokenX, tokenY, isLight);
   const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
   const totalLiquidity = poolLiquidities?.[poolId] ?? 0;
   const volumn24h = poolVolume?.[poolId] ?? 0;
@@ -91,7 +92,7 @@ const PoolV3Detail = () => {
         }
         const pool = poolList.find((p) => poolKeyToString(p.pool_key) === poolKeyString);
         const isLight = theme === 'light';
-        const fmtPool = formatPoolData(pool, isLight);
+        const fmtPool = await formatPoolData(pool, isLight);
         setPoolDetail(fmtPool as any);
       }
     })();

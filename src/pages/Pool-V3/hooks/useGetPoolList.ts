@@ -40,8 +40,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     const newPrice = { ...coingeckoPrices };
-    const newCgkPrice = { ...cachePrices };
-    let numberOfRecordsUpdate = 0;
 
     for (const pool of poolList) {
       if ('liquidityAddr' in pool) {
@@ -57,9 +55,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           // calculate price of X in Y from current sqrt price
           const price = calcPrice(pool.pool.current_tick_index, true, tokenX.decimals, tokenY.decimals);
           newPrice[tokenX.coinGeckoId || tokenX.denom] = price * prices[tokenY.coinGeckoId];
-
-          // newCgkPrice[tokenX.coinGeckoId || tokenX.denom] = price * prices[tokenY.coinGeckoId];
-          // numberOfRecordsUpdate = numberOfRecordsUpdate + 1;
         }
       }
 
@@ -68,22 +63,24 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           // calculate price of Y in X from current sqrt price
           const price = calcPrice(pool.pool.current_tick_index, false, tokenX.decimals, tokenY.decimals);
           newPrice[tokenY.coinGeckoId || tokenY.denom] = price * prices[tokenX.coinGeckoId];
-
-          // newCgkPrice[tokenY.coinGeckoId || tokenY.denom] = price * prices[tokenX.coinGeckoId];
-          // numberOfRecordsUpdate = numberOfRecordsUpdate + 1;
         }
       }
     }
 
     setPrices(newPrice);
-    // setCachePrices(newCgkPrice);
   }, [poolList]);
 
   useEffect(() => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
-    const fmtPools = (poolList || []).map(formatPoolDataCallback).filter((e) => e.isValid);
-    setDataPool(fmtPools);
+    (async function formatListPools() {
+      const listPools = (poolList || []).map(formatPoolDataCallback);
+      console.log({ listPools });
+      const fmtPools = (await Promise.all(listPools)).filter((e) => e.isValid);
+      console.log({ fmtPools });
+      // const fmtPools = (poolList || []).map(formatPoolDataCallback).filter(async (e) => (await e).isValid);
+      setDataPool(fmtPools);
+    })();
   }, [poolList, coingeckoPrices]);
 
   return {
@@ -97,8 +94,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
 
 const getPoolList = async (): Promise<PoolWithPoolKey[]> => {
   try {
-    // const pools = await SingletonOraiswapV3.getPools();
-
     const [poolV3, poolV2] = await Promise.allSettled([SingletonOraiswapV3.getPools(), getPools()]);
 
     const res = [...(poolV3['value'] || []), ...(poolV2['value'] || [])];

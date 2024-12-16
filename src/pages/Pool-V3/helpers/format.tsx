@@ -6,6 +6,7 @@ import { PoolInfoResponse } from 'types/pool';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { POOL_TYPE } from '../index';
 import { oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
+import { tokenInspector } from 'initTokenInspector';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {
   FromTokenIcon: React.FunctionComponent<
@@ -35,10 +36,22 @@ export const getTokenInfo = (address, isLight) => {
   return { Icon, tokenInfo };
 };
 
-export const getIconPoolData = (tokenX, tokenY, isLight) => {
+export const getIconPoolData = async (tokenX, tokenY, isLight) => {
+  console.log({ tokenX, tokenY });
+  if (!tokenX || !tokenY) {
+    console.trace('getIconPoolData');
+  }
+
   let [FromTokenIcon, ToTokenIcon] = [null, null];
-  const tokenXinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
-  const tokenYinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
+  let tokenXinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
+  let tokenYinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
+  if (!tokenXinfo) {
+    tokenXinfo = await tokenInspector.inspectToken(tokenX);
+  }
+  if (!tokenYinfo) {
+    tokenYinfo = await tokenInspector.inspectToken(tokenY);
+  }
+
   if (tokenXinfo)
     FromTokenIcon = isLight ? (
       <img src={tokenXinfo.iconLight} alt="iconlight" />
@@ -54,7 +67,7 @@ export const getIconPoolData = (tokenX, tokenY, isLight) => {
   return { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo };
 };
 
-export const formatPoolData = (p: PoolWithPoolKey | PoolInfoResponse, isLight: boolean = false) => {
+export const formatPoolData = async (p: PoolWithPoolKey | PoolInfoResponse, isLight: boolean = false) => {
   if ('liquidityAddr' in p) {
     const { firstAssetInfo, secondAssetInfo } = p;
     const [baseDenom, quoteDenom] = [
@@ -62,7 +75,11 @@ export const formatPoolData = (p: PoolWithPoolKey | PoolInfoResponse, isLight: b
       parseAssetOnlyDenom(JSON.parse(secondAssetInfo))
     ];
 
-    const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(baseDenom, quoteDenom, isLight);
+    const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = await getIconPoolData(
+      baseDenom,
+      quoteDenom,
+      isLight
+    );
 
     return {
       ...p,
@@ -78,7 +95,7 @@ export const formatPoolData = (p: PoolWithPoolKey | PoolInfoResponse, isLight: b
 
   const [tokenX, tokenY] = [p?.pool_key.token_x, p?.pool_key.token_y];
   const feeTier = p?.pool_key.fee_tier.fee || 0;
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(tokenX, tokenY, isLight);
+  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = await getIconPoolData(tokenX, tokenY, isLight);
   const spread = p?.pool_key.fee_tier.tick_spacing || 100;
 
   const poolKey = p?.pool_key ? poolKeyToString(p.pool_key) : '';
