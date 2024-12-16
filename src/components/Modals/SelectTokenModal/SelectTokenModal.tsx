@@ -64,10 +64,8 @@ export const SelectTokenModal: FC<ModalProps> = ({
   }, [textSearch]);
 
   const listItems = items.filter(
-    (item) =>
-      item.decimals !== 18 && (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
+    (item) => item.decimals !== 18 && (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
   );
-
   return (
     <Modal theme={theme} isOpen={isOpen} close={close} open={open} isCloseBtn={true}>
       <div className={cx('select', theme)}>
@@ -126,7 +124,7 @@ export const SelectTokenModal: FC<ModalProps> = ({
               coinGeckoId: tokenAndChainIcons?.coinGeckoId,
               width: 30,
               height: 30
-            })
+            });
 
             return (
               <div

@@ -104,7 +104,7 @@ function parsePoolAmount(poolInfo: OraiswapPairTypes.PoolResponse, trueAsset: As
         (asset) =>
           'native_token' in asset.info &&
           asset.info.native_token.denom ===
-          'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
       )?.amount || '0'
     );
   }
@@ -200,7 +200,13 @@ async function fetchPairInfo(tokenTypes: [TokenItemType, TokenItemType]): Promis
     : network.factory_v2;
   let { info: firstAsset } = parseTokenInfo(tokenTypes[0]);
   let { info: secondAsset } = parseTokenInfo(tokenTypes[1]);
-  const factoryContract = new OraiswapFactoryQueryClient(window.client, factoryAddr);
+  // const factoryContract = new OraiswapFactoryQueryClient(window.client, factoryAddr);
+
+  // TODO: hardcode factory contract test for staging, need remove later.
+  const factoryContract = new OraiswapFactoryQueryClient(
+    window.client,
+    'orai1m99lx5vp3ak03w9ef6wwrtkrkhed7mtxfkj7s59nx0lfnnwaxavsmk8wyy'
+  );
   const data = await factoryContract.pair({
     assetInfos: [firstAsset, secondAsset]
   });
@@ -720,14 +726,19 @@ async function getPairAmountInfo(
 }
 
 export {
-  fetchCachedPairInfo, fetchLpBalance, fetchPairInfo,
+  fetchCachedPairInfo,
+  fetchLpBalance,
+  fetchPairInfo,
   fetchPoolInfoAmount,
   fetchRelayerFee,
-  fetchRewardPerSecInfo, fetchRoundBid, fetchStakingPoolInfo,
+  fetchRewardPerSecInfo,
+  fetchRoundBid,
+  fetchStakingPoolInfo,
   fetchTaxRate,
   fetchTokenAllowance,
   fetchTokenInfo,
-  fetchTokenInfos, generateContractMessages,
+  fetchTokenInfos,
+  generateContractMessages,
   generateConvertCw20Erc20Message,
   generateConvertErc20Cw20Message,
   generateConvertMsgs,
@@ -736,4 +747,3 @@ export {
   getPairAmountInfo,
   getSubAmountDetails
 };
-

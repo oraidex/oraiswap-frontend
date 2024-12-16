@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './NewPoolModal.module.scss';
-import { assetInfoMap, network } from 'initCommon';
+import { assetInfoMap, network, oraichainTokens } from 'initCommon';
 import SelectToken from 'pages/Pool-V3/components/SelectToken';
 import useOnchainTokensReducer from 'hooks/useOnchainTokens';
 import { getCosmWasmClient } from 'libs/cosmjs';
@@ -33,7 +33,7 @@ interface ModalProps {
 
 const steps = ['Add Liquidity', 'Confirm'];
 
-const FACTORY_POOL_V2 = "orai1m99lx5vp3ak03w9ef6wwrtkrkhed7mtxfkj7s59nx0lfnnwaxavsmk8wyy";
+const FACTORY_POOL_V2 = 'orai1m99lx5vp3ak03w9ef6wwrtkrkhed7mtxfkj7s59nx0lfnnwaxavsmk8wyy';
 
 const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const { data: prices } = useCoinGeckoPrices();
@@ -41,8 +41,8 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [isSelectingToken, setIsSelectingToken] = useState<'token1' | 'token2' | null>(null);
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
-  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(getPoolTokens(assetInfoMap));
-  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(getPoolTokens(assetInfoMap));
+  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(oraichainTokens);
+  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(oraichainTokens);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
 
@@ -53,8 +53,10 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
   const onchainTokens = useOnchainTokensReducer('tokens');
 
-  const tokenObj1 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token1) || onchainTokens.find((token) => token?.denom === token1);
-  const tokenObj2 = getPoolTokens(assetInfoMap).find((token) => token?.denom === token2) || onchainTokens.find((token) => token?.denom === token2);
+  const tokenObj1 =
+    oraichainTokens.find((token) => token?.denom === token1) || onchainTokens.find((token) => token?.denom === token1);
+  const tokenObj2 =
+    oraichainTokens.find((token) => token?.denom === token2) || onchainTokens.find((token) => token?.denom === token2);
 
   const { data: token1InfoData } = useQuery(['token-info', token1], () => fetchTokenInfo(tokenObj1!), {
     enabled: !!tokenObj1
@@ -68,8 +70,8 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const token2Balance = BigInt(amounts[tokenObj2?.denom] ?? '0');
 
   // TODO: ICON CREATE POOL V2
-  const Token1Icon = tokenObj1?.Icon;
-  const Token2Icon = tokenObj2?.Icon;
+  const Token1Icon = tokenObj1?.icon;
+  const Token2Icon = tokenObj2?.icon;
 
   const getBalanceValue = (tokenSymbol: string | undefined, amount: number | string) => {
     if (!tokenSymbol) return 0;
@@ -88,15 +90,15 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
       const funds: { denom: string; amount: string }[] = [];
 
-      const assetInfos: AssetInfo[] = []
-      const assets: Asset[] = []
+      const assetInfos: AssetInfo[] = [];
+      const assets: Asset[] = [];
 
       console.log({
         tokenObj1,
         tokenObj2,
         amountToken1,
         amountToken2
-      })
+      });
 
       if (tokenObj1.contractAddress) {
         msgs.push({
@@ -108,38 +110,38 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               spender: FACTORY_POOL_V2
             }
           }
-        })
+        });
         assetInfos.push({
           token: {
-            contract_addr: tokenObj1.contractAddress,
+            contract_addr: tokenObj1.contractAddress
           }
-        })
+        });
         assets.push({
           info: {
             token: {
-              contract_addr: tokenObj1.contractAddress,
+              contract_addr: tokenObj1.contractAddress
             }
           },
           amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString()
-        })
+        });
       } else {
         funds.push({
           denom: tokenObj1.denom,
           amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString()
-        })
+        });
         assetInfos.push({
           native_token: {
-            denom: tokenObj1.denom,
+            denom: tokenObj1.denom
           }
-        })
+        });
         assets.push({
           info: {
             native_token: {
-              denom: tokenObj1.denom,
+              denom: tokenObj1.denom
             }
           },
           amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString()
-        })
+        });
       }
 
       if (tokenObj2.contractAddress) {
@@ -152,38 +154,38 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               spender: FACTORY_POOL_V2
             }
           }
-        })
+        });
         assetInfos.push({
           token: {
-            contract_addr: tokenObj2.contractAddress,
+            contract_addr: tokenObj2.contractAddress
           }
-        })
+        });
         assets.push({
           info: {
             token: {
-              contract_addr: tokenObj2.contractAddress,
+              contract_addr: tokenObj2.contractAddress
             }
           },
           amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString()
-        })
+        });
       } else {
         funds.push({
           denom: tokenObj2.denom,
           amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString()
-        })
+        });
         assetInfos.push({
           native_token: {
-            denom: tokenObj2.denom,
+            denom: tokenObj2.denom
           }
-        })
+        });
         assets.push({
           info: {
             native_token: {
-              denom: tokenObj2.denom,
+              denom: tokenObj2.denom
             }
           },
           amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString()
-        })
+        });
       }
 
       const createPairMsg = {
@@ -201,21 +203,20 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
           }
         },
         funds
-      }
-      
+      };
+
       console.log({
         msgs
-      })
+      });
 
-      msgs.push(createPairMsg)
+      msgs.push(createPairMsg);
 
       const result = await client.executeMultiple(address.address, msgs, 'auto');
       console.log(result);
-
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const step1Component = (
     <>
@@ -254,7 +255,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               (() => {
                 return (
                   <>
-                    {Token1Icon && <Token1Icon className={cx('logo')} />}
+                    {Token1Icon && <img src={Token1Icon} className={cx('logo')} alt="" />}
                     <div className={cx('title')}>
                       <div>{token1InfoData?.symbol ?? ''}</div>
                       <div className={cx('des')}>Cosmos Hub</div>
@@ -321,7 +322,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               (() => {
                 return (
                   <>
-                    {Token2Icon && <Token2Icon className={cx('logo')} />}
+                    {Token2Icon && <img src={Token2Icon} className={cx('logo')} alt="" />}
                     <div className={cx('title')}>
                       <div>{token2InfoData?.symbol ?? ''}</div>
                       <div className={cx('highlight')}>Cosmos Hub</div>
@@ -374,7 +375,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         <div className={cx('stats_info')}>
           <div className={cx('stats_info_row')}>
             <div className={cx('stats_info_cl')} style={{ background: '#612FCA' }} />
-            {Token1Icon && <Token1Icon className={cx('stats_info_lg')} />}
+            {Token1Icon && <img src={Token1Icon} className={cx('stats_info_lg')} alt="" />}
             <div className={cx('stats_info_name')}>{token1InfoData?.symbol}</div>
             <div className={cx('stats_info_value_amount')}>{amountToken1}</div>
           </div>
@@ -387,7 +388,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
           </div>
           <div className={cx('stats_info_row')}>
             <div className={cx('stats_info_cl')} style={{ background: '#FFD5AE' }} />
-            {Token2Icon && <Token2Icon className={cx('stats_info_lg')} />}
+            {Token2Icon && <img src={Token2Icon} className={cx('stats_info_lg')} alt="" />}
             <div className={cx('stats_info_name')}>{token2InfoData?.symbol}</div>
             <div className={cx('stats_info_value_amount')}>{amountToken2}</div>
           </div>
