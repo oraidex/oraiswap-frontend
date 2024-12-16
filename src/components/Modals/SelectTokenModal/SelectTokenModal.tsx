@@ -49,13 +49,17 @@ export const SelectTokenModal: FC<ModalProps> = ({
 }) => {
   const [theme] = useConfigReducer('theme');
   const [textSearch, setTextSearch] = useState('');
+  const [address] = useConfigReducer('address');
 
   const onchainTokens = useOnchainTokensReducer('tokens');
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch) {
-      dispatch<any>(inspectToken(textSearch));
+      dispatch<any>(inspectToken({
+        tokenId: textSearch,
+        address
+      }));
     }
   }, [textSearch]);
 

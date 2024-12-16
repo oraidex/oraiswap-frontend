@@ -41,6 +41,7 @@ export const tokenSlice = createSlice({
         ...state.amounts,
         ...action.payload
       };
+      console.log("update in TOken state", state.amounts);
     },
     updatePairs: (state, action: PayloadAction<PairDetails>) => {
       state.pairs = {

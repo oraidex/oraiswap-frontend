@@ -1,14 +1,20 @@
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { OraiToken } from "@oraichain/orai-token-inspector/dist/types";
 import { TokenItemType } from "@oraichain/oraidex-common";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { network } from "initCommon";
 import { tokenInspector } from "initTokenInspector";
+import { Dispatch } from "@reduxjs/toolkit";
+import { updateAmounts } from "./token";
 
 export interface OnchainTokensState {
     tokens: TokenItemType[];
+    amounts: AmountDetails;
 }
 
 const initialState: OnchainTokensState = {
     tokens: [],
+    amounts: {}
 };
 
 export const onchainTokensSlice = createSlice({
@@ -17,7 +23,9 @@ export const onchainTokensSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(inspectToken.fulfilled, (state, action) => {
-            state.tokens = [onChainTokenToTokenItem(action.payload)];
+            const { token, balance } = action.payload;
+            state.tokens = [onChainTokenToTokenItem(token)];
+            state.amounts[token.denom] = balance;
         });
     }
 });
@@ -38,12 +46,49 @@ export const onChainTokenToTokenItem = (token: OraiToken): TokenItemType => {
     }
 };
 
-export const inspectToken = createAsyncThunk('onchainTokens/inspectToken', async (tokenId: string) => {
+export const inspectToken = createAsyncThunk('onchainTokens/inspectToken', async ({ tokenId, address }: {
+    tokenId: string,
+    address?: string
+}, thunkAPI): Promise<{
+    token: OraiToken,
+    balance: string
+}> => {
     const token = await tokenInspector.inspectToken({
         tokenId,
         getOffChainData: false
     });
-    return token;
+
+    const client = await CosmWasmClient.connect(network.rpc);
+
+    let tokenBalance = "0";
+    if (token.contractAddress) {
+        const balance = await client.queryContractSmart(
+            token.contractAddress,
+            {
+                balance: {
+                    address
+                }
+            }
+        )
+        tokenBalance = balance.balance;
+    } else {
+        const balance = await client.getBalance(address, token.denom);
+        tokenBalance = balance.amount;
+    }
+
+    thunkAPI.dispatch(updateAmounts({
+        [token.denom]: tokenBalance
+    }));
+
+    console.log({
+        token,
+        balance: tokenBalance
+    })
+
+    return {
+        token,
+        balance: tokenBalance
+    };
 });
 
 export default onchainTokensSlice.reducer;

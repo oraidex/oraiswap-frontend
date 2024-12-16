@@ -19,6 +19,7 @@ import SelectToken from 'pages/Pool-V3/components/SelectToken';
 import useOnchainTokensReducer from 'hooks/useOnchainTokens';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
+import useConfigReducer from 'hooks/useConfigReducer';
 
 const cx = cn.bind(styles);
 
@@ -44,7 +45,11 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(getPoolTokens(assetInfoMap));
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
+
+  const onChainBalances = useOnchainTokensReducer('amounts');
+
   const amounts = useSelector((state: RootState) => state.token.amounts);
+  
 
   const onchainTokens = useOnchainTokensReducer('tokens');
 
@@ -406,6 +411,8 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               thousandSeparator
               decimalScale={6}
               type="text"
+              value={0.3}
+              disabled={true}
             // value={supplyToken2 ? supplyToken2 : ''}
             // onValueChange={({ floatValue }) => {
             //   setSupplyToken2(floatValue);
