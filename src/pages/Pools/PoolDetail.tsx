@@ -49,6 +49,10 @@ const PoolDetail: React.FC = () => {
   const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
   const lpTokenBalance = BigInt(lpBalanceInfoData?.balance || '0');
 
+  useEffect(() => {
+    refetchAllLpPools();
+  }, [lpAddresses]);
+
   const refetchAllLpPools = async () => {
     if (lpAddresses.length === 0) return;
     const lpTokenData = await fetchLpPoolsFromContract(

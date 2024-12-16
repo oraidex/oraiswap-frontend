@@ -83,8 +83,8 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
     }
   };
 
-  const Token1Icon = theme === 'light' ? token1?.IconLight || token1?.Icon : token1?.Icon;
-  const Token2Icon = theme === 'light' ? token2?.IconLight || token2?.Icon : token2?.Icon;
+  const Token1Icon = token1?.icon;
+  const Token2Icon = token2?.icon;
 
   const totalSupply = BigInt(lpTokenInfoData?.total_supply || 0);
   const lp1BurnAmount =
@@ -94,8 +94,8 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
     totalSupply === BigInt(0) || !lpAmountBurn
       ? BigInt(0)
       : (token2.contractAddress === BTC_CONTRACT
-        ? (token2Amount / BigInt(10 ** 8)) * BigInt(lpAmountBurn)
-        : token2Amount * BigInt(lpAmountBurn)) / totalSupply;
+          ? (token2Amount / BigInt(10 ** 8)) * BigInt(lpAmountBurn)
+          : token2Amount * BigInt(lpAmountBurn)) / totalSupply;
 
   const lpAmountBurnUsdt = !myLpBalance ? 0 : (Number(lpAmountBurn) / Number(myLpBalance)) * Number(myLpUsdt);
   return (
@@ -130,7 +130,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
             </div>
             <div className={cx('row-amount')}>
               <div className={cx('token')}>
-                {Token1Icon && <Token1Icon className={cx('logo')} />}
+                {Token1Icon && <img src={Token1Icon} className={cx('logo')} />}
                 <div className={cx('title', theme)}>
                   <div>{token1?.name}</div>
                   <div className={cx('des')}>Oraichain</div>
@@ -148,7 +148,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
             </div>
             <div className={cx('row-amount')}>
               <div className={cx('token')}>
-                {Token2Icon && <Token2Icon className={cx('logo')} />}
+                {Token2Icon && <img src={Token2Icon} className={cx('logo')} />}
                 <div className={cx('title', theme)}>
                   {/* TODO: remove after pool close */}
                   <div>{token2?.name === 'BTC (Legacy)' ? 'BTC' : token2?.name}</div>
