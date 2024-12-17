@@ -4,39 +4,76 @@
   width: 100%;
   height: 100vh;
   position: absolute;
+  &.christmas {
+    .top {
+      position: sticky;
+      top: 68px;
+      left: 0;
 
-  .top {
-    position: sticky;
-    top: 68px;
-    left: 0;
+      width: 100px;
+      height: 119px;
+      z-index: 30;
 
-    width: 100px;
-    height: 119px;
-    z-index: 30;
+      @include medium-desktop {
+        width: 70px;
+        height: 89px;
+      }
 
-    @include medium-desktop {
-      width: 70px;
-      height: 89px;
+      @include mobile {
+        width: 70px;
+        height: 89px;
+      }
     }
 
-    @include mobile {
-      width: 70px;
-      height: 89px;
+    .bottom {
+      z-index: 30;
+      position: fixed;
+      right: -5px;
+      bottom: -10px;
+
+      width: 221.82px;
+      height: 156px;
+
+      @include mobile {
+        display: none;
+      }
     }
   }
 
-  .bottom {
-    z-index: 30;
-    position: fixed;
-    right: -50px;
-    bottom: -50px;
+  &.halloween {
+    .top {
+      position: sticky;
+      top: 68px;
+      left: 0;
 
-    width: 136.764px;
-    height: 193px;
-    transform: rotate(-12deg);
+      width: 100px;
+      height: 119px;
+      z-index: 30;
 
-    @include mobile {
-      display: none;
+      @include medium-desktop {
+        width: 70px;
+        height: 89px;
+      }
+
+      @include mobile {
+        width: 70px;
+        height: 89px;
+      }
+    }
+
+    .bottom {
+      z-index: 30;
+      position: fixed;
+      right: -50px;
+      bottom: -50px;
+
+      width: 136.764px;
+      height: 193px;
+      transform: rotate(-12deg);
+
+      @include mobile {
+        display: none;
+      }
     }
   }
 }
@@ -93,8 +130,10 @@
         position: sticky;
         top: 800px;
         margin-top: 32px;
-
+        width: 200px;
+        height: 60px;
         @include mobile {
+          left: 30%;
           margin-bottom: -100px;
         }
       }

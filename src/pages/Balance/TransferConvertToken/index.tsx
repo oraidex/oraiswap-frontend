@@ -493,14 +493,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             evmChains.find((chain) => chain.chainId === token.chainId) ||
             btcChains.find((chain) => chain.chainId !== token.chainId)
           ) {
-            const isBridgeOraichainToSolana = toNetworkChainId === solChainId;
-            const isOraiOrMaxInSol =
-              toNetworkChainId === 'Oraichain' &&
-              (token.coinGeckoId === 'max-2' || token.coinGeckoId === 'oraichain-token');
             const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
             const isDisabled =
-              isOraiOrMaxInSol ||
-              isBridgeOraichainToSolana ||
               transferLoading ||
               !addressTransfer ||
               receivedAmount < 0 ||

@@ -187,8 +187,8 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
       };
     })
     .sort((a, b) => {
-      const aIsPrioritized = a.tokenXinfo.denom === prioritizePool;
-      const bIsPrioritized = b.tokenXinfo.denom === prioritizePool;
+      const aIsPrioritized = a.tokenXinfo?.denom === prioritizePool;
+      const bIsPrioritized = b.tokenXinfo?.denom === prioritizePool;
 
       if (aIsPrioritized && !bIsPrioritized) return CoefficientBySort[SortType.DESC];
       if (bIsPrioritized && !aIsPrioritized) return CoefficientBySort[SortType.ASC];

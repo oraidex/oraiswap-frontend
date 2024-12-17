@@ -70,12 +70,24 @@
     }
 
     .eventItem {
-      .left {
-        transform: translate(0, 7px);
+      &.christmas {
+        .left {
+          transform: translate(0px, -15px);
+        }
+
+        .right {
+          transform: translate(0px, -13px);
+        }
       }
 
-      .right {
-        transform: translate(1px, -9px);
+      &.halloween {
+        .left {
+          transform: translate(0, 7px);
+        }
+
+        .right {
+          transform: translate(1px, -9px);
+        }
       }
     }
   }
@@ -136,12 +148,24 @@
     }
 
     &:hover {
-      .left {
-        transform: translate(0, 7px);
+      &.christmas {
+        .left {
+          transform: translate(0px, -15px);
+        }
+
+        .right {
+          transform: translate(0px, -13px);
+        }
       }
 
-      .right {
-        transform: translate(1px, -9px);
+      &.halloween {
+        .left {
+          transform: translate(0, 7px);
+        }
+
+        .right {
+          transform: translate(1px, -9px);
+        }
       }
     }
   }
