@@ -86,6 +86,7 @@ import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
 import TonWallet from '@oraichain/tonbridge-sdk/build/wallet';
+import classNames from 'classnames';
 
 const cx = cn.bind(styles);
 
@@ -834,7 +835,7 @@ const SwapComponent: React.FC<{
             </div>
           </div>
 
-          <div className={styles.eventItem}>
+          <div className={classNames(styles.eventItem, styles[event])}>
             {configTheme.swapBox.inner.bottomLeft && (
               <img className={styles.left} src={configTheme.swapBox.inner.bottomLeft} alt="" />
             )}
@@ -866,7 +867,7 @@ const SwapComponent: React.FC<{
                 disabled={disabledSwapBtn}
               >
                 {!disabledSwapBtn && (
-                  <div className={styles.eventItem}>
+                  <div className={classNames(styles.eventItem, styles[event])}>
                     {configTheme.swapBox.inner.button.leftImg && (
                       <img className={styles.left} src={configTheme.swapBox.inner.button.leftImg} alt="" />
                     )}

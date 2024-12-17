@@ -27,6 +27,7 @@ import { initPairSwap } from './Swap/hooks/useFillToken';
 import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from './helpers';
 import { ChartTokenType, useChartUsdPrice } from './hooks/useChartUsdPrice';
 import styles from './index.module.scss';
+import classNames from 'classnames';
 
 const cx = cn.bind(styles);
 
@@ -77,7 +78,7 @@ const Swap: React.FC = () => {
   return (
     <>
       {(configTheme.animation.topImg || configTheme.animation.bottomImg) && (
-        <div className={styles.wrapperEvent}>
+        <div className={classNames(styles.wrapperEvent, styles[event])}>
           {configTheme.animation.topImg && <img className={styles.top} src={configTheme.animation.topImg} alt="" />}
           {configTheme.animation.bottomImg && (
             <img className={styles.bottom} src={configTheme.animation.bottomImg} alt="" />
