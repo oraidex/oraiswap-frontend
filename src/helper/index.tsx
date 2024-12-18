@@ -51,33 +51,31 @@ export interface InfoError {
 }
 
 export type DecimalLike = string | number | bigint | BigDecimal;
-export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-export const EVM_CHAIN_ID: NetworkChainId[] = evmChains.map((c) => c.chainId);
+export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+export const EVM_CHAIN_ID: NetworkChainId[] = evmChains.map(c => c.chainId);
 export const networks = chainInfos.filter(
-  (c) => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
+  c => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
 );
 export const cosmosNetworks = chainInfos.filter(
-  (c) =>
-    c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
+  c => c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
 );
 
-export const bitcoinNetworks = chainInfos.filter((c) => c.chainId === bitcoinChainId);
+export const bitcoinNetworks = chainInfos.filter(c => c.chainId === bitcoinChainId);
 export const cosmosNetworksWithIcon = chainInfosWithIcon.filter(
-  (c) =>
-    c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
+  c => c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
 );
 
-export const evmNetworksWithoutTron = chainInfos.filter((c) => c.networkType === 'evm' && c.chainId !== '0x2b6653dc');
+export const evmNetworksWithoutTron = chainInfos.filter(c => c.networkType === 'evm' && c.chainId !== '0x2b6653dc');
 export const evmNetworksIconWithoutTron = chainInfosWithIcon.filter(
-  (c) => c.networkType === 'evm' && c.chainId !== '0x2b6653dc'
+  c => c.networkType === 'evm' && c.chainId !== '0x2b6653dc'
 );
 
 // export const bitcoinNetworks = chainInfos.filter((c) => c.chainId === ChainIdEnum.Bitcoin);
-export const tronNetworks = chainInfos.filter((c) => c.chainId === '0x2b6653dc');
-export const tronNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === '0x2b6653dc');
-export const btcNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === bitcoinChainId);
-export const solanaNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === solChainId);
-export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === TonChainId);
+export const tronNetworks = chainInfos.filter(c => c.chainId === '0x2b6653dc');
+export const tronNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === '0x2b6653dc');
+export const btcNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === bitcoinChainId);
+export const solanaNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === solChainId);
+export const tonNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === TonChainId);
 
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
@@ -85,7 +83,7 @@ export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
 };
 
 export const findChainByChainId = (chainId: string) => {
-  return networks.find((n) => n.chainId === chainId) || oraichainNetwork;
+  return networks.find(n => n.chainId === chainId) || oraichainNetwork;
 };
 
 export const getDenomEvm = (): EvmDenom => {
@@ -100,7 +98,7 @@ export const getDenomEvm = (): EvmDenom => {
 };
 
 export const getSpecialCoingecko = (fromCoingecko: string, toCoingecko: string) => {
-  const isSpecialCoingecko = (coinGeckoId) =>
+  const isSpecialCoingecko = coinGeckoId =>
     ['kawaii-islands', 'milky-token', 'injective-protocol'].includes(coinGeckoId);
   const isSpecialFromCoingecko = isSpecialCoingecko(fromCoingecko);
   const isSpecialToCoingecko = isSpecialCoingecko(toCoingecko);
@@ -143,7 +141,7 @@ export const getAccountUrl = (account: string) => {
 export const getNetworkGasPrice = async (chainId): Promise<number> => {
   try {
     const chainInfosWithoutEndpoints = await window.Keplr?.getChainInfosWithoutEndpoints(chainId);
-    const findToken = chainInfosWithoutEndpoints.find((e) => e.chainId === chainId);
+    const findToken = chainInfosWithoutEndpoints.find(e => e.chainId === chainId);
     if (findToken) {
       return findToken.feeCurrencies[0].gasPriceStep.average;
     }
@@ -191,11 +189,11 @@ export const handleCheckWallet = async () => {
   }
 };
 
-export const handleCheckChainEvmWallet = async (fromChainId) => {
+export const handleCheckChainEvmWallet = async fromChainId => {
   const supportedChainIds = ['0x01', '0x38'];
 
   if (supportedChainIds.includes(fromChainId)) {
-    const fromChainInfo = evmChainInfos.find((evm) => Number(evm.chainId) === Number(fromChainId));
+    const fromChainInfo = evmChainInfos.find(evm => Number(evm.chainId) === Number(fromChainId));
     if (fromChainInfo) {
       try {
         await window.ethereumDapp.request({
@@ -247,7 +245,7 @@ const transferMsgError = (message: string, info?: InfoError) => {
     return `Your previous transaction has not been included in a block. Please wait until it is included before creating a new transaction!`;
 
   const network = info?.chainName
-    ? [...evmChains, ...cosmosChains].find((evm) => evm.chainId === info.chainName)?.chainName
+    ? [...evmChains, ...cosmosChains].find(evm => evm.chainId === info.chainName)?.chainName
     : '';
   if (message.includes('Insufficient funds to redeem voucher') || message.includes('checking balance channel ibc'))
     return `Insufficient ${info?.tokenName ?? ''} liquidity on ${network} Bridge`;
@@ -401,7 +399,7 @@ export const isConnectSpecificNetwork = (status: string | null) => {
 export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwork, network: CustomChainInfo) => {
   let address = '';
   if (network.chainId === EVM_CHAIN_ID_COMMON.TRON_CHAIN_ID) {
-    if (isConnectTronInMobile(walletByNetworks)) {
+    if (window.tronLinkDapp?.isOwallet) {
       const accountTron: interfaceRequestTron = await window.tronLinkDapp.request({
         method: 'tron_requestAccounts'
       });
@@ -495,7 +493,7 @@ export const getChainSupported = async () => {
     }
   });
 };
-export const getAddressBySnap = async (chainId) => {
+export const getAddressBySnap = async chainId => {
   await window.Keplr.suggestChain(chainId);
   const rs = await getChainSupported();
   if (rs?.[chainId]) {
@@ -521,7 +519,7 @@ type ChainInfoWithoutIcons = Omit<CustomChainInfo, 'currencies' | 'Icon' | 'Icon
   currencies: Array<Omit<CustomChainInfo['currencies'][number], 'Icon' | 'IconLight'>>;
   bech32Config: Bech32Config;
 };
-const checkErrorObj = (info) => {
+const checkErrorObj = info => {
   if (info?.Icon && info?.IconLight) {
     const { Icon, IconLight, ...data } = info;
     return data;
@@ -536,16 +534,16 @@ const checkErrorObj = (info) => {
 };
 export const chainInfoWithoutIcon = (): ChainInfoWithoutIcons[] => {
   let chainInfoData = [...chainInfos];
-  return chainInfoData.map((info) => {
+  return chainInfoData.map(info => {
     const infoWithoutIcon = checkErrorObj(info);
 
-    const currenciesWithoutIcons = info.currencies.map((currency) => {
+    const currenciesWithoutIcons = info.currencies.map(currency => {
       const currencyWithoutIcons = checkErrorObj(currency);
       return currencyWithoutIcons;
     });
 
     const stakeCurrencyyWithoutIcons = checkErrorObj(info.stakeCurrency);
-    const feeCurrenciesWithoutIcons = info?.feeCurrencies?.map((feeCurrency) => {
+    const feeCurrenciesWithoutIcons = info?.feeCurrencies?.map(feeCurrency => {
       const feeCurrencyyWithoutIcon = checkErrorObj(feeCurrency);
 
       return feeCurrencyyWithoutIcon;
@@ -612,7 +610,7 @@ export interface GetIconInterface {
 export const minimize = (priceUsd: string) => {
   const regex = /^0\.0*(\d+)/;
   const match = priceUsd.match(regex);
-  const getSubscript = (num) => String.fromCharCode(0x2080 + num);
+  const getSubscript = num => String.fromCharCode(0x2080 + num);
 
   if (match) {
     const leadingZeros = match[0].length - match[1].length - 2;
@@ -654,7 +652,7 @@ export function formatMoney(num) {
 
 export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
   if (type === 'token') {
-    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === coinGeckoId);
+    const tokenIcon = flattenTokensWithIcon.find(tokenWithIcon => tokenWithIcon.coinGeckoId === coinGeckoId);
     if (tokenIcon) {
       return isLightTheme ? (
         <tokenIcon.IconLight width={width} height={height} />
@@ -665,7 +663,7 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
 
     return <DefaultIcon />;
   } else {
-    const networkIcon = chainIcons.find((chain) => chain.chainId === chainId);
+    const networkIcon = chainIcons.find(chain => chain.chainId === chainId);
     if (networkIcon) {
       return isLightTheme ? (
         <networkIcon.IconLight width={width} height={height} />
@@ -679,7 +677,7 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
 };
 
 export const getIconToken = ({ isLightTheme, denom, width = 18, height = 18 }) => {
-  const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) =>
+  const tokenIcon = flattenTokensWithIcon.find(tokenWithIcon =>
     [tokenWithIcon.contractAddress, tokenWithIcon.denom].includes(denom)
   );
   if (tokenIcon) {
