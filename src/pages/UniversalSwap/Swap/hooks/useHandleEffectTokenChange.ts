@@ -17,6 +17,7 @@ import {
 import useFilteredTokens from './useFilteredTokens';
 import { cosmosChains, tokenMap, oraidexCommon } from 'initCommon';
 import useOnchainTokensReducer from 'hooks/useOnchainTokens';
+import { RootState } from 'store/configure';
 
 const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) => {
   const dispatch = useDispatch();
@@ -33,12 +34,12 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   const [initAddressTransfer, setInitAddressTransfer] = useState('');
 
   const onchainTokens = useOnchainTokensReducer('tokens');
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   // get token on oraichain to simulate swap amount.
-  const originalFromToken = tokenMap[fromTokenDenomSwap] || onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
-  const originalToToken = tokenMap[toTokenDenomSwap] || onchainTokens.find((token) => token.denom === toTokenDenomSwap);
+  const originalFromToken = allOraichainTokens.find((token) => token.denom === fromTokenDenomSwap);
 
-  console.log({ fromTokenDenomSwap, toTokenDenomSwap });
+  const originalToToken = tokenMap[toTokenDenomSwap] || onchainTokens.find((token) => token.denom === toTokenDenomSwap);
 
   const { fromToken, toToken } = getFromToToken(
     originalFromToken,
@@ -53,8 +54,7 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
     originalToToken,
     searchTokenName,
     fromTokenDenomSwap,
-    toTokenDenomSwap,
-    onchainTokens
+    toTokenDenomSwap
   );
 
   useEffect(() => {

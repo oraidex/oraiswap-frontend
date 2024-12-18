@@ -16,9 +16,9 @@ import {
 import { chainInfosWithIcon, oraichainTokensWithIcon, tokenMap } from 'initCommon';
 import { getIcon } from 'helper';
 import SearchInput from 'components/SearchInput';
-import useOnchainTokensReducer from 'hooks/useOnchainTokens';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { inspectToken } from 'reducer/onchainTokens';
+import { RootState } from 'store/configure';
 
 const cx = cn.bind(styles);
 
@@ -51,8 +51,8 @@ export const SelectTokenModal: FC<ModalProps> = ({
   const [textSearch, setTextSearch] = useState('');
   const [address] = useConfigReducer('address');
 
-  const onchainTokens = useOnchainTokensReducer('tokens');
   const dispatch = useDispatch();
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch) {
@@ -85,7 +85,7 @@ export const SelectTokenModal: FC<ModalProps> = ({
         />
 
         <div className={cx('options')}>
-          {[...listItems, ...onchainTokens]?.map((item: TokenItemType | CustomChainInfo) => {
+          {allOraichainTokens?.map((item: TokenItemType | CustomChainInfo) => {
             let key: string, title: string, balance: string;
             let tokenAndChainIcons;
 

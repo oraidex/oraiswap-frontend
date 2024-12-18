@@ -1,4 +1,9 @@
-import { filterNonPoolEvmTokens, getSwapFromTokens, getSwapToTokens, SwapDirection,  } from '@oraichain/oraidex-universal-swap';
+import {
+  filterNonPoolEvmTokens,
+  getSwapFromTokens,
+  getSwapToTokens,
+  SwapDirection
+} from '@oraichain/oraidex-universal-swap';
 import { useEffect, useState } from 'react';
 import { TokenItemType, BTC_CONTRACT } from '@oraichain/oraidex-common';
 import { flattenTokens, oraichainTokens } from 'initCommon';
@@ -9,14 +14,12 @@ const useFilteredTokens = (
   originalToToken: TokenItemType,
   searchTokenName: string,
   fromTokenDenomSwap: string,
-  toTokenDenomSwap: string,
-  onchainTokens: TokenItemType[]
+  toTokenDenomSwap: string
 ) => {
   const [filteredToTokens, setFilteredToTokens] = useState<TokenItemType[]>([]);
   const [filteredFromTokens, setFilteredFromTokens] = useState<TokenItemType[]>([]);
 
   useEffect(() => {
-
     // should use function of UniversalSwapHelper
     const filteredToTokens = filterNonPoolEvmTokens(
       originalFromToken.chainId,

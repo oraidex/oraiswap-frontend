@@ -4,6 +4,7 @@ import { CwIcs20LatestQueryClient, MulticallQueryClient, Uint128 } from '@oraich
 import { ConfigResponse, RelayerFeeResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
   BTC_CONTRACT,
+  FACTORY_V2_CONTRACT,
   IBCInfo,
   IBC_WASM_CONTRACT,
   KWT_DENOM,
@@ -194,19 +195,14 @@ async function fetchCachedPairInfo(
 }
 
 async function fetchPairInfo(tokenTypes: [TokenItemType, TokenItemType]): Promise<PairInfo> {
-  // scorai is in factory_v2
+  // TODO: update this check function in oraidex-common to return default factory v2.
   const factoryAddr = isFactoryV1([parseTokenInfo(tokenTypes[0]).info, parseTokenInfo(tokenTypes[1]).info])
     ? network.factory
     : network.factory_v2;
   let { info: firstAsset } = parseTokenInfo(tokenTypes[0]);
   let { info: secondAsset } = parseTokenInfo(tokenTypes[1]);
   // const factoryContract = new OraiswapFactoryQueryClient(window.client, factoryAddr);
-
-  // TODO: hardcode factory contract test for staging, need remove later.
-  const factoryContract = new OraiswapFactoryQueryClient(
-    window.client,
-    'orai1m99lx5vp3ak03w9ef6wwrtkrkhed7mtxfkj7s59nx0lfnnwaxavsmk8wyy'
-  );
+  const factoryContract = new OraiswapFactoryQueryClient(window.client, FACTORY_V2_CONTRACT);
   const data = await factoryContract.pair({
     assetInfos: [firstAsset, secondAsset]
   });

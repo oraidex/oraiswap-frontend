@@ -16,8 +16,6 @@ import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './index.module.scss';
 import { oraichainTokensWithIcon } from 'initCommon';
-import { tokenInspector } from 'initTokenInspector';
-import useOnchainTokensReducer from 'hooks/useOnchainTokens';
 import { inspectToken } from 'reducer/onchainTokens';
 
 const SelectToken = ({
@@ -38,8 +36,8 @@ const SelectToken = ({
   const { data: prices } = useCoinGeckoPrices();
   const isLightTheme = theme === 'light';
 
-  const onchainTokens = useOnchainTokensReducer('tokens');
   const dispatch = useDispatch();
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch) {
@@ -105,13 +103,13 @@ const SelectToken = ({
 
           {!isOpen ? null : (
             <div className={styles.selectTokenList}>
-              {![...listItems, ...onchainTokens].length && (
+              {!allOraichainTokens.length && (
                 <div className={styles.selectTokenListNoResult}>
                   {isLightTheme ? <NoResultLight /> : <NoResultDark />}
                 </div>
               )}
 
-              {[...listItems, ...onchainTokens]
+              {allOraichainTokens
                 .map((token) => {
                   const tokenIcon = getIcon({
                     isLightTheme,

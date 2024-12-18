@@ -7,6 +7,7 @@ import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { POOL_TYPE } from '../index';
 import { oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
 import { tokenInspector } from 'initTokenInspector';
+import { store } from 'store/configure';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {
   FromTokenIcon: React.FunctionComponent<
@@ -38,19 +39,11 @@ export const getTokenInfo = (address, isLight) => {
 
 export const getIconPoolData = async (tokenX: string, tokenY: string, isLight: boolean) => {
   let [FromTokenIcon, ToTokenIcon] = [null, null];
-  let tokenXinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
-  let tokenYinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
-  if (!tokenXinfo && tokenX) {
-    try {
-      tokenXinfo = await tokenInspector.inspectToken({ tokenId: tokenX, getOffChainData: true });
-    } catch (error) {
-      console.log({ error });
-      console.log({ tokenX });
-    }
-  }
-  if (!tokenYinfo && tokenY) {
-    tokenYinfo = await tokenInspector.inspectToken({ tokenId: tokenY, getOffChainData: true });
-  }
+
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens;
+  const tokenXinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenX));
+  const tokenYinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenY));
 
   if (tokenXinfo)
     FromTokenIcon = isLight ? (
