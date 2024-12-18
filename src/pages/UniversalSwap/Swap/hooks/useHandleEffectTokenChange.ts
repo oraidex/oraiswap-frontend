@@ -37,10 +37,10 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   // get token on oraichain to simulate swap amount.
-  console.log({ fromTokenDenomSwap, allOraichainTokens: allOraichainTokens.length });
-  const originalFromToken = allOraichainTokens.find((token) => token.denom === fromTokenDenomSwap);
-
-  const originalToToken = tokenMap[toTokenDenomSwap] || onchainTokens.find((token) => token.denom === toTokenDenomSwap);
+  const originalFromToken =
+    allOraichainTokens.find((token) => token.denom === fromTokenDenomSwap) || tokenMap[fromTokenDenomSwap];
+  const originalToToken =
+    allOraichainTokens.find((token) => token.denom === toTokenDenomSwap) || tokenMap[toTokenDenomSwap];
 
   const { fromToken, toToken } = getFromToToken(
     originalFromToken,
