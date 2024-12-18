@@ -1,5 +1,4 @@
 import { isMobile } from '@walletconnect/browser-utils';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
 import cn from 'classnames/bind';
 import { minimize } from 'helper';
 import useTheme from 'hooks/useTheme';
@@ -9,7 +8,7 @@ import { selectCurrentFromToken, selectCurrentToChain, selectCurrentToToken } fr
 import { FILTER_TIME_CHART, TAB_CHART_SWAP } from 'reducer/type';
 import { ChartTokenType } from '../hooks/useChartUsdPrice';
 import styles from './HeaderTab.module.scss';
-import { flattenTokens, flattenTokensWithIcon } from 'initCommon';
+import { flattenTokens } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -159,26 +158,26 @@ export const HeaderTop = ({
           <div>
             {tab === TAB_CHART_SWAP.TOKEN
               ? currentToToken &&
-                currentToChain && (
-                  <div className={cx('tokenInfo')}>
-                    {ToTokenIcon}
-                    <span>{currentToToken?.name || currentToToken?.denom}</span>
-                    <span className={cx('tokenName')}>{currentToChain}</span>
-                  </div>
-                )
+              currentToChain && (
+                <div className={cx('tokenInfo')}>
+                  {ToTokenIcon}
+                  <span>{currentToToken?.name || currentToToken?.denom}</span>
+                  <span className={cx('tokenName')}>{currentToChain}</span>
+                </div>
+              )
               : currentToToken &&
-                currentFromToken && (
-                  <div className={cx('tokenInfo')}>
-                    <div className={cx('icons')}>
-                      <div className={cx('formIcon')}>{FromTokenIcon}</div>
-                      <div className={cx('toIcon')}>{ToTokenIcon}</div>
-                    </div>
-                    <span>
-                      {currentFromToken?.name || currentFromToken?.denom}/
-                      {currentToToken?.name || currentToToken?.denom}
-                    </span>
+              currentFromToken && (
+                <div className={cx('tokenInfo')}>
+                  <div className={cx('icons')}>
+                    <div className={cx('formIcon')}>{FromTokenIcon}</div>
+                    <div className={cx('toIcon')}>{ToTokenIcon}</div>
                   </div>
-                )}
+                  <span>
+                    {currentFromToken?.name || currentFromToken?.denom}/
+                    {currentToToken?.name || currentToToken?.denom}
+                  </span>
+                </div>
+              )}
           </div>
         )}
         {mobileMode && (

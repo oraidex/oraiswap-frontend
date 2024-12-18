@@ -7,7 +7,6 @@ import {
 import { useEffect, useState } from 'react';
 import { TokenItemType, BTC_CONTRACT } from '@oraichain/oraidex-common';
 import { flattenTokens, oraichainTokens } from 'initCommon';
-// import { filterNonPoolEvmTokens } from 'pages/UniversalSwap/helpers';
 
 const useFilteredTokens = (
   originalFromToken: TokenItemType,

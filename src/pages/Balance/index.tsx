@@ -1,14 +1,13 @@
 import { coin, makeStdTx } from '@cosmjs/amino';
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
 import { Decimal } from '@cosmjs/math';
-import { DeliverTxResponse, GasPrice, isDeliverTxFailure } from '@cosmjs/stargate';
+import { DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import {
   getTokenOnOraichain,
   toAmount,
   TokenItemType,
   calculateTimeoutTimestamp,
-  getCosmosGasPrice,
   solChainId,
   toDisplay,
   MAX_ORAICHAIN_DENOM,
@@ -68,13 +67,11 @@ import { RootState } from 'store/configure';
 import styles from './Balance.module.scss';
 import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
-import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import { BitcoinUnit } from 'bitcoin-units';
 import Content from 'layouts/Content';
 import { config } from 'libs/nomic/config';
 import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/nomic/models/ibc-chain';
-import { generateError, getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
+import { getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import {
   calculatorTotalFeeBtc,
   convertKwt,

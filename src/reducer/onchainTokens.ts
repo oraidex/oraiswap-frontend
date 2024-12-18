@@ -1,11 +1,10 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { OraiToken } from '@oraichain/orai-token-inspector/dist/types';
 import { TokenItemType } from '@oraichain/oraidex-common';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
 import { tokenInspector } from 'initTokenInspector';
-import { Dispatch } from '@reduxjs/toolkit';
-import { addToOraichainTokens, updateAllOraichainTokens, updateAmounts } from './token';
+import { addToOraichainTokens, updateAmounts } from './token';
 
 export interface OnchainTokensState {
   tokens: TokenItemType[];

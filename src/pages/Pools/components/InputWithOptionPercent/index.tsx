@@ -1,4 +1,4 @@
-import { CW20_DECIMALS, toAmount, toDisplay, CoinIcon, TokenInfo } from '@oraichain/oraidex-common';
+import { CW20_DECIMALS, toAmount, toDisplay, TokenInfo } from '@oraichain/oraidex-common';
 import classNames from 'classnames/bind';
 import TokenBalance from 'components/TokenBalance';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -17,7 +17,7 @@ const InputWithOptionPercent: FC<{
   totalAmount: bigint;
   percentList?: number[];
   value: bigint | null;
-  TokenIcon?: CoinIcon;
+  TokenIcon?: any;
   token?: TokenInfo;
   apr?: number;
   showIcon?: boolean;

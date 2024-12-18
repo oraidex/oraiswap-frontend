@@ -4,7 +4,7 @@ import cn from 'classnames/bind';
 import Modal from 'components/Modal';
 import Pie from 'components/Pie';
 import TokenBalance from 'components/TokenBalance';
-import { FACTORY_V2_CONTRACT, getPoolTokens, toAmount, TokenItemType } from '@oraichain/oraidex-common';
+import { FACTORY_V2_CONTRACT, TokenItemType } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { toDisplay } from '@oraichain/oraidex-common';
 import { FC, useState } from 'react';
@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './NewPoolModal.module.scss';
-import { assetInfoMap, network, oraichainTokens } from 'initCommon';
+import { assetInfoMap, flattenTokens, network, oraichainTokens } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { SelectTokenModal } from '../components/SelectTokenModal';
@@ -63,7 +63,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
   const getBalanceValue = (tokenSymbol: string | undefined, amount: number | string) => {
     if (!tokenSymbol) return 0;
-    const coingeckoId = getPoolTokens(assetInfoMap).find((token) => token.name === tokenSymbol)?.coinGeckoId;
+    const coingeckoId = oraichainTokens.find((token) => token.name === tokenSymbol)?.coinGeckoId;
     const pricePer = prices[coingeckoId!] ?? 0;
 
     return pricePer * +amount;

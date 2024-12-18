@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import SelectToken from '../SelectToken/SelectToken';
 import SelectChain from '../SelectChain/SelectChain';
 import useOnClickOutside from 'hooks/useOnClickOutside';

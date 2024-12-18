@@ -13,7 +13,6 @@ import { extractDenom } from '../PriceRangePlot/utils';
 import SelectToken from '../SelectToken';
 import styles from './index.module.scss';
 import SlippageSetting from '../SettingSlippage';
-import { newPoolKey, poolKeyToString } from '@oraichain/oraiswap-v3';
 import CreateNewPosition from '../CreateNewPosition';
 
 export enum STEP_CREATE_POOL {

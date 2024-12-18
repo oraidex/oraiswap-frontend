@@ -1,4 +1,4 @@
-import { chainIcons, CustomChainInfo } from '@oraichain/oraidex-common';
+import { CustomChainInfo } from '@oraichain/oraidex-common';
 import ArrowImg from 'assets/icons/arrow_new.svg';
 import CheckImg from 'assets/icons/check.svg';
 import NetworkImg from 'assets/icons/network.svg';

@@ -8,7 +8,6 @@ import WinIcon from 'assets/icons/win-icon.svg?react';
 import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
 import NoData from 'assets/images/nodata-bid.svg?react';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { getUsd } from 'libs/utils';
 import { BidStatus } from 'pages/CoHarvest/constants';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import styles from './index.module.scss';

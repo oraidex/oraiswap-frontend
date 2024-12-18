@@ -4,7 +4,7 @@ import TokenBalance from 'components/TokenBalance';
 import TransferConvertToken from '../TransferConvertToken';
 import { OraiIcon, TokenItemType, tokensIcon } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { flattenTokens, flattenTokensWithIcon, tokensWithIcon } from 'initCommon';
+import { flattenTokens } from 'initCommon';
 
 export interface TokenItemProps {
   token: TokenItemType;
@@ -46,7 +46,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
   let tokenIcon = flattenTokens.find((tok) => tok.coinGeckoId === token.coinGeckoId);
   if (!tokenIcon) {
     tokenIcon = {
-      coinGeckoId: token.coinGeckoId,
+      ...token,
+      
+      // TODO: update token icon to default token
       icon: OraiIcon,
       iconLight: OraiIcon
     };

@@ -45,9 +45,7 @@ const Swap: React.FC = () => {
   const [percentChangeUsd, setPercentChangeUsd] = useState<string | number>(0);
   const [initPriceUsd, setInitPriceUsd] = useState(0);
   const [initPercentChangeUsd, setInitPercentChangeUsd] = useState<string | number>(0);
-  const currentPair = useSelector(selectCurrentToken);
   const tokenTo = useSelector(selectCurrentToToken);
-  const tf = useSelector(selectChartTimeFrame);
 
   // get data for mobile
   useChartUsdPrice(

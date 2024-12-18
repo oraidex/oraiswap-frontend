@@ -7,8 +7,7 @@ import SuccessIcon from 'assets/icons/success.svg?react';
 import TokensIcon from 'assets/icons/tokens.svg?react';
 import { OraiswapTokenQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import CheckBox from 'components/CheckBox';
-import { getPoolTokens } from '@oraichain/oraidex-common';
-import { assetInfoMap } from 'initCommon';
+import { assetInfoMap, oraichainTokens } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -68,7 +67,7 @@ export const ModalListToken = ({
                 const cw20Token = new OraiswapTokenQueryClient(window.client, contractAddr);
                 await cw20Token.tokenInfo();
 
-                const existContractAddress = [...getPoolTokens(assetInfoMap), ...tokensNew].find(
+                const existContractAddress = [...oraichainTokens, ...tokensNew].find(
                   (e) => e.contractAddress === contractAddr
                 );
                 if (existContractAddress) return setIsAddToken(false);
@@ -106,7 +105,7 @@ export const ModalListToken = ({
         </div>
         <div className={cx('list')}>
           <ul>
-            {[...getPoolTokens(assetInfoMap), ...tokensNew]
+            {[...oraichainTokens, ...tokensNew]
               .filter((p) => (isToken ? !p.contractAddress : p.contractAddress))
               .filter((pair) => !allRewardSelect.includes(pair.denom))
               .map((t, index) => {

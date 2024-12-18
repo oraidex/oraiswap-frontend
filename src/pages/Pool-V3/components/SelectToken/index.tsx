@@ -17,6 +17,7 @@ import { RootState } from 'store/configure';
 import styles from './index.module.scss';
 import { oraichainTokensWithIcon } from 'initCommon';
 import { inspectToken } from 'reducer/onchainTokens';
+import useConfigReducer from 'hooks/useConfigReducer';
 
 const SelectToken = ({
   token,
@@ -34,6 +35,7 @@ const SelectToken = ({
   const [isOpen, setIsOpen] = useState(false);
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
+  const [address] = useConfigReducer('address');
   const isLightTheme = theme === 'light';
 
   const dispatch = useDispatch();
@@ -41,7 +43,10 @@ const SelectToken = ({
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch) {
-      dispatch<any>(inspectToken(textSearch));
+      dispatch<any>(inspectToken({
+        tokenId: textSearch,
+        address
+      }));
     }
   }, [textSearch]);
 

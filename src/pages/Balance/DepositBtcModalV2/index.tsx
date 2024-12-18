@@ -11,7 +11,7 @@ import BTCToken from 'assets/images/token-btc.svg?react';
 import CloseIcon from 'assets/icons/close-icon.svg?react';
 import { reduceString } from 'libs/utils';
 import { timeAgo } from 'helper';
-import { satToBTC, useDepositFeesBitcoin, useDepositFeesBitcoinV2, useGetInfoBtc } from '../helpers';
+import { satToBTC, useDepositFeesBitcoinV2, useGetInfoBtc } from '../helpers';
 import { useCopy } from 'hooks/useCopy';
 import { Link } from 'react-router-dom';
 import { BigDecimal, CoinGeckoPrices } from '@oraichain/oraidex-common';

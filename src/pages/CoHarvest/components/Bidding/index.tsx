@@ -30,6 +30,7 @@ import { RootState } from 'store/configure';
 import InputBalance from '../InputBalance';
 import InputRange from '../InputRange';
 import styles from './index.module.scss';
+import { NetworkChainId } from '@oraichain/common';
 
 export type BiddingProps = {
   openExplainModal: () => void;
@@ -196,7 +197,7 @@ const Bidding = ({ openExplainModal, isEnd, round, isStarted, isCurrentRound, ba
               );
               if (result?.transactionHash) {
                 displayToast(TToastType.TX_SUCCESSFUL, {
-                  customLink: getTransactionUrl(network.chainId, result.transactionHash)
+                  customLink: getTransactionUrl(network.chainId as NetworkChainId, result.transactionHash)
                 });
                 refetchAllBidPoolRound();
                 refetchHistoryBidPool();

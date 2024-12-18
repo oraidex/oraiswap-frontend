@@ -8,7 +8,6 @@ import { FC, useState } from 'react';
 import NumberFormat, { NumberFormatValues } from 'react-number-format';
 import { TooltipIcon } from './SettingTooltip';
 import styles from './SlippageModal.module.scss';
-import ToggleSwitch from 'components/ToggleSwitch';
 
 const cx = cn.bind(styles);
 
@@ -25,7 +24,6 @@ export const SlippageModal: FC<ModalProps> = ({ setUserSlippage, setVisible, isB
   const [theme] = useConfigReducer('theme');
   const [manualSlippage, setManualSlippage] = useState<number>();
   const [openTooltip, setOpenTooltip] = useState(false);
-  const [isAIRoute, setIsAIRoute] = useConfigReducer('AIRoute');
 
   return (
     <div className={cx('setting', `${theme}-modal`, { isBotomSheet })}>

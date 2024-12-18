@@ -1,7 +1,5 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { AccountData } from '@cosmjs/proto-signing';
-// import { OraidexListingContractClient } from '@oraichain/oraidex-contracts-sdk';
-import { toAmount, toDisplay } from '@oraichain/oraidex-common';
 import PlusIcon from 'assets/icons/plus.svg?react';
 import RewardIcon from 'assets/icons/reward.svg?react';
 import TrashIcon from 'assets/icons/trash.svg?react';
@@ -16,14 +14,10 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import { network } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
-import { checkRegex, validateAddressCosmos } from 'libs/utils';
-import sumBy from 'lodash/sumBy';
+import { validateAddressCosmos } from 'libs/utils';
 import { FC, useRef, useState } from 'react';
-import NumberFormat from 'react-number-format';
-import { InitBalancesItems, RewardItems } from './ItemsComponent';
-import { ModalDelete, ModalListToken } from './ModalComponent';
+import { InitBalancesItems } from './ItemsComponent';
 import styles from './NewTokenModal.module.scss';
-import ImageInput from 'components/DragDropImage';
 import { sha256 } from '@injectivelabs/sdk-ts';
 const cx = cn.bind(styles);
 
@@ -43,25 +37,8 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [tokenSymbol, setTokenSymbol] = useState('');
   const [tokenDecimal, setTokenDecimal] = useState(6);
   const [description, setDescription] = useState('');
-  // const [projectUrl, setProjectUrl] = useState('');
   const [tokenLogoUrl, setTokenLogoUrl] = useState('');
   const [selectedInitBalances, setSelectedInitBalances] = useState([]);
-
-  /**
-   * 
-  pub description: Option<String>, // yes
-    /// denom_units represents the list of DenomUnit's for a given coin
-    pub denom_units: Vec<DenomUnit>, // yes
-    /// base represents the base denom (should be the DenomUnit with exponent = 0).
-    pub base: Option<String>, // yes -> exp 0
-    /// display indicates the suggested denom that should be displayed in clients.
-    pub display: Option<String>, // yes -> exp max 
-    /// name defines the name of the token (eg: Cosmos Atom)
-    pub name: Option<String>, // yes
-    /// symbol is the token symbol usually shown on exchanges (eg: ATOM). This can
-    /// be the same as the display.
-    pub symbol: Option<String>, // yes
-   */
 
   const [typeDelete, setTypeDelete] = useState('');
 
@@ -86,11 +63,6 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   useOnClickOutside(ref, () => handleOutsideClick());
 
   const handleCreateToken = async () => {
-    // TODO: 
-    // if (!checkRegex(tokenName))
-    //   return displayToast(TToastType.TX_FAILED, {
-    //     message: 'Token name is required and must be letter (3 to 12 characters)'
-    //   });
     const { client, defaultAddress: address } = await getCosmWasmClient({
       chainId: network.chainId
     });
@@ -178,13 +150,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       if (initBalances.length > 0) {
         msgs.push(...initBalanceMsg);
       }
-
-      console.log(msgs);
-
       const res = await client.executeMultiple(address.address, msgs, 'auto');
-
-      console.log(res);
-
     } catch (error) {
       console.log('error listing token: ', error);
       handleErrorTransaction(error);
@@ -206,11 +172,9 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   };
 
   const deleteSelectedItem = () => {
-    // if (typeDelete === 'Init Balances') {
     const newInitBalances = initBalances.filter((_, i) => !selectedInitBalances.includes(i));
     setInitBalances(newInitBalances);
     setSelectedInitBalances([]);
-    // }
   }
 
   const generateOverlay = () => {

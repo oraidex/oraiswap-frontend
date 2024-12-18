@@ -1,5 +1,5 @@
 import { CwIcs20LatestQueryClient, Uint128 } from '@oraichain/common-contracts-sdk';
-import { AssetInfo, Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
+import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
   CoinGeckoId,
   IBC_WASM_CONTRACT,

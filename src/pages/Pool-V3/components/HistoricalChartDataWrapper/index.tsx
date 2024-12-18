@@ -1,10 +1,9 @@
 import { FC } from 'react';
-import HistoricalPriceChart, { formatPretty } from '../HistoricalPriceChart';
+import HistoricalPriceChart from '../HistoricalPriceChart';
 import styles from './index.module.scss';
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { TimeDuration, TokenPairHistoricalPrice } from 'reducer/poolDetailV3';
 import { Dec } from '@keplr-wallet/unit';
-import { isMobile } from '@walletconnect/browser-utils';
 import useTheme from 'hooks/useTheme';
 
 

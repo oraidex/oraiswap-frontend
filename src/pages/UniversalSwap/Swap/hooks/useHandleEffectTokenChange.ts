@@ -3,7 +3,7 @@ import { isMobile } from '@walletconnect/browser-utils';
 import { getAddressTransfer, networks } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useWalletReducer from 'hooks/useWalletReducer';
-import { genCurrentChain, generateNewSymbolV2, getFromToToken } from 'pages/UniversalSwap/helpers';
+import { genCurrentChain, getFromToToken } from 'pages/UniversalSwap/helpers';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -14,7 +14,7 @@ import {
   setCurrentToToken
 } from 'reducer/tradingSlice';
 import useFilteredTokens from './useFilteredTokens';
-import { cosmosChains, tokenMap, oraidexCommon } from 'initCommon';
+import { cosmosChains, tokenMap } from 'initCommon';
 import useOnchainTokensReducer from 'hooks/useOnchainTokens';
 import { RootState } from 'store/configure';
 

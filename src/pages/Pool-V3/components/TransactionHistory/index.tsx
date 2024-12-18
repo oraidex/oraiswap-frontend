@@ -1,7 +1,6 @@
 import { OraiIcon, TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import LinkIcon from 'assets/icons/link.svg?react';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
 import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
 import NoData from 'assets/images/nodata-bid.svg?react';
 import LoadingBox from 'components/LoadingBox';

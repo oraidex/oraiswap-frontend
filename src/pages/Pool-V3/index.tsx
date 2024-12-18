@@ -12,7 +12,7 @@ import PositionList from './components/PositionList';
 import { useGetPoolList } from './hooks/useGetPoolList';
 import styles from './index.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
-import BannerNoticePool from './components/BannerNoticePool';
+// import BannerNoticePool from './components/BannerNoticePool';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import NewPoolModal from 'pages/Pools/NewPoolModal/NewPoolModal';
 import { Button } from 'components/Button';
