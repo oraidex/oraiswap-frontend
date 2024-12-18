@@ -131,9 +131,10 @@
         top: 800px;
         margin-top: 32px;
         width: 200px;
-        height: 60px;
+        height: 100px;
         @include mobile {
           left: 30%;
+          height: 60px;
           margin-bottom: -100px;
         }
       }
