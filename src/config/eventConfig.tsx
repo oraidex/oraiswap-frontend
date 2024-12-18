@@ -2,7 +2,6 @@ import { EVENT_ENUM } from 'reducer/temporaryConfig';
 import LogoFullImgDark from 'assets/images/OraiDEX_full_dark.svg';
 import LogoFullImgLight from 'assets/images/OraiDEX_full_light.svg';
 import LogoFullImgDarkHlw from 'assets/images/halloween/logo.svg';
-import LogoFullImgChristmas from 'assets/images/christmas/logo.svg';
 import IconOrderBook from 'assets/icons/ic_orderbook.svg?react';
 import IconFuture from 'assets/icons/ic_futures.svg?react';
 import IconFutureHLW from 'assets/icons/halloween/ic_future_hlw.svg?react';
@@ -19,6 +18,8 @@ import btnSpiderRight from 'assets/images/halloween/spider_right.svg';
 import btnSpiderLeft from 'assets/images/halloween/spider_left.svg';
 import bottomHlwMenu from 'assets/images/halloween/bottomMenu.svg';
 
+import LogoFullImgChristmas from 'assets/images/christmas/logo.svg';
+import LogoFullLightImgChristmas from 'assets/images/christmas/logo_light.svg';
 import bottomNoelMenu from 'assets/images/christmas/bottomMenu.svg';
 import linkNoelActiveRight from 'assets/images/christmas/linkActiveRight.svg';
 import linkNoelActiveLeft from 'assets/images/christmas/linkActiveLeft.svg';
@@ -29,14 +30,20 @@ import btnSnowRight from 'assets/images/christmas/snow_right.svg';
 import btnSnowLeft from 'assets/images/christmas/snow_left.svg';
 import IconFutureNoel from 'assets/images/christmas/ic_future_noel.svg?react';
 import IconOrderbookNoel from 'assets/images/christmas/ic_orderbook_noel.svg?react';
-import IconSleighNoel from 'assets/images/christmas/sleigh.gif';
-import IconBalloonNoel from 'assets/images/christmas/balloon.gif';
+import IconTxFailNoel from 'assets/images/christmas/tx_fail.svg';
+import IconTxSuccessNoel from 'assets/images/christmas/tx_success.svg';
+import IconTxInfoNoel from 'assets/images/christmas/tx_info.svg';
+
+import GiftBoxJson from 'assets/lottie/gift-box.json';
+import BalloonJson from 'assets/lottie/balloon.json';
 
 export type ConfigTheme = {
   logo: string;
   animation: {
     topImg: string;
     bottomImg: string;
+    topJson?: any;
+    bottomJson?: any;
   };
   menu: {
     orderBookIcon: React.FunctionComponent<
@@ -67,6 +74,11 @@ export type ConfigTheme = {
         leftImg: string;
       };
     };
+  };
+  toast?: {
+    txInfoImg: string;
+    txSuccessImg: string;
+    txFailImg: string;
   };
 };
 
@@ -130,10 +142,12 @@ export const lightConfig: Record<EVENT_ENUM, ConfigTheme> = {
     }
   },
   [EVENT_ENUM.christmas]: {
-    logo: LogoFullImgChristmas,
+    logo: LogoFullLightImgChristmas,
     animation: {
-      topImg: IconBalloonNoel,
-      bottomImg: IconSleighNoel
+      topImg: '',
+      bottomImg: '',
+      topJson: BalloonJson,
+      bottomJson: GiftBoxJson
     },
     menu: {
       orderBookIcon: IconOrderbookNoel,
@@ -222,8 +236,10 @@ export const darkConfig: Record<EVENT_ENUM, ConfigTheme> = {
   [EVENT_ENUM.christmas]: {
     logo: LogoFullImgChristmas,
     animation: {
-      topImg: IconBalloonNoel,
-      bottomImg: IconSleighNoel
+      topImg: '',
+      bottomImg: '',
+      topJson: BalloonJson,
+      bottomJson: GiftBoxJson
     },
     menu: {
       orderBookIcon: IconOrderbookNoel,
@@ -246,6 +262,11 @@ export const darkConfig: Record<EVENT_ENUM, ConfigTheme> = {
           leftImg: btnSnowLeft
         }
       }
+    },
+    toast: {
+      txInfoImg: IconTxInfoNoel,
+      txSuccessImg: IconTxSuccessNoel,
+      txFailImg: IconTxFailNoel
     }
   }
 };
