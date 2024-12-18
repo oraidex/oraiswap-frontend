@@ -27,7 +27,7 @@ import ImageInput from 'components/DragDropImage';
 import { sha256 } from '@injectivelabs/sdk-ts';
 const cx = cn.bind(styles);
 
-const TOKEN_FACTORY_CONTRACT = 'orai1v5kjdl8et3kkpg78mjscelccrtf6ze6vufqnlvrf5xh5k2c6zxksuwge4u';
+const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
 
 interface ModalProps {
   className?: string;
