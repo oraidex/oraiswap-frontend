@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Balance from 'pages/Balance';
-import Pools from 'pages/Pools';
 import PoolsV3 from 'pages/Pool-V3';
 import PoolDetail from 'pages/Pools/PoolDetail';
 import UniversalSwap from 'pages/UniversalSwap/index';
@@ -14,8 +13,6 @@ import BitcoinDashboard from 'pages/BitcoinDashboard';
 import BitcoinDashboardV2 from 'pages/BitcoinDashboardV2';
 import StakingPage from 'pages/Staking';
 import DownloadApp from 'pages/DownloadApp';
-import SwapPoolV3 from 'pages/Pool-V3/components/Swap';
-import PositionDetail from 'pages/Pool-V3/components/PositionDetail';
 import PoolV3Detail from 'pages/Pool-V3/components/PoolDetail';
 
 export default () => (

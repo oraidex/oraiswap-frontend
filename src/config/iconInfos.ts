@@ -28,8 +28,11 @@ import PepeIcon from 'assets/icons/pepe.svg?react';
 import CatIcon from 'assets/icons/icon-simoncat.svg?react';
 import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
-import { CustomChainInfo, TokenItemType } from '@oraichain/oraidex-common';
+import SolanaIcon from 'assets/icons/solana.svg?react';
+import MaxIcon from 'assets/icons/max.svg?react';
+import { CustomChainInfo, TokenItemType, solChainId } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
+import { TonChainId } from 'context/ton-provider';
 
 export type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
 export type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight'>;
@@ -169,6 +172,16 @@ export const tokensIconInfos: TokenIcon[] = [
     coinGeckoId: 'dogecoin',
     Icon: DogecoinIcon,
     IconLight: DogecoinIcon
+  },
+  {
+    coinGeckoId: 'solana',
+    Icon: SolanaIcon,
+    IconLight: SolanaIcon
+  },
+  {
+    coinGeckoId: 'max-2',
+    Icon: MaxIcon,
+    IconLight: MaxIcon
   }
 ];
 
@@ -242,6 +255,16 @@ export const chainIconsInfos: ChainIcon[] = [
     chainId: 'celestia',
     Icon: CelestiaIcon,
     IconLight: CelestiaIcon
+  },
+  {
+    chainId: solChainId,
+    Icon: SolanaIcon,
+    IconLight: SolanaIcon
+  },
+  {
+    chainId: TonChainId,
+    Icon: TonIcon,
+    IconLight: TonIcon
   }
 ];
 

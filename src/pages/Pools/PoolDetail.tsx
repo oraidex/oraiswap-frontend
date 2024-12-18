@@ -7,7 +7,7 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
 import Content from 'layouts/Content';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateLpPools } from 'reducer/token';
@@ -29,7 +29,8 @@ import { Button } from 'components/Button';
 import AddIcon from 'assets/icons/Add.svg?react';
 import { parseAssetOnlyDenom } from './helpers';
 import { AddLiquidityModal } from './components/AddLiquidityModal';
-import { numberWithCommas } from 'helper/format';
+import { formatNumberKMB, numberWithCommas } from 'helper/format';
+import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 
 const PoolDetail: React.FC = () => {
   const theme = useTheme();
@@ -46,6 +47,7 @@ const PoolDetail: React.FC = () => {
   const { refetchPairAmountInfo, refetchLpTokenInfoData } = useGetPairInfo(poolDetailData);
   const queryClient = useQueryClient();
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
+  const [ratioOraiBtc, setRatioOraiBtc] = useState(0);
 
   const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
   const lpTokenBalance = BigInt(lpBalanceInfoData?.balance || '0');
@@ -118,6 +120,34 @@ const PoolDetail: React.FC = () => {
 
   const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
 
+  const listBTCAddresses = [
+    BTC_CONTRACT,
+    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+  ];
+  useEffect(() => {
+    if (!poolDetailData) return;
+    const { token2 } = poolDetailData;
+    async function getOraiBtcAllocation() {
+      const res = await fetchRetry(
+        'https://lcd.orai.io/cosmos/bank/v1beta1/balances/orai1fv5kwdv4z0gvp75ht378x8cg2j7prlywa0g35qmctez9q8u4xryspn6lrd'
+      );
+      return await res.json();
+    }
+
+    if (listBTCAddresses.includes(token2.denom) || listBTCAddresses.includes(token2.contractAddress)) {
+      getOraiBtcAllocation().then((data) => {
+        const balances = data.balances;
+        const oraiBalance = balances.find((item) => item.denom === 'orai');
+        const btcBalance = balances.find(
+          (item) => item.denom === 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+        );
+        const oraiBalanceDisplay = formatNumberKMB(toDisplay(oraiBalance?.amount || '0'), false);
+        const btcBalanceDisplay = formatNumberKMB(toDisplay(btcBalance?.amount || '0', 14), false);
+        setRatioOraiBtc(Number(oraiBalanceDisplay) / Number(btcBalanceDisplay));
+      });
+    }
+  }, [poolDetailData]);
+
   return (
     <Content nonBackground otherBackground>
       <div className={styles.pool_detail}>
@@ -136,17 +166,30 @@ const PoolDetail: React.FC = () => {
                   {QuoteTokenIcon && <QuoteTokenIcon />}
                 </div>
                 <span>
-                  {baseToken?.name?.toUpperCase()} / {quoteToken?.name?.toUpperCase()}
+                  {baseToken?.name?.toUpperCase()} /{' '}
+                  {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name?.toUpperCase()}
                 </span>
                 <span className={classNames(styles.tag)}>V2</span>
               </div>
             </div>
+
             <div className={styles.price}>
-              1 {baseToken?.name} = {numberWithCommas(priceChange?.price || 0, undefined, { maximumFractionDigits: 6 })}{' '}
-              {quoteToken?.name}
-              {isMobileMode ? <br /> : <div className={styles.divider}>|</div>}1 {quoteToken?.name} ={' '}
-              {numberWithCommas(1 / (priceChange?.price || 1), undefined, { maximumFractionDigits: 6 })}{' '}
-              {baseToken?.name}
+              {/* TODO: remove after pool close */}
+              {ratioOraiBtc
+                ? `1 ${baseToken?.name} = ${numberWithCommas(1 / (ratioOraiBtc || 1), undefined, {
+                    maximumFractionDigits: 6
+                  })}`
+                : `1 ${baseToken?.name} = ${numberWithCommas(priceChange?.price || 0, undefined, {
+                    maximumFractionDigits: 6
+                  })}`}
+              {/* TODO: remove after pool close */} {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name}
+              {isMobileMode ? <br /> : <div className={styles.divider}>|</div>}1{' '}
+              {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name} ={' '}
+              {ratioOraiBtc
+                ? `${numberWithCommas(ratioOraiBtc || 0, undefined, { maximumFractionDigits: 6 })} ${baseToken?.name}`
+                : `${numberWithCommas(1 / (priceChange?.price || 1) || 0, undefined, { maximumFractionDigits: 6 })} ${
+                    baseToken?.name
+                  }`}
             </div>
           </div>
           <div className={styles.addPosition}>

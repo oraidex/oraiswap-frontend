@@ -65,7 +65,7 @@ export class NomicClient implements NomicClientInterface {
         receiver: receiver, // bech32 address of the depositing user,
         sender: sender
       } as DepositOptions;
-      console.log('🚀 ~ NomicClient ~ generateAddress ~ config:', config);
+      // console.log('🚀 ~ NomicClient ~ generateAddress ~ config:', config);
 
       const btcAddressToDeposit = (await generateDepositAddress(config, false)) as DepositSuccess;
 

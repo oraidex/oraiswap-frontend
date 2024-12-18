@@ -8,7 +8,8 @@ import {
   MILKYBSC_ORAICHAIN_DENOM,
   TokenItemType,
   KWT_BSC_CONTRACT,
-  MILKY_BSC_CONTRACT
+  MILKY_BSC_CONTRACT,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 
@@ -92,6 +93,11 @@ export const evmTokens = uniqBy(
 );
 export const btcTokens = uniqBy(
   flattenTokens.filter((token) => token.chainId === bitcoinChainId),
+  (c) => c.denom
+);
+
+export const solTokens = uniqBy(
+  flattenTokens.filter((token) => token.chainId === solChainId),
   (c) => c.denom
 );
 

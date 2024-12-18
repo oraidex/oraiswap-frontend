@@ -2,7 +2,7 @@ import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
-import { btcTokens, cosmosTokens, evmTokens, oraichainTokens, tokenMap } from 'config/bridgeTokens';
+import { btcTokens, cosmosTokens, evmTokens, oraichainTokens, solTokens, tokenMap } from 'config/bridgeTokens';
 import {
   genAddressCosmos,
   getAddress,
@@ -23,16 +23,22 @@ import {
   EVM_BALANCE_RETRY_COUNT,
   ERC20__factory,
   getEvmAddress,
-  tronToEthAddress
+  tronToEthAddress,
+  solChainId,
+  tonNetworkMainnet
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { chainInfos, evmChains } from 'config/chainInfos';
+import { chainInfos, evmChains, TON_ZERO_ADDRESS } from 'config/chainInfos';
 import { network } from 'config/networks';
 import { ethers } from 'ethers';
 import axios from 'rest/request';
 import { reduce } from 'lodash';
 import { getUtxos } from 'pages/Balance/helpers';
 import { bitcoinChainId } from 'helper/constants';
+import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { Address, TonClient } from '@ton/ton';
+import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
 
 export type LoadTokenParams = {
   refresh?: boolean;
@@ -40,6 +46,8 @@ export type LoadTokenParams = {
   oraiAddress?: string;
   tronAddress?: string;
   btcAddress?: string;
+  solAddress?: string;
+  tonAddress?: string;
 };
 
 async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo: { chainId: string; rpc: string }) {
@@ -72,7 +80,7 @@ const timer = {};
 
 async function loadTokens(
   dispatch: Dispatch,
-  { oraiAddress, metamaskAddress, tronAddress, btcAddress }: LoadTokenParams
+  { oraiAddress, metamaskAddress, tronAddress, btcAddress, solAddress, tonAddress }: LoadTokenParams
 ) {
   try {
     if (oraiAddress) {
@@ -120,6 +128,7 @@ async function loadTokens(
         );
       }, 2000);
     }
+
     if (btcAddress) {
       clearTimeout(timer[btcAddress]);
       timer[btcAddress] = setTimeout(() => {
@@ -129,6 +138,24 @@ async function loadTokens(
           // TODO: hardcode check bitcoinTestnet need update later
           chainInfos.filter((c) => c.chainId == bitcoinChainId)
         );
+      }, 2000);
+    }
+
+    if (solAddress) {
+      clearTimeout(timer[solAddress]);
+      timer[solAddress] = setTimeout(() => {
+        loadSolAmounts(
+          dispatch,
+          solAddress,
+          chainInfos.filter((c) => c.chainId == solChainId)
+        );
+      }, 2000);
+    }
+
+    if (tonAddress) {
+      clearTimeout(timer[tonAddress]);
+      timer[tonAddress] = setTimeout(() => {
+        loadAllBalanceTonToken(dispatch, tonAddress);
       }, 2000);
     }
   } catch (error) {
@@ -312,7 +339,43 @@ async function loadBtcEntries(
   }
 }
 
+async function loadSolEntries(
+  address: string,
+  chain: CustomChainInfo,
+  retryCount?: number
+): Promise<[string, string][]> {
+  try {
+    const connection = new Connection(chain.rpc, {
+      commitment: 'confirmed'
+    });
+
+    const walletPublicKey = new PublicKey(address);
+    const tokenAmount = await connection.getParsedTokenAccountsByOwner(walletPublicKey, {
+      programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+    });
+
+    let entries: [string, string][] = solTokens.map((item) => {
+      let amount = '0';
+      if (item?.contractAddress) {
+        const findAmount = tokenAmount.value.find(
+          (token) => token.account.data.parsed.info.mint === item.contractAddress
+        );
+        if (findAmount) amount = findAmount.account.data.parsed.info.tokenAmount.amount;
+      }
+      return [item.denom, amount];
+    });
+    return entries;
+  } catch (error) {
+    console.log('error querying BTC balance: ', error);
+    let retry = retryCount ? retryCount + 1 : 1;
+    if (retry >= EVM_BALANCE_RETRY_COUNT) throw generateError(`Cannot query BTC balance with error: ${error}`);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    return loadBtcEntries(address, chain, retry);
+  }
+}
+
 async function loadEvmAmounts(dispatch: Dispatch, evmAddress: string, chains: CustomChainInfo[]) {
+  console.log('---', chains);
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map((chain) => loadEvmEntries(evmAddress, chain))))
   );
@@ -332,6 +395,18 @@ async function loadBtcAmounts(dispatch: Dispatch, btcAddress: string, chains: Cu
   }
 }
 
+async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: CustomChainInfo[]) {
+  try {
+    const amountDetails = Object.fromEntries(
+      flatten(await Promise.all(chains.map((chain) => loadSolEntries(solAddress, chain))))
+    );
+
+    dispatch(updateAmounts(amountDetails));
+  } catch (error) {
+    console.log('error: loadBtcAmounts', error);
+  }
+}
+
 async function loadKawaiiSubnetAmount(dispatch: Dispatch, kwtAddress: string) {
   if (!kwtAddress) return;
   const kawaiiInfo = chainInfos.find((c) => c.chainId === 'kawaii_6886-1');
@@ -343,6 +418,92 @@ async function loadKawaiiSubnetAmount(dispatch: Dispatch, kwtAddress: string) {
   // update amounts
   dispatch(updateAmounts(amountDetails));
 }
+
+const loadBalanceByToken = async (dispatch: Dispatch, addressTon: string, addressToken?: string) => {
+  try {
+    // get the decentralized RPC endpoint
+    const endpoint = await getHttpEndpoint();
+    const client = new TonClient({
+      endpoint
+    });
+    if (addressToken === TON_ZERO_ADDRESS) {
+      const balance = await client.getBalance(Address.parse(addressTon));
+
+      return { ton: balance || '0' };
+    }
+
+    const token = tonNetworkMainnet.currencies.find((e) => e.contractAddress === addressToken);
+
+    const jettonMinter = JettonMinter.createFromAddress(Address.parse(addressToken));
+    const jettonMinterContract = client.open(jettonMinter);
+    const jettonWalletAddress = await jettonMinterContract.getWalletAddress(Address.parse(addressTon));
+    const jettonWallet = JettonWallet.createFromAddress(jettonWalletAddress);
+    const jettonWalletContract = client.open(jettonWallet);
+    const balance = await jettonWalletContract.getBalance();
+
+    dispatch(updateAmounts({ [token.coinMinimalDenom]: (balance.amount || '0').toString() }));
+    return { [token.coinMinimalDenom]: balance.amount || '0' };
+  } catch (error) {
+    console.log('error load ton balance', error);
+    return {};
+  }
+};
+
+const loadAllBalanceTonToken = async (dispatch: Dispatch, tonAddress: string, listToken?: string[]) => {
+  if (!tonAddress) return;
+
+  const allTokens = !listToken?.length
+    ? tonNetworkMainnet.currencies
+    : tonNetworkMainnet.currencies.filter((e) => listToken.includes(e.contractAddress));
+
+  const endpoint = await getHttpEndpoint();
+  const client = new TonClient({
+    endpoint
+  });
+
+  const fullData = await Promise.all(
+    (allTokens || []).map(async (item) => {
+      if (item.contractAddress === TON_ZERO_ADDRESS) {
+        // native token: TON
+        const balance = await client.getBalance(Address.parse(tonAddress));
+
+        return {
+          balance: balance,
+          jettonWalletAddress: '',
+          token: item
+        };
+      }
+      const jettonMinter = JettonMinter.createFromAddress(Address.parse(item.contractAddress));
+      const jettonMinterContract = client.open(jettonMinter);
+
+      const jettonWalletAddress = await jettonMinterContract.getWalletAddress(Address.parse(tonAddress));
+
+      const jettonWallet = JettonWallet.createFromAddress(jettonWalletAddress);
+      const jettonWalletContract = client.open(jettonWallet);
+      const balance = await jettonWalletContract.getBalance();
+
+      return {
+        balance: balance.amount,
+        jettonWalletAddress,
+        token: item
+      };
+    })
+  );
+
+  let amountDetail: AmountDetails = {};
+  fullData?.map((data) => {
+    const token = tonNetworkMainnet.currencies.find((e) => e.contractAddress === data.token.contractAddress);
+
+    amountDetail = {
+      ...amountDetail,
+      [token.coinMinimalDenom]: (data.balance || '0').toString()
+    };
+  });
+
+  dispatch(updateAmounts(amountDetail));
+
+  return amountDetail;
+};
 
 export default function useLoadTokens(): (params: LoadTokenParams) => Promise<void> {
   const dispatch = useDispatch();

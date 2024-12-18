@@ -750,6 +750,9 @@ export const getHistoricalPriceDataInDay = async (
       poolId
     };
 
+    // remove the last record and use the latest price
+    res.data.pop();
+
     return res;
   } catch (error) {
     console.log('error getHistoricalPriceData', error);

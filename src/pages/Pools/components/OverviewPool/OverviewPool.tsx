@@ -1,11 +1,10 @@
-import { CW20_DECIMALS, toDisplay } from '@oraichain/oraidex-common';
+import { BTC_CONTRACT, CW20_DECIMALS, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import classNames from 'classnames';
 import TokenBalance from 'components/TokenBalance';
 import useTheme from 'hooks/useTheme';
-import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PoolDetail } from 'types/pool';
 import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
 import BootsIcon from 'assets/icons/boost-icon.svg?react';
@@ -19,6 +18,10 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
   const { pairAmountInfoData, lpTokenInfoData } = useGetPairInfo(poolDetailData);
   const { token1, token2 } = poolDetailData;
 
+  const [oraiBtcAllocation, setOraiBtcAllocation] = useState({
+    oraiBalanceDisplay: '0',
+    btcBalanceDisplay: '0'
+  });
   const [isShowMore] = useState(false);
   const isLight = theme === 'light';
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
@@ -41,6 +44,37 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
     poolReward = cachedReward.find((item) => item.liquidity_token === stakingToken);
   }
 
+  const listBTCAddresses = [
+    BTC_CONTRACT,
+    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+  ];
+
+  useEffect(() => {
+    if (!poolDetailData) return;
+    const { token2 } = poolDetailData;
+    async function getOraiBtcAllocation() {
+      const res = await fetchRetry(
+        'https://lcd.orai.io/cosmos/bank/v1beta1/balances/orai1fv5kwdv4z0gvp75ht378x8cg2j7prlywa0g35qmctez9q8u4xryspn6lrd'
+      );
+      return await res.json();
+    }
+    if (listBTCAddresses.includes(token2.denom) || listBTCAddresses.includes(token2.contractAddress)) {
+      getOraiBtcAllocation().then((data) => {
+        const balances = data.balances;
+        const oraiBalance = balances.find((item) => item.denom === 'orai');
+        const btcBalance = balances.find(
+          (item) => item.denom === 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+        );
+        const oraiBalanceDisplay = formatNumberKMB(toDisplay(oraiBalance?.amount || '0'), false);
+        const btcBalanceDisplay = formatNumberKMB(toDisplay(btcBalance?.amount || '0', 14), false);
+        setOraiBtcAllocation({
+          oraiBalanceDisplay,
+          btcBalanceDisplay
+        });
+      });
+    }
+  }, [poolDetailData]);
+
   return (
     <div className={styles.overviewWrapper}>
       <div className={styles.infos}>
@@ -61,20 +95,33 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
 
         <div className={classNames(styles.box, styles.alloc)}>
           <p>Liquidity Allocation</p>
-          <div className={styles.tokens}>
-            <div className={classNames(styles.tokenItem, styles[theme])}>
-              {BaseTokenIcon && <BaseTokenIcon />}
-              <span className={styles.value}>
-                {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0'), false)}
-              </span>
+          {listBTCAddresses.includes(token2.denom) || listBTCAddresses.includes(token2.contractAddress) ? (
+            <div className={styles.tokens}>
+              <div className={classNames(styles.tokenItem, styles[theme])}>
+                {BaseTokenIcon && <BaseTokenIcon />}
+                <span className={styles.value}>{oraiBtcAllocation.oraiBalanceDisplay}</span>
+              </div>
+              <div className={classNames(styles.tokenItem, styles[theme])}>
+                {QuoteTokenIcon && <QuoteTokenIcon />}
+                <span className={styles.value}>{oraiBtcAllocation.btcBalanceDisplay}</span>
+              </div>
             </div>
-            <div className={classNames(styles.tokenItem, styles[theme])}>
-              {QuoteTokenIcon && <QuoteTokenIcon />}
-              <span className={styles.value}>
-                {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0'), false)}
-              </span>
+          ) : (
+            <div className={styles.tokens}>
+              <div className={classNames(styles.tokenItem, styles[theme])}>
+                {BaseTokenIcon && <BaseTokenIcon />}
+                <span className={styles.value}>
+                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0'), false)}
+                </span>
+              </div>
+              <div className={classNames(styles.tokenItem, styles[theme])}>
+                {QuoteTokenIcon && <QuoteTokenIcon />}
+                <span className={styles.value}>
+                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0'), false)}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <div className={styles.reward}>

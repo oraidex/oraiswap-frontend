@@ -57,6 +57,7 @@ const useCreatePositionForm = (
   const [higherTick, setHigherTick] = useState<number>(0);
   const [optionType, setOptionType] = useState<OptionType>(OptionType.CUSTOM);
   const [isFullRange, setIsFullRange] = useState<boolean>(false);
+  const [isSuperNarrow, setIsSuperNarrow] = useState<boolean>(false);
 
   const poolId = usePoolDetailV3Reducer('poolId');
   const poolKey = usePoolDetailV3Reducer('poolKey');
@@ -197,6 +198,12 @@ const useCreatePositionForm = (
         time,
         price: close
       }));
+
+      data.push({
+        time: Date.now(),
+        price: currentPrice
+      });
+
       const padding = 0.1;
 
       const prices = data.map((d) => d.price);
@@ -340,6 +347,7 @@ const useCreatePositionForm = (
   // wide: take the price range of prices in 3m
   const handleOptionWide = () => {
     setIsFullRange(false);
+    setIsSuperNarrow(false);
     changeHistoricalRange('3mo');
     const data = cache3Month?.map(({ time, close }) => ({
       time,
@@ -367,25 +375,36 @@ const useCreatePositionForm = (
   const handleOptionNarrow = () => {
     setIsFullRange(false);
     changeHistoricalRange('7d');
-    const data = cache7Day?.map(({ time, close }) => ({
-      time,
-      price: close
-    }));
-    data.push({
-      time: Date.now(),
-      price: currentPrice
-    });
-    const prices = data.map((d) => d.price);
+    setIsSuperNarrow(true);
+    // const data = cache7Day?.map(({ time, close }) => ({
+    //   time,
+    //   price: close
+    // }));
+    // data.push({
+    //   time: Date.now(),
+    //   price: currentPrice
+    // });
+    // const prices = data.map((d) => d.price);
 
-    const chartMin = cache7Day?.length > 0 ? Math.max(0, Math.min(...prices)) : currentPrice * 0.5;
-    const chartMax = cache7Day?.length > 0 ? Math.max(...prices) : currentPrice * 1.5;
+    // const chartMin = cache7Day?.length > 0 ? Math.max(0, Math.min(...prices)) : currentPrice * 0.5;
+    // const chartMax = cache7Day?.length > 0 ? Math.max(...prices) : currentPrice * 1.5;
 
+    // if (isXToY) {
+    //   setMinPrice(chartMin);
+    //   setMaxPrice(chartMax);
+    // } else {
+    //   setMinPrice(chartMax);
+    //   setMaxPrice(chartMin);
+    // }
+
+    setLowerTick(Number(pool.current_tick_index));
+    setHigherTick(Number(pool.current_tick_index) + Number(poolKey.fee_tier.tick_spacing));
     if (isXToY) {
-      setMinPrice(chartMin);
-      setMaxPrice(chartMax);
+      setMinPrice(currentPrice);
+      setMaxPrice(currentPrice);
     } else {
-      setMinPrice(chartMax);
-      setMaxPrice(chartMin);
+      setMinPrice(currentPrice);
+      setMaxPrice(currentPrice);
     }
   };
 
@@ -405,6 +424,7 @@ const useCreatePositionForm = (
 
   const getCorrespondingTickRange = (priceMin: number, priceMax: number) => {
     try {
+      if (isSuperNarrow) return;
       if (isFullRange) {
         setLowerTick(getMinTick(Number(poolKey.fee_tier.tick_spacing)));
         setHigherTick(getMaxTick(Number(poolKey.fee_tier.tick_spacing)));
@@ -440,7 +460,7 @@ const useCreatePositionForm = (
           return;
         }
       }
-      
+
       setLowerTick(Math.min(lowerTick, higherTick));
       setHigherTick(Math.max(lowerTick, higherTick));
     } catch (error) {
@@ -508,6 +528,7 @@ const useCreatePositionForm = (
     zapUsd,
     zapApr,
     setIsFullRange,
+    setIsSuperNarrow,
     setApr,
     setZapApr,
     handleOptionCustom,

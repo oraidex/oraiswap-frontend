@@ -12,14 +12,18 @@ import {
   evmWallets,
   btcWallets,
   type NetworkType,
-  WalletNetwork
+  WalletNetwork,
+  solanaWallets,
+  tonWallets
 } from 'components/WalletManagement/walletConfig';
 import {
   tronNetworksWithIcon,
   cosmosNetworksWithIcon,
   evmNetworksIconWithoutTron,
   getListAddressCosmos,
-  btcNetworksWithIcon
+  btcNetworksWithIcon,
+  solanaNetworksWithIcon,
+  tonNetworksWithIcon
 } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -46,6 +50,8 @@ export const MyWallet: React.FC<{
   const [oraiAddress] = useConfigReducer('address');
   const [tronAddress] = useConfigReducer('tronAddress');
   const [btcAddress] = useConfigReducer('btcAddress');
+  const [solAddress] = useConfigReducer('solAddress');
+  const [tonAddress] = useConfigReducer('tonAddress');
 
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [cosmosAddresses, setCosmosAddress] = useConfigReducer('cosmosAddress');
@@ -169,6 +175,25 @@ export const MyWallet: React.FC<{
     return renderWalletAddress(btcNetworks, btcWalletConnected, (_network) => btcAddress);
   };
 
+  const renderSolAddresses = () => {
+    if (!solAddress) return null;
+    const solWalletConnected = solanaWallets.find((item) => item.nameRegistry === walletByNetworks.solana);
+    if (!solWalletConnected) return <></>;
+
+    const solNetworks = solanaNetworksWithIcon.map((evm) => ({ ...evm, typeChain: 'solana' }));
+    return renderWalletAddress(solNetworks, solWalletConnected, (_network) => solAddress);
+  };
+
+  const renderTonAddresses = () => {
+    if (!tonAddress) return null;
+    const tonWalletConnected = tonWallets.find((item) => item.nameRegistry === walletByNetworks.ton);
+
+    if (!tonWalletConnected) return <></>;
+
+    const tonNetworks = tonNetworksWithIcon.map((evm) => ({ ...evm, typeChain: 'ton' }));
+    return renderWalletAddress(tonNetworks, tonWalletConnected, (_network) => tonAddress);
+  };
+
   return (
     <div
       ref={myWalletRef}
@@ -235,6 +260,8 @@ export const MyWallet: React.FC<{
           {renderEvmAddresses()}
           {renderTronAddresses()}
           {renderBtcAddresses()}
+          {renderSolAddresses()}
+          {renderTonAddresses()}
         </div>
       </div>
     </div>

@@ -27,6 +27,8 @@ import { initPairSwap } from './Swap/hooks/useFillToken';
 import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from './helpers';
 import { ChartTokenType, useChartUsdPrice } from './hooks/useChartUsdPrice';
 import styles from './index.module.scss';
+import classNames from 'classnames';
+import Lottie from 'lottie-react';
 
 const cx = cn.bind(styles);
 
@@ -74,13 +76,28 @@ const Swap: React.FC = () => {
 
   const configTheme = EVENT_CONFIG_THEME[theme][event];
 
+  const { topImg, bottomImg, topJson, bottomJson } = configTheme.animation;
+
+  const hasAnimationsOrImages = topImg || bottomImg || topJson || bottomJson;
+  const animations = [
+    { condition: topJson, className: styles.top, type: 'json', data: topJson },
+    { condition: bottomJson, className: styles.bottom, type: 'json', data: bottomJson },
+    { condition: topImg, className: styles.top, type: 'img', src: topImg },
+    { condition: bottomImg, className: styles.bottom, type: 'img', src: bottomImg }
+  ];
+
   return (
     <>
-      {(configTheme.animation.topImg || configTheme.animation.bottomImg) && (
-        <div className={styles.wrapperEvent}>
-          {configTheme.animation.topImg && <img className={styles.top} src={configTheme.animation.topImg} alt="" />}
-          {configTheme.animation.bottomImg && (
-            <img className={styles.bottom} src={configTheme.animation.bottomImg} alt="" />
+      {hasAnimationsOrImages && (
+        <div className={classNames(styles.wrapperEvent, styles[event])}>
+          {animations.map(({ condition, className, type, data, src }, index) =>
+            condition ? (
+              type === 'json' ? (
+                <Lottie key={index} className={className} animationData={data} autoPlay={true} loop={true} />
+              ) : (
+                <img key={index} className={className} src={src} alt="" />
+              )
+            ) : null
           )}
         </div>
       )}

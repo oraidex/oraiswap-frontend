@@ -3,18 +3,25 @@ import {
   WEBSOCKET_RECONNECT_ATTEMPTS,
   WEBSOCKET_RECONNECT_INTERVAL
 } from '@oraichain/oraidex-common';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useTonConnectUI } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { network } from 'config/networks';
+import { SolanaWalletProvider } from 'context/solana-content';
 import { ThemeProvider } from 'context/theme-context';
-import { getListAddressCosmos, interfaceRequestTron } from 'helper';
+import { TonNetwork } from 'context/ton-provider';
+import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
 import useWalletReducer from 'hooks/useWalletReducer';
+import SingletonOraiswapV3 from 'libs/contractSingleton';
+import { getCosmWasmClient } from 'libs/cosmjs';
 import Keplr from 'libs/keplr';
 import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
+import { useLoadWalletsTon } from 'pages/Balance/hooks/useLoadWalletsTon';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
@@ -26,16 +33,17 @@ import './index.scss';
 import Menu from './Menu';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
-import SingletonOraiswapV3 from 'libs/contractSingleton';
-import { getCosmWasmClient } from 'libs/cosmjs';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
-  const [, setTronAddress] = useConfigReducer('tronAddress');
-  const [, setMetamaskAddress] = useConfigReducer('metamaskAddress');
-  const [, setBtcAddress] = useConfigReducer('btcAddress');
+  const [tronAddress, setTronAddress] = useConfigReducer('tronAddress');
+  const [tonAddress] = useConfigReducer('tonAddress');
+  const [metamaskAddress, setMetamaskAddress] = useConfigReducer('metamaskAddress');
+  const [btcAddress, setBtcAddress] = useConfigReducer('btcAddress');
+  const [solAddress, setSolAddress] = useConfigReducer('solAddress');
   const [, setStatusChangeAccount] = useConfigReducer('statusChangeAccount');
   const loadTokenAmounts = useLoadTokens();
+  const [tonConnectUI] = useTonConnectUI();
   const [persistVersion, setPersistVersion] = useConfigReducer('persistVersion');
   const [theme] = useConfigReducer('theme');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
@@ -45,8 +53,18 @@ const App = () => {
   const ethOwallet = window.eth_owallet;
 
   const dispatch = useDispatch();
+  const solanaWallet = useWallet();
 
   useTronEventListener();
+
+  // init TON
+  useEffect(() => {
+    window.Ton = tonConnectUI;
+  }, [tonConnectUI]);
+
+  useLoadWalletsTon({
+    tonNetwork: TonNetwork.Mainnet
+  });
 
   useEffect(() => {
     (async () => {
@@ -181,6 +199,42 @@ const App = () => {
   }, [mobileMode]);
 
   useEffect(() => {
+    loadTokenAmounts({
+      oraiAddress: address
+    });
+  }, [address]);
+
+  useEffect(() => {
+    loadTokenAmounts({
+      metamaskAddress
+    });
+  }, [metamaskAddress]);
+
+  useEffect(() => {
+    loadTokenAmounts({
+      tronAddress
+    });
+  }, [tronAddress]);
+
+  useEffect(() => {
+    loadTokenAmounts({
+      btcAddress
+    });
+  }, [btcAddress]);
+
+  useEffect(() => {
+    loadTokenAmounts({
+      solAddress
+    });
+  }, [solAddress]);
+
+  useEffect(() => {
+    loadTokenAmounts({
+      tonAddress
+    });
+  }, [tonAddress]);
+
+  useEffect(() => {
     window.addEventListener('keplr_keystorechange', keplrHandler);
     return () => {
       window.removeEventListener('keplr_keystorechange', keplrHandler);
@@ -233,6 +287,43 @@ const App = () => {
     return btcAddress;
   };
 
+  const handleAddressSolOwallet = async () => {
+    let solAddress;
+    if (walletByNetworks.solana === 'owallet' || mobileMode) {
+      if (window.owalletSolana) {
+        const { publicKey } = await window.owalletSolana.connect();
+        if (publicKey) {
+          solAddress = publicKey.toBase58();
+          setSolAddress(solAddress);
+        }
+      }
+    }
+    return solAddress;
+  };
+
+  useEffect(() => {
+    const provider = window?.solana;
+    if (provider) {
+      provider?.on('accountChanged', (publicKeySol: any) => {
+        const wallet = getWalletByNetworkFromStorage();
+        if (wallet.solana === 'phantom') {
+          if (publicKeySol) {
+            const solAddress = publicKeySol.toBase58();
+            setSolAddress(solAddress);
+            loadTokenAmounts({ solAddress });
+          } else {
+            // Attempt to reconnect to Phantom or Owallet
+            provider.connect().catch((error: any) => {
+              console.error({ errorSolAccountChanged: error });
+            });
+          }
+        }
+      });
+    }
+
+    return () => {};
+  }, []);
+
   const handleAddressTronOwallet = async () => {
     let tronAddress;
 
@@ -248,19 +339,24 @@ const App = () => {
     return tronAddress;
   };
 
+  // TODO: owallet not support TON. need to update in next time
   const keplrHandler = async () => {
     try {
+      console.log('first', 309);
       polyfillForMobileMode();
       const oraiAddress = await handleAddressCosmos();
       const metamaskAddress = await handleAddressEvmOwallet();
       const btcAddress = await handleAddressBtcOwallet();
       const tronAddress = await handleAddressTronOwallet();
+      const solAddress = await handleAddressSolOwallet();
 
       loadTokenAmounts({
         oraiAddress,
         metamaskAddress,
         tronAddress,
-        btcAddress
+        btcAddress,
+        solAddress,
+        tonAddress
       });
     } catch (error) {
       console.log('Error: ', error.message);
@@ -274,18 +370,20 @@ const App = () => {
   const [openBanner, setOpenBanner] = useState(false);
 
   return (
-    <ThemeProvider>
-      <div className={`app ${theme}`}>
-        {/* <button data-featurebase-feedback>Open Widget</button> */}
-        <Menu />
-        <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
-        {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
-        <div className="main">
-          <Sidebar />
-          <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
+    <SolanaWalletProvider>
+      <ThemeProvider>
+        <div className={`app ${theme}`}>
+          {/* <button data-featurebase-feedback>Open Widget</button> */}
+          <Menu />
+          <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
+          {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
+          <div className="main">
+            <Sidebar />
+            <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
+          </div>
         </div>
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </SolanaWalletProvider>
   );
 };
 

@@ -8,6 +8,8 @@ import { reduceString } from 'libs/utils';
 import { toast, ToastOptions } from 'react-toastify';
 import styles from './Toast.module.scss';
 import { FunctionComponent } from 'react';
+import { EVENT_CONFIG_THEME } from 'config/eventConfig';
+import { initialState } from 'reducer/temporaryConfig';
 
 const defaultOptions: ToastOptions = {
   position: 'top-right',
@@ -23,6 +25,7 @@ const defaultOptions: ToastOptions = {
 };
 
 const defaultExtraData = { message: '', customLink: '' };
+const configTheme = EVENT_CONFIG_THEME['dark'][initialState.event];
 
 export enum TToastType {
   TX_BROADCASTING,
@@ -164,7 +167,7 @@ const ToastInfo: FunctionComponent<{
   textLink: string;
 }> = ({ message, link, textLink }) => (
   <div className={styles.toast_content}>
-    <InfoIcon />
+    {getIconToastTx(<InfoIcon />, configTheme?.toast.txInfoImg)}
     <section className={styles.toast_section}>
       <p>{message}</p>
       {link && (
@@ -176,9 +179,26 @@ const ToastInfo: FunctionComponent<{
   </div>
 );
 
+const getIconToastTx = (txIcon, txImg) => {
+  if (!txImg) return txIcon;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: '-12px'
+      }}
+    >
+      <img width={60} src={txImg} alt="" />
+      {txIcon}
+    </div>
+  );
+};
+
 const ToastTxFailed: FunctionComponent<{ message: string }> = ({ message }) => (
   <div className={styles.toast_content}>
-    <FailedIcon />
+    {getIconToastTx(<FailedIcon />, configTheme?.toast.txFailImg)}
     <section className={styles.toast_section}>
       <h6>Transaction Failed</h6>
       <p>{message}</p>
@@ -188,7 +208,7 @@ const ToastTxFailed: FunctionComponent<{ message: string }> = ({ message }) => (
 
 const ToastKeplrFailed: FunctionComponent<{ message: string }> = ({ message }) => (
   <div className={styles.toast_content}>
-    <FailedIcon />
+    {getIconToastTx(<FailedIcon />, configTheme?.toast.txFailImg)}
     <section className={styles.toast_section}>
       <h6>Keplr failed</h6>
       <p>{message}</p>
@@ -198,7 +218,7 @@ const ToastKeplrFailed: FunctionComponent<{ message: string }> = ({ message }) =
 
 const ToastMetamaskFailed: FunctionComponent<{ message: string }> = ({ message }) => (
   <div className={styles.toast_content}>
-    <FailedIcon />
+    {getIconToastTx(<FailedIcon />, configTheme?.toast.txFailImg)}
     <section className={styles.toast_section}>
       <h6>Metamask failed</h6>
       <p>{message}</p>
@@ -208,7 +228,7 @@ const ToastMetamaskFailed: FunctionComponent<{ message: string }> = ({ message }
 
 const ToastTronLinkFailed: FunctionComponent<{ message: string }> = ({ message }) => (
   <div className={styles.toast_content}>
-    <FailedIcon />
+    {getIconToastTx(<FailedIcon />, configTheme?.toast.txFailImg)}
     <section className={styles.toast_section}>
       <h6>Tronlink failed</h6>
       <p>{message}</p>
@@ -218,7 +238,7 @@ const ToastTronLinkFailed: FunctionComponent<{ message: string }> = ({ message }
 
 const ToastWalletFailed: FunctionComponent<{ message: string }> = ({ message }) => (
   <div className={styles.toast_content}>
-    <FailedIcon />
+    {getIconToastTx(<FailedIcon />, configTheme?.toast.txFailImg)}
     <section className={styles.toast_section}>
       <h6>Wallet failed</h6>
       <p>{message}</p>
@@ -234,7 +254,7 @@ const ToastTxSuccess: FunctionComponent<{
   linkPairAddress?: string;
 }> = ({ link, linkCw20Token, cw20Address, linkLpAddress, linkPairAddress }) => (
   <div className={styles.toast_content}>
-    <SuccessIcon />
+    {getIconToastTx(<SuccessIcon />, configTheme?.toast.txSuccessImg)}
     <section className={styles.toast_section}>
       <h6>Transaction Successful</h6>
       {cw20Address && (

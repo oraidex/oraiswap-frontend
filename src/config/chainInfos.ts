@@ -5,19 +5,40 @@ import {
   ChainIdEnum,
   BridgeAppCurrency,
   CustomChainInfo,
-  defaultBech32Config
+  defaultBech32Config,
+  getTokensFromNetwork,
+  TON_ORAICHAIN_DENOM,
+  HMSTR_ORAICHAIN_DENOM,
+  TON_ALL_OSMOSIS_CONTRACT,
+  TON_OSMOSIS_CONTRACT,
+  solChainId,
+  tonNetworkMainnet,
+  TON_CONTRACT,
+  TON20_USDT_CONTRACT,
+  jUSDC_TON_CONTRACT as jUSDC_TON_CONTRACT_COMMON,
+  HMSTR_TON_CONTRACT as HMSTR_TON_CONTRACT_COMMON
 } from '@oraichain/oraidex-common';
+import HamsterIcon from 'assets/icons/hmstr.svg?react';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import OraiIcon from 'assets/icons/oraichain.svg?react';
 import BTCIcon from 'assets/icons/btc-icon.svg?react';
 import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
+import UsdtIcon from 'assets/icons/tether.svg?react';
+import UsdcIcon from 'assets/icons/usd_coin.svg?react';
+import TonIcon from 'assets/icons/ton.svg?react';
 import flatten from 'lodash/flatten';
+import { TON_SCAN, TonChainId, TonNetwork } from 'context/ton-provider';
 
 import { chainIconsInfos, tokensIconInfos, mapListWithIcon } from './iconInfos';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
 
 export const tokensIcon = tokensIconInfos;
 export const chainIcons = chainIconsInfos;
+
+export const TON_ZERO_ADDRESS = TON_CONTRACT;
+export const USDT_TON_CONTRACT = TON20_USDT_CONTRACT;
+export const jUSDC_TON_CONTRACT = jUSDC_TON_CONTRACT_COMMON;
+export const HMSTR_TON_CONTRACT = HMSTR_TON_CONTRACT_COMMON;
 
 const [otherChainTokens, oraichainTokens] = tokens;
 const OraiBTCToken: BridgeAppCurrency = {
@@ -30,6 +51,57 @@ const OraiBTCToken: BridgeAppCurrency = {
     high: 0
   }
 };
+
+export type AlloyedPool = {
+  poolId: string;
+  alloyedToken: string;
+  sourceToken: string;
+};
+
+export const OsmosisAlloyedPools: AlloyedPool[] = [
+  {
+    poolId: '2161',
+    alloyedToken: TON_ALL_OSMOSIS_CONTRACT,
+    sourceToken: TON_OSMOSIS_CONTRACT
+  }
+];
+
+export const OsmosisTokenDenom = {
+  allTon: TON_ALL_OSMOSIS_CONTRACT,
+  ton: TON_OSMOSIS_CONTRACT
+};
+
+export const OsmosisTokenList = [
+  {
+    chainId: 'osmosis-1',
+    bridgeTo: [TonChainId],
+    coinDenom: 'TON.orai',
+    name: 'TON',
+    symbol: 'TON.orai',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.ton,
+    coinMinimalDenom: OsmosisTokenDenom.ton,
+    coinGeckoId: 'the-open-network',
+    decimal: 9,
+    coinDecimals: 9
+  },
+  {
+    chainId: 'osmosis-1',
+    bridgeTo: [TonChainId],
+    coinDenom: 'TON',
+    name: 'TON',
+    symbol: 'TON',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.allTon,
+    coinMinimalDenom: OsmosisTokenDenom.allTon,
+    coinGeckoId: 'the-open-network',
+    decimal: 9,
+    coinDecimals: 9,
+    alloyedToken: true
+  }
+];
 
 const oraibtcNetwork = {
   rpc: 'https://btc.rpc.orai.io',
@@ -121,41 +193,16 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
-export const chainInfosWithIcon = mapListWithIcon([...customChainInfos, bitcoinMainnet], chainIcons, 'chainId');
 export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
+export const tonNetworkTokens = getTokensFromNetwork(tonNetworkMainnet);
 
 export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];
 export const flattenTokensWithIcon = flatten(tokensWithIcon);
 
-export const OraiToken: BridgeAppCurrency = {
-  coinDenom: 'ORAI',
-  coinMinimalDenom: 'orai',
-  coinDecimals: 6,
-  coinGeckoId: 'oraichain-token',
-  Icon: OraiIcon,
-  IconLight: OraiLightIcon,
-  bridgeTo: ['0x38', '0x01', 'injective-1'],
-  gasPriceStep: {
-    low: 0.003,
-    average: 0.005,
-    high: 0.007
-  }
-};
-
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
-  currencies: [
-    ...customOraichainNetwork.currencies
-    // {
-    //   coinDenom: 'BTC V2',
-    //   coinGeckoId: 'bitcoin',
-    //   coinMinimalDenom: CWBitcoinFactoryDenom,
-    //   bridgeTo: ['bitcoin'] as any,
-    //   coinDecimals: 14 as any,
-    //   coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'
-    // }
-  ]
+  currencies: [...customOraichainNetwork.currencies]
 };
 
 export const OraiBTCBridgeNetwork = {
@@ -220,4 +267,6 @@ export const evmChains = chainInfos.filter(
   (c) => c.networkType === 'evm' && c.bip44.coinType === 60 && c.chainId !== '0x1ae6'
 );
 
-export const btcChains = chainInfos.filter((c) => c.networkType === ('bitcoin' as any));
+export const chainInfosWithIcon = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
+
+export const btcChains = chainInfos.filter((c) => c.networkType === 'bitcoin');

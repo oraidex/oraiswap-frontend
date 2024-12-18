@@ -2,11 +2,20 @@ import { WalletType as WalletCosmosType } from '@oraichain/oraidex-common/build/
 import KeplrIcon from 'assets/icons/keplr-icon.svg?react';
 import MetamaskIcon from 'assets/icons/metamask-icon.svg?react';
 import OwalletIcon from 'assets/icons/owallet-icon.svg?react';
+import PhantomIcon from 'assets/icons/phantom.svg?react';
 import TronIcon from 'assets/icons/tron-icon.svg?react';
-import { cosmosNetworksWithIcon, evmNetworksIconWithoutTron, tronNetworksWithIcon, btcNetworksWithIcon } from 'helper';
+import TonIcon from 'assets/icons/ton.svg?react';
+import {
+  cosmosNetworksWithIcon,
+  evmNetworksIconWithoutTron,
+  tronNetworksWithIcon,
+  btcNetworksWithIcon,
+  solanaNetworksWithIcon,
+  tonNetworksWithIcon
+} from 'helper';
 
-export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin';
-export type WalletType = WalletCosmosType | 'metamask' | 'tronLink' | 'eip191' | 'bitcoin';
+export type NetworkType = 'cosmos' | 'evm' | 'tron' | 'bitcoin' | 'solana' | 'ton';
+export type WalletType = WalletCosmosType | 'metamask' | 'tronLink' | 'eip191' | 'bitcoin' | 'phantom' | 'ton';
 export type WalletNetwork = {
   icon: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & {
@@ -94,7 +103,38 @@ export const btcWallets: WalletNetwork[] = [
   }
 ];
 
-export const allWallets: WalletNetwork[] = [...cosmosWallets, ...tronWallets, ...evmWallets, ...btcWallets];
+export const solanaWallets: WalletNetwork[] = [
+  {
+    icon: OwalletIcon,
+    name: 'Owallet',
+    nameRegistry: 'owallet',
+    isActive: true
+  },
+  {
+    icon: PhantomIcon,
+    name: 'Phantom',
+    nameRegistry: 'phantom',
+    isActive: true
+  }
+];
+
+export const tonWallets: WalletNetwork[] = [
+  {
+    icon: TonIcon,
+    name: 'TonConnect',
+    nameRegistry: 'ton',
+    isActive: true
+  }
+];
+
+export const allWallets: WalletNetwork[] = [
+  ...cosmosWallets,
+  ...tronWallets,
+  ...evmWallets,
+  ...btcWallets,
+  ...solanaWallets,
+  ...tonWallets
+];
 
 export const walletProvider: WalletProvider[] = [
   {
@@ -116,5 +156,15 @@ export const walletProvider: WalletProvider[] = [
     networkType: 'bitcoin',
     networks: btcNetworksWithIcon,
     wallets: btcWallets
+  },
+  {
+    networkType: 'ton',
+    networks: tonNetworksWithIcon,
+    wallets: tonWallets
+  },
+  {
+    networkType: 'solana',
+    networks: solanaNetworksWithIcon,
+    wallets: solanaWallets
   }
 ];

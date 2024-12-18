@@ -9,6 +9,7 @@ import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import styles from './SelectChain.module.scss';
 
 const cx = cn.bind(styles);
@@ -43,6 +44,10 @@ export default function SelectChain({
     return acc + totalUsd;
   }, 0);
 
+  const listChains = [...networks]
+    .filter((net) => !isAllowChainId(net.chainId) && (!filterChainId.length || filterChainId.includes(net.chainId)))
+    .filter((n) => !isMaintainBridge || (isMaintainBridge && n.networkType === 'cosmos' && n.chainId !== 'noble-1'));
+
   return (
     <>
       {/* <div className={cx('selectChainWrap', isSelectToken ? 'active' : '')}> */}
@@ -68,13 +73,7 @@ export default function SelectChain({
 
         <div className={styles.selectChainList}>
           <div className={styles.selectChainItems}>
-            {[...networks]
-              .filter(
-                (net) => !isAllowChainId(net.chainId) && (!filterChainId.length || filterChainId.includes(net.chainId))
-              )
-              .filter(
-                (n) => !isMaintainBridge || (isMaintainBridge && n.networkType === 'cosmos' && n.chainId !== 'noble-1')
-              )
+            {listChains
               .map((n) => {
                 const subAmounts = Object.fromEntries(
                   Object.entries(amounts).filter(([denom]) => tokenMap[denom] && tokenMap[denom].chainId === n.chainId)
@@ -88,7 +87,14 @@ export default function SelectChain({
               })
               .sort((a, b) => Number(b.totalUsd || 0) - Number(a.totalUsd || 0))
               .map((item) => {
-                const networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
+                let networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
+                if (!networkIcon) {
+                  networkIcon = {
+                    ...item,
+                    Icon: DefaultIcon,
+                    IconLight: DefaultIcon
+                  };
+                }
                 const key = item.chainId.toString();
                 const title = item.chainName;
                 const balance = '$' + (item.totalUsd > 0 ? item.totalUsd.toFixed(2) : '0');

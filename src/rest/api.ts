@@ -3,6 +3,7 @@ import { Coin, coin } from '@cosmjs/stargate';
 import { CwIcs20LatestQueryClient, MulticallQueryClient, Uint128 } from '@oraichain/common-contracts-sdk';
 import { ConfigResponse, RelayerFeeResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
+  BTC_CONTRACT,
   IBCInfo,
   IBC_WASM_CONTRACT,
   KWT_DENOM,
@@ -42,7 +43,6 @@ import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.type
 import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
 import { oraichainTokens, tokenMap, tokens } from 'config/bridgeTokens';
 import { network } from 'config/networks';
-import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
@@ -99,6 +99,17 @@ async function fetchTokenInfos(tokens: TokenItemType[]): Promise<TokenInfo[]> {
 }
 
 function parsePoolAmount(poolInfo: OraiswapPairTypes.PoolResponse, trueAsset: AssetInfo): bigint {
+  // TODO: remove when pool orai/btc close
+  if ('token' in trueAsset && trueAsset.token.contract_addr === BTC_CONTRACT) {
+    return BigInt(
+      poolInfo.assets.find(
+        (asset) =>
+          'native_token' in asset.info &&
+          asset.info.native_token.denom ===
+            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+      )?.amount || '0'
+    );
+  }
   return BigInt(poolInfo.assets.find((asset) => isEqual(asset.info, trueAsset))?.amount || '0');
 }
 
@@ -673,7 +684,8 @@ function generateMoveOraib2OraiMessages(
       sender: fromAddress,
       receiver: toAddress,
       memo: '',
-      timeoutTimestamp: Long.fromString(calculateTimeoutTimestamp(ibcInfo.timeout))
+      timeoutHeight: undefined,
+      timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout))
     });
   }
   return transferMsgs;
