@@ -13,7 +13,7 @@ import { formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
 import SingletonOraiswapV3, { fetchPoolAprInfo, poolKeyToString } from 'libs/contractSingleton';
-import { formatPoolData, getIconPoolData, PoolWithTokenInfo } from 'pages/Pool-V3/helpers/format';
+import { formatPoolData, PoolWithTokenInfo } from 'pages/Pool-V3/helpers/format';
 import { convertPosition } from 'pages/Pool-V3/helpers/helper';
 import { useGetAllPositions } from 'pages/Pool-V3/hooks/useGetAllPosition';
 import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';

@@ -324,14 +324,16 @@ export const getFromToToken = (
     fromContractAddr: originalFromToken?.contractAddress,
     toContractAddr: originalToToken?.contractAddress
   });
-  const fromToken = (isEvmSwap
-    ? tokenMap[fromTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[fromTokenDenomSwap]) ||
-    onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
-  const toToken = (isEvmSwap
-    ? tokenMap[toTokenDenomSwap]
-    : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[toTokenDenomSwap])
-    || onchainTokens.find((token) => token.denom === toTokenDenomSwap);
+  const fromToken =
+    (isEvmSwap
+      ? tokenMap[fromTokenDenomSwap]
+      : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId, oraichainTokens) ??
+        tokenMap[fromTokenDenomSwap]) || onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
+  const toToken =
+    (isEvmSwap
+      ? tokenMap[toTokenDenomSwap]
+      : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[toTokenDenomSwap]) ||
+    onchainTokens.find((token) => token.denom === toTokenDenomSwap);
 
   return { fromToken, toToken };
 };

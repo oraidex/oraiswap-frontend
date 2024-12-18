@@ -5,16 +5,16 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
 import { tokenInspector } from 'initTokenInspector';
 import { Dispatch } from '@reduxjs/toolkit';
-import { updateAmounts } from './token';
+import { addToOraichainTokens, updateAllOraichainTokens, updateAmounts } from './token';
 
 export interface OnchainTokensState {
   tokens: TokenItemType[];
-  amounts: AmountDetails;
+  allOnChainTokens: TokenItemType[];
 }
 
 const initialState: OnchainTokensState = {
   tokens: [],
-  amounts: {}
+  allOnChainTokens: []
 };
 
 export const onchainTokensSlice = createSlice({
@@ -23,9 +23,9 @@ export const onchainTokensSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(inspectToken.fulfilled, (state, action) => {
-      const { token, balance } = action.payload;
+      const { token } = action.payload;
       state.tokens = [onChainTokenToTokenItem(token)];
-      state.amounts[token.denom] = balance;
+      state.allOnChainTokens = [...state.allOnChainTokens, onChainTokenToTokenItem(token)];
     });
   }
 });
@@ -39,10 +39,12 @@ export const onChainTokenToTokenItem = (token: OraiToken): TokenItemType => {
     decimals: token.decimals,
     denom: token.denom,
     icon: token.logo,
+    iconLight: token.logo,
     rpc: 'https://rpc.orai.io',
     org: 'oraichain',
     coinGeckoId: undefined,
-    contractAddress: token.contractAddress
+    contractAddress: token.contractAddress,
+    feeCurrencies: network.feeCurrencies
   };
 };
 
@@ -88,6 +90,8 @@ export const inspectToken = createAsyncThunk(
         [token.denom]: tokenBalance
       })
     );
+
+    thunkAPI.dispatch(addToOraichainTokens([onChainTokenToTokenItem(token)]));
 
     return {
       token,

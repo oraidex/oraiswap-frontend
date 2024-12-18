@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { ConfigResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
+import { TokenItemType } from '@oraichain/oraidex-common';
 
 export interface TokenState {
   amounts: AmountDetails;
@@ -9,6 +10,7 @@ export interface TokenState {
   bondLpPools: BondLpPoolDetails;
   feeConfigs: ConfigResponse;
   totalLpv3: number;
+  allOraichainTokens: TokenItemType[];
 }
 
 const initialState: TokenState = {
@@ -26,7 +28,8 @@ const initialState: TokenState = {
     swap_router_contract: 'string',
     token_fee_receiver: '',
     token_fees: []
-  }
+  },
+  allOraichainTokens: []
 };
 
 export const tokenSlice = createSlice({
@@ -41,7 +44,6 @@ export const tokenSlice = createSlice({
         ...state.amounts,
         ...action.payload
       };
-      console.log("update in TOken state", state.amounts);
     },
     updatePairs: (state, action: PayloadAction<PairDetails>) => {
       state.pairs = {
@@ -73,6 +75,17 @@ export const tokenSlice = createSlice({
         ...state.feeConfigs,
         ...action.payload
       };
+    },
+    updateAllOraichainTokens: (state, action: PayloadAction<any>) => {
+      state.allOraichainTokens = action.payload;
+    },
+    addToOraichainTokens: (state, action: PayloadAction<any>) => {
+      state.allOraichainTokens = [
+        ...state.allOraichainTokens,
+        ...action.payload.filter(
+          (token: TokenItemType) => !state.allOraichainTokens.find((t) => t.denom === token.denom)
+        )
+      ];
     }
   }
 });
@@ -85,7 +98,9 @@ export const {
   updateLpPools,
   updateBondLpPools,
   updateFeeConfig,
-  updateTotalLpv3
+  updateTotalLpv3,
+  updateAllOraichainTokens,
+  addToOraichainTokens
 } = tokenSlice.actions;
 
 export default tokenSlice.reducer;

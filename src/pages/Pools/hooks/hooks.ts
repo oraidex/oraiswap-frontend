@@ -1,7 +1,7 @@
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { MulticallQueryClient, MulticallReadOnlyInterface } from '@oraichain/common-contracts-sdk';
 import { AggregateResult } from '@oraichain/common-contracts-sdk/build/Multicall.types';
-import { toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { OraiswapStakingQueryClient, OraiswapStakingTypes } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -215,7 +215,7 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
     enabled: !!pairDenoms
   });
 
-  const [[token1, token2], setTokens] = useState([{}, {}]);
+  const [[token1, token2], setTokens] = useState<[TokenItemType, TokenItemType]>([{}, {}]);
 
   useEffect(() => {
     if (!pairDenoms) return;

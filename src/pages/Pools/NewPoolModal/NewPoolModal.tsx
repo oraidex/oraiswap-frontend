@@ -4,10 +4,9 @@ import cn from 'classnames/bind';
 import Modal from 'components/Modal';
 import Pie from 'components/Pie';
 import TokenBalance from 'components/TokenBalance';
-import { getPoolTokens, toAmount, TokenItemType } from '@oraichain/oraidex-common';
+import { FACTORY_V2_CONTRACT, getPoolTokens, toAmount, TokenItemType } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { toDisplay } from '@oraichain/oraidex-common';
-import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
 import { FC, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import { useSelector } from 'react-redux';
@@ -15,11 +14,9 @@ import { fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './NewPoolModal.module.scss';
 import { assetInfoMap, network, oraichainTokens } from 'initCommon';
-import SelectToken from 'pages/Pool-V3/components/SelectToken';
-import useOnchainTokensReducer from 'hooks/useOnchainTokens';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
-import useConfigReducer from 'hooks/useConfigReducer';
+import { SelectTokenModal } from '../components/SelectTokenModal';
 
 const cx = cn.bind(styles);
 
@@ -33,30 +30,21 @@ interface ModalProps {
 
 const steps = ['Add Liquidity', 'Confirm'];
 
-const FACTORY_POOL_V2 = 'orai1m99lx5vp3ak03w9ef6wwrtkrkhed7mtxfkj7s59nx0lfnnwaxavsmk8wyy';
-
 const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const { data: prices } = useCoinGeckoPrices();
   const [step, setStep] = useState(1);
   const [isSelectingToken, setIsSelectingToken] = useState<'token1' | 'token2' | null>(null);
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
-  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(oraichainTokens);
-  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(oraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(allOraichainTokens);
+  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(allOraichainTokens);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
-
-  const onChainBalances = useOnchainTokensReducer('amounts');
-
   const amounts = useSelector((state: RootState) => state.token.amounts);
-  
 
-  const onchainTokens = useOnchainTokensReducer('tokens');
-
-  const tokenObj1 =
-    oraichainTokens.find((token) => token?.denom === token1) || onchainTokens.find((token) => token?.denom === token1);
-  const tokenObj2 =
-    oraichainTokens.find((token) => token?.denom === token2) || onchainTokens.find((token) => token?.denom === token2);
+  const tokenObj1 = allOraichainTokens.find((token) => token?.denom === token1);
+  const tokenObj2 = allOraichainTokens.find((token) => token?.denom === token2);
 
   const { data: token1InfoData } = useQuery(['token-info', token1], () => fetchTokenInfo(tokenObj1!), {
     enabled: !!tokenObj1
@@ -107,7 +95,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
             increase_allowance: {
               amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString(),
               expires: undefined,
-              spender: FACTORY_POOL_V2
+              spender: FACTORY_V2_CONTRACT
             }
           }
         });
@@ -151,7 +139,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
             increase_allowance: {
               amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString(),
               expires: undefined,
-              spender: FACTORY_POOL_V2
+              spender: FACTORY_V2_CONTRACT
             }
           }
         });
@@ -189,7 +177,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       }
 
       const createPairMsg = {
-        contractAddress: FACTORY_POOL_V2,
+        contractAddress: FACTORY_V2_CONTRACT,
         msg: {
           create_pair: {
             asset_infos: assetInfos,
@@ -197,8 +185,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
             pair_admin: undefined,
             provide_liquidity: {
               assets,
-              receiver: undefined,
-              slippage_tolerance: undefined
+              receiver: undefined
             }
           }
         },
@@ -414,10 +401,10 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               type="text"
               value={0.3}
               disabled={true}
-            // value={supplyToken2 ? supplyToken2 : ''}
-            // onValueChange={({ floatValue }) => {
-            //   setSupplyToken2(floatValue);
-            // }}
+              // value={supplyToken2 ? supplyToken2 : ''}
+              // onValueChange={({ floatValue }) => {
+              //   setSupplyToken2(floatValue);
+              // }}
             />
             <span>%</span>
           </div>
@@ -486,23 +473,19 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         isOpen={isSelectingToken === 'token1'}
         open={() => setIsSelectingToken('token1')}
         close={() => setIsSelectingToken(null)}
-        prices={prices}
         setToken={(token1: string) => {
           setToken1(token1);
-          setListToken2Option(getPoolTokens(assetInfoMap).filter((t) => t.denom !== token1));
+          setListToken2Option(listToken2Option.filter((t) => t.denom !== token1));
         }}
-        amounts={amounts}
         items={listToken1Option}
       />
       <SelectTokenModal
         isOpen={isSelectingToken === 'token2'}
         open={() => setIsSelectingToken('token2')}
         close={() => setIsSelectingToken(null)}
-        prices={prices}
-        amounts={amounts}
         setToken={(token2: string) => {
           setToken2(token2);
-          setListToken1Option(getPoolTokens(assetInfoMap).filter((t) => t.denom !== token2));
+          setListToken1Option(listToken1Option.filter((t) => t.denom !== token2));
         }}
         items={listToken2Option}
       />

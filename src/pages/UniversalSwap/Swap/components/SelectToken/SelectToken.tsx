@@ -1,31 +1,22 @@
-import {
-  CustomChainInfo,
-  TokenItemType,
-  truncDecimals,
-  HMSTR_ORAICHAIN_DENOM,
-  DOGE_BNB_ORAICHAIN_DENOM,
-  chainIcons
-} from '@oraichain/oraidex-common';
+import { CustomChainInfo, DOGE_BNB_ORAICHAIN_DENOM, TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
-import cn from 'classnames/bind';
 import SearchInput from 'components/SearchInput';
-import styles from './SelectToken.module.scss';
 import { Themes } from 'context/theme-context';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import useConfigReducer from 'hooks/useConfigReducer';
+import useOnchainTokensReducer from 'hooks/useOnchainTokens';
+import { chainInfos } from 'initCommon';
 import { toSumDisplay } from 'libs/utils';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
-import { getSubAmountDetails } from 'rest/api';
-import useConfigReducer from 'hooks/useConfigReducer';
-import { oraidexCommon, chainInfos, chainInfosWithIcon, flattenTokens, flattenTokensWithIcon } from 'initCommon';
-import { tokenInspector } from 'initTokenInspector';
-import useOnchainTokensReducer from 'hooks/useOnchainTokens';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { inspectToken } from 'reducer/onchainTokens';
+import { getSubAmountDetails } from 'rest/api';
+import { RootState } from 'store/configure';
+import styles from './SelectToken.module.scss';
 
-const cx = cn.bind(styles);
 interface InputSwapProps {
   isSelectToken: boolean;
   setIsSelectToken?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,38 +29,20 @@ interface InputSwapProps {
 }
 
 interface GetIconInterface {
-  type: 'token' | 'network' | 'onchain-token';
   chainId?: string;
-  coinGeckoId?: string;
   isLightTheme: boolean;
   width?: number;
   height?: number;
   onchainToken?: TokenItemType;
 }
 
-const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height, onchainToken }: GetIconInterface) => {
-  if (type === 'token') {
-    const foundToken = flattenTokens.find((token) => token.coinGeckoId === coinGeckoId);
-    return isLightTheme ? (
-      <img src={foundToken.icon} alt="icon" width={30} height={30} />
-    ) : (
-      <img src={foundToken.icon} alt="icon" width={30} height={30} />
-    );
-  } else if (type === 'onchain-token') {
-    if (!onchainToken) return null;
-    return isLightTheme ? (
-      <img src={onchainToken.icon} alt="icon" width={30} height={30} />
-    ) : (
-      <img src={onchainToken.icon} alt="icon" width={30} height={30} />
-    );
-  } else {
-    const chainInfo = chainInfos.find((chain) => chain.chainId === chainId);
-    return isLightTheme ? (
-      <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
-    ) : (
-      <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
-    );
-  }
+const getChainIcon = ({ isLightTheme, chainId, width, height }: GetIconInterface) => {
+  const chainInfo = chainInfos.find((chain) => chain.chainId === chainId);
+  return isLightTheme ? (
+    <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
+  ) : (
+    <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
+  );
 };
 
 export default function SelectToken({
@@ -91,6 +64,7 @@ export default function SelectToken({
 
   const onchainTokens = useOnchainTokensReducer('tokens');
   const dispatch = useDispatch();
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   useEffect(() => {
     if (selectChain && selectChain !== textChain) setTextChain(selectChain);
@@ -111,8 +85,11 @@ export default function SelectToken({
     .filter(
       (item) =>
         (textChain ? item.chainId === textChain : true) &&
-        ((textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true) ||
-          (textSearch ? item.contractAddress?.toLowerCase().includes(textSearch.toLowerCase()) : true))
+        (textSearch
+          ? [item.name.toLowerCase(), item.denom.toLowerCase(), item.contractAddress?.toLowerCase()].includes(
+              textSearch.toLowerCase()
+            )
+          : true)
     )
     .reduce((unique, item) => {
       if (!unique.some((uniqueItem) => uniqueItem.denom === item.denom)) {
@@ -152,18 +129,14 @@ export default function SelectToken({
 
             {[...listItems, ...onchainTokens]
               .map((token) => {
-                const tokenIcon = getIcon({
-                  isLightTheme,
-                  type: isTokenOnchain ? 'onchain-token' : 'token',
-                  coinGeckoId: token.coinGeckoId,
-                  width: 30,
-                  height: 30,
-                  onchainToken: isTokenOnchain ? onchainTokens[0] : undefined
-                });
+                const tokenIcon = isLightTheme ? (
+                  <img src={token.iconLight} alt="icon" width={30} height={30} />
+                ) : (
+                  <img src={token.icon} alt="icon" width={30} height={30} />
+                );
 
-                const networkIcon = getIcon({
+                const networkIcon = getChainIcon({
                   isLightTheme,
-                  type: 'network',
                   chainId: token.chainId,
                   width: 16,
                   height: 16

@@ -14,8 +14,6 @@ import { extractAddress, formatPoolData } from '../helpers/format';
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const theme = useTheme();
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
-  const [cachePrices, setCachePrices] = useConfigReducer('coingecko');
-  const [loading, setLoading] = useState(false);
   const [dataPool, setDataPool] = useState([...Array(0)]);
 
   const {
@@ -69,8 +67,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
       const listPools = (poolList || []).map((p) => formatPoolData(p));
 
       const fmtPools = (await Promise.all(listPools)).filter((e) => e.isValid);
-      console.log({ fmtPools });
-      // const fmtPools = (poolList || []).map(formatPoolDataCallback).filter(async (e) => (await e).isValid);
       setDataPool(fmtPools);
     })();
   }, [poolList, coingeckoPrices]);

@@ -15,13 +15,13 @@ import Keplr from 'libs/keplr';
 import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
 import { setAddressBookList } from 'reducer/addressBook';
-import { persistor } from 'store/configure';
+import { persistor, RootState } from 'store/configure';
 import { ADDRESS_BOOK_KEY_BACKUP, PERSIST_VER } from 'store/constants';
 import './index.scss';
-import { network } from 'initCommon';
+import { initializeOraidexCommon, network } from 'initCommon';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
 import Menu from './Menu';
@@ -47,11 +47,15 @@ const App = () => {
   const mobileMode = isMobile();
   const { tron, evm } = walletByNetworks;
   const ethOwallet = window.eth_owallet;
-
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
   const dispatch = useDispatch();
   const solanaWallet = useWallet();
 
   useTronEventListener();
+
+  useEffect(() => {
+    initializeOraidexCommon(dispatch, allOraichainTokens);
+  }, [allOraichainTokens]);
 
   useEffect(() => {
     (async () => {

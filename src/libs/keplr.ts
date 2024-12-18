@@ -149,7 +149,6 @@ export default class Keplr extends CosmosWallet {
       const isEnableKeplr = await this.getKeplr();
       if (isEnableKeplr && ['keplr', 'owallet'].includes(this.typeWallet)) {
         if (!this.keplr) throw new Error('Error: get window cosmos!');
-        console.log({ chainId });
         const { bech32Address } = await this.getKeplrKey(chainId);
         if (!bech32Address) throw Error('Not found address from keplr!');
         return bech32Address;
