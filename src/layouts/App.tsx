@@ -33,6 +33,9 @@ import './index.scss';
 import Menu from './Menu';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
+import SnowChristmas from 'components/SnowChristmas';
+import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
+import { EVENT_ENUM } from 'reducer/temporaryConfig';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
@@ -51,6 +54,7 @@ const App = () => {
   const mobileMode = isMobile();
   const { tron, evm } = walletByNetworks;
   const ethOwallet = window.eth_owallet;
+  const [event] = useTemporaryConfigReducer('event');
 
   const dispatch = useDispatch();
   const solanaWallet = useWallet();
@@ -373,6 +377,8 @@ const App = () => {
     <SolanaWalletProvider>
       <ThemeProvider>
         <div className={`app ${theme}`}>
+          {event === EVENT_ENUM.christmas && <SnowChristmas theme={theme} />}
+
           {/* <button data-featurebase-feedback>Open Widget</button> */}
           <Menu />
           <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
