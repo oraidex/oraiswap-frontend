@@ -1,26 +1,17 @@
 import {
-  tokens,
-  oraichainNetwork as customOraichainNetwork,
-  chainInfos as customChainInfos,
   ChainIdEnum,
-  BridgeAppCurrency,
   CustomChainInfo,
-  defaultBech32Config,
-  solChainId
+  TON_ALL_OSMOSIS_CONTRACT,
+  TON_OSMOSIS_CONTRACT,
+  defaultBech32Config
 } from '@oraichain/oraidex-common';
+
+import { BridgeAppCurrency } from '@oraichain/common';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
-import OraiIcon from 'assets/icons/oraichain.svg?react';
 import BTCIcon from 'assets/icons/btc-icon.svg?react';
-import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
-import flatten from 'lodash/flatten';
+import TonIcon from 'assets/icons/ton.svg?react';
+import { TonChainId } from 'context/ton-provider';
 
-import { chainIconsInfos, tokensIconInfos, mapListWithIcon } from './iconInfos';
-import { CWBitcoinFactoryDenom } from 'helper/constants';
-
-export const tokensIcon = tokensIconInfos;
-export const chainIcons = chainIconsInfos;
-
-const [otherChainTokens, oraichainTokens] = tokens;
 const OraiBTCToken: BridgeAppCurrency = {
   coinDenom: 'ORAIBTC',
   coinMinimalDenom: 'uoraibtc',
@@ -31,6 +22,57 @@ const OraiBTCToken: BridgeAppCurrency = {
     high: 0
   }
 };
+
+export type AlloyedPool = {
+  poolId: string;
+  alloyedToken: string;
+  sourceToken: string;
+};
+
+export const OsmosisAlloyedPools: AlloyedPool[] = [
+  {
+    poolId: '2161',
+    alloyedToken: TON_ALL_OSMOSIS_CONTRACT,
+    sourceToken: TON_OSMOSIS_CONTRACT
+  }
+];
+
+export const OsmosisTokenDenom = {
+  allTon: TON_ALL_OSMOSIS_CONTRACT,
+  ton: TON_OSMOSIS_CONTRACT
+};
+
+export const OsmosisTokenList = [
+  {
+    chainId: 'osmosis-1',
+    bridgeTo: [TonChainId],
+    coinDenom: 'TON.orai',
+    name: 'TON',
+    symbol: 'TON.orai',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.ton,
+    coinMinimalDenom: OsmosisTokenDenom.ton,
+    coinGeckoId: 'the-open-network',
+    decimal: 9,
+    coinDecimals: 9
+  },
+  {
+    chainId: 'osmosis-1',
+    bridgeTo: [TonChainId],
+    coinDenom: 'TON',
+    name: 'TON',
+    symbol: 'TON',
+    Icon: TonIcon,
+    contractAddress: null,
+    denom: OsmosisTokenDenom.allTon,
+    coinMinimalDenom: OsmosisTokenDenom.allTon,
+    coinGeckoId: 'the-open-network',
+    decimal: 9,
+    coinDecimals: 9,
+    alloyedToken: true
+  }
+];
 
 const oraibtcNetwork = {
   rpc: 'https://btc.rpc.orai.io',
@@ -122,37 +164,6 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
-export const chainInfosWithIcon = mapListWithIcon(
-  [...customChainInfos, bitcoinMainnet, oraibtcNetwork],
-  chainIcons,
-  'chainId'
-);
-export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
-export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
-
-export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];
-export const flattenTokensWithIcon = flatten(tokensWithIcon);
-
-export const OraiToken: BridgeAppCurrency = {
-  coinDenom: 'ORAI',
-  coinMinimalDenom: 'orai',
-  coinDecimals: 6,
-  coinGeckoId: 'oraichain-token',
-  Icon: OraiIcon,
-  IconLight: OraiLightIcon,
-  bridgeTo: ['0x38', '0x01', 'injective-1'],
-  gasPriceStep: {
-    low: 0.003,
-    average: 0.005,
-    high: 0.007
-  }
-};
-
-export const oraichainNetwork: CustomChainInfo = {
-  ...customOraichainNetwork,
-  currencies: [...customOraichainNetwork.currencies]
-};
-
 export const OraiBTCBridgeNetwork = {
   chainId: 'oraibtc-mainnet-1',
   chainName: 'OraiBtc Bridge',
@@ -206,13 +217,3 @@ export const OraiBTCBridgeNetwork = {
     return this.currencies;
   }
 };
-
-export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork];
-export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
-
-// exclude kawaiverse subnet and other special evm that has different cointype
-export const evmChains = chainInfos.filter(
-  (c) => c.networkType === 'evm' && c.bip44.coinType === 60 && c.chainId !== '0x1ae6'
-);
-
-export const btcChains = chainInfos.filter((c) => c.networkType === 'bitcoin');

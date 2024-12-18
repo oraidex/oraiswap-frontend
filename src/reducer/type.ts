@@ -77,7 +77,6 @@ export type InfoAToken = {
 };
 
 export interface TradingState {
-  currentToken: PairToken | null;
   chartTimeFrame: number;
   currentToChain: NetworkName | '';
   currentToToken: TokenItemType | null;

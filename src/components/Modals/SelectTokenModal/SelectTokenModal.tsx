@@ -85,69 +85,80 @@ export const SelectTokenModal: FC<ModalProps> = ({
         />
 
         <div className={cx('options')}>
-          {allOraichainTokens?.map((item: TokenItemType | CustomChainInfo) => {
-            let key: string, title: string, balance: string;
-            let tokenAndChainIcons;
-
-            if (type === 'token') {
-              const token = item as TokenItemType;
-              key = token.denom;
-              title = token.name;
-              let sumAmountDetails: AmountDetails = {};
-              // by default, we only display the amount that matches the token denom
-              sumAmountDetails[token.denom] = amounts[token.denom];
-              let sumAmount: number = toSumDisplay(sumAmountDetails);
-              // if there are sub-denoms, we get sub amounts & calculate sum display of both sub & main amount
-              if (token.evmDenoms) {
-                const subAmounts = getSubAmountDetails(amounts, token);
-                sumAmountDetails = { ...sumAmountDetails, ...subAmounts };
-                sumAmount = toSumDisplay(sumAmountDetails);
+          {items
+            ?.map((item: TokenItemType | CustomChainInfo) => {
+              let key: string, title: string, balance: string, rawBalance: string;
+              let tokenAndChainIcons;
+              if (type === 'token') {
+                const token = item as TokenItemType;
+                key = token.denom;
+                title = token.name;
+                let sumAmountDetails: AmountDetails = {};
+                // by default, we only display the amount that matches the token denom
+                sumAmountDetails[token.denom] = amounts[token.denom];
+                let sumAmount: number = toSumDisplay(sumAmountDetails);
+                // if there are sub-denoms, we get sub amounts & calculate sum display of both sub & main amount
+                if (token.evmDenoms) {
+                  const subAmounts = getSubAmountDetails(amounts, token);
+                  sumAmountDetails = { ...sumAmountDetails, ...subAmounts };
+                  sumAmount = toSumDisplay(sumAmountDetails);
+                }
+                tokenAndChainIcons = tokensIcon.find((tokenIcon) => tokenIcon.coinGeckoId === token.coinGeckoId);
+                balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
+                rawBalance = balance;
+              } else {
+                const network = item as CustomChainInfo;
+                key = network.chainId.toString();
+                title = network.chainName;
+                const subAmounts = Object.fromEntries(
+                  Object.entries(amounts).filter(
+                    ([denom]) => tokenMap[denom] && tokenMap[denom].chainId === network.chainId
+                  )
+                );
+                const totalUsd = getTotalUsd(subAmounts, prices);
+                tokenAndChainIcons = chainIcons.find((chainIcon) => chainIcon.chainId === network.chainId);
+                rawBalance = totalUsd > 0 ? totalUsd.toFixed(2) : '0';
+                balance = '$' + rawBalance;
               }
-              tokenAndChainIcons = tokensIcon.find((tokenIcon) => tokenIcon.coinGeckoId === token.coinGeckoId);
+              const icon =
+                tokenAndChainIcons && theme === 'light' ? (
+                  <img src={tokenAndChainIcons?.iconLight} className={cx('logo')} alt="" />
+                ) : (
+                  <img src={tokenAndChainIcons?.icon} alt="" className={cx('logo')} />
+                );
 
-              balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
-            } else {
-              const network = item as CustomChainInfo;
-              key = network.chainId.toString();
-              title = network.chainName;
-              const subAmounts = Object.fromEntries(
-                Object.entries(amounts).filter(
-                  ([denom]) => tokenMap[denom] && tokenMap[denom].chainId === network.chainId
-                )
-              );
-              const totalUsd = getTotalUsd(subAmounts, prices);
-              tokenAndChainIcons = chainInfosWithIcon.find((chainIcon) => chainIcon.chainId === network.chainId);
-              balance = '$' + (totalUsd > 0 ? totalUsd.toFixed(2) : '0');
-            }
-            const icon = getIcon({
-              isLightTheme: theme === 'light',
-              type: 'token',
-              chainId: tokenAndChainIcons?.chainId,
-              coinGeckoId: tokenAndChainIcons?.coinGeckoId,
-              width: 30,
-              height: 30
-            });
-
-            return (
-              <div
-                className={cx('item', theme)}
-                key={key}
-                onClick={() => {
-                  setToken(key, type === 'token' && (item as TokenItemType).contractAddress);
-                  if (setSymbol) {
-                    setSymbol(title);
-                  }
-                  close();
-                }}
-              >
-                {icon}
-                <div className={cx('grow')}>
-                  <div>{title}</div>
+              return {
+                ...item,
+                key,
+                title,
+                balance,
+                rawBalance,
+                icon
+              };
+            })
+            .sort((a, b) => Number(b.rawBalance || 0) - Number(a.rawBalance || 0))
+            .map((item, idx) => {
+              const { key, title, balance, icon } = item;
+              return (
+                <div
+                  className={cx('item', theme)}
+                  key={`${key}-${idx}`}
+                  onClick={() => {
+                    setToken(key, type === 'token' && (item as TokenItemType).contractAddress);
+                    if (setSymbol) {
+                      setSymbol(title);
+                    }
+                    close();
+                  }}
+                >
+                  {icon}
+                  <div className={cx('grow')}>
+                    <div>{title}</div>
+                  </div>
+                  <div>{balance}</div>
                 </div>
-                <div>{balance}</div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </Modal>

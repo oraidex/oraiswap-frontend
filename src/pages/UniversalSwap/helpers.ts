@@ -209,6 +209,8 @@ export const getExplorerScan = (chainId: NetworkChainId) => {
       return 'https://scan.kawaii.global/tx';
     case 'noble-1':
       return 'https://www.mintscan.io/noble/tx';
+    case 'ton':
+      return 'https://tonscan.org/address';
     default:
       return 'https://scan.orai.io/txs';
   }
@@ -295,13 +297,13 @@ export const getTokenIcon = (token: TokenItemType, theme: string) => {
 export const refreshBalances = async (
   loadingRefresh: boolean,
   setLoadingRefresh: (boolean) => void,
-  { metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress },
+  { metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress, tonAddress },
   callback
 ) => {
   try {
     if (loadingRefresh) return;
     setLoadingRefresh(true);
-    await callback({ metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress });
+    await callback({ metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress, tonAddress });
   } catch (err) {
     console.log({ err });
   } finally {
@@ -359,11 +361,6 @@ export const getDisableSwap = ({
   simulateData,
   isLoadingSimulate
 }) => {
-  const mobileMode = isMobile();
-  const canSwapToCosmos = !mobileMode && originalToToken.cosmosBased && !walletByNetworks.cosmos;
-  const canSwapToEvm = !mobileMode && !originalToToken.cosmosBased && !walletByNetworks.evm;
-  const canSwapToTron = !mobileMode && originalToToken.chainId === '0x2b6653dc' && !walletByNetworks.tron;
-  const canSwapTo = canSwapToCosmos || canSwapToEvm || canSwapToTron;
   const disabledSwapBtn =
     swapLoading ||
     !fromAmountToken ||
@@ -371,15 +368,11 @@ export const getDisableSwap = ({
     fromAmountTokenBalance > fromTokenBalance || // insufficent fund
     !addressTransfer ||
     !validAddress.isValid ||
-    isLoadingSimulate ||
-    canSwapTo;
+    isLoadingSimulate;
 
   let disableMsg: string;
   if (!validAddress.isValid) disableMsg = `Recipient address not found`;
   if (!addressTransfer) disableMsg = `Recipient address not found`;
-  if (canSwapToCosmos) disableMsg = `Please connect cosmos wallet`;
-  if (canSwapToEvm) disableMsg = `Please connect evm wallet`;
-  if (canSwapToTron) disableMsg = `Please connect tron wallet`;
   if (!simulateData || simulateData.displayAmount <= 0) disableMsg = 'Enter an amount';
   if (fromAmountTokenBalance > fromTokenBalance) disableMsg = `Insufficient funds`;
   if (isLoadingSimulate) disableMsg = `Swap`;
@@ -400,7 +393,7 @@ export const getProtocolsSmartRoute = (
 ) => {
   const protocols = ['Oraidex', 'OraidexV3'];
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
-  if (fromToken.chainId === 'noble-1' || toToken?.chainId === 'noble-1') return protocols;
+  if (fromToken?.chainId === 'noble-1' || toToken?.chainId === 'noble-1') return protocols;
 
   const allowOsmosisProtocols = ['injective-1', 'Neutaro-1', 'noble-1', 'osmosis-1', 'cosmoshub-4', 'celestia'];
   const isAllowOsmosisProtocol =

@@ -10,14 +10,14 @@ import {
   calculateTimeoutTimestamp,
   getCosmosGasPrice,
   solChainId,
-  SOLANA_RPC
+  toDisplay,
+  MAX_ORAICHAIN_DENOM,
+  MAX_SOL_CONTRACT_ADDRESS
 } from '@oraichain/oraidex-common';
 import {
   chainInfos,
   flattenTokens,
-  flattenTokensWithIcon,
   oraidexCommon,
-  tokens,
   oraichainTokens as oraichainTokensCommon,
   otherChainTokens as otherChainTokenCommon
 } from 'initCommon';
@@ -41,6 +41,7 @@ import {
   getSpecialCoingecko,
   getTransactionUrl,
   handleCheckAddress,
+  handleCheckWallet,
   handleErrorTransaction,
   networks
 } from 'helper';
@@ -94,23 +95,32 @@ import DepositBtcModalV2 from './DepositBtcModalV2';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
 import { NetworkChainId } from '@oraichain/common';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Web3SolanaProgramInteraction } from 'program/web3';
+import { SOL_RELAYER_ADDRESS, Web3SolanaProgramInteraction } from 'program/web3';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
 import { ORAICHAIN_RELAYER_ADDRESS } from 'program/web3';
+import { PublicKey } from '@solana/web3.js';
+import { NATIVE_MINT } from '@solana/spl-token';
+import { TonChainId } from 'context/ton-provider';
+import useTonBridgeHandler from './hooks/useTonBridgeHandler';
 
 interface BalanceProps {}
 
 export const isMaintainBridge = false;
 
 const Balance: React.FC<BalanceProps> = () => {
+  //@ts-ignore
+  const isOwallet = window.owallet?.isOwallet;
+
   // hook
   const [searchParams] = useSearchParams();
-  const tokenUrl = searchParams.get('token');
+  const ref = useRef(null);
   const navigate = useNavigate();
+  const tokenUrl = searchParams.get('token');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const feeConfig = useSelector((state: RootState) => state.token.feeConfigs);
   const nomic = useContext(NomicContext);
   const cwBitcoinContext = useContext(CwBitcoinContext);
+  const [walletByNetworks] = useWalletReducer('walletsByNetwork');
 
   // state internal
   const [loadingRefresh, setLoadingRefresh] = useState(false);
@@ -118,29 +128,36 @@ const Balance: React.FC<BalanceProps> = () => {
   const [isDepositBtcModal, setIsDepositBtcModal] = useState(false);
   const [, setTxHash] = useState('');
   const [[from, to], setTokenBridge] = useState<TokenItemType[]>([]);
+  const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>();
   const [[otherChainTokens, oraichainTokens], setTokens] = useState<TokenItemType[][]>([[], []]);
-  const [walletByNetworks] = useWalletReducer('walletsByNetwork');
-
-  const [theme] = useConfigReducer('theme');
-  const [oraiAddress] = useConfigReducer('address');
-  const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
-  const [metamaskAddress] = useConfigReducer('metamaskAddress');
-  const [filterNetworkUI, setFilterNetworkUI] = useConfigReducer('filterNetwork');
-  const [tronAddress] = useConfigReducer('tronAddress');
-  const [btcAddress] = useConfigReducer('btcAddress');
-  const [solAddress] = useConfigReducer('solAddress');
   const [addressRecovery, setAddressRecovery] = useState('');
   const [isFastMode, setIsFastMode] = useState(true);
+
+  const [theme] = useConfigReducer('theme');
+
+  const [filterNetworkUI, setFilterNetworkUI] = useConfigReducer('filterNetwork');
+  const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
+
+  const [metamaskAddress] = useConfigReducer('metamaskAddress');
+  const [oraiAddress] = useConfigReducer('address');
+  const [tronAddress] = useConfigReducer('tronAddress');
+  const [tonAddress] = useConfigReducer('tonAddress');
+  const [solAddress] = useConfigReducer('solAddress');
+  const [btcAddress] = useConfigReducer('btcAddress');
+
+  const wallet = useWallet();
+
+  const { handleBridgeFromCosmos, handleBridgeFromTon } = useTonBridgeHandler({
+    token: from,
+    fromNetwork: from?.chainId,
+    toNetwork: toNetworkChainId
+  });
   const depositV2Fee = useDepositFeesBitcoinV2(true);
   const withdrawV2Fee = useGetWithdrawlFeesBitcoinV2({
     enabled: true,
     bitcoinAddress: btcAddress
   });
-  const wallet = useWallet();
 
-  const ref = useRef(null);
-  //@ts-ignore
-  const isOwallet = window.owallet?.isOwallet;
   const getAddress = async () => {
     try {
       await nomic.generateAddress();
@@ -162,7 +179,7 @@ const Balance: React.FC<BalanceProps> = () => {
     if (isOwallet) {
       getAddress();
     }
-  }, [isOwallet, oraiAddress]);
+  }, [oraiAddress, isOwallet]);
 
   useOnClickOutside(ref, () => {
     setTokenBridge([undefined, undefined]);
@@ -314,7 +331,7 @@ const Balance: React.FC<BalanceProps> = () => {
           customLink: `/bitcoin-dashboard${isV2 ? '-v2' : ''}?tab=pending_deposits`
         });
         setTimeout(async () => {
-          await loadTokenAmounts({ metamaskAddress, tronAddress, oraiAddress, btcAddress: btcAddr });
+          await loadTokenAmounts({ metamaskAddress, tronAddress, oraiAddress, btcAddress: btcAddr, tonAddress });
         }, 5000);
         return;
       }
@@ -423,6 +440,26 @@ const Balance: React.FC<BalanceProps> = () => {
     return [isSoltoOraichain, isOraichainToSol, isBTCtoOraichain, isBTCtoOraichain || isOraichainToBTC];
   };
 
+  const checkTransferTon = async (toNetworkChainId: string) => {
+    const isFromTonToCosmos = from.chainId === TonChainId && toNetworkChainId !== TonChainId;
+    const isFromCosmosToTON = from.cosmosBased && toNetworkChainId === TonChainId;
+    const findToNetwork = flattenTokens.find((flat) => flat.chainId === toNetworkChainId);
+    const isFromCosmosToCosmos =
+      from.cosmosBased && findToNetwork.cosmosBased && from.coinGeckoId === 'the-open-network';
+    return { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos };
+  };
+
+  const handleTransferTon = async ({ isTonToCosmos, transferAmount, isFromCosmosToCosmos, toNetworkChainId }) => {
+    if (!isFromCosmosToCosmos) {
+      const tonAddress = window.Ton.account?.address;
+      if (!tonAddress) throw Error('Not found your ton address!');
+    }
+    if (isTonToCosmos) {
+      return await handleBridgeFromTon(transferAmount);
+    }
+    return await handleBridgeFromCosmos(transferAmount);
+  };
+
   const handleTransferBTC = async ({ isBTCToOraichain, fromToken, transferAmount }) => {
     const btcAddr = await window.Bitcoin.getAddress();
     if (!btcAddr) throw Error('Not found your bitcoin address!');
@@ -457,7 +494,25 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
+    if (!oraiAddress) {
+      throw new Error('Please connect to Oraichain wallet');
+    }
+
     const web3Solana = new Web3SolanaProgramInteraction();
+    console.log('from token address: ', fromToken.contractAddress);
+    if (fromToken.contractAddress !== MAX_SOL_CONTRACT_ADDRESS) {
+      const bridgeBalance =
+        fromToken.contractAddress === NATIVE_MINT.toBase58()
+          ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
+          : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, fromToken.contractAddress);
+      console.log('token balance to oraichain: ', bridgeBalance, fromToken.contractAddress);
+      if (bridgeBalance < transferAmount) {
+        throw new Error(
+          `Transfer ${fromToken.denom} to Oraichain failed. The bridge balance only has ${bridgeBalance}${fromToken.denom}, wanted ${transferAmount}${fromToken.denom}`
+        );
+      }
+    }
+
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
     const transaction = response?.transaction;
     if (transaction) {
@@ -474,7 +529,29 @@ const Balance: React.FC<BalanceProps> = () => {
     fromToken: TokenItemType;
     transferAmount: number;
   }) => {
+    if (!solAddress) {
+      throw new Error('Please connect to Solana wallet');
+    }
+
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
+
+    if (fromToken.denom !== MAX_ORAICHAIN_DENOM) {
+      const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
+      console.log(
+        'Current bridge balance transfer to sol: ',
+        toDisplay(currentBridgeBalance.amount, fromToken.decimals),
+        fromToken.denom
+      );
+      if (toDisplay(currentBridgeBalance.amount, fromToken.decimals) < transferAmount) {
+        throw new Error(
+          `Transfer ${fromToken.denom} to Solana failed. The bridge balance only has ${toDisplay(
+            currentBridgeBalance.amount,
+            fromToken.decimals
+          )}${currentBridgeBalance.denom.toUpperCase()}, wanted ${transferAmount}${currentBridgeBalance.denom.toUpperCase()}`
+        );
+      }
+    }
+
     const result = await window.client.sendTokens(
       oraiAddress,
       receiverAddress,
@@ -502,6 +579,7 @@ const Balance: React.FC<BalanceProps> = () => {
     toNetworkChainId?: NetworkChainId
   ) => {
     try {
+      await handleCheckWallet();
       assert(from && to, 'Please choose both from and to tokens');
       const initFromBalance = amounts[from.denom];
       const subAmounts = getSubAmountDetails(amounts, from);
@@ -520,6 +598,19 @@ const Balance: React.FC<BalanceProps> = () => {
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
+      }
+
+      // check transfer TON <=> ORAICHAIN,Osmosis
+      const { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos } = await checkTransferTon(toNetworkChainId);
+      console.log({ isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos });
+
+      if (isFromCosmosToCosmos || isFromTonToCosmos || isFromCosmosToTON) {
+        return await handleTransferTon({
+          isTonToCosmos: isFromTonToCosmos,
+          isFromCosmosToCosmos,
+          toNetworkChainId,
+          transferAmount: fromAmount
+        });
       }
 
       assert(
@@ -594,52 +685,6 @@ const Balance: React.FC<BalanceProps> = () => {
       );
 
       if (findRelayerFee) relayerFee.relayerAmount = findRelayerFee.amount;
-
-      //-------------------------------------------------------
-      // FIXME: need remove after fix ibc hooks
-      if (from.cosmosBased && from.chainId !== 'noble-1' && to.chainId === 'Oraichain') {
-        const ibcInfo = UniversalSwapHelper.getIbcInfo(from.chainId, to.chainId);
-        if (!ibcInfo)
-          throw generateError(`Could not find the ibc info given the from token with coingecko id ${from.coinGeckoId}`);
-
-        const offlineSigner = await collectWallet(from.chainId);
-        const client = await connectWithSigner(
-          from.rpc,
-          offlineSigner as any,
-          from.chainId === 'injective-1' ? 'injective' : 'cosmwasm',
-          {
-            gasPrice: GasPrice.fromString(
-              `${getCosmosGasPrice(from.gasPriceStep)}${from.feeCurrencies[0].coinMinimalDenom}`
-            ),
-            broadcastPollIntervalMs: 600
-          }
-        );
-
-        const receiver = await handleCheckAddress(to.chainId);
-        const msgTransferObj = {
-          sourcePort: ibcInfo.source,
-          receiver,
-          sourceChannel: ibcInfo.channel,
-          token: coin(toAmount(fromAmount, from.decimals).toString(), from.denom),
-          sender: cosmosAddress,
-          memo: '',
-          timeoutTimestamp: calculateTimeoutTimestamp(ibcInfo.timeout)
-        };
-        let msgTransfer: any = MsgTransfer.fromPartial(msgTransferObj as any);
-        if (from.chainId === 'injective-1') {
-          msgTransfer = MsgTransferInjective.fromPartial(msgTransferObj);
-        }
-
-        const msgTransferEncodeObj = {
-          typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-          value: msgTransfer
-        };
-
-        result = await client.signAndBroadcast(cosmosAddress, [msgTransferEncodeObj], 'auto');
-        return processTxResult(from.rpc, result, getTransactionUrl(from.chainId, result.transactionHash));
-      }
-      //-------------------------------------------------------
-
       const universalSwapHandler = new UniversalSwapHandler(
         {
           sender: { cosmos: cosmosAddress, evm: latestEvmAddress, tron: tronAddress },
@@ -650,9 +695,11 @@ const Balance: React.FC<BalanceProps> = () => {
           userSlippage: 0,
           bridgeFee: 1,
           amounts: amountsBalance,
-          simulateAmount
+          simulateAmount,
+          simulatePrice: '1000000'
         },
         {
+          // @ts-ignore
           cosmosWallet: window.Keplr,
           evmWallet: new Metamask(window.tronWebDapp),
           swapOptions: {
@@ -675,13 +722,9 @@ const Balance: React.FC<BalanceProps> = () => {
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
     return [...otherChainTokens, ...oraichainTokens]
       .filter((token) => {
-        // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
-        if (!token.bridgeTo && !token.contractAddress) return false;
-        if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) {
-          return false;
-        }
+        if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) return false;
         if (UniversalSwapHelper.isSupportedNoPoolSwapEvm(token.coinGeckoId)) return false;
-        return token.chainId === chainId;
+        return token.bridgeTo && token.chainId === chainId;
       })
       .sort((a, b) => {
         return toTotalDisplay(amounts, b) * prices[b.coinGeckoId] - toTotalDisplay(amounts, a) * prices[a.coinGeckoId];
@@ -763,7 +806,7 @@ const Balance: React.FC<BalanceProps> = () => {
                 await refreshBalances(
                   loadingRefresh,
                   setLoadingRefresh,
-                  { metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress },
+                  { metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress, tonAddress },
                   loadTokenAmounts
                 );
               }}
@@ -841,6 +884,7 @@ const Balance: React.FC<BalanceProps> = () => {
                       }}
                       isFastMode={isFastMode}
                       setIsFastMode={setIsFastMode}
+                      setToNetworkChainId={setToNetworkChainId}
                     />
                   </div>
                 );

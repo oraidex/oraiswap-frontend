@@ -544,6 +544,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  &.christmas {
+    .left {
+      transform: translate(20px, 10px);
+    }
+
+    .right {
+      z-index: 1000;
+      transform: translate(-10px, 0px);
+    }
+  }
 }
 
 .priceImpact {
@@ -764,9 +775,21 @@
     align-items: center;
     justify-content: space-between;
 
+    &.christmas {
+      .left {
+        transform: translate(0%, -10px);
+      }
+
+      .right {
+        transform: translate(5px, 0px);
+      }
+    }
+
     img {
       transition: all ease-in-out 0.2s;
+    }
 
+    &.halloween {
       &.left {
         transform: translateX(-100%);
       }
@@ -777,12 +800,24 @@
     }
 
     &:hover {
-      .left {
-        transform: translateX(0%);
+      &.christmas {
+        .left {
+          transform: translateX(0%);
+        }
+
+        .right {
+          transform: translate(5px, 0px);
+        }
       }
 
-      .right {
-        transform: translateX(0);
+      &.halloween {
+        .left {
+          transform: translateX(0%);
+        }
+
+        .right {
+          transform: translateX(0);
+        }
       }
     }
   }

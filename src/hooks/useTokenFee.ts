@@ -84,6 +84,14 @@ export const useRelayerFeeToken = (originalFromToken: TokenItemType, originalToT
     () => {
       const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
       const oraiToken = oraichainTokens.find((token) => token.coinGeckoId === 'oraichain-token');
+
+      if (!oraiToken || !originalToToken) {
+        return {
+          displayAmount: 0,
+          amount: '0'
+        };
+      }
+
       return UniversalSwapHelper.handleSimulateSwap({
         flattenTokens,
         oraichainTokens,
@@ -147,6 +155,12 @@ export const useUsdtToBtc = (amount) => {
   const { data } = useQuery(
     ['convert-btc-to-usdt', originalFromToken, originalToToken],
     () => {
+      if (!originalToToken || !originalFromToken) {
+        return {
+          displayAmount: 0,
+          amount: '0'
+        };
+      }
       return UniversalSwapHelper.handleSimulateSwap({
         flattenTokens,
         oraichainTokens,

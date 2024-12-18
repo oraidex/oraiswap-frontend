@@ -23,6 +23,7 @@ export interface TokenItemProps {
   isBtcToken?: boolean;
   isFastMode?: boolean;
   setIsFastMode?: Function;
+  setToNetworkChainId: Function;
 }
 
 const TokenItem: React.FC<TokenItemProps> = ({
@@ -38,7 +39,8 @@ const TokenItem: React.FC<TokenItemProps> = ({
   isBtcOfOwallet,
   isBtcToken,
   isFastMode,
-  setIsFastMode
+  setIsFastMode,
+  setToNetworkChainId
 }) => {
   // TODO: chain tokensIcon to tokensWithIcon
   let tokenIcon = flattenTokens.find((tok) => tok.coinGeckoId === token.coinGeckoId);
@@ -94,6 +96,7 @@ const TokenItem: React.FC<TokenItemProps> = ({
             convertKwt={convertKwt}
             isFastMode={isFastMode}
             setIsFastMode={setIsFastMode}
+            setToNetwork={setToNetworkChainId}
           />
         )}
       </div>

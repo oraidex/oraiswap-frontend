@@ -46,7 +46,7 @@ const Sidebar: React.FC<{}> = React.memo(() => {
           }}
           rel="noreferrer"
         >
-          <div className={styles.eventItem}>
+          <div className={classNames(styles.eventItem, styles[event])}>
             {configTheme.sideBar.leftLinkImg && (
               <img className={styles.left} src={configTheme.sideBar.leftLinkImg} alt="" />
             )}
@@ -58,6 +58,8 @@ const Sidebar: React.FC<{}> = React.memo(() => {
           <span className={classNames(styles[theme], styles.menu_item_text)}>{title}</span>
         </a>
       );
+
+    const isActive = (link.includes(to) && link?.length === to?.length) || (link === '/' && to === '/universalswap');
     return (
       <Link
         to={to}
@@ -68,13 +70,12 @@ const Sidebar: React.FC<{}> = React.memo(() => {
         className={classNames(
           styles.menu_item,
           {
-            [styles.active]:
-              (link.includes(to) && link?.length === to?.length) || (link === '/' && to === '/universalswap')
+            [styles.active]: isActive
           },
           styles[theme]
         )}
       >
-        <div className={styles.eventItem}>
+        <div className={classNames(styles.eventItem, styles[event])}>
           {configTheme.sideBar.leftLinkImg && (
             <img className={styles.left} src={configTheme.sideBar.leftLinkImg} alt="" />
           )}

@@ -3,7 +3,7 @@ import { btcTokens, cosmosTokens, flattenTokens, solTokens } from 'initCommon';
 import { useDispatch } from 'react-redux';
 import { updateAmounts } from 'reducer/token';
 
-export type Wallet = WalletType | 'metamask' | 'tron' | 'bitcoin' | 'phantom';
+export type Wallet = WalletType | 'metamask' | 'tron' | 'bitcoin' | 'ton' | 'phantom';
 export const useResetBalance = () => {
   const dispatch = useDispatch();
 
@@ -39,6 +39,9 @@ export const useResetBalance = () => {
       case 'phantom':
         updatedAmounts = resetBalanceSol();
         break;
+      case 'ton':
+        updatedAmounts = resetBalanceTon();
+        break;
       default:
         break;
     }
@@ -68,6 +71,11 @@ export const useResetBalance = () => {
 
   const resetBalanceSol = () => {
     return Object.fromEntries(solTokens.map((t) => [t.denom, '0']));
+  };
+
+  const resetBalanceTon = () => {
+    const tronTokens = flattenTokens.filter((token) => token.chainId === 'ton');
+    return Object.fromEntries(tronTokens.map((t) => [t.denom, '0']));
   };
 
   return { handleResetBalance };

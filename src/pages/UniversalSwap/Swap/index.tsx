@@ -2,14 +2,13 @@ import {
   BigDecimal,
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
-  TON_ORAICHAIN_DENOM,
   TRON_DENOM,
   TokenItemType,
-  chainIcons,
   getTokenOnOraichain,
   toAmount,
   toDisplay
 } from '@oraichain/oraidex-common';
+import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import BookIcon from 'assets/icons/book_icon.svg?react';
 import DownArrowIcon from 'assets/icons/down-arrow-v2.svg';
 import FeeIcon from 'assets/icons/fee.svg?react';
@@ -24,11 +23,6 @@ import WarningIcon from 'assets/icons/warning_icon.svg?react';
 import RefreshImg from 'assets/images/refresh.svg?react';
 import { assets } from 'chain-registry';
 import cn from 'classnames/bind';
-import styles from './index.module.scss';
-import { chainInfosWithIcon, flattenTokens, flattenTokensWithIcon, oraichainTokens, oraidexCommon } from 'initCommon';
-import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import Loader from 'components/Loader';
 import LoadingBox from 'components/LoadingBox';
 import PowerByOBridge from 'components/PowerByOBridge';
@@ -53,6 +47,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import { useGetFeeConfig } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
+import { flattenTokens, flattenTokensWithIcon, oraichainTokens } from 'initCommon';
 import Metamask from 'libs/metamask';
 import { getUsd, reduceString, toSubAmount } from 'libs/utils';
 import mixpanel from 'mixpanel-browser';
@@ -66,6 +61,8 @@ import {
   isAllowIBCWasm,
   refreshBalances
 } from 'pages/UniversalSwap/helpers';
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentAddressBookStep, setCurrentAddressBookStep } from 'reducer/addressBook';
 import { AddressManagementStep } from 'reducer/type';
 import { RootState } from 'store/configure';
@@ -78,13 +75,16 @@ import InputCommon from './components/InputCommon';
 import InputSwap from './components/InputSwap/InputSwap';
 import SwapDetail from './components/SwapDetail';
 
+import { CosmosChainId, NetworkChainId } from '@oraichain/common';
+import TonWallet from '@oraichain/tonbridge-sdk/build/wallet';
+import classNames from 'classnames';
 import TokenAndChainSelectors from './components/TokenAndChainSelectors';
 import { TooltipSwapBridge } from './components/TooltipSwapBridge';
 import { useGetTransHistory } from './hooks';
 import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculateDataSwap';
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
-import { CosmosChainId, NetworkChainId } from '@oraichain/common';
+import styles from './index.module.scss';
 
 const cx = cn.bind(styles);
 
@@ -97,6 +97,7 @@ const SwapComponent: React.FC<{
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [tronAddress] = useConfigReducer('tronAddress');
   const [oraiAddress] = useConfigReducer('address');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const [theme] = useConfigReducer('theme');
   const isLightMode = theme === 'light';
@@ -156,6 +157,7 @@ const SwapComponent: React.FC<{
   // hooks
   useGetFeeConfig();
   const { data: prices } = useCoinGeckoPrices();
+  console.log({ originalFromToken, originalToToken });
   const { fees, outputs, tokenInfos, simulateDatas, averageSimulateDatas } = useCalculateDataSwap({
     originalFromToken,
     originalToToken,
@@ -320,8 +322,25 @@ const SwapComponent: React.FC<{
       const isCustomRecipient = validAddress.isValid && addressTransfer !== initAddressTransfer;
       const alphaSmartRoutes = simulateData?.routes;
 
+      let tonWallet = undefined;
+      if ([originalFromToken.chainId, originalToToken.chainId].includes('ton') && !!walletByNetworks.ton) {
+        tonWallet = await TonWallet.create('mainnet', {
+          mnemonicData: {
+            mnemonic: undefined,
+            tonWalletVersion: 'V4'
+          },
+          tonConnector: window?.Ton as any
+        });
+      }
+
+      const tonAddress = tonWallet?.sender?.address?.toString();
       const swapData = {
-        sender: { cosmos: cosmosAddress, evm: checksumMetamaskAddress, tron: tronAddress },
+        sender: {
+          cosmos: cosmosAddress,
+          evm: checksumMetamaskAddress,
+          tron: tronAddress,
+          ton: tonAddress
+        },
         originalFromToken,
         originalToToken,
         fromAmount: fromAmountToken,
@@ -336,27 +355,27 @@ const SwapComponent: React.FC<{
       };
 
       // @ts-ignore
-      const univeralSwapHandler = new UniversalSwapHandler(
-        swapData,
-        {
-          cosmosWallet: window.Keplr,
-          evmWallet: new Metamask(window.tronWebDapp),
-          swapOptions: {
-            isAlphaIbcWasm: useAlphaIbcWasm,
-            isIbcWasm: useIbcWasm,
-            // FIXME: hardcode with case celestia not check balance
-            isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
-          }
-        },
-        oraidexCommon
-      );
+      const univeralSwapHandler = new UniversalSwapHandler(swapData, {
+        cosmosWallet: window.Keplr,
+        evmWallet: new Metamask(window.tronWebDapp),
+        tonWallet,
+        swapOptions: {
+          isAlphaIbcWasm: useAlphaIbcWasm,
+          isIbcWasm: useIbcWasm,
 
-      const { transactionHash } = await univeralSwapHandler.processUniversalSwap();
+          // FIXME: hardcode with case celestia not check balance
+          isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
+        }
+      });
+
+      const result = await univeralSwapHandler.processUniversalSwap();
+      let transactionHash = result?.transactionHash;
+
       if (transactionHash) {
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl(originalFromToken.chainId, transactionHash)
         });
-        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress });
+        loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress, tonAddress });
         setSwapLoading(false);
 
         // save to duckdb
@@ -427,16 +446,16 @@ const SwapComponent: React.FC<{
     setCoe(coeff);
   };
 
-  const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth', TON_ORAICHAIN_DENOM];
+  const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth'];
   const supportedChainFunc = () => {
     if (unSupportSimulateToken.includes(originalFromToken?.denom)) {
       return ['Oraichain'];
     }
 
-    const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
-    if (isOraichainDenom) {
-      return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
-    }
+    // const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
+    // if (isOraichainDenom) {
+    //   return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
+    // }
 
     if (originalFromToken.chainId === 'injective-1') {
       return networks.filter((chainInfo) => chainInfo.chainId === 'Oraichain').map((chain) => chain.chainId);
@@ -677,7 +696,14 @@ const SwapComponent: React.FC<{
                     loadingRefresh,
                     setLoadingRefresh,
                     // TODO: need add bitcoinAddress when universal swap support bitcoin
-                    { metamaskAddress, tronAddress, oraiAddress, btcAddress: undefined, solAddress: undefined },
+                    {
+                      metamaskAddress,
+                      tronAddress,
+                      oraiAddress,
+                      tonAddress,
+                      btcAddress: undefined,
+                      solAddress: undefined
+                    },
                     loadTokenAmounts
                   )
                 }
@@ -812,7 +838,7 @@ const SwapComponent: React.FC<{
             </div>
           </div>
 
-          <div className={styles.eventItem}>
+          <div className={classNames(styles.eventItem, styles[event])}>
             {configTheme.swapBox.inner.bottomLeft && (
               <img className={styles.left} src={configTheme.swapBox.inner.bottomLeft} alt="" />
             )}
@@ -844,7 +870,7 @@ const SwapComponent: React.FC<{
                 disabled={disabledSwapBtn}
               >
                 {!disabledSwapBtn && (
-                  <div className={styles.eventItem}>
+                  <div className={classNames(styles.eventItem, styles[event])}>
                     {configTheme.swapBox.inner.button.leftImg && (
                       <img className={styles.left} src={configTheme.swapBox.inner.button.leftImg} alt="" />
                     )}

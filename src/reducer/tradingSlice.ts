@@ -5,7 +5,6 @@ import { RootState } from 'store/configure';
 import { PairToken, TradingState } from './type';
 
 const initialState: TradingState = {
-  currentToken: PAIRS_CHART.find((pair) => pair.symbol === 'ORAI/USDT'),
   chartTimeFrame: 0,
   currentToChain: 'Oraichain',
   currentToToken: null,
@@ -16,9 +15,6 @@ const tradingSlice = createSlice({
   name: 'trading',
   initialState,
   reducers: {
-    setCurrentToken: (state, action: PayloadAction<PairToken>) => {
-      state.currentToken = action.payload;
-    },
     setCurrentToChain: (state, action: PayloadAction<string | ''>) => {
       state.currentToChain = action.payload;
     },
@@ -35,8 +31,7 @@ const tradingSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setCurrentToken, setChartTimeFrame, setCurrentToChain, setCurrentToToken, setCurrentFromToken } =
-  tradingSlice.actions;
+export const { setChartTimeFrame, setCurrentToChain, setCurrentToToken, setCurrentFromToken } = tradingSlice.actions;
 
 export const selectCurrentToken = (state: RootState): PairToken => state.trading.currentToken;
 export const selectCurrentToChain = (state: RootState): string | '' => state.trading.currentToChain;

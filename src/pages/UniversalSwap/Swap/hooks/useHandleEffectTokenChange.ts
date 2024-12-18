@@ -11,7 +11,6 @@ import {
   selectCurrentToken,
   setCurrentFromToken,
   setCurrentToChain,
-  setCurrentToken,
   setCurrentToToken
 } from 'reducer/tradingSlice';
 import useFilteredTokens from './useFilteredTokens';
@@ -28,6 +27,7 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
 
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [tronAddress] = useConfigReducer('tronAddress');
+  const [tonAddress] = useConfigReducer('tonAddress');
   const [oraiAddress] = useConfigReducer('address');
 
   const [addressTransfer, setAddressTransfer] = useState('');
@@ -37,6 +37,7 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   // get token on oraichain to simulate swap amount.
+  console.log({ fromTokenDenomSwap, allOraichainTokens: allOraichainTokens.length });
   const originalFromToken = allOraichainTokens.find((token) => token.denom === fromTokenDenomSwap);
 
   const originalToToken = tokenMap[toTokenDenomSwap] || onchainTokens.find((token) => token.denom === toTokenDenomSwap);
@@ -60,19 +61,23 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   useEffect(() => {
     (async () => {
       if (!isMobile()) {
-        if (!walletByNetworks.evm && !walletByNetworks.cosmos && !walletByNetworks.tron) {
+        const isNetworkSupported =
+          walletByNetworks.evm || walletByNetworks.cosmos || walletByNetworks.tron || walletByNetworks.ton;
+
+        if (!isNetworkSupported) {
           return setAddressTransfer('');
         }
 
-        if (originalToToken.cosmosBased && !walletByNetworks.cosmos) {
-          return setAddressTransfer('');
-        }
+        const isCosmosBased = originalToToken.cosmosBased;
+        const chainId = originalToToken.chainId;
 
-        if (!originalToToken.cosmosBased && originalToToken.chainId === '0x2b6653dc' && !walletByNetworks.tron) {
-          return setAddressTransfer('');
-        }
-
-        if (!originalToToken.cosmosBased && !walletByNetworks.evm) {
+        if (
+          (isCosmosBased && !walletByNetworks.cosmos) ||
+          (!isCosmosBased &&
+            ((chainId === '0x2b6653dc' && !walletByNetworks.tron) ||
+              (chainId === 'ton' && !walletByNetworks.ton) ||
+              (['0x01', '0x38'].includes(chainId) && !walletByNetworks.evm)))
+        ) {
           return setAddressTransfer('');
         }
       }
@@ -90,19 +95,15 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
     oraiAddress,
     metamaskAddress,
     tronAddress,
+    tonAddress,
     walletByNetworks.evm,
     walletByNetworks.cosmos,
     walletByNetworks.tron,
+    walletByNetworks.ton,
     window?.ethereumDapp,
-    window?.tronWebDapp
+    window?.tronWebDapp,
+    window?.Ton?.account
   ]);
-
-  useEffect(() => {
-    const newTVPair = generateNewSymbolV2(fromToken, toToken, currentPair);
-
-    if (newTVPair) dispatch(setCurrentToken(newTVPair));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromToken, toToken]);
 
   useEffect(() => {
     const newCurrentToChain = genCurrentChain({ toToken: originalToToken, currentToChain });
@@ -120,7 +121,7 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   }, [originalFromToken, fromToken]);
 
   const isConnectedWallet =
-    walletByNetworks.cosmos || walletByNetworks.bitcoin || walletByNetworks.evm || walletByNetworks.tron;
+    walletByNetworks.cosmos || walletByNetworks.bitcoin || walletByNetworks.evm || walletByNetworks.tron || window.Ton;
 
   let validAddress = {
     isValid: true

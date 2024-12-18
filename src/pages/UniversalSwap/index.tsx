@@ -26,6 +26,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import styles from './index.module.scss';
+import classNames from 'classnames';
 
 const cx = cn.bind(styles);
 
@@ -76,7 +77,7 @@ const Swap: React.FC = () => {
   return (
     <>
       {(configTheme.animation.topImg || configTheme.animation.bottomImg) && (
-        <div className={styles.wrapperEvent}>
+        <div className={classNames(styles.wrapperEvent, styles[event])}>
           {configTheme.animation.topImg && <img className={styles.top} src={configTheme.animation.topImg} alt="" />}
           {configTheme.animation.bottomImg && (
             <img className={styles.bottom} src={configTheme.animation.bottomImg} alt="" />

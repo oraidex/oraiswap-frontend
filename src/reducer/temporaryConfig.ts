@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 export enum EVENT_ENUM {
   normal = 'normal',
-  halloween = 'halloween'
-  // christmas = 'christmas'
+  halloween = 'halloween',
+  christmas = 'christmas'
 }
 
 export interface TemporaryConfigState {
@@ -14,7 +14,7 @@ export interface TemporaryConfigState {
 
 const initialState: TemporaryConfigState = {
   customBanner: true,
-  event: EVENT_ENUM.normal
+  event: EVENT_ENUM.christmas
 };
 
 export const temporaryConfigSlice = createSlice({

@@ -40,7 +40,6 @@ import {
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
-import { Long } from 'cosmjs-types/helpers';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';
@@ -685,7 +684,8 @@ function generateMoveOraib2OraiMessages(
       sender: fromAddress,
       receiver: toAddress,
       memo: '',
-      timeoutTimestamp: Long.fromString(calculateTimeoutTimestamp(ibcInfo.timeout))
+      timeoutHeight: undefined,
+      timeoutTimestamp: BigInt(calculateTimeoutTimestamp(ibcInfo.timeout))
     });
   }
   return transferMsgs;

@@ -115,8 +115,6 @@ export const HistoryTab: React.FC<{
 }> = ({ networkFilter }) => {
   const { transHistory } = useGetTransHistory();
   const [selectedData, setSelectedData] = useState(null);
-  console.log({ selectedData });
-
   const headers: TableHeaderProps<TransactionHistory> = {
     assets: {
       name: '',
