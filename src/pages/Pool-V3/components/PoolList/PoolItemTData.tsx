@@ -22,6 +22,9 @@ const PoolItemTData = ({
   setCurrentPool,
   setPairDenomsDeposit
 }) => {
+
+
+
   const navigate = useNavigate();
   const [openTooltip, setOpenTooltip] = useState(false);
 
@@ -41,6 +44,15 @@ const PoolItemTData = ({
     firstAssetInfo,
     secondAssetInfo
   } = item;
+  
+  // if (!tokenXinfo) {
+  //   console.log('tokenXinfo is null', poolKey);
+  // }
+
+  // if (!tokenYinfo) {
+  //   console.log('tokenYinfo is null', poolKey);
+  // }
+
   const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
 
   const isOraiBtcPoolV2 = tokenXinfo?.name === 'ORAI' && tokenYinfo?.name === 'BTC (Legacy)' && type === 'Pool V2';

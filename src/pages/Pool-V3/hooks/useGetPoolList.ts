@@ -9,11 +9,17 @@ import { useEffect, useState } from 'react';
 import { PoolInfoResponse } from 'types/pool';
 import { calcPrice } from '../components/PriceRangePlot/utils';
 import { extractAddress, formatPoolData } from '../helpers/format';
+import { parseAssetInfo } from '@oraichain/oraidex-common';
+import { tokenInspector } from 'initTokenInspector';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
+import { useDispatch } from 'react-redux';
+import { addToOraichainTokens } from 'reducer/token';
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const theme = useTheme();
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
   const [dataPool, setDataPool] = useState([...Array(0)]);
+  const dispatch = useDispatch();
 
   const {
     data: poolList,
@@ -63,6 +69,29 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     (async function formatListPools() {
+      const tokenAddresses = new Set<string>();
+      poolList.forEach((pool) => {
+        if ('liquidityAddr' in pool) {
+          tokenAddresses.add(parseAssetInfo(JSON.parse(pool.firstAssetInfo)));
+          tokenAddresses.add(parseAssetInfo(JSON.parse(pool.secondAssetInfo)));
+        } else {
+          tokenAddresses.add(pool.pool_key.token_x);
+          tokenAddresses.add(pool.pool_key.token_y);
+        }
+      });
+
+      // loop through oraichainTokens, if token is already in oraichainTokens, remove it from tokenAddresses
+      oraichainTokens.forEach((token) => {
+        if (tokenAddresses.has(extractAddress(token))) {
+          tokenAddresses.delete(extractAddress(token));
+        }
+      });
+
+      const extendedInfos = await tokenInspector.inspectMultiTokens([...tokenAddresses]);
+      const convertToTokensType = extendedInfos.map((info) => onChainTokenToTokenItem(info));
+      dispatch(addToOraichainTokens(convertToTokensType));
+
+
       const listPools = (poolList || []).map((p) => formatPoolData(p));
 
       const fmtPools = (await Promise.all(listPools)).filter((e) => e.isValid);
