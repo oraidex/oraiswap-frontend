@@ -46,15 +46,15 @@ export const getIconPoolData = async (tokenX: string, tokenY: string, isLight: b
 
   if (tokenXinfo)
     FromTokenIcon = isLight ? (
-      <img src={tokenXinfo.iconLight} alt="iconlight" />
+      <img style={{ borderRadius: '100%' }} src={tokenXinfo.iconLight} alt="iconlight" />
     ) : (
-      <img src={tokenXinfo.icon} alt="iconlight" />
+      <img style={{ borderRadius: '100%' }} src={tokenXinfo.icon} alt="iconlight" />
     );
   if (tokenYinfo)
     ToTokenIcon = isLight ? (
-      <img src={tokenYinfo.iconLight} alt="iconlight" />
+      <img style={{ borderRadius: '100%' }} src={tokenYinfo.iconLight} alt="iconlight" />
     ) : (
-      <img src={tokenYinfo.icon} alt="iconlight" />
+      <img style={{ borderRadius: '100%' }} src={tokenYinfo.icon} alt="iconlight" />
     );
   return { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo };
 };

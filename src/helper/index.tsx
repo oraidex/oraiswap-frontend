@@ -10,7 +10,7 @@ import {
   EVM_CHAIN_ID_COMMON,
   SOL_SCAN,
   WalletType as WalletCosmosType,
-  solChainId,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { serializeError } from 'serialize-error';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
@@ -41,6 +41,7 @@ import {
 import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common';
 import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { TonClient } from '@ton/ton';
+import { store } from 'store/configure';
 
 export interface Tokens {
   denom?: string;
@@ -677,15 +678,17 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
   }
 };
 
-export const getIconToken = ({ isLightTheme, denom, width = 18, height = 18 }) => {
-  const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) =>
+export const getIconToken = ({ isLightTheme, denom, width = 30, height = 30 }) => {
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens;
+  const tokenIcon = allOraichainTokens.find((tokenWithIcon) =>
     [tokenWithIcon.contractAddress, tokenWithIcon.denom].includes(denom)
   );
   if (tokenIcon) {
     return isLightTheme ? (
-      <img src={tokenIcon.iconLight} width={width} height={height} alt="" />
+      <img style={{ borderRadius: '100%' }} src={tokenIcon.iconLight} width={width} height={height} alt="" />
     ) : (
-      <img src={tokenIcon.icon} width={width} height={height} alt="" />
+      <img style={{ borderRadius: '100%' }} src={tokenIcon.icon} width={width} height={height} alt="" />
     );
   }
 

@@ -132,9 +132,9 @@ export default function SelectToken({
             {[...listItems, ...onchainTokens]
               .map((token) => {
                 const tokenIcon = isLightTheme ? (
-                  <img src={token.iconLight} alt="icon" width={30} height={30} />
+                  <img style={{ borderRadius: '100%' }} src={token.iconLight} alt="icon" width={30} height={30} />
                 ) : (
-                  <img src={token.icon} alt="icon" width={30} height={30} />
+                  <img style={{ borderRadius: '100%' }} src={token.icon} alt="icon" width={30} height={30} />
                 );
 
                 const networkIcon = getChainIcon({
