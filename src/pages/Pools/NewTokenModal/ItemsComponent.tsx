@@ -8,6 +8,8 @@ import { tokenMap } from 'initCommon';
 import NumberFormat from 'react-number-format';
 import styles from './NewTokenModal.module.scss';
 import { getIcon } from 'helper';
+import TrashIcon from 'assets/icons/ion_trash-sharp.svg?react';
+import { reduceString } from 'libs/utils';
 
 const cx = cn.bind(styles);
 
@@ -17,7 +19,7 @@ export const RewardItems = ({ item, ind, selectedReward, setSelectedReward, setR
     isLightTheme: theme === 'light',
     type: 'token',
     chainId: originalFromToken?.chainId,
-    coinGeckoId: originalFromToken?.coinGeckoId, 
+    coinGeckoId: originalFromToken?.coinGeckoId,
     width: 30,
     height: 30
   })
@@ -69,70 +71,62 @@ export const InitBalancesItems = ({
   setInitBalances,
   initBalances,
   theme,
-  decimals
+  decimals,
+  deleteSelectedItem
 }) => {
   return (
-    <div>
-      <div className={cx('wrap-init-balances')}>
-        <div>
-          <CheckBox
-            checked={selectedInitBalances.includes(ind)}
-            onCheck={() => {
-              const arr = selectedInitBalances.includes(ind)
-                ? selectedInitBalances.filter((e) => e !== ind)
-                : [...selectedInitBalances, ind];
-              setSelectedInitBalances(arr);
-            }}
-          />
-        </div>
-        <div className={cx('wallet', theme)}>
-          <span>{ind + 1}</span>
-          <WalletIcon />
+    <div className={cx('init-balance-item')}>
+      <div className={cx('row-item')}>
+        <div className={cx('input', theme)}>
+          <div>
+            <Input
+              value={item.address ? reduceString(item.address, 7, 10) : null}
+              style={{
+                color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+              }}
+              onChange={(e) => {
+                setInitBalances(
+                  initBalances.map((ba, i) => ({
+                    amount: ba.amount,
+                    address: ind === i ? e?.target?.value : ba.address
+                  }))
+                );
+              }}
+              placeholder="Address"
+            />
+          </div>
         </div>
       </div>
-      <div className={cx('row')}>
-        <div className={cx('label')}>Address</div>
-        <Input
-          className={cx('input', theme)}
-          value={item.address}
-          onChange={(e) => {
-            setInitBalances(
-              initBalances.map((ba, i) => ({
-                amount: ba.amount,
-                address: ind === i ? e?.target?.value : ba.address
-              }))
-            );
-          }}
-          placeholder="ADDRESS"
-        />
+      <div className={cx('row-item')}>
+        <div className={cx('input', theme)}>
+          <div>
+            <NumberFormat
+              thousandSeparator
+              decimalScale={6}
+              value={toDisplay(item.amount, decimals)}
+              style={{
+                color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+              }}
+              onValueChange={({ floatValue }) =>
+                setInitBalances(
+                  initBalances.map((ba, index) => {
+                    return ind === index ? { ...ba, amount: toAmount(floatValue, decimals) } : ba;
+                  })
+                )
+              }
+              placeholder="0"
+            />
+          </div>
+        </div>
       </div>
-      <div
-        className={cx('row')}
-        style={{
-          paddingTop: 10
+      <div className={cx('trash')}
+        onClick={() => {
+          const arr = selectedInitBalances.includes(ind) ? selectedInitBalances.filter((e) => e !== ind) : [...selectedInitBalances, ind];
+          deleteSelectedItem(arr);
         }}
       >
-        <div className={cx('label')}>Amount</div>
-        <NumberFormat
-          placeholder="0"
-          className={cx('input', theme)}
-          style={{
-            color: theme === 'light' ? 'rgba(126, 92, 197, 1)' : 'rgb(255, 222, 91)'
-          }}
-          thousandSeparator
-          decimalScale={6}
-          type="text"
-          value={toDisplay(item.amount, decimals)}
-          onValueChange={({ floatValue }) =>
-            setInitBalances(
-              initBalances.map((ba, index) => {
-                return ind === index ? { ...ba, amount: toAmount(floatValue, decimals) } : ba;
-              })
-            )
-          }
-        />
+        <TrashIcon />
       </div>
-      <hr />
     </div>
   );
 };

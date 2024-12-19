@@ -1,15 +1,13 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { AccountData } from '@cosmjs/proto-signing';
+import { sha256 } from '@injectivelabs/sdk-ts';
 import PlusIcon from 'assets/icons/plus.svg?react';
-import RewardIcon from 'assets/icons/reward.svg?react';
-import TrashIcon from 'assets/icons/trash.svg?react';
 import cn from 'classnames/bind';
-import CheckBox from 'components/CheckBox';
 import Input from 'components/Input';
 import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { handleErrorTransaction } from 'helper';
+import { getTransactionUrl, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import { network } from 'initCommon';
@@ -18,7 +16,7 @@ import { validateAddressCosmos } from 'libs/utils';
 import { FC, useRef, useState } from 'react';
 import { InitBalancesItems } from './ItemsComponent';
 import styles from './NewTokenModal.module.scss';
-import { sha256 } from '@injectivelabs/sdk-ts';
+import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 const cx = cn.bind(styles);
 
 const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
@@ -35,7 +33,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [theme] = useConfigReducer('theme');
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
-  const [tokenDecimal, setTokenDecimal] = useState(6);
+  const [tokenDecimal, setTokenDecimal] = useState(null);
   const [description, setDescription] = useState('');
   const [tokenLogoUrl, setTokenLogoUrl] = useState('');
   const [selectedInitBalances, setSelectedInitBalances] = useState([]);
@@ -146,11 +144,19 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       }) : [];
 
       msgs.push(createDenomMsg);
-      
+
       if (initBalances.length > 0) {
         msgs.push(...initBalanceMsg);
       }
       const res = await client.executeMultiple(address.address, msgs, 'auto');
+
+      if (res.transactionHash) {
+        displayToast(TToastType.TX_SUCCESSFUL, {
+          customLink: getTransactionUrl('Oraichain', res.transactionHash)
+        });
+        close();
+      }
+
     } catch (error) {
       console.log('error listing token: ', error);
       handleErrorTransaction(error);
@@ -171,88 +177,96 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
     }
   };
 
-  const deleteSelectedItem = () => {
-    const newInitBalances = initBalances.filter((_, i) => !selectedInitBalances.includes(i));
+  const deleteSelectedItem = (arr) => {
+    const newInitBalances = initBalances.filter((_, i) => !arr.includes(i));
     setInitBalances(newInitBalances);
     setSelectedInitBalances([]);
   }
 
-  const generateOverlay = () => {
-    return isAddListToken || typeDelete ? <div className={cx('overlay')} /> : null;
-  };
-
   return (
-    <Modal isOpen={isOpen} close={close} open={open} isCloseBtn={true} className={cx('modal')}>
-      {generateOverlay()}
+    <Modal isOpen={isOpen} close={close} open={open} isCloseBtn={true} className={cx('modal', 'overlay')}>
       <div className={cx('container', theme)}>
         <div className={cx('container-inner')}>
-          <RewardIcon />
-          <div className={cx('title', theme)}>Create a new token</div>
+          <div className={cx('title', theme)}>Create a new Token</div>
         </div>
         <div className={cx('content')} ref={ref}>
           <div className={cx('box', theme)}>
             <div className={cx('token')}>
               <div>
-                <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token name</div>
+                <div className={cx('row')}>
+                  <div className={cx('label')}>Token name <span>*</span></div>
                   <div className={cx('input', theme)}>
-                    <div>
                       <Input
                         value={tokenName}
                         style={{
-                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)',
                         }}
+                        className={cx('input-inner')}
                         onChange={(e) => setTokenName(e?.target?.value)}
                         placeholder="Oraichain Token"
                       />
-                    </div>
                   </div>
                 </div>
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Symbol</div>
+                  <div className={cx('label')}>Token Symbol <span>*</span></div>
                   <div className={cx('input', theme)}>
-                    <div>
+
                       <Input
                         value={tokenSymbol}
                         style={{
                           color: theme === 'light' && 'rgba(39, 43, 48, 1)'
                         }}
+                        className={cx('input-inner')}
                         onChange={(e) => setTokenSymbol(e?.target?.value)}
                         placeholder="ORAI"
                       />
                     </div>
-                  </div>
+
                 </div>
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Decimals</div>
+                  <div className={cx('label')}>Token Decimals <span>*</span></div>
                   <div className={cx('input', theme)}>
-                    <div>
+
                       <Input
                         type='number'
                         value={tokenDecimal}
                         style={{
                           color: theme === 'light' && 'rgba(39, 43, 48, 1)'
                         }}
-                        onChange={(e) => setTokenDecimal(Number(e?.target?.value))}
+                        min={0}
+                        max={18}
+                        className={cx('input-inner')}
+                        onChange={(e) => {
+                          if (e?.target?.value === '') {
+                            setTokenDecimal(null);
+                            return
+                          }
+                          setInitBalances([]);
+                          setIsInitBalances(false);
+                          setSelectedInitBalances([]);
+                          setTokenDecimal(Number(e?.target?.value))
+                        }}
+                        onWheel={(e) => e.currentTarget.blur()}
                         placeholder="6"
                       />
-                    </div>
+
                   </div>
                 </div>
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Description</div>
-                  <div className={cx('input', theme)}>
-                    <div>
+                  <div className={cx('label')}>Token Description <span>*</span></div>
+                  <div className={cx('description', theme)}>
+
                       <textarea
                         value={description}
                         style={{
                           color: theme === 'light' && 'rgba(39, 43, 48, 1)'
                         }}
+                        className={cx('input-inner')}
                         rows={3}
                         onChange={(e) => setDescription(e?.target?.value)}
                         placeholder="Orai is the best token"
                       />
-                    </div>
+
                   </div>
                 </div>
                 {/* <div className={cx('row', 'pt-16')}>
@@ -279,31 +293,73 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   </div>
                 </div> */}
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Logo Url</div>
+                  <div className={cx('label')}>Token Logo Url <span>*</span></div>
                   <div className={cx('input', theme)}>
-                    <div>
+                    <div className={cx('input-image')}>
                       <Input
                         value={tokenLogoUrl}
                         style={{
-                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)',
                         }}
+                        className={cx('input-inner')}
                         onChange={(e) => setTokenLogoUrl(e?.target?.value)}
-                        placeholder="(Optional) https://orai.io"
+                        placeholder="https://orai.io"
                       />
-                      {tokenLogoUrl && <img src={tokenLogoUrl} alt="Logo" width={150} height={150} />}
+                      {tokenLogoUrl && <img src={tokenLogoUrl} alt="Logo" width={50} height={50} />}
                     </div>
                   </div>
                 </div>
-                <hr />
-                <div>
-                  <CheckBox
-                    label="Initial Balances (Optional)"
-                    checked={isInitBalances}
-                    onCheck={setIsInitBalances}
-                  />
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('init-balance')} onClick={() => setIsInitBalances(!isInitBalances)}>
+                    <span>
+                      Init Balances
+                    </span>
+                    <div style={{
+                      transform: isInitBalances ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.5s',
+                    }}>
+                      <ArrowDownIcon />
+                    </div>
+                  </div>
                 </div>
-                {isInitBalances && (
+                {isInitBalances && tokenDecimal > 0 && (
                   <div>
+                    {/* {isInitBalances && (
+                      <div className={cx('header-init')}>
+                        <CheckBox
+                          label={`Select All(${selectedInitBalances.length})`}
+                          checked={initBalances.length && selectedInitBalances.length === initBalances.length}
+                          onCheck={() => handleOnCheck(selectedInitBalances, setSelectedInitBalances, initBalances)}
+                        />
+                        <div
+                          className={cx('trash')}
+                          onClick={() => selectedInitBalances.length && deleteSelectedItem()}
+                        >
+                          <TrashIcon />
+                        </div>
+                      </div>
+                    )} */}
+
+
+                    {isInitBalances &&
+                      initBalances.map((item, ind) => {
+                        return (
+                          <div key={ind}>
+                            <InitBalancesItems
+                              item={item}
+                              ind={ind}
+                              selectedInitBalances={selectedInitBalances}
+                              setSelectedInitBalances={setSelectedInitBalances}
+                              setInitBalances={setInitBalances}
+                              initBalances={initBalances}
+                              theme={theme}
+                              decimals={tokenDecimal}
+                              deleteSelectedItem={deleteSelectedItem}
+                            />
+                          </div>
+                        );
+                      })}
+
                     {isInitBalances && (
                       <div
                         className={cx('btn-add-init', theme)}
@@ -321,42 +377,6 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                         <span>Add</span>
                       </div>
                     )}
-
-                    {isInitBalances && (
-                      <div className={cx('header-init')}>
-                        <CheckBox
-                          label={`Select All(${selectedInitBalances.length})`}
-                          checked={initBalances.length && selectedInitBalances.length === initBalances.length}
-                          onCheck={() => handleOnCheck(selectedInitBalances, setSelectedInitBalances, initBalances)}
-                        />
-                        <div
-                          className={cx('trash')}
-                          onClick={() => selectedInitBalances.length && deleteSelectedItem()}
-                        >
-                          <TrashIcon />
-                        </div>
-                      </div>
-                    )}
-
-                    <div style={{ height: 10 }} />
-
-                    {isInitBalances &&
-                      initBalances.map((item, ind) => {
-                        return (
-                          <div key={ind}>
-                            <InitBalancesItems
-                              item={item}
-                              ind={ind}
-                              selectedInitBalances={selectedInitBalances}
-                              setSelectedInitBalances={setSelectedInitBalances}
-                              setInitBalances={setInitBalances}
-                              initBalances={initBalances}
-                              theme={theme}
-                              decimals={tokenDecimal}
-                            />
-                          </div>
-                        );
-                      })}
                   </div>
                 )}
               </div>
@@ -366,7 +386,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         <div
           className={cx(
             'create-btn',
-            (isLoading || (!tokenName)) && 'disable-btn'
+            (isLoading || (!tokenName) || (!tokenSymbol) || (!tokenDecimal) || (!tokenLogoUrl)) && 'disable-btn'
           )}
           onClick={() => !isLoading && (tokenName) && handleCreateToken()}
         >
