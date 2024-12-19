@@ -224,8 +224,35 @@ export const canStake = (rewardPerSec: string) => {
   const rewardPerSecJSON = JSON.parse(rewardPerSec) as {
     assets: {
       amount: string;
-    }[]
+    }[];
   };
 
   return rewardPerSecJSON.assets.some((asset) => asset.amount !== '0');
-}
+};
+
+export const listFactoryV1Pools = [
+  {
+    symbols: ['AIRI', 'ORAI'],
+    factoryV1: true
+  },
+  {
+    symbols: ['ORAIX', 'ORAI'],
+    factoryV1: true
+  },
+  {
+    symbols: ['ORAI', 'ATOM'],
+    factoryV1: true
+  },
+  {
+    symbols: ['ORAI', 'USDT'],
+    factoryV1: true
+  },
+  {
+    symbols: ['KWT', 'ORAI'],
+    factoryV1: true
+  },
+  {
+    symbols: ['ORAI', 'OSMO'],
+    factoryV1: true
+  }
+];

@@ -1,13 +1,15 @@
-// import { PAIRS_CHART } from '@oraichain/oraidex-common';
 import { useEffect, useState } from 'react';
 
 const checkIsPairOfPool = ({ fromName, toName }: { fromName: string; toName: string }) => {
+  // TODO: check a pair is v2
   const check = [].find((p) => {
     const symbols = p.symbols.map((symbol) => symbol.toUpperCase());
     return symbols.includes(fromName) && symbols.includes(toName);
   });
 
-  return !!check;
+  // return !!check;
+  // TODO: check a pair is v2
+  return true;
 };
 
 export const useSwapFee = ({ fromToken, toToken }) => {

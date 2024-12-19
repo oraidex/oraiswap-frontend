@@ -149,7 +149,7 @@
         position: absolute;
         top: 100%;
         left: 0;
-        width: 156px;
+        width: 165px;
         padding: 10px;
         border-radius: 12px;
         margin-top: 6px;
@@ -173,6 +173,23 @@
           background-color: theme-get('neutral-surface-bg-section');
           color: theme-get('colors-neutral-text-body-on-row');
           border: 1px solid #494949;
+        }
+      }
+
+      .dropdownCreate {
+        .filterItem {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .typePool {
+            font-weight: 500;
+          }
+
+          .desPool {
+            font-size: 12px;
+            color: #979995;
+          }
         }
       }
     }

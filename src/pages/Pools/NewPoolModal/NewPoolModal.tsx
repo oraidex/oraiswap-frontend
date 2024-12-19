@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import DoneStepImg from 'assets/images/done-step.svg';
 import cn from 'classnames/bind';
 import Modal from 'components/Modal';
-import Pie from 'components/Pie';
 import TokenBalance from 'components/TokenBalance';
-import { FACTORY_V2_CONTRACT, getPoolTokens, toAmount, TokenItemType } from '@oraichain/oraidex-common';
+import { FACTORY_V2_CONTRACT, TokenItemType } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { toDisplay } from '@oraichain/oraidex-common';
 import { FC, useState } from 'react';
@@ -17,9 +15,15 @@ import { assetInfoMap, network, oraichainTokens } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { SelectTokenModal } from '../components/SelectTokenModal';
+import IcBack from 'assets/icons/ic_back.svg?react';
+import useTheme from 'hooks/useTheme';
+import { numberWithCommas } from 'helper/format';
+import useConfigReducer from 'hooks/useConfigReducer';
+import Loader from 'components/Loader';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
+import { getTransactionUrl } from 'helper';
 
 const cx = cn.bind(styles);
-
 interface ModalProps {
   className?: string;
   isOpen: boolean;
@@ -27,8 +31,6 @@ interface ModalProps {
   close: () => void;
   isCloseBtn?: boolean;
 }
-
-const steps = ['Add Liquidity', 'Confirm'];
 
 const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const { data: prices } = useCoinGeckoPrices();
@@ -41,7 +43,10 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(allOraichainTokens);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
+  const [loading, setLoading] = useState(false);
   const amounts = useSelector((state: RootState) => state.token.amounts);
+  const theme = useTheme();
+  const [walletAddress] = useConfigReducer('address');
 
   const tokenObj1 = allOraichainTokens.find((token) => token?.denom === token1);
   const tokenObj2 = allOraichainTokens.find((token) => token?.denom === token2);
@@ -49,7 +54,6 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const { data: token1InfoData } = useQuery(['token-info', token1], () => fetchTokenInfo(tokenObj1!), {
     enabled: !!tokenObj1
   });
-
   const { data: token2InfoData } = useQuery(['token-info', token2], () => fetchTokenInfo(tokenObj2!), {
     enabled: !!tokenObj2
   });
@@ -63,13 +67,14 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
   const getBalanceValue = (tokenSymbol: string | undefined, amount: number | string) => {
     if (!tokenSymbol) return 0;
-    const coingeckoId = getPoolTokens(assetInfoMap).find((token) => token.name === tokenSymbol)?.coinGeckoId;
+    const coingeckoId = oraichainTokens.find((token) => token.name === tokenSymbol)?.coinGeckoId;
     const pricePer = prices[coingeckoId!] ?? 0;
 
     return pricePer * +amount;
   };
 
   const handleCreatePool = async () => {
+    setLoading(true);
     try {
       const { client, defaultAddress: address } = await getCosmWasmClient({
         chainId: network.chainId
@@ -199,15 +204,73 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       msgs.push(createPairMsg);
 
       const result = await client.executeMultiple(address.address, msgs, 'auto');
-      console.log(result);
+
+      // @ts-ignore
+      displayToast(TToastType.TX_SUCCESSFUL, {
+        customLink: getTransactionUrl('Oraichain', result.transactionHash),
+        message: 'Please wait a minute to see your newly created pool V2.'
+      });
     } catch (error) {
       console.error(error);
+      displayToast(TToastType.TX_FAILED, {
+        message: error.message
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const step1Component = (
     <>
       <div className={cx('supply')}>
+        <div className={cx('input')}>
+          <div className={cx('token')}>
+            <div className={cx('token-info')} onClick={() => setIsSelectingToken('token1')}>
+              {!!token1 ? (
+                (() => {
+                  return (
+                    <>
+                      {Token1Icon && <img src={Token1Icon} className={cx('logo')} alt="" />}
+                      <div className={cx('title')}>
+                        <div>{token1InfoData?.symbol ?? ''}</div>
+                      </div>
+                      <div className={cx('arrow-down')} />
+                    </>
+                  );
+                })()
+              ) : (
+                <>
+                  <span className={cx('title')}>Select assets</span>
+                  <div className={cx('arrow-down')} />
+                </>
+              )}
+            </div>
+            <div className={cx('itemInput', { [styles.disabled]: false })}>
+              <div className={cx('tokenInfo')}>
+                <div className={cx('input')}>
+                  <NumberFormat
+                    placeholder="0"
+                    thousandSeparator
+                    className={cx('amount')}
+                    decimalScale={6}
+                    disabled={!token1InfoData}
+                    type="text"
+                    value={amountToken1 ? amountToken1 : ''}
+                    onChange={() => {}}
+                    isAllowed={(values) => {
+                      const { floatValue } = values;
+                      // allow !floatValue to let user can clear their input
+                      return !floatValue || (floatValue >= 0 && floatValue <= 1e14);
+                    }}
+                    onValueChange={({ floatValue }) => {
+                      setAmountToken1(floatValue ?? 0);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className={cx('balance')}>
           <TokenBalance
             balance={{
@@ -216,65 +279,79 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               denom: token1InfoData?.symbol
             }}
             prefix="Balance: "
-            decimalScale={2}
+            decimalScale={6}
           />
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken1(toDisplay(token1Balance, token1InfoData?.decimals))}
-          >
-            MAX
-          </div>
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken1(toDisplay(token1Balance / BigInt(2), token1InfoData?.decimals))}
-          >
-            HALF
-          </div>
-          <TokenBalance
-            balance={getBalanceValue(token1InfoData?.symbol ?? '', toDisplay(token1Balance, token1InfoData?.decimals))}
-            style={{ flexGrow: 1, textAlign: 'right' }}
-            decimalScale={2}
-          />
-        </div>
-        <div className={cx('input')}>
-          <div className={cx('token')} onClick={() => setIsSelectingToken('token1')}>
-            {!!token1 ? (
-              (() => {
-                return (
-                  <>
-                    {Token1Icon && <img src={Token1Icon} className={cx('logo')} alt="" />}
-                    <div className={cx('title')}>
-                      <div>{token1InfoData?.symbol ?? ''}</div>
-                      <div className={cx('des')}>Cosmos Hub</div>
-                    </div>
-                    <div className={cx('arrow-down')} />
-                  </>
-                );
-              })()
-            ) : (
-              <>
-                <div className={cx('placeholder-logo')} />
-                <span className={cx('title')}>Select assets</span>
-                <div className={cx('arrow-down')} />
-              </>
-            )}
-          </div>
-          <div className={cx('amount')}>
-            <NumberFormat
-              placeholder="0"
-              thousandSeparator
-              decimalScale={6}
-              type="text"
-              value={amountToken1 ? amountToken1 : ''}
-              onValueChange={({ floatValue }) => {
-                setAmountToken1(floatValue ?? 0);
-              }}
+          <div className={cx('amountUsd')}>
+            <div
+              className={cx('btn')}
+              onClick={() => setAmountToken1(toDisplay(token1Balance / BigInt(2), token1InfoData?.decimals))}
+            >
+              HALF
+            </div>
+            <div
+              className={cx('btn')}
+              onClick={() => setAmountToken1(toDisplay(token1Balance, token1InfoData?.decimals))}
+            >
+              MAX
+            </div>
+            <TokenBalance
+              balance={getBalanceValue(token1InfoData?.symbol ?? '', amountToken1)}
+              style={{ flexGrow: 1, textAlign: 'right' }}
+              decimalScale={2}
             />
           </div>
         </div>
       </div>
 
       <div className={cx('supply')}>
+        <div className={cx('input')}>
+          <div className={cx('token')}>
+            <div className={cx('token-info')} onClick={() => setIsSelectingToken('token2')}>
+              {!!token2 ? (
+                (() => {
+                  return (
+                    <>
+                      {Token2Icon && <img src={Token2Icon} className={cx('logo')} alt="" />}
+                      <div className={cx('title')}>
+                        <div>{token2InfoData?.symbol ?? ''}</div>
+                      </div>
+                      <div className={cx('arrow-down')} />
+                    </>
+                  );
+                })()
+              ) : (
+                <>
+                  <span className={cx('title')}>Select assets</span>
+                  <div className={cx('arrow-down')} />
+                </>
+              )}
+            </div>
+            <div className={cx('itemInput', { [styles.disabled]: false })}>
+              <div className={cx('tokenInfo')}>
+                <div className={cx('input')}>
+                  <NumberFormat
+                    placeholder="0"
+                    thousandSeparator
+                    className={cx('amount')}
+                    decimalScale={6}
+                    disabled={!token2InfoData}
+                    type="text"
+                    value={amountToken2 ? amountToken2 : ''}
+                    onChange={() => {}}
+                    isAllowed={(values) => {
+                      const { floatValue } = values;
+                      // allow !floatValue to let user can clear their input
+                      return !floatValue || (floatValue >= 0 && floatValue <= 1e14);
+                    }}
+                    onValueChange={({ floatValue }) => {
+                      setAmountToken2(floatValue ?? 0);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className={cx('balance')}>
           <TokenBalance
             balance={{
@@ -283,72 +360,39 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               denom: token2InfoData?.symbol
             }}
             prefix="Balance: "
-            decimalScale={2}
+            decimalScale={6}
           />
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken2(toDisplay(token2Balance, token2InfoData?.decimals))}
-          >
-            MAX
-          </div>
-          <div
-            className={cx('btn')}
-            onClick={() => setAmountToken2(toDisplay(token2Balance / BigInt(2), token2InfoData?.decimals))}
-          >
-            HALF
-          </div>
-          <TokenBalance
-            balance={getBalanceValue(token2InfoData?.symbol ?? '', toDisplay(token2Balance, token2InfoData?.decimals))}
-            style={{ flexGrow: 1, textAlign: 'right' }}
-            decimalScale={2}
-          />
-        </div>
-        <div className={cx('input')}>
-          <div className={cx('token')} onClick={() => setIsSelectingToken('token2')}>
-            {!!token2 ? (
-              (() => {
-                return (
-                  <>
-                    {Token2Icon && <img src={Token2Icon} className={cx('logo')} alt="" />}
-                    <div className={cx('title')}>
-                      <div>{token2InfoData?.symbol ?? ''}</div>
-                      <div className={cx('highlight')}>Cosmos Hub</div>
-                    </div>
-                    <div className={cx('arrow-down')} />
-                  </>
-                );
-              })()
-            ) : (
-              <>
-                <div className={cx('placeholder-logo')} />
-                <span className={cx('title')}>Select assets</span>
-                <div className={cx('arrow-down')} />
-              </>
-            )}
-          </div>
-          <div className={cx('amount')}>
-            <NumberFormat
-              placeholder="0"
-              thousandSeparator
-              decimalScale={6}
-              type="text"
-              value={amountToken2 ? amountToken2 : ''}
-              onValueChange={({ floatValue }) => {
-                setAmountToken2(floatValue ?? 0);
-              }}
+          <div className={cx('amountUsd')}>
+            <div
+              className={cx('btn')}
+              onClick={() => setAmountToken2(toDisplay(token2Balance / BigInt(2), token2InfoData?.decimals))}
+            >
+              HALF
+            </div>
+            <div
+              className={cx('btn')}
+              onClick={() => setAmountToken2(toDisplay(token2Balance, token2InfoData?.decimals))}
+            >
+              MAX
+            </div>
+            <TokenBalance
+              balance={getBalanceValue(token2InfoData?.symbol ?? '', amountToken2)}
+              style={{ flexGrow: 1, textAlign: 'right' }}
+              decimalScale={2}
             />
           </div>
         </div>
       </div>
       <div style={{ display: 'flex', gap: '10px' }}>
-        <div
+        <button
           className={cx('swap-btn')}
           onClick={() => {
             setStep(2);
           }}
+          disabled={loading || !walletAddress || !amountToken1 || !amountToken2 || !token1InfoData || !token2InfoData}
         >
           Next
-        </div>
+        </button>
       </div>
     </>
   );
@@ -356,35 +400,41 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const step2Component = (
     <>
       <div className={cx('stat')}>
-        <Pie percent={50}>
-          {token1InfoData?.symbol}/{token2InfoData?.symbol}
-        </Pie>
         <div className={cx('stats_info')}>
-          <div className={cx('stats_info_row')}>
-            <div className={cx('stats_info_cl')} style={{ background: '#612FCA' }} />
-            {Token1Icon && <img src={Token1Icon} className={cx('stats_info_lg')} alt="" />}
-            <div className={cx('stats_info_name')}>{token1InfoData?.symbol}</div>
-            <div className={cx('stats_info_value_amount')}>{amountToken1}</div>
+          <div className={cx('stats_info_wrapper')}>
+            <div className={cx('stats_info_row')}>
+              <div>{Token1Icon && <img src={Token1Icon} className={cx('stats_info_lg')} alt="" />}</div>
+              <div>
+                <span className={cx('stats_info_value_amount')}>{amountToken1} </span>
+                <span className={cx('stats_info_name')}>{token1InfoData?.symbol}</span>
+                <div>
+                  <TokenBalance
+                    balance={getBalanceValue(token1InfoData?.symbol ?? '', +amountToken1)}
+                    className={cx('stats_info_value_usd')}
+                    decimalScale={2}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className={cx('percent-each')}>50%</div>
           </div>
-          <div className={cx('stats_info_row')}>
-            <TokenBalance
-              balance={getBalanceValue(token1InfoData?.symbol ?? '', +amountToken1)}
-              className={cx('stats_info_value_usd')}
-              decimalScale={2}
-            />
-          </div>
-          <div className={cx('stats_info_row')}>
-            <div className={cx('stats_info_cl')} style={{ background: '#FFD5AE' }} />
-            {Token2Icon && <img src={Token2Icon} className={cx('stats_info_lg')} alt="" />}
-            <div className={cx('stats_info_name')}>{token2InfoData?.symbol}</div>
-            <div className={cx('stats_info_value_amount')}>{amountToken2}</div>
-          </div>
-          <div className={cx('stats_info_row')}>
-            <TokenBalance
-              balance={getBalanceValue(token2InfoData?.symbol ?? '', +amountToken2)}
-              className={cx('stats_info_value_usd')}
-              decimalScale={2}
-            />
+
+          <div className={cx('stats_info_wrapper')}>
+            <div className={cx('stats_info_row')}>
+              {Token2Icon && <img src={Token2Icon} className={cx('stats_info_lg')} alt="" />}
+              <div>
+                <span className={cx('stats_info_value_amount')}>{amountToken2} </span>
+                <span className={cx('stats_info_name')}>{token2InfoData?.symbol}</span>
+                <div>
+                  <TokenBalance
+                    balance={getBalanceValue(token2InfoData?.symbol ?? '', +amountToken2)}
+                    className={cx('stats_info_value_usd')}
+                    decimalScale={2}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className={cx('percent-each')}>50%</div>
           </div>
         </div>
       </div>
@@ -410,57 +460,42 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
           </div>
         </div>
       </div>
-      {/* <div className={cx('detail')}>
-        <div className={cx('row')}>
-          <div className={cx('row-title')}>
-            <span>Pool Creation Fee</span>
-            <TooltipIcon />
-          </div>
-          <span>0 ORAI</span>
-        </div>
-      </div> */}
       <div style={{ display: 'flex', gap: '10px' }}>
-        <div className={cx('back-btn')} onClick={() => setStep(1)}>
-          Back
-        </div>
-        <div className={cx('swap-btn')} onClick={() => handleCreatePool()}>
-          Create
-        </div>
+        <button disabled={loading} className={cx('swap-btn')} onClick={handleCreatePool}>
+          {loading && <Loader width={22} height={22} />}&nbsp;&nbsp; Create
+        </button>
       </div>
     </>
   );
 
   return (
-    <Modal isOpen={isOpen} close={close} open={open} isCloseBtn={true} className={cx('modal')}>
+    <Modal
+      isOpen={isOpen}
+      close={close}
+      open={open}
+      isCloseBtn={true}
+      className={cx('modal', theme === 'dark' ? 'dark' : 'light')}
+    >
       <div className={cx('container')}>
-        <div className={cx('title')}>Create new pool</div>
+        <div className={cx('header')}>
+          {step === 2 && (
+            <div className={cx('back-btn')} onClick={() => setStep(1)}>
+              <IcBack />
+            </div>
+          )}
+
+          <div className={cx('title')}>Create new pool V2</div>
+        </div>
+
         <div className={cx('steps')}>
-          <div className={cx('progress')}>
-            <div className={cx('purple-line')} style={{ width: `${50 * (step - 1)}%` }} />
-            <div className={cx('white-line')} />
-            {steps.map((undefine, _idx) => {
-              const idx = _idx + 1;
-              if (step > idx)
-                return <img key={idx} className={cx('done', `point-${idx}`)} alt="done-step" src={DoneStepImg} />;
-              if (step === idx)
-                return (
-                  <div key={idx} className={cx('point', `point-${idx}`, 'highlight')}>
-                    {idx}
-                  </div>
-                );
-              return (
-                <div key={idx} className={cx('point', `point-${idx}`)}>
-                  {idx}
-                </div>
-              );
-            })}
-          </div>
           <div className={cx('text')}>
-            {steps.map((step, idx) => (
-              <div key={idx} className={cx(`point-${idx + 1}`)}>
-                {step}
-              </div>
-            ))}
+            <div className={cx(`point`)}>{step === 1 ? 'Add Liquidity' : 'Confirmation'}</div>
+          </div>
+          <div className={cx('progress')}>
+            <div>
+              <span className={cx('currentStep')}>{step}</span>
+              <span>/2</span>
+            </div>
           </div>
         </div>
         {(() => {

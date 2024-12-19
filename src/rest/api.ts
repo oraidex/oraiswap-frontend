@@ -17,7 +17,6 @@ import {
   handleSentFunds,
   ibcInfos,
   ibcInfosOld,
-  isFactoryV1,
   parseTokenInfo,
   toAmount,
   toDecimal,
@@ -39,11 +38,13 @@ import {
   PairInfo
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
-import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
+import { generateSwapOperationMsgs, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { network, oraichainTokens, tokenMap, tokens } from 'initCommon';
+import { flattenTokens, network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
+import { listFactoryV1Pools } from 'pages/Pools/helpers';
+import { getRouterConfig } from 'pages/UniversalSwap/Swap/hooks';
 import { BondLP, MiningLP, UnbondLP, WithdrawLP } from 'types/pool';
 import { PairInfoExtend, TokenInfo } from 'types/token';
 
@@ -118,17 +119,29 @@ export async function fetchPairPriceWithStablecoin(
 ): Promise<string> {
   const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
   const result = await Promise.allSettled([
-    simulateSwap({
-      fromInfo: fromTokenInfo,
-      toInfo: tokenMap[STABLE_DENOM],
-      amount: toAmount(1, fromTokenInfo!.decimals).toString(),
-      routerClient
+    UniversalSwapHelper.handleSimulateSwap({
+      flattenTokens: flattenTokens,
+      oraichainTokens: oraichainTokens,
+      originalFromInfo: fromTokenInfo,
+      originalToInfo: tokenMap[STABLE_DENOM],
+      originalAmount: 1,
+      routerClient,
+      routerOption: {
+        useIbcWasm: true
+      },
+      routerConfig: getRouterConfig()
     }),
-    simulateSwap({
-      fromInfo: toTokenInfo,
-      toInfo: tokenMap[STABLE_DENOM],
-      amount: toAmount(1, toTokenInfo!.decimals).toString(),
-      routerClient
+    UniversalSwapHelper.handleSimulateSwap({
+      flattenTokens: flattenTokens,
+      oraichainTokens: oraichainTokens,
+      originalFromInfo: toTokenInfo,
+      originalToInfo: tokenMap[STABLE_DENOM],
+      originalAmount: 1,
+      routerClient,
+      routerOption: {
+        useIbcWasm: true
+      },
+      routerConfig: getRouterConfig()
     })
   ]).then((results) => {
     for (let res of results) {
@@ -194,14 +207,15 @@ async function fetchCachedPairInfo(
 }
 
 async function fetchPairInfo(tokenTypes: [TokenItemType, TokenItemType]): Promise<PairInfo> {
-  // TODO: update this check function in oraidex-common to return default factory v2.
-  const factoryAddr = isFactoryV1([parseTokenInfo(tokenTypes[0]).info, parseTokenInfo(tokenTypes[1]).info])
+  const factoryAddr = listFactoryV1Pools.find(
+    (factoryV1Pool) =>
+      factoryV1Pool.symbols.includes(tokenTypes[0]?.name) && factoryV1Pool.symbols.includes(tokenTypes[1]?.name)
+  )
     ? network.factory
     : network.factory_v2;
   let { info: firstAsset } = parseTokenInfo(tokenTypes[0]);
   let { info: secondAsset } = parseTokenInfo(tokenTypes[1]);
-  // const factoryContract = new OraiswapFactoryQueryClient(window.client, factoryAddr);
-  const factoryContract = new OraiswapFactoryQueryClient(window.client, FACTORY_V2_CONTRACT);
+  const factoryContract = new OraiswapFactoryQueryClient(window.client, factoryAddr);
   const data = await factoryContract.pair({
     assetInfos: [firstAsset, secondAsset]
   });

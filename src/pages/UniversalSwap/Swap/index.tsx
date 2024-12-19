@@ -157,7 +157,6 @@ const SwapComponent: React.FC<{
   // hooks
   useGetFeeConfig();
   const { data: prices } = useCoinGeckoPrices();
-  console.log({ originalFromToken, originalToToken });
   const { fees, outputs, tokenInfos, simulateDatas, averageSimulateDatas } = useCalculateDataSwap({
     originalFromToken,
     originalToToken,
