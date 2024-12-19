@@ -1,9 +1,7 @@
 import { CW20_DECIMALS, OraiIcon, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
-import Content from 'layouts/Content';
 import isEqual from 'lodash/isEqual';
 import React, { useState } from 'react';
 import { PoolInfoResponse } from 'types/pool';

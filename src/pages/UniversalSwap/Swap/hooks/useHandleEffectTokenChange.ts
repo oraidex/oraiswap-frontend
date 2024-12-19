@@ -14,7 +14,7 @@ import {
   setCurrentToToken
 } from 'reducer/tradingSlice';
 import useFilteredTokens from './useFilteredTokens';
-import { cosmosChains, tokenMap, oraidexCommon } from 'initCommon';
+import { cosmosChains, tokenMap } from 'initCommon';
 import useOnchainTokensReducer from 'hooks/useOnchainTokens';
 import { RootState } from 'store/configure';
 

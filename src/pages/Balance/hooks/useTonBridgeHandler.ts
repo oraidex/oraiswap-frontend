@@ -28,7 +28,6 @@ import { CW_TON_BRIDGE, TON_SCAN, TonChainId, TonInteractionContract, TonNetwork
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { getTransactionUrl, handleErrorTransaction } from 'helper';
 import { numberWithCommas } from 'helper/format';
-import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { getCosmWasmClient } from 'libs/cosmjs';

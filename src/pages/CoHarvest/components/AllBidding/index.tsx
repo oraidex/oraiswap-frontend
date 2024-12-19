@@ -2,7 +2,7 @@ import { toDisplay } from '@oraichain/oraidex-common';
 import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
 import NoData from 'assets/images/nodata-bid.svg?react';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { getUsd, reduceString } from 'libs/utils';
+import { reduceString } from 'libs/utils';
 import { TIMER } from 'pages/CoHarvest/constants';
 import { dateFormat } from 'pages/CoHarvest/helpers';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';

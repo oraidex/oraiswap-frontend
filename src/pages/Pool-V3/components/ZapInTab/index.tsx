@@ -1,19 +1,15 @@
 import styles from './index.module.scss';
-import { BigDecimal, CoinGeckoPrices, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { CoinGeckoPrices, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { FC, useState } from 'react';
 import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
-import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import ErrorIcon from 'assets/icons/error-fill-icon.svg?react';
 import OutputIcon from 'assets/icons/zapOutput-ic.svg?react';
 import TooltipHover from 'components/TooltipHover';
 import NumberFormat from 'react-number-format';
 import SelectToken from '../SelectToken';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store/configure';
 import ZappingText from 'components/Zapping';
 import { ZapInLiquidityResponse } from '@oraichain/oraiswap-v3';
-import { getIcon } from 'helper';
 import cn from 'classnames/bind';
 import LeafIcon from 'assets/icons/leaf.svg?react';
 

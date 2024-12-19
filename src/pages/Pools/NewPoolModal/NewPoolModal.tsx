@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './NewPoolModal.module.scss';
-import { assetInfoMap, network, oraichainTokens } from 'initCommon';
+import { assetInfoMap, flattenTokens, network, oraichainTokens } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { SelectTokenModal } from '../components/SelectTokenModal';

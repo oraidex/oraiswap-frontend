@@ -7,7 +7,6 @@ import { getIcon } from 'helper';
 import useTheme from 'hooks/useTheme';
 import { useRef, useState } from 'react';
 import styles from './index.module.scss';
-import cn from 'classnames/bind';
 import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';
@@ -15,7 +14,6 @@ import { useDispatch } from 'react-redux';
 import { setToDefault } from 'reducer/poolDetailV3';
 import CreatePositionForm from '../CreatePositionForm';
 
-const cx = cn.bind(styles);
 export const openInNewTab = (url: string): void => {
   const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
   if (newWindow) newWindow.opener = null;

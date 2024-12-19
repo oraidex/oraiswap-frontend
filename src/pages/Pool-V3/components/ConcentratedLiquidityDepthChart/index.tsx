@@ -1,7 +1,6 @@
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
 import {
-  AnimatedAxis,
   AnimatedGrid,
   Annotation,
   AnnotationCircleSubject,
@@ -12,9 +11,7 @@ import {
   XYChart
 } from '@visx/xychart';
 import { FC } from 'react';
-import { theme } from '../HistoricalPriceChart';
 import styles from './index.module.scss';
-import { max, min } from 'lodash';
 
 export type DepthData = {
   price: number;

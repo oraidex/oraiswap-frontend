@@ -5,8 +5,7 @@ import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { PoolInfoResponse } from 'types/pool';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { POOL_TYPE } from '../index';
-import { oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
-import { tokenInspector } from 'initTokenInspector';
+import { oraichainTokensWithIcon } from 'initCommon';
 import { store } from 'store/configure';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import Tippy, { TippyProps } from '@tippyjs/react';
 import classNames from 'classnames';
 import InfoIcon from 'assets/icons/info.svg?react';

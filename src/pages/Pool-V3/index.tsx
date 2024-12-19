@@ -17,6 +17,7 @@ import PoolList from './components/PoolList';
 import PositionList from './components/PositionList';
 import { useGetPoolList } from './hooks/useGetPoolList';
 import styles from './index.module.scss';
+// import BannerNoticePool from './components/BannerNoticePool';
 
 enum PoolV3PageType {
   POOL = 'pools',
