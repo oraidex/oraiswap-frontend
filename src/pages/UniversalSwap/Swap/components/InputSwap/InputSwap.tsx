@@ -53,7 +53,6 @@ export default function InputSwap({
   loadingSimulate,
   impactWarning
 }: InputSwapProps) {
-  const tokenInfo = flattenTokens.find((flattenToken) => flattenToken.coinGeckoId === token.coinGeckoId);
   let chainInfo = chainInfos.find((chain) => chain.chainId === selectChain);
   const isLightMode = theme === 'light';
 
@@ -111,9 +110,9 @@ export default function InputSwap({
           <div className={cx('left')}>
             <div className={cx('icon')}>
               {isLightMode ? (
-                <img src={tokenInfo.icon} alt="icon" width={30} height={30} />
+                <img src={token.icon} alt="icon" width={30} height={30} />
               ) : (
-                <img className={cx('logo')} src={tokenInfo.icon} alt="icon" width={30} height={30} />
+                <img className={cx('logo')} src={token.icon} alt="icon" width={30} height={30} />
               )}
             </div>
 

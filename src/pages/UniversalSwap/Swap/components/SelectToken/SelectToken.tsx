@@ -122,6 +122,7 @@ export default function SelectToken({
         <div className={styles.selectTokenAll}>
           <div className={styles.selectTokenTitle}>Select token</div>
           <div className={styles.selectTokenList}>
+            {/* TODO: check filter here */}
             {![...listItems, ...onchainTokens].length && (
               <div className={styles.selectTokenListNoResult}>
                 {isLightTheme ? <NoResultLight /> : <NoResultDark />}

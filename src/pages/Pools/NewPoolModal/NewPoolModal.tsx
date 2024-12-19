@@ -5,7 +5,7 @@ import TokenBalance from 'components/TokenBalance';
 import { FACTORY_V2_CONTRACT, TokenItemType } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { toDisplay } from '@oraichain/oraidex-common';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import { useSelector } from 'react-redux';
 import { fetchTokenInfo } from 'rest/api';
@@ -60,6 +60,11 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
   const token1Balance = BigInt(amounts[tokenObj1?.denom] ?? '0');
   const token2Balance = BigInt(amounts[tokenObj2?.denom] ?? '0');
+
+  useEffect(() => {
+    setListToken1Option([...allOraichainTokens]);
+    setListToken2Option([...allOraichainTokens]);
+  }, [allOraichainTokens.length]);
 
   // TODO: ICON CREATE POOL V2
   const Token1Icon = tokenObj1?.icon;

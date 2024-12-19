@@ -47,7 +47,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import { useGetFeeConfig } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
-import { flattenTokens, flattenTokensWithIcon, oraichainTokens } from 'initCommon';
+import { flattenTokens, flattenTokensWithIcon, oraichainTokens, oraidexCommon } from 'initCommon';
 import Metamask from 'libs/metamask';
 import { getUsd, reduceString, toSubAmount } from 'libs/utils';
 import mixpanel from 'mixpanel-browser';
@@ -353,19 +353,23 @@ const SwapComponent: React.FC<{
         alphaSmartRoutes
       };
 
-      // @ts-ignore
-      const univeralSwapHandler = new UniversalSwapHandler(swapData, {
-        cosmosWallet: window.Keplr,
-        evmWallet: new Metamask(window.tronWebDapp),
-        tonWallet,
-        swapOptions: {
-          isAlphaIbcWasm: useAlphaIbcWasm,
-          isIbcWasm: useIbcWasm,
+      const univeralSwapHandler = new UniversalSwapHandler(
+        swapData,
+        {
+          // @ts-ignore
+          cosmosWallet: window.Keplr,
+          evmWallet: new Metamask(window.tronWebDapp),
+          tonWallet,
+          swapOptions: {
+            isAlphaIbcWasm: useAlphaIbcWasm,
+            isIbcWasm: useIbcWasm,
 
-          // FIXME: hardcode with case celestia not check balance
-          isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
-        }
-      });
+            // FIXME: hardcode with case celestia not check balance
+            isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
+          }
+        },
+        oraidexCommon
+      );
 
       const result = await univeralSwapHandler.processUniversalSwap();
       let transactionHash = result?.transactionHash;

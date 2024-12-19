@@ -10,7 +10,6 @@ import {
   evmTokens,
   network,
   oraichainTokens,
-  tokenMap,
   solTokens,
   tonNetworkMainnet
 } from 'initCommon';
@@ -46,6 +45,7 @@ import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { Address, TonClient } from '@ton/ton';
 import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
 import { TON_ZERO_ADDRESS } from '@oraichain/common';
+import { store } from 'store/configure';
 
 export type LoadTokenParams = {
   refresh?: boolean;
@@ -73,7 +73,12 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
         amountDetails[t.denom] = '0';
       });
 
-    const tokensAmount = amountAll.filter((coin) => tokenMap[coin.denom]).map((coin) => [coin.denom, coin.amount]);
+    const storage = store.getState();
+    const allOraichainTokens = storage.token.allOraichainTokens;
+    const allOraichainTokensMap = Object.fromEntries(allOraichainTokens.map((c) => [c.denom, c]));
+    const tokensAmount = amountAll
+      .filter((coin) => allOraichainTokensMap[coin.denom])
+      .map((coin) => [coin.denom, coin.amount]);
     Object.assign(amountDetails, Object.fromEntries(tokensAmount));
 
     dispatch(updateAmounts(amountDetails));
