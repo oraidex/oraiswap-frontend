@@ -182,7 +182,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toNetwork: toNetworkChainId
   });
 
-  let bridgeFee = fromTokenFee + toTokenFee + solFee.relayerFee + solFee.tokenFeeAmount;
+  let bridgeFee = fromTokenFee + toTokenFee;
 
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
