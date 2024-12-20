@@ -12,14 +12,16 @@ import { extractAddress, formatPoolData } from '../helpers/format';
 import { parseAssetInfo } from '@oraichain/oraidex-common';
 import { tokenInspector } from 'initTokenInspector';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToOraichainTokens } from 'reducer/token';
+import { RootState } from 'store/configure';
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const theme = useTheme();
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
   const [dataPool, setDataPool] = useState([...Array(0)]);
   const dispatch = useDispatch();
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   const {
     data: poolList,
@@ -41,8 +43,8 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
         continue;
       }
 
-      const tokenX = oraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_x);
-      const tokenY = oraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_y);
+      const tokenX = allOraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_x);
+      const tokenY = allOraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_y);
 
       if (!tokenX || !tokenY) continue;
       if (tokenX && !prices[tokenX.coinGeckoId]) {
@@ -81,16 +83,25 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
       });
 
       // loop through oraichainTokens, if token is already in oraichainTokens, remove it from tokenAddresses
-      oraichainTokens.forEach((token) => {
+      allOraichainTokens.forEach((token) => {
         if (tokenAddresses.has(extractAddress(token))) {
           tokenAddresses.delete(extractAddress(token));
         }
       });
 
-      const extendedInfos = await tokenInspector.inspectMultiTokens([...tokenAddresses]);
-      const convertToTokensType = extendedInfos.map((info) => onChainTokenToTokenItem(info));
-      dispatch(addToOraichainTokens(convertToTokensType));
-
+      if (tokenAddresses.size > 0) {
+        if (
+          !(
+            tokenAddresses.size === 1 &&
+            // deprecate HMSTR token
+            tokenAddresses.has('factory/orai17hyr3eg92fv34fdnkend48scu32hn26gqxw3hnwkfy904lk9r09qqzty42/HMSTR')
+          )
+        ) {
+          const extendedInfos = await tokenInspector.inspectMultiTokens([...tokenAddresses]);
+          const convertToTokensType = extendedInfos.map((info) => onChainTokenToTokenItem(info));
+          dispatch(addToOraichainTokens(convertToTokensType));
+        }
+      }
 
       const listPools = (poolList || []).map((p) => formatPoolData(p));
 

@@ -41,6 +41,7 @@ import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { TokenDataOnChain } from 'pages/Pool-V3/components/PriceRangePlot/utils';
 import { getPools } from 'rest/graphClient';
 import { PoolInfoResponse } from 'types/pool';
+import { store } from 'store/configure';
 
 export const ALL_FEE_TIERS_DATA: FeeTier[] = [
   { fee: 100000000, tick_spacing: 1 },
@@ -771,8 +772,10 @@ export function simulateIncentiveAprPosition(
     pool.current_tick_index ? pool.current_tick_index : 0
   );
 
-  const tokenX = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
-  const tokenY = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens;
+  const tokenX = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
+  const tokenY = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
 
   const positionLiquidityUsdX = ((prices[tokenX?.coinGeckoId] ?? 0) * Number(res.x)) / 10 ** tokenX.decimals;
   const positionLiquidityUsdY = ((prices[tokenY?.coinGeckoId] ?? 0) * Number(res.y)) / 10 ** tokenY.decimals;
