@@ -4,6 +4,7 @@ import { flattenTokens } from 'config/bridgeTokens';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 export enum Direction {
   SOLANA_TO_ORAI = 'solana_to_orai',
@@ -36,6 +37,7 @@ const useGetFeeSol = ({
   };
 
   const [solFee, setSolFee] = useState(defaultSolFee);
+
   useEffect(() => {
     (async () => {
       try {
