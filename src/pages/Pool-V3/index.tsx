@@ -17,6 +17,8 @@ import PoolList from './components/PoolList';
 import PositionList from './components/PositionList';
 import { useGetPoolList } from './hooks/useGetPoolList';
 import styles from './index.module.scss';
+
+const cx = classNames.bind(styles);
 // import BannerNoticePool from './components/BannerNoticePool';
 
 enum PoolV3PageType {
@@ -160,12 +162,12 @@ const PoolV3 = () => {
                         setOpenOptionCreatePool(false);
                       }}
                     >
-                      <div className={styles.icon}>
+                      <div className={`${styles.icon} ${styles[theme]}`}>
                         <IconCreatePoolV3 />
                       </div>
                       <div>
                         <div className={styles.typePool}>Pool V3</div>
-                        <div className={styles.desPool}>Flexible fee</div>
+                        <div className={styles.desPool}>Concentrated Liquidity</div>
                       </div>
                     </div>
                     <div
@@ -175,12 +177,12 @@ const PoolV3 = () => {
                         setOpenOptionCreatePool(false);
                       }}
                     >
-                      <div className={styles.icon}>
+                      <div className={`${styles.icon} ${styles[theme]}`}>
                         <IconCreatePoolV2 />
                       </div>
                       <div>
                         <div className={styles.typePool}>Pool V2</div>
-                        <div className={styles.desPool}>Stable pool</div>
+                        <div className={styles.desPool}>Full range liquidity</div>
                       </div>
                     </div>
                   </div>

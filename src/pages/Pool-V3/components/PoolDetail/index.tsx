@@ -137,7 +137,7 @@ const PoolV3Detail = () => {
         // if (dataPosition.length) return;
         const feeClaimData = await getFeeClaimData(address);
 
-        const positionsMap = convertPosition({
+        const positionsMap = await convertPosition({
           positions: userPositions.map((po, ind) => ({ ...po, ind })),
           poolsData: poolList,
           cachePrices: poolPrice,
@@ -145,6 +145,7 @@ const PoolV3Detail = () => {
           isLight,
           feeClaimData
         });
+
         const filteredPositions = positionsMap
           .filter((pos) => poolKeyToString(pos.pool_key) === poolKeyString)
           .sort((a, b) => a.token_id - b.token_id);

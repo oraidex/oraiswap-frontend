@@ -23,6 +23,7 @@ const TransactionHistory = ({
   quoteToken: TokenItemType;
   poolKey: string;
 }) => {
+
   const [theme] = useConfigReducer('theme');
   const mobileMode = isMobile();
   const { data: prices } = useCoinGeckoPrices();
@@ -55,6 +56,7 @@ const TransactionHistory = ({
                 .map((item, index) => {
                   const offerToken = item.offerDenom === baseDenom ? baseToken : quoteToken;
                   const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
+
 
                   if (offerToken) BaseTokenIcon = theme === 'light' ? offerToken.iconLight : offerToken.icon;
                   if (returnToken) QuoteTokenIcon = theme === 'light' ? returnToken.iconLight : returnToken.icon;
@@ -151,10 +153,10 @@ const TransactionHistory = ({
                       const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
 
                       if (offerToken)
-                        BaseTokenIcon = theme === 'light' ? offerToken.IconLight || offerToken.Icon : offerToken.Icon;
+                        BaseTokenIcon = theme === 'light' ? offerToken.iconLight || offerToken.icon : offerToken.icon;
                       if (returnToken)
                         QuoteTokenIcon =
-                          theme === 'light' ? returnToken.IconLight || returnToken.Icon : returnToken.Icon;
+                          theme === 'light' ? returnToken.iconLight || returnToken.icon : returnToken.icon;
 
                       const returnUSD = item.volumeUSD;
                       const feeUSD = item.commissionAmount;

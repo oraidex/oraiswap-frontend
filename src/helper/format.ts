@@ -19,6 +19,7 @@ export const formatNumberKMB = (num: number, isUsd: boolean = true) => {
 
 // TODO: need to seperate format funcs to format module later.
 export const formatDisplayUsdt = (amount: number | string, dp = 2, dpMin = 4): string => {
+  if (Number.isNaN(amount)) return '$--'; 
   const validatedAmount = validateNumber(amount);
   if (validatedAmount < 1) return `$${toFixedIfNecessary(amount.toString(), dpMin).toString()}`;
 

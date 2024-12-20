@@ -44,7 +44,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [initBalances, setInitBalances] = useState([
     {
       address: '',
-      amount: BigInt(1e6)
+      amount: BigInt(10 ** (tokenDecimal || 0))
     }
   ]);
 
@@ -130,6 +130,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       }
 
       const initBalanceMsg = isInitBalances ? initBalances.map((init) => {
+        console.log(init.amount.toString())
         return {
           contractAddress: TOKEN_FACTORY_CONTRACT,
           msg: {
@@ -310,7 +311,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   </div>
                 </div>
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('init-balance')} onClick={() => setIsInitBalances(!isInitBalances)}>
+                  <div className={cx('init-balance', theme)} onClick={() => setIsInitBalances(!isInitBalances)}>
                     <span>
                       Init Balances
                     </span>
@@ -368,7 +369,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                             ...initBalances,
                             {
                               address: '',
-                              amount: BigInt(1e6)
+                              amount: BigInt(10 ** (tokenDecimal || 0))
                             }
                           ])
                         }

@@ -150,7 +150,7 @@
         position: absolute;
         top: 100%;
         left: 0;
-        width: 165px;
+        width: 200px;
         padding: 10px;
         border-radius: 12px;
         margin-top: 6px;
@@ -163,8 +163,15 @@
             background-color: theme-get('neutral-surface-bg-section');
           }
 
-          &:hover {
-            filter: brightness(1.5);
+          .icon {
+            &.light {
+              color: black;
+              svg {
+                path {
+                  stroke: #000;
+                }
+              }
+            }
           }
         }
 

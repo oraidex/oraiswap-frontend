@@ -560,7 +560,7 @@ export const formatClaimFeeData = (feeClaimData: PositionsNode[]) => {
   return fmtFeeClaimData;
 };
 
-export const convertPosition = ({
+export const convertPosition = async ({
   positions,
   poolsData,
   isLight,
@@ -579,15 +579,15 @@ export const convertPosition = ({
 }) => {
   const fmtFeeClaim = formatClaimFeeData(feeClaimData);
 
-  const fmtData = positions
-    .map((position: Position & { poolData: { pool: Pool }; ind: number; token_id: number }) => {
+  const fmtData = await Promise.all(positions
+    .map(async (position: Position & { poolData: { pool: Pool }; ind: number; token_id: number }) => {
       const [tokenX, tokenY] = [position?.pool_key.token_x, position?.pool_key.token_y];
       let {
         FromTokenIcon: tokenXIcon,
         ToTokenIcon: tokenYIcon,
         tokenXinfo,
         tokenYinfo
-      } = getIconPoolData(tokenX, tokenY, isLight);
+      } = await getIconPoolData(tokenX, tokenY, isLight);
 
       if (!tokenXinfo || !tokenYinfo) {
         return null;
@@ -711,6 +711,6 @@ export const convertPosition = ({
         totalEarnIncentiveUsd: (totalEarnIncentiveUsd as BigDecimal).toNumber()
       };
     })
-    .filter(Boolean);
+    .filter(Boolean));
   return fmtData;
 };

@@ -102,8 +102,8 @@ export const InitBalancesItems = ({
           <div>
             <NumberFormat
               thousandSeparator
-              decimalScale={6}
-              value={toDisplay(item.amount, decimals)}
+              decimalScale={decimals || 0}
+              value={toDisplay(item.amount, decimals || 0, 0)}
               style={{
                 color: theme === 'light' && 'rgba(39, 43, 48, 1)'
               }}

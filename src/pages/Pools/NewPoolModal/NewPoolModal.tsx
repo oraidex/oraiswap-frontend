@@ -227,32 +227,32 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
   const step1Component = (
     <>
-      <div className={cx('supply')}>
-        <div className={cx('input')}>
-          <div className={cx('token')}>
-            <div className={cx('token-info')} onClick={() => setIsSelectingToken('token1')}>
+      <div className={cx('supply', theme)}>
+        <div className={cx('input', theme)}>
+          <div className={cx('token', theme)}>
+            <div className={cx('token-info', theme)} onClick={() => setIsSelectingToken('token1')}>
               {!!token1 ? (
                 (() => {
                   return (
                     <>
-                      {Token1Icon && <img src={Token1Icon} className={cx('logo')} alt="" />}
-                      <div className={cx('title')}>
+                      {Token1Icon && <img src={Token1Icon} className={cx('logo', theme)} alt="" />}
+                      <div className={cx('title', theme)}>
                         <div>{token1InfoData?.symbol ?? ''}</div>
                       </div>
-                      <div className={cx('arrow-down')} />
+                      <div className={cx('arrow-down', theme)} />
                     </>
                   );
                 })()
               ) : (
                 <>
-                  <span className={cx('title')}>Select assets</span>
-                  <div className={cx('arrow-down')} />
+                  <span className={cx('title', theme)}>Select assets</span>
+                  <div className={cx('arrow-down', theme)} />
                 </>
               )}
             </div>
             <div className={cx('itemInput', { [styles.disabled]: false })}>
               <div className={cx('tokenInfo')}>
-                <div className={cx('input')}>
+                <div className={cx('input', theme)}>
                   <NumberFormat
                     placeholder="0"
                     thousandSeparator
@@ -308,32 +308,32 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         </div>
       </div>
 
-      <div className={cx('supply')}>
-        <div className={cx('input')}>
-          <div className={cx('token')}>
-            <div className={cx('token-info')} onClick={() => setIsSelectingToken('token2')}>
+      <div className={cx('supply', theme)}>
+        <div className={cx('input', theme)}>
+          <div className={cx('token', theme)}>
+            <div className={cx('token-info', theme)} onClick={() => setIsSelectingToken('token2')}>
               {!!token2 ? (
                 (() => {
                   return (
                     <>
-                      {Token2Icon && <img src={Token2Icon} className={cx('logo')} alt="" />}
-                      <div className={cx('title')}>
+                      {Token2Icon && <img src={Token2Icon} className={cx('logo', theme)} alt="" />}
+                      <div className={cx('title', theme)}>
                         <div>{token2InfoData?.symbol ?? ''}</div>
                       </div>
-                      <div className={cx('arrow-down')} />
+                      <div className={cx('arrow-down', theme)} />
                     </>
                   );
                 })()
               ) : (
                 <>
-                  <span className={cx('title')}>Select assets</span>
-                  <div className={cx('arrow-down')} />
+                  <span className={cx('title', theme)}>Select assets</span>
+                  <div className={cx('arrow-down', theme)} />
                 </>
               )}
             </div>
             <div className={cx('itemInput', { [styles.disabled]: false })}>
               <div className={cx('tokenInfo')}>
-                <div className={cx('input')}>
+                <div className={cx('input', theme)}>
                   <NumberFormat
                     placeholder="0"
                     thousandSeparator
@@ -404,51 +404,51 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
   const step2Component = (
     <>
-      <div className={cx('stat')}>
-        <div className={cx('stats_info')}>
-          <div className={cx('stats_info_wrapper')}>
-            <div className={cx('stats_info_row')}>
-              <div>{Token1Icon && <img src={Token1Icon} className={cx('stats_info_lg')} alt="" />}</div>
+      <div className={cx('stat', theme)}>
+        <div className={cx('stats_info', theme)}>
+          <div className={cx('stats_info_wrapper', theme)}>
+            <div className={cx('stats_info_row', theme)}>
+              <div>{Token1Icon && <img src={Token1Icon} className={cx('stats_info_lg', theme)} alt="" />}</div>
               <div>
-                <span className={cx('stats_info_value_amount')}>{amountToken1} </span>
-                <span className={cx('stats_info_name')}>{token1InfoData?.symbol}</span>
+                <span className={cx('stats_info_value_amount', theme)}>{amountToken1} </span>
+                <span className={cx('stats_info_name', theme)}>{token1InfoData?.symbol}</span>
                 <div>
                   <TokenBalance
                     balance={getBalanceValue(token1InfoData?.symbol ?? '', +amountToken1)}
-                    className={cx('stats_info_value_usd')}
+                    className={cx('stats_info_value_usd', theme)}
                     decimalScale={2}
                   />
                 </div>
               </div>
             </div>
-            <div className={cx('percent-each')}>50%</div>
+            <div className={cx('percent-each', theme)}>50%</div>
           </div>
 
-          <div className={cx('stats_info_wrapper')}>
-            <div className={cx('stats_info_row')}>
-              {Token2Icon && <img src={Token2Icon} className={cx('stats_info_lg')} alt="" />}
+          <div className={cx('stats_info_wrapper', theme)}>
+            <div className={cx('stats_info_row', theme)}>
+              {Token2Icon && <img src={Token2Icon} className={cx('stats_info_lg', theme)} alt="" />}
               <div>
-                <span className={cx('stats_info_value_amount')}>{amountToken2} </span>
-                <span className={cx('stats_info_name')}>{token2InfoData?.symbol}</span>
+                <span className={cx('stats_info_value_amount', theme)}>{amountToken2} </span>
+                <span className={cx('stats_info_name', theme)}>{token2InfoData?.symbol}</span>
                 <div>
                   <TokenBalance
                     balance={getBalanceValue(token2InfoData?.symbol ?? '', +amountToken2)}
-                    className={cx('stats_info_value_usd')}
+                    className={cx('stats_info_value_usd', theme)}
                     decimalScale={2}
                   />
                 </div>
               </div>
             </div>
-            <div className={cx('percent-each')}>50%</div>
+            <div className={cx('percent-each', theme)}>50%</div>
           </div>
         </div>
       </div>
-      <div className={cx('supply')}>
-        <div className={cx('input')}>
-          <div className={cx('token')}>
-            <span className={cx('title')}>Swap Fee</span>
+      <div className={cx('supply', theme)}>
+        <div className={cx('input', theme)}>
+          <div className={cx('token', theme)}>
+            <span className={cx('title', theme)}>Swap Fee</span>
           </div>
-          <div className={cx('amount')}>
+          <div className={cx('amount', theme)}>
             <NumberFormat
               placeholder="0"
               thousandSeparator
@@ -481,7 +481,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       isCloseBtn={true}
       className={cx('modal', theme === 'dark' ? 'dark' : 'light')}
     >
-      <div className={cx('container')}>
+      <div className={cx('container', theme)}>
         <div className={cx('header')}>
           {step === 2 && (
             <div className={cx('back-btn')} onClick={() => setStep(1)}>
@@ -489,12 +489,12 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
             </div>
           )}
 
-          <div className={cx('title')}>Create new pool V2</div>
+          <div className={cx('title', theme)}>Create new pool V2</div>
         </div>
 
         <div className={cx('steps')}>
           <div className={cx('text')}>
-            <div className={cx(`point`)}>{step === 1 ? 'Add Liquidity' : 'Confirmation'}</div>
+            <div className={cx(`point`, theme)}>{step === 1 ? 'Add Liquidity' : 'Confirmation'}</div>
           </div>
           <div className={cx('progress')}>
             <div>

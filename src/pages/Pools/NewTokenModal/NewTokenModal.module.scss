@@ -133,7 +133,7 @@
               }
 
               .input-inner {
-                    width: 100%;
+                width: 100%;
               }
 
               .input-image {
@@ -198,6 +198,16 @@
                 width: 15px;
                 height: 15px;
               }
+
+              &.light {
+                div {
+                  svg {
+                    path {
+                      fill: black;
+                    }
+                  }
+                }
+              }
             }
           }
 
@@ -207,7 +217,7 @@
 
           .btn-add-init {
             /* Inner/Button */
-            border: 1px solid #F7F7F7;
+            border: 1px solid #f7f7f7;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -226,7 +236,7 @@
 
             /* aiRight/White */
 
-            color: #F7F7F7;
+            color: #f7f7f7;
 
             margin-top: 12px;
 
@@ -359,7 +369,6 @@
         flex-direction: row;
         justify-content: space-between;
         gap: 12px;
-        
 
         .row-item {
           margin-top: 16px;
@@ -562,6 +571,7 @@
   // top: 0;
   // left: 0;
   background-color: rgba(0, 0, 0, 0.45);
+  border-radius: 16px;
   z-index: 999;
 }
 

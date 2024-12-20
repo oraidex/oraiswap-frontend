@@ -63,6 +63,11 @@
       }
     }
   }
+  svg {
+    path {
+      stroke: #474747;
+    }
+  }
 
   &.active {
     @include theme() {

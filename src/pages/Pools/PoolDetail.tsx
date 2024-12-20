@@ -1,5 +1,5 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
+import { BTC_CONTRACT, fetchRetry, OraiIcon, toDisplay } from '@oraichain/oraidex-common';
 import { useQueryClient } from '@tanstack/react-query';
 import { isMobile } from '@walletconnect/browser-utils';
 import AddIcon from 'assets/icons/Add.svg?react';
@@ -14,7 +14,7 @@ import useTheme from 'hooks/useTheme';
 import { network } from 'initCommon';
 import Content from 'layouts/Content';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateLpPools } from 'reducer/token';
 import { PoolInfoResponse } from 'types/pool';
@@ -27,6 +27,8 @@ import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools, useGetPriceCha
 import { useGetLpBalance } from './hooks/useGetLpBalance';
 import { useGetPairInfo } from './hooks/useGetPairInfo';
 import TransactionHistory from './components/TransactionHistory';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
+import { RootState } from 'store/configure';
 
 const PoolDetail: React.FC = () => {
   const theme = useTheme();
@@ -47,6 +49,9 @@ const PoolDetail: React.FC = () => {
 
   const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
   const lpTokenBalance = BigInt(lpBalanceInfoData?.balance || '0');
+
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+
 
   useEffect(() => {
     refetchAllLpPools();
@@ -101,6 +106,23 @@ const PoolDetail: React.FC = () => {
   const baseToken = (token1?.contractAddress || token1?.denom) === params.base_denom ? token1 : token2;
   const quoteToken = (token2?.contractAddress || token2?.denom) === params.base_denom ? token1 : token2;
 
+  let BaseTokenIcon = OraiIcon;
+  let QuoteTokenIcon = OraiIcon;
+  const BaseTokenInOraichain = allOraichainTokens.find(
+    (oraiTokens) =>
+      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.contractAddress) ||
+      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.denom)
+  );
+  const QuoteTokenInOraichain = allOraichainTokens.find(
+    (oraiTokens) =>
+      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.contractAddress) ||
+      [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.denom)
+  );
+  if (BaseTokenInOraichain)
+    BaseTokenIcon = theme === 'light' ? BaseTokenInOraichain.iconLight : BaseTokenInOraichain.icon;
+  if (QuoteTokenInOraichain)
+    QuoteTokenIcon = theme === 'light' ? QuoteTokenInOraichain.iconLight : QuoteTokenInOraichain.icon;
+
   const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
 
   const listBTCAddresses = [
@@ -146,8 +168,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  {/* <img src={BaseTokenIcon} alt="icon" width={30} height={30} />
-                  <img src={QuoteTokenIcon} alt="icon" width={30} height={30} /> */}
+                  <img src={BaseTokenIcon} alt="icon" width={30} height={30} />
+                  <img src={QuoteTokenIcon} alt="icon" width={30} height={30} />
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} /{' '}
