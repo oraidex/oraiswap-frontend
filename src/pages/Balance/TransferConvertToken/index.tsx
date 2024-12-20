@@ -286,7 +286,10 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         ) : null}
         - Received amount:{' '}
         <span>
-          {(receivedAmount > 0 ? receivedAmount : 0).toFixed(6)} {token.name}
+          {(isSolToOraichain || isOraichainToSol ? solFee.sendAmount : receivedAmount > 0 ? receivedAmount : 0).toFixed(
+            6
+          )}{' '}
+          {token.name}
         </span>
         {!!toDisplayBTCFee && (
           <>
