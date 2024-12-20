@@ -46,6 +46,7 @@ import useGetFee from '../hooks/useGetFee';
 import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
 import { TonChainId } from 'context/ton-provider';
 import { network } from 'config/networks';
+import useGetFeeSol from '../hooks/useGetFeeSol';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -169,14 +170,19 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toNetwork: toNetworkChainId
   });
 
+  const { solFee, isOraichainToSol, isSolToOraichain } = useGetFeeSol({
+    originalFromToken: token,
+    toChainId: toNetworkChainId,
+    amountToken: convertAmount
+  });
+
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
     token,
     fromNetwork: token.chainId,
     toNetwork: toNetworkChainId
   });
 
-  // bridge fee & relayer fee
-  let bridgeFee = fromTokenFee + toTokenFee;
+  let bridgeFee = fromTokenFee + toTokenFee + solFee.relayerFee + solFee.tokenFeeAmount;
 
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
@@ -241,7 +247,14 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
     return (
       <div className={styles.bridgeFee}>
-        {bridgeFeeTon ? (
+        {isSolToOraichain || isOraichainToSol ? (
+          <>
+            Bridge fee:{' '}
+            <span>
+              {solFee.totalFee} {token.name}
+            </span>
+          </>
+        ) : bridgeFeeTon ? (
           <>
             Bridge fee:{' '}
             <span>
@@ -261,7 +274,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {tonTokenFee} {token.name}{' '}
             </span>
           </div>
-        ) : null}{' '}
+        ) : null}
         {relayerFeeTokenFee > 0 ? (
           <div className={styles.relayerFee}>
             - Relayer fee:{' '}
@@ -270,11 +283,13 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {relayerFeeTokenFee} {token.name}{' '}
             </span>
           </div>
-        ) : null}{' '}
-        - Received amount:
+        ) : null}
+        - Received amount:{' '}
         <span>
-          {' '}
-          {(receivedAmount > 0 ? receivedAmount : 0).toFixed(6)} {token.name}
+          {(isSolToOraichain || isOraichainToSol ? solFee.sendAmount : receivedAmount > 0 ? receivedAmount : 0).toFixed(
+            6
+          )}{' '}
+          {token.name}
         </span>
         {!!toDisplayBTCFee && (
           <>
@@ -302,8 +317,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   };
 
   const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
-
-  console.log({ networks });
 
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
@@ -494,10 +507,10 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             btcChains.find((chain) => chain.chainId !== token.chainId)
           ) {
             const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
-            const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
+            // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
             const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
             const isDisabled =
-              isSolBridge ||
+              // isSolBridge ||
               isBridgeBitcoin ||
               transferLoading ||
               !addressTransfer ||
