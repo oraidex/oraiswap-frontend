@@ -1,24 +1,22 @@
-import cn from 'classnames/bind';
-import Modal from 'components/Modal';
-import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { getTotalUsd, toSumDisplay } from 'libs/utils';
-import { FC, useEffect, useState } from 'react';
-import styles from './SelectTokenModal.module.scss';
-import useConfigReducer from 'hooks/useConfigReducer';
 import {
   CustomChainInfo,
   TokenItemType,
-  chainIcons,
   getSubAmountDetails,
   tokensIcon,
   truncDecimals
 } from '@oraichain/oraidex-common';
-import { chainInfosWithIcon, oraichainTokensWithIcon, tokenMap } from 'initCommon';
-import { getIcon } from 'helper';
+import cn from 'classnames/bind';
+import Modal from 'components/Modal';
 import SearchInput from 'components/SearchInput';
+import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import useConfigReducer from 'hooks/useConfigReducer';
+import { chainInfos, tokenMap } from 'initCommon';
+import { getTotalUsd, toSumDisplay } from 'libs/utils';
+import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { inspectToken } from 'reducer/onchainTokens';
 import { RootState } from 'store/configure';
+import styles from './SelectTokenModal.module.scss';
 
 const cx = cn.bind(styles);
 
@@ -116,15 +114,15 @@ export const SelectTokenModal: FC<ModalProps> = ({
                   )
                 );
                 const totalUsd = getTotalUsd(subAmounts, prices);
-                tokenAndChainIcons = chainIcons.find((chainIcon) => chainIcon.chainId === network.chainId);
+                tokenAndChainIcons = chainInfos.find((chainIcon) => chainIcon.chainId === network.chainId);
                 rawBalance = totalUsd > 0 ? totalUsd.toFixed(2) : '0';
                 balance = '$' + rawBalance;
               }
               const icon =
                 tokenAndChainIcons && theme === 'light' ? (
-                  <img src={tokenAndChainIcons?.iconLight} className={cx('logo')} alt="" />
+                  <img src={tokenAndChainIcons?.chainSymbolImageUrl} className={cx('logo')} alt="" />
                 ) : (
-                  <img src={tokenAndChainIcons?.icon} alt="" className={cx('logo')} />
+                  <img src={tokenAndChainIcons?.chainSymbolImageUrl} alt="" className={cx('logo')} />
                 );
 
               return {

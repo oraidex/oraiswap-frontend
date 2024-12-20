@@ -26,6 +26,7 @@ import { OverviewPool } from './components/OverviewPool';
 import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools, useGetPriceChange } from './hooks';
 import { useGetLpBalance } from './hooks/useGetLpBalance';
 import { useGetPairInfo } from './hooks/useGetPairInfo';
+import TransactionHistory from './components/TransactionHistory';
 
 const PoolDetail: React.FC = () => {
   const theme = useTheme();
@@ -224,8 +225,7 @@ const PoolDetail: React.FC = () => {
             {
               id: 'txs',
               value: 'Transactions',
-              content: null
-              // content: <TransactionHistory baseToken={BaseTokenInOraichain} quoteToken={QuoteTokenInOraichain} />
+              content: <TransactionHistory baseToken={baseToken} quoteToken={quoteToken} />
             }
           ]}
         />

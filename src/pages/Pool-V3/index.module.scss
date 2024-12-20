@@ -74,13 +74,13 @@
 
     .right {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
       align-items: flex-start;
-
-      @include medium_mobile {
-        flex-direction: column-reverse;
-      }
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
     }
 
     .search {
@@ -99,7 +99,7 @@
 
       @media (max-width: 575px) {
         font-size: 15px;
-        width: 100%;
+        flex-grow: 1;
       }
 
       &::placeholder {
@@ -111,6 +111,7 @@
 
     .dropDown {
       position: relative;
+      margin-left: auto;
 
       .btn {
         display: flex;

@@ -138,7 +138,13 @@ const PoolV3 = () => {
                   }}
                 />
               </div>
-              <CreateNewPool pools={poolList} setShowModal={setIsOpenNewPoolModalV3} showModal={isOpenNewPoolModalV3} />
+              {isOpenNewPoolModalV3 && (
+                <CreateNewPool
+                  pools={poolList}
+                  setShowModal={setIsOpenNewPoolModalV3}
+                  showModal={isOpenNewPoolModalV3}
+                />
+              )}
               <div className={styles.dropDown}>
                 <div className={styles.btnAdd}>
                   <Button type="primary-sm" onClick={() => setOpenOptionCreatePool(!openOptionCreatePool)}>

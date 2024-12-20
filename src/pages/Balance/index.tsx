@@ -66,7 +66,6 @@ import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './Balance.module.scss';
 import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
-import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { BitcoinUnit } from 'bitcoin-units';
 import Content from 'layouts/Content';
 import { config } from 'libs/nomic/config';

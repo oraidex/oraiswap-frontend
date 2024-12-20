@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import { PoolInfoResponse } from 'types/pool';
 import { AddLiquidityModal } from '../AddLiquidityModal';
 import styles from './ListPool.module.scss';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/configure';
 
 type ListPoolProps = {
   poolTableData: PoolTableData[];
@@ -22,16 +24,26 @@ export const ListPools: React.FC<ListPoolProps> = ({ poolTableData, generateIcon
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
   const [theme] = useConfigReducer('theme');
   const navigate = useNavigate();
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   const headers: TableHeaderProps<PoolTableData> = {
     symbols: {
       name: 'Pool Name',
-      accessor: (data) => (
-        <div className={styles.symbols}>
-          <div className={styles.symbols_logo}>{generateIcon(data.baseToken, data.quoteToken)}</div>
-          <span className={styles.symbols_name}>{data.symbols}</span>
-        </div>
-      ),
+      accessor: (data) => {
+        const firstTokenDenom = parseAssetOnlyDenom(JSON.parse(data.firstAssetInfo));
+        const secondTokenDenom = parseAssetOnlyDenom(JSON.parse(data.secondAssetInfo));
+
+        const tokens = [firstTokenDenom, secondTokenDenom].map(
+          (symbol) =>
+            allOraichainTokens.find((token) => token.denom === symbol || token.contractAddress === symbol)?.name
+        );
+        return (
+          <div className={styles.symbols}>
+            <div className={styles.symbols_logo}>{generateIcon(data.baseToken, data.quoteToken)}</div>
+            <span className={styles.symbols_name}>{tokens?.join('/')}</span>
+          </div>
+        );
+      },
       sortField: 'symbols',
       width: '22%',
       align: 'left'
