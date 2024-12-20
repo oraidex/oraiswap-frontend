@@ -161,7 +161,7 @@ export const TabsTxs: React.FC<{
         })}
       </div>
       {tab !== TYPE_TAB_HISTORY.HISTORY && (
-        <div>
+        <div style={{ position: 'relative' }}>
           <div
             className={cx('right')}
             onClick={() => {
