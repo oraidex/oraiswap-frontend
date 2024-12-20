@@ -168,7 +168,7 @@ const getCheckpointData = async (checkpointIndex?: number): Promise<CheckpointPa
     const res = await axios.get(`/bitcoin/checkpoint/${checkpointIndex}`, {});
     let data = res.data.data;
     let status = data.status;
-    // Slice 1 to remove the input of previosu checkpoint
+    // Slice 1 to remove the input of previous checkpoint
     data.transaction.data.input = data.transaction.data.input.slice(1).map((item: TransactionInput) => {
       let [txid, vout] = item.previous_output.split(':');
       return {
