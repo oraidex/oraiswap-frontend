@@ -1,6 +1,7 @@
 import { CustomChainInfo, MAX_ORAICHAIN_DENOM, TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
+import IconVerified from 'assets/icons/ic_verified.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import SearchInput from 'components/SearchInput';
 import { Themes } from 'context/theme-context';
@@ -197,7 +198,10 @@ export default function SelectToken({
                         </div>
                       </div>
                       <div>
-                        <div className={styles.selectTokenItemTokenName}>{token.name}</div>
+                        <div className={styles.selectTokenItemTokenName}>
+                          {token.name}
+                          {token.isVerified && <IconVerified />}
+                        </div>
                         <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>
                       </div>
                     </div>

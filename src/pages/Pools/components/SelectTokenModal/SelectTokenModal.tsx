@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { inspectToken } from 'reducer/onchainTokens';
 import { RootState } from 'store/configure';
 import styles from './SelectTokenModal.module.scss';
+import IconVerified from 'assets/icons/ic_verified.svg?react';
 
 const cx = cn.bind(styles);
 
@@ -79,6 +80,7 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
             let tokenAndChainIcons;
 
             const token = item as TokenItemType;
+            console.log({ token });
             key = token.denom;
             title = token.name;
             let sumAmountDetails: AmountDetails = {};
@@ -116,7 +118,9 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
               >
                 {icon}
                 <div className={cx('grow')}>
-                  <div>{title}</div>
+                  <div>
+                    {title} {token.isVerified && <IconVerified />}
+                  </div>
                 </div>
                 <div>{balance}</div>
               </div>

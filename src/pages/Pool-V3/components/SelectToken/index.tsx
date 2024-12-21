@@ -15,9 +15,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './index.module.scss';
-import { oraichainTokensWithIcon } from 'initCommon';
+import { oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
 import { inspectToken } from 'reducer/onchainTokens';
 import useConfigReducer from 'hooks/useConfigReducer';
+import IconVerified from 'assets/icons/ic_verified.svg?react';
 
 const SelectToken = ({
   token,
@@ -41,14 +42,16 @@ const SelectToken = ({
   const dispatch = useDispatch();
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
-  useEffect(() => {
-    if (listItems.length === 0 && textSearch) {
-      dispatch<any>(inspectToken({
-        tokenId: textSearch,
-        address
-      }));
-    }
-  }, [textSearch]);
+  // useEffect(() => {
+  //   if (listItems.length === 0 && textSearch) {
+  //     dispatch<any>(
+  //       inspectToken({
+  //         tokenId: textSearch,
+  //         address
+  //       })
+  //     );
+  //   }
+  // }, [textSearch]);
 
   const listItems = oraichainTokensWithIcon.filter(
     (item) =>
@@ -108,13 +111,17 @@ const SelectToken = ({
 
           {!isOpen ? null : (
             <div className={styles.selectTokenList}>
-              {!allOraichainTokens.length && (
+              {/* TODO: use allOraichainTokens after launched permissionless  */}
+              {/* {allOraichainTokens */}
+              {!oraichainTokens.length && (
                 <div className={styles.selectTokenListNoResult}>
                   {isLightTheme ? <NoResultLight /> : <NoResultDark />}
                 </div>
               )}
 
-              {allOraichainTokens
+              {/* TODO: use allOraichainTokens after launched permissionless  */}
+              {/* {allOraichainTokens */}
+              {oraichainTokens
                 .map((token) => {
                   const tokenIcon = getIcon({
                     isLightTheme,
@@ -178,7 +185,9 @@ const SelectToken = ({
                           </div>
                         </div>
                         <div>
-                          <div className={styles.selectTokenItemTokenName}>{token.name}</div>
+                          <div className={styles.selectTokenItemTokenName}>
+                            {token.name} {token.isVerified && <IconVerified />}
+                          </div>
                           <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>
                         </div>
                       </div>
