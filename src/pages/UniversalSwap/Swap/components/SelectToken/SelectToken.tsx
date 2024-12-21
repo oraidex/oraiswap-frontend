@@ -64,7 +64,6 @@ export default function SelectToken({
 
   const onchainTokens = useOnchainTokensReducer('tokens');
   const dispatch = useDispatch();
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   useEffect(() => {
     if (selectChain && selectChain !== textChain) setTextChain(selectChain);
