@@ -40,9 +40,9 @@ interface GetIconInterface {
 const getChainIcon = ({ isLightTheme, chainId, width, height }: GetIconInterface) => {
   const chainInfo = chainInfos.find((chain) => chain.chainId === chainId);
   return isLightTheme ? (
-    <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
+    <img src={chainInfo?.chainSymbolImageUrl} alt="icon" width={width} height={height} />
   ) : (
-    <img src={chainInfo.chainSymbolImageUrl} alt="icon" width={width} height={height} />
+    <img src={chainInfo?.chainSymbolImageUrl} alt="icon" width={width} height={height} />
   );
 };
 
@@ -123,13 +123,13 @@ export default function SelectToken({
           <div className={styles.selectTokenTitle}>Select token</div>
           <div className={styles.selectTokenList}>
             {/* TODO: check filter here */}
-            {![...listItems, ...onchainTokens].length && (
+            {![...listItems, textChain === 'Oraichain' && [...onchainTokens]].length && (
               <div className={styles.selectTokenListNoResult}>
                 {isLightTheme ? <NoResultLight /> : <NoResultDark />}
               </div>
             )}
-
-            {[...listItems, ...onchainTokens]
+            {/* TODO: check filter here */}
+            {[...listItems, textChain === 'Oraichain' && [...onchainTokens]]
               .map((token) => {
                 const tokenIcon = isLightTheme ? (
                   <img style={{ borderRadius: '100%' }} src={token.iconLight} alt="icon" width={30} height={30} />
