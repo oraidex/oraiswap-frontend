@@ -1,5 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
-import { OraiToken } from '@oraichain/orai-token-inspector/dist/types';
+import { InspectedToken } from '@oraichain/orai-token-inspector/dist/types';
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
@@ -29,21 +29,24 @@ export const onchainTokensSlice = createSlice({
   }
 });
 
-//TODO: hardcode oraichain
-export const onChainTokenToTokenItem = (token: OraiToken): TokenItemType => {
+export const onChainTokenToTokenItem = (token: InspectedToken): TokenItemType => {
   return {
-    name: token.symbol,
-    chainId: 'Oraichain',
-    cosmosBased: true,
+    name: token.name,
+    chainId: token.chainId,
+    cosmosBased: token.cosmosBased,
     decimals: token.decimals,
     denom: token.denom,
-    icon: token.logo,
-    iconLight: token.logo,
-    rpc: 'https://rpc.orai.io',
-    org: 'oraichain',
-    coinGeckoId: undefined,
+    icon: token.icon,
+    iconLight: token.iconLight,
+    rpc: token.rpc,
+    org: token.org,
     contractAddress: token.contractAddress,
-    feeCurrencies: network.feeCurrencies
+    feeCurrencies: network.feeCurrencies,
+    coinGeckoId: undefined,
+    bridgeTo: token.bridgeTo,
+    coinType: token.coinType,
+    gasPriceStep: token.gasPriceStep,
+    isVerified: false,
   };
 };
 
@@ -59,7 +62,7 @@ export const inspectToken = createAsyncThunk(
     },
     thunkAPI
   ): Promise<{
-    token: OraiToken;
+    token: InspectedToken;
     balance: string;
   }> => {
     const token = await tokenInspector.inspectToken({

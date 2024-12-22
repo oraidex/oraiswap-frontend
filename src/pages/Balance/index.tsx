@@ -63,7 +63,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getSubAmountDetails } from 'rest/api';
-import { RootState } from 'store/configure';
+import { RootState, store } from 'store/configure';
 import styles from './Balance.module.scss';
 import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
 import { BitcoinUnit } from 'bitcoin-units';
@@ -716,7 +716,10 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
-    return [...otherChainTokens, ...oraichainTokens]
+    const storage = store.getState();
+    const allOraichainTokens = storage.token.allOraichainTokens;
+    console.log('allOraichainTokens: ', allOraichainTokens);
+    return [...otherChainTokens, ...allOraichainTokens]
       .filter((token) => {
         if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) return false;
         if (UniversalSwapHelper.isSupportedNoPoolSwapEvm(token.coinGeckoId)) return false;
