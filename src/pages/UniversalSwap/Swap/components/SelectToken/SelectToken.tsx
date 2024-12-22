@@ -62,6 +62,7 @@ export default function SelectToken({
   const [tokenRank = {}] = useConfigReducer('tokenRank');
   const [address] = useConfigReducer('address');
   const [isTokenOnchain, setIsTokenOnchain] = useState(false);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   const onchainTokens = useOnchainTokensReducer('tokens');
   const dispatch = useDispatch();
@@ -81,7 +82,9 @@ export default function SelectToken({
     }
   }, [textSearch, address]);
 
-  const listItems = items
+  const checkedItems = selectChain === 'Oraichain' ? allOraichainTokens : items;
+  console.log({ allOraichainTokens });
+  const listItems = checkedItems
     .filter(
       (item) =>
         (textChain ? item.chainId === textChain : true) &&
@@ -99,6 +102,7 @@ export default function SelectToken({
     }, []);
 
   const prioritizeToken = MAX_ORAICHAIN_DENOM;
+
   return (
     <>
       <div className={`${styles.selectToken} ${isSelectToken ? styles.active : ''}`}>
@@ -123,20 +127,18 @@ export default function SelectToken({
           <div className={styles.selectTokenTitle}>Select token</div>
           <div className={styles.selectTokenList}>
             {/* TODO: check filter here */}
-            {![...listItems, textChain === 'Oraichain' && [...onchainTokens]].flat().length && (
+            {!listItems.length && (
               <div className={styles.selectTokenListNoResult}>
                 {isLightTheme ? <NoResultLight /> : <NoResultDark />}
               </div>
             )}
             {/* TODO: check filter here */}
-            {/* {[...listItems, textChain === 'Oraichain' && [...onchainTokens]] */}
-            {[...listItems, ...onchainTokens]
+            {listItems
               .map((token) => {
-                if (!token.denom) console.log('token', token);
-                const tokenIcon = isLightTheme ? (
-                  <img style={{ borderRadius: '100%' }} src={token.iconLight} alt="icon" width={30} height={30} />
-                ) : (
-                  <img style={{ borderRadius: '100%' }} src={token.icon} alt="icon" width={30} height={30} />
+                const tokenIconUrl =
+                  (isLightTheme ? token.iconLight : token.icon) || 'https://i.ibb.co/W5J0Gyk/question-16341539.png';
+                const tokenIcon = (
+                  <img style={{ borderRadius: '100%' }} src={tokenIconUrl} alt="icon" width={30} height={30} />
                 );
 
                 const networkIcon = getChainIcon({
@@ -201,7 +203,7 @@ export default function SelectToken({
                       </div>
                       <div>
                         <div className={styles.selectTokenItemTokenName}>
-                          {token.name}
+                          {token.name || 'UNKNOWN'}
                           {token.isVerified && <IconVerified />}
                         </div>
                         <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>

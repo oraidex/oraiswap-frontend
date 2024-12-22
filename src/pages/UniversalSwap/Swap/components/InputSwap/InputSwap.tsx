@@ -109,15 +109,21 @@ export default function InputSwap({
         <div className={cx('box-select')} onClick={() => setIsSelectToken(true)}>
           <div className={cx('left')}>
             <div className={cx('icon')}>
-              {isLightMode ? (
-                <img src={token.icon} alt="icon" width={30} height={30} />
-              ) : (
+              {token.icon ? (
                 <img className={cx('logo')} src={token.icon} alt="icon" width={30} height={30} />
+              ) : (
+                <img
+                  className={cx('logo')}
+                  src={'https://i.ibb.co/W5J0Gyk/question-16341539.png'}
+                  alt="icon"
+                  width={30}
+                  height={30}
+                />
               )}
             </div>
 
             <div className={cx('section')}>
-              <div className={cx('name')}>{token?.name}</div>
+              <div className={cx('name')}>{token?.name || 'UNKNOWN'}</div>
             </div>
             <img src={ArrowImg} alt="arrow" />
           </div>

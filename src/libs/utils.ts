@@ -11,7 +11,7 @@ import bech32 from 'bech32';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { chainInfos, cosmosTokens, network, tokenMap } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
-import { NetworkChainId } from '@oraichain/common'
+import { NetworkChainId } from '@oraichain/common';
 
 export const checkRegex = (str: string, regex?: RegExp) => {
   const re = regex ?? /^[a-zA-Z\-]{3,12}$/;
@@ -62,6 +62,7 @@ export const toTotalDisplay = (amounts: AmountDetails, tokenInfo: TokenItemType)
 
 export const toSubAmount = (amounts: AmountDetails, tokenInfo: TokenItemType): bigint => {
   const displayAmount = toSubDisplay(amounts, tokenInfo);
+  if (tokenInfo.decimals === 0) return BigInt(0);
   return toAmount(displayAmount, tokenInfo.decimals);
 };
 

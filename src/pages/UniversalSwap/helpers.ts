@@ -37,6 +37,7 @@ import {
   tokenMap
 } from 'initCommon';
 import { NetworkChainId } from '@oraichain/common';
+import { store } from 'store/configure';
 
 export enum SwapDirection {
   From,
@@ -296,17 +297,21 @@ export const getFromToToken = (
     fromContractAddr: originalFromToken?.contractAddress,
     toContractAddr: originalToToken?.contractAddress
   });
+
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens;
   const fromToken =
     (isEvmSwap
       ? tokenMap[fromTokenDenomSwap]
-      : getTokenOnOraichain(tokenMap[fromTokenDenomSwap]?.coinGeckoId, oraichainTokens) ??
-        tokenMap[fromTokenDenomSwap]) || onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
-  const toToken =
-    (isEvmSwap
-      ? tokenMap[toTokenDenomSwap]
-      : getTokenOnOraichain(tokenMap[toTokenDenomSwap]?.coinGeckoId, oraichainTokens) ?? tokenMap[toTokenDenomSwap]) ||
-    onchainTokens.find((token) => token.denom === toTokenDenomSwap);
-
+      : allOraichainTokens.find(
+          (token) => token.denom === fromTokenDenomSwap || token.contractAddress === fromTokenDenomSwap
+        ) ?? tokenMap[fromTokenDenomSwap]) || onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
+  const toToken = isEvmSwap
+    ? tokenMap[toTokenDenomSwap]
+    : allOraichainTokens.find(
+        (token) => token.denom === toTokenDenomSwap || token.contractAddress === toTokenDenomSwap
+      ) ?? tokenMap[toTokenDenomSwap];
+  onchainTokens.find((token) => token.denom === toTokenDenomSwap);
   return { fromToken, toToken };
 };
 
