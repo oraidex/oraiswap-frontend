@@ -11,6 +11,7 @@ export interface TokenState {
   feeConfigs: ConfigResponse;
   totalLpv3: number;
   allOraichainTokens: TokenItemType[];
+  allOtherChainTokens: TokenItemType[];
 }
 
 const initialState: TokenState = {
@@ -29,7 +30,8 @@ const initialState: TokenState = {
     token_fee_receiver: '',
     token_fees: []
   },
-  allOraichainTokens: []
+  allOraichainTokens: [],
+  allOtherChainTokens: []
 };
 
 export const tokenSlice = createSlice({
@@ -84,6 +86,17 @@ export const tokenSlice = createSlice({
         ...state.allOraichainTokens,
         ...action.payload.filter(
           (token: TokenItemType) => !state.allOraichainTokens.find((t) => t.denom === token.denom)
+        )
+      ];
+    },
+    updateAllOtherChainTokens: (state, action: PayloadAction<any>) => {
+      state.allOtherChainTokens = action.payload;
+    },
+    addToOtherChainTokens: (state, action: PayloadAction<any>) => {
+      state.allOtherChainTokens = [
+        ...state.allOtherChainTokens,
+        ...action.payload.filter(
+          (token: TokenItemType) => !state.allOtherChainTokens.find((t) => t.denom === token.denom)
         )
       ];
     }

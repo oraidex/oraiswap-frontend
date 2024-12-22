@@ -50,7 +50,6 @@ export const SelectTokenModal: FC<ModalProps> = ({
   const [address] = useConfigReducer('address');
 
   const dispatch = useDispatch();
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch) {

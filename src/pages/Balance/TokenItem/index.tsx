@@ -5,6 +5,8 @@ import TransferConvertToken from '../TransferConvertToken';
 import { OraiIcon, TokenItemType, tokensIcon } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { flattenTokens } from 'initCommon';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/configure';
 
 export interface TokenItemProps {
   token: TokenItemType;
@@ -43,7 +45,10 @@ const TokenItem: React.FC<TokenItemProps> = ({
   setToNetworkChainId
 }) => {
   // TODO: chain tokensIcon to tokensWithIcon
-  let tokenIcon = flattenTokens.find((tok) => tok.coinGeckoId === token.coinGeckoId);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  let tokenIcon = allOraichainTokens.find((tok) => tok.denom === token.denom);
+  // console.log('tokenIcon', tokenIcon);
+
   if (!tokenIcon) {
     tokenIcon = {
       ...token,
@@ -65,9 +70,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
       <div className={styles.balanceAmountInfo}>
         <div className={styles.token}>
           {theme === 'light' ? (
-            <img width={44} height={44} src={tokenIcon?.iconLight} alt="icon-light" />
+            <img style={{ borderRadius: '100%' }} width={44} height={44} src={tokenIcon?.iconLight} alt="icon-light" />
           ) : (
-            <img width={44} height={44} src={tokenIcon?.icon} alt="icon-light" />
+            <img style={{ borderRadius: '100%' }} width={44} height={44} src={tokenIcon?.icon} alt="icon-light" />
           )}
           <div className={styles.tokenInfo}>
             <div className={classNames(styles.tokenName, styles[theme])}>{token.name}</div>

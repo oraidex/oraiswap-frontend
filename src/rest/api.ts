@@ -117,6 +117,7 @@ export async function fetchPairPriceWithStablecoin(
   fromTokenInfo: TokenItemType,
   toTokenInfo: TokenItemType
 ): Promise<string> {
+  if (!fromTokenInfo.denom || !toTokenInfo.denom) return '0';
   const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
   const result = await Promise.allSettled([
     UniversalSwapHelper.handleSimulateSwap({
@@ -157,6 +158,7 @@ async function fetchPoolInfoAmount(
   cachedPairs?: PairDetails,
   pairInfo?: PairInfo
 ): Promise<PoolInfo> {
+  if (!fromTokenInfo.denom || !toTokenInfo.denom) return { offerPoolAmount: BigInt(0), askPoolAmount: BigInt(0) };
   const { info: fromInfo } = parseTokenInfo(fromTokenInfo);
   const { info: toInfo } = parseTokenInfo(toTokenInfo);
 

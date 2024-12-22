@@ -718,7 +718,6 @@ const Balance: React.FC<BalanceProps> = () => {
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
     const storage = store.getState();
     const allOraichainTokens = storage.token.allOraichainTokens;
-    console.log('allOraichainTokens: ', allOraichainTokens);
     return [...otherChainTokens, ...allOraichainTokens]
       .filter((token) => {
         if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) return false;
