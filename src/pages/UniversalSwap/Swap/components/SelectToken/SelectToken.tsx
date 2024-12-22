@@ -123,14 +123,15 @@ export default function SelectToken({
           <div className={styles.selectTokenTitle}>Select token</div>
           <div className={styles.selectTokenList}>
             {/* TODO: check filter here */}
-            {![...listItems, textChain === 'Oraichain' && [...onchainTokens]].length && (
+            {![...listItems, textChain === 'Oraichain' && [...onchainTokens]].flat().length && (
               <div className={styles.selectTokenListNoResult}>
                 {isLightTheme ? <NoResultLight /> : <NoResultDark />}
               </div>
             )}
             {/* TODO: check filter here */}
-            {[...listItems, textChain === 'Oraichain' && [...onchainTokens]]
+            {[...listItems, textChain === 'Oraichain' && [...onchainTokens]].flat()
               .map((token) => {
+                if (!token.denom) console.log('token', token);
                 const tokenIcon = isLightTheme ? (
                   <img style={{ borderRadius: '100%' }} src={token.iconLight} alt="icon" width={30} height={30} />
                 ) : (
