@@ -130,24 +130,26 @@ export const HeaderTop = ({
   const currentFromToken = useSelector(selectCurrentFromToken);
   const currentToChain = useSelector(selectCurrentToChain);
   const currentToToken = useSelector(selectCurrentToToken);
-
   const mobileMode = isMobile();
   let [ToTokenIcon, FromTokenIcon] = [null, null];
 
   const generateIconTokenByTheme = (token) => {
     return theme === 'light' ? (
-      <img src={token.iconLight} width={30} height={30} alt="token" />
+      <img style={{ borderRadius: '100%' }} src={token.iconLight} width={30} height={30} alt="token" />
     ) : (
-      <img src={token.icon} alt="token" width={30} height={30} />
+      <img style={{ borderRadius: '100%' }} src={token.icon} alt="token" width={30} height={30} />
     );
   };
 
   if (currentToToken) {
-    const tokenIcon = flattenTokens.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === currentToToken.coinGeckoId);
-    if (tokenIcon) ToTokenIcon = generateIconTokenByTheme(tokenIcon);
+    ToTokenIcon = generateIconTokenByTheme(currentToToken);
   }
   if (currentFromToken) {
-    const tokenIcon = flattenTokens.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === currentFromToken.coinGeckoId);
+    const tokenIcon = flattenTokens.find(
+      (tokenWithIcon) =>
+        tokenWithIcon.contractAddress === currentFromToken.contractAddress ||
+        tokenWithIcon.denom === currentFromToken.denom
+    );
     if (tokenIcon) FromTokenIcon = generateIconTokenByTheme(tokenIcon);
   }
 
@@ -157,27 +159,25 @@ export const HeaderTop = ({
         {showTokenInfo && (
           <div>
             {tab === TAB_CHART_SWAP.TOKEN
-              ? currentToToken &&
-              currentToChain && (
-                <div className={cx('tokenInfo')}>
-                  {ToTokenIcon}
-                  <span>{currentToToken?.name || currentToToken?.denom}</span>
-                  <span className={cx('tokenName')}>{currentToChain}</span>
-                </div>
-              )
-              : currentToToken &&
-              currentFromToken && (
-                <div className={cx('tokenInfo')}>
-                  <div className={cx('icons')}>
-                    <div className={cx('formIcon')}>{FromTokenIcon}</div>
-                    <div className={cx('toIcon')}>{ToTokenIcon}</div>
+              ? currentToChain && (
+                  <div className={cx('tokenInfo')}>
+                    {ToTokenIcon}
+                    <span>{currentToToken?.name || currentToToken?.denom}</span>
+                    <span className={cx('tokenName')}>{currentToChain}</span>
                   </div>
-                  <span>
-                    {currentFromToken?.name || currentFromToken?.denom}/
-                    {currentToToken?.name || currentToToken?.denom}
-                  </span>
-                </div>
-              )}
+                )
+              : currentFromToken && (
+                  <div className={cx('tokenInfo')}>
+                    <div className={cx('icons')}>
+                      <div className={cx('formIcon')}>{FromTokenIcon}</div>
+                      <div className={cx('toIcon')}>{ToTokenIcon}</div>
+                    </div>
+                    <span>
+                      {currentFromToken?.name || currentFromToken?.denom}/
+                      {currentToToken?.name || currentToToken?.denom}
+                    </span>
+                  </div>
+                )}
           </div>
         )}
         {mobileMode && (

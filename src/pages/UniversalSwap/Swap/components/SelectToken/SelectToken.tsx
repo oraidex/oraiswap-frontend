@@ -129,7 +129,8 @@ export default function SelectToken({
               </div>
             )}
             {/* TODO: check filter here */}
-            {[...listItems, textChain === 'Oraichain' && [...onchainTokens]].flat()
+            {/* {[...listItems, textChain === 'Oraichain' && [...onchainTokens]] */}
+            {[...listItems, ...onchainTokens]
               .map((token) => {
                 if (!token.denom) console.log('token', token);
                 const tokenIcon = isLightTheme ? (
