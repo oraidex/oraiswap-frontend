@@ -382,8 +382,14 @@ export const findDefaultToToken = (from: TokenItemType) => {
 
   const defaultToken = allTokens.find((t) => {
     const defaultChain = from.bridgeTo[0];
-
-    return defaultChain === t.chainId && from.coinGeckoId === t.coinGeckoId && from.chainId !== t.chainId;
+    // console.log('defaultChain', defaultChain);
+    // console.log('from.coinGeckoId === t.coinGeckoId', from.coinGeckoId === t.coinGeckoId)
+    // if (defaultChain === t.chainId) {
+    //   console.log({ from, t });
+    // }
+    return defaultChain === t.chainId 
+    // && from.coinGeckoId === t.coinGeckoId 
+    && from.chainId !== t.chainId;
   });
 
   return defaultToken;
