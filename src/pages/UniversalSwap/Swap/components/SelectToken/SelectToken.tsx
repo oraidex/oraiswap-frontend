@@ -129,7 +129,8 @@ export default function SelectToken({
               </div>
             )}
             {/* TODO: check filter here */}
-            {[...listItems, textChain === 'Oraichain' && [...onchainTokens]]
+            {/* {[...listItems, textChain === 'Oraichain' && [...onchainTokens]] */}
+            {[...listItems, ...onchainTokens]
               .map((token) => {
                 const tokenIcon = isLightTheme ? (
                   <img style={{ borderRadius: '100%' }} src={token.iconLight} alt="icon" width={30} height={30} />
