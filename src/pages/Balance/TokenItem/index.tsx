@@ -46,13 +46,14 @@ const TokenItem: React.FC<TokenItemProps> = ({
 }) => {
   // TODO: chain tokensIcon to tokensWithIcon
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
-  let tokenIcon = allOraichainTokens.find((tok) => tok.denom === token.denom);
+  const allOtherChainTokens = useSelector((state: RootState) => state.token.allOtherChainTokens);
+  let tokenIcon = [...allOraichainTokens, ...allOtherChainTokens].find((tok) => tok.denom === token.denom);
   // console.log('tokenIcon', tokenIcon);
 
   if (!tokenIcon) {
     tokenIcon = {
       ...token,
-      
+
       // TODO: update token icon to default token
       icon: OraiIcon,
       iconLight: OraiIcon

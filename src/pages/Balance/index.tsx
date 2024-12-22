@@ -59,8 +59,8 @@ import { useGetFeeConfig } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
 import Metamask from 'libs/metamask';
 import isEqual from 'lodash/isEqual';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState, store } from 'store/configure';
@@ -98,8 +98,12 @@ import { PublicKey } from '@solana/web3.js';
 import { NATIVE_MINT } from '@solana/spl-token';
 import { TonChainId } from 'context/ton-provider';
 import useTonBridgeHandler from './hooks/useTonBridgeHandler';
+import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
+import { tokenInspector } from 'initTokenInspector';
+import { addToOtherChainTokens } from 'reducer/token';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
-interface BalanceProps {}
+interface BalanceProps { }
 
 export const isMaintainBridge = false;
 
@@ -114,6 +118,8 @@ const Balance: React.FC<BalanceProps> = () => {
   const tokenUrl = searchParams.get('token');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const feeConfig = useSelector((state: RootState) => state.token.feeConfigs);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOtherChainTokens = useSelector((state: RootState) => state.token.allOtherChainTokens);
   const nomic = useContext(NomicContext);
   const cwBitcoinContext = useContext(CwBitcoinContext);
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
@@ -142,6 +148,8 @@ const Balance: React.FC<BalanceProps> = () => {
   const [btcAddress] = useConfigReducer('btcAddress');
 
   const wallet = useWallet();
+
+  const dispatch = useDispatch();
 
   const { handleBridgeFromCosmos, handleBridgeFromTon } = useTonBridgeHandler({
     token: from,
@@ -177,6 +185,8 @@ const Balance: React.FC<BalanceProps> = () => {
     }
   }, [oraiAddress, isOwallet]);
 
+
+
   useOnClickOutside(ref, () => {
     setTokenBridge([undefined, undefined]);
   });
@@ -187,12 +197,26 @@ const Balance: React.FC<BalanceProps> = () => {
 
   useEffect(() => {
     if (!tokenUrl) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
+
+    (async () => {
+      if (tokenUrl && filterNetworkUI === SolanaNetworkConfig.chainId) {
+        const token = await tokenInspector.inspectTokenFromSpecifiedChain({
+          tokenId: tokenUrl,
+          chainId: filterNetworkUI
+        });
+
+        dispatch(addToOtherChainTokens([onChainTokenToTokenItem(token)]))
+
+        console.log('🚀 ~ token:', token);
+      }
+    })();
+
     setTokens(
       [otherChainTokens, oraichainTokens].map((childTokens) =>
         childTokens.filter((t) => t.name.includes(tokenUrl.toUpperCase()))
       )
     );
-  }, [tokenUrl]);
+  }, [tokenUrl, filterNetworkUI]);
 
   useEffect(() => {
     initEthereum().catch((error) => {
@@ -264,6 +288,7 @@ const Balance: React.FC<BalanceProps> = () => {
         return;
       }
       const toToken = findDefaultToToken(token);
+      console.log('🚀 ~ onClickToken ~ toToken', toToken);
       setTokenBridge([token, toToken]);
     },
     [otherChainTokens, oraichainTokens, from, to]
@@ -590,9 +615,20 @@ const Balance: React.FC<BalanceProps> = () => {
       let newToToken = to;
       if (toNetworkChainId) {
         // ORAICHAIN -> EVM (BSC/ETH/TRON) ( TO: TOKEN ORAIBRIDGE)
-        newToToken = flattenTokens.find(
+        newToToken = [...allOraichainTokens,
+        ...allOtherChainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
+
+        if (from.chainId === SolanaNetworkConfig.chainId) {
+          newToToken = [...allOraichainTokens,
+          ...allOtherChainTokens].find(
+            (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
+            && flat.denom.includes(from.denom) 
+          );
+        }
+
+        console.log('🚀 ~ onClickTransfer ~ newToToken', newToToken);
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
@@ -716,9 +752,7 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
-    const storage = store.getState();
-    const allOraichainTokens = storage.token.allOraichainTokens;
-    return [...otherChainTokens, ...allOraichainTokens]
+    return [...allOtherChainTokens, ...allOraichainTokens]
       .filter((token) => {
         if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) return false;
         if (UniversalSwapHelper.isSupportedNoPoolSwapEvm(token.coinGeckoId)) return false;
@@ -728,6 +762,10 @@ const Balance: React.FC<BalanceProps> = () => {
         return toTotalDisplay(amounts, b) * prices[b.coinGeckoId] - toTotalDisplay(amounts, a) * prices[a.coinGeckoId];
       });
   };
+
+  const listTokens = useMemo(() => {
+    return getFilterTokens(filterNetworkUI);
+  }, [allOtherChainTokens, allOraichainTokens, filterNetworkUI]);
 
   const totalUsd = getTotalUsd(amounts, prices);
 
@@ -818,7 +856,7 @@ const Balance: React.FC<BalanceProps> = () => {
         <LoadingBox loading={loadingRefresh}>
           <div className={styles.tokens}>
             <div className={styles.tokens_form} ref={ref}>
-              {getFilterTokens(filterNetworkUI).map((t: TokenItemType) => {
+              {listTokens.map((t: TokenItemType) => {
                 // check balance cw20
                 let amount = BigInt(amounts[t.denom] ?? 0);
                 let usd = getUsd(amount, t, prices);
@@ -868,6 +906,7 @@ const Balance: React.FC<BalanceProps> = () => {
                         }
                       }}
                       onClickTransfer={async (fromAmount: number, filterNetwork?: NetworkChainId) => {
+                        console.log({ fromAmount, filterNetwork, from, to });
                         await onClickTransfer(fromAmount, from, to, filterNetwork);
                       }}
                       convertKwt={async (transferAmount: number, fromToken: TokenItemType) => {

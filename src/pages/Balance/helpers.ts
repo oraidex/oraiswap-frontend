@@ -40,6 +40,8 @@ import { generateError } from 'libs/utils';
 import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMoveOraib2OraiMessages } from 'rest/api';
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
+import { store } from 'store/configure';
+import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
@@ -372,16 +374,19 @@ export const transferIbcCustom = async (
 export const findDefaultToToken = (from: TokenItemType) => {
   if (!from.bridgeTo) return;
 
-  const defaultToken = flattenTokens.find((t) => {
+  const storage = store.getState();
+  const allTokens = [
+    ...storage.token.allOraichainTokens,
+    ...storage.token.allOtherChainTokens,
+  ]
+
+  const defaultToken = allTokens.find((t) => {
     const defaultChain = from.bridgeTo[0];
+
     return defaultChain === t.chainId && from.coinGeckoId === t.coinGeckoId && from.chainId !== t.chainId;
   });
 
   return defaultToken;
-
-  // return flattenTokens.find(
-  //   (t) => from.bridgeTo.includes(t.chainId) && from.name.includes(t.name) && from.chainId !== t.chainId
-  // );
 };
 
 export const convertKwt = async (transferAmount: number, fromToken: TokenItemType): Promise<DeliverTxResponse> => {

@@ -93,12 +93,20 @@ export const tokenSlice = createSlice({
       state.allOtherChainTokens = action.payload;
     },
     addToOtherChainTokens: (state, action: PayloadAction<any>) => {
+      try {
+        // console.log('action.payload', action.payload);
       state.allOtherChainTokens = [
         ...state.allOtherChainTokens,
         ...action.payload.filter(
           (token: TokenItemType) => !state.allOtherChainTokens.find((t) => t.denom === token.denom)
         )
       ];
+      // console.log("done")
+
+      // console.log('state.allOtherChainTokens', state.allOtherChainTokens);
+      } catch (error) {
+        console.log('error', error);
+      }
     }
   }
 });
@@ -113,7 +121,9 @@ export const {
   updateFeeConfig,
   updateTotalLpv3,
   updateAllOraichainTokens,
-  addToOraichainTokens
+  addToOraichainTokens,
+  updateAllOtherChainTokens,
+  addToOtherChainTokens
 } = tokenSlice.actions;
 
 export default tokenSlice.reducer;

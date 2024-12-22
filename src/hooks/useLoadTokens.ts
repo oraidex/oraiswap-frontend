@@ -366,7 +366,9 @@ async function loadSolEntries(
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
     });
 
-    let entries: [string, string][] = solTokens.map((item) => {
+    const storage = store.getState();
+    const allSolTokens = storage.token.allOtherChainTokens.filter((t) => t.chainId === chain.chainId);
+    let entries: [string, string][] = allSolTokens.map((item) => {
       let amount = '0';
       if (item?.contractAddress) {
         const findAmount = tokenAmount.value.find(
