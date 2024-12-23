@@ -18,6 +18,8 @@ import { InitBalancesItems } from './ItemsComponent';
 import styles from './NewTokenModal.module.scss';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import NumberFormat from 'react-number-format';
+import { inspectToken } from 'reducer/onchainTokens';
+import { useDispatch } from 'react-redux';
 const cx = cn.bind(styles);
 
 const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
@@ -49,6 +51,8 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       amount: BigInt(10 ** (tokenDecimal || 0))
     }
   ]);
+
+  const dispatch = useDispatch();
 
   const [isAddListToken, setIsAddListToken] = useState(false);
   const [cap, setCap] = useState(BigInt(0));
@@ -164,6 +168,9 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       const res = await client.executeMultiple(address.address, msgs, 'auto');
 
       if (res.transactionHash) {
+        dispatch<any>(
+          inspectToken({ tokenId: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`, address: oraiAddress })
+        );
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl('Oraichain', res.transactionHash)
         });
