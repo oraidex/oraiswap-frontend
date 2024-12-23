@@ -4074,10 +4074,10 @@
     ethers "^5.5.1"
     lodash "^4.17.21"
 
-"@oraichain/common@1.2.6":
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.6.tgz#7b2f4bed1a7a93e54190a8409e289f6ebab7ba06"
-  integrity sha512-Ten4zmHnunmXtE4zBPO2e4zENvr/Iv1nOzDpZcdCoFJHd7Xe4JuKMWuDBfDy9FWW9AlMbnkcKB7jqaLq4uyP3A==
+"@oraichain/common@1.2.7":
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.7.tgz#5063b20967eac14b5fc94e75f02afa6685565507"
+  integrity sha512-yOaEpjxtYwGkOxzSiqYwULfK0KSGdBj0ziQLZjQhM6yhW3MzTK70nAORW64ATKomSlBQFy9I/6MFsGkQBHiv3w==
   dependencies:
     "@keplr-wallet/types" "0.12.141"
     axios "0.21.4"
@@ -4091,19 +4091,6 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.0.tgz#201dddcff7bbb0dd90a04cacf82dc3f6b9480788"
   integrity sha512-gMTBSkLtHOMUfC5d3VJmEUtN17z5wL2YUrHLXCTcE6VA/K8nZ4jRt8yoO4JU/Lzy8LhZecQ2vM8r6kgLUpg8lw==
-  dependencies:
-    "@keplr-wallet/types" "0.12.141"
-    axios "0.21.4"
-    axios-extensions "3.1.6"
-    bech32 "^1.1.4"
-    cosmjs-types "^0.8.0"
-    ethers "^5.5.1"
-    lodash "^4.17.21"
-
-"@oraichain/common@^1.2.1-beta13":
-  version "1.2.1-beta13"
-  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.1-beta13.tgz#81a56b2562308199c35a218815daa0851d487964"
-  integrity sha512-Kle7g2nbzmumsz/lZFU6EX+FP1xDgzT+XTOL3ZREuEcroZn7xo35cD+wcOeaifehVSBhPF/1NmknoSB2aV0+Yw==
   dependencies:
     "@keplr-wallet/types" "0.12.141"
     axios "0.21.4"
@@ -4245,10 +4232,10 @@
     react-use "^17.4.0"
     react-use-websocket "^4.5.0"
 
-"@oraichain/oraidex-common@2.0.0-beta":
-  version "2.0.0-beta"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.0-beta.tgz#9cb8a9f9093223550be07c0501449ae1528a145d"
-  integrity sha512-varP+oL/NM0jRQsXB/JSpcYeSj4VMEiobZg4aLUYh+N7dlwn243Jw7oyj91uWLwg3ollttb3GFlcPUFJpOkNwA==
+"@oraichain/oraidex-common@2.0.0-beta.24", "@oraichain/oraidex-common@2.0.1", "@oraichain/oraidex-common@^1.1.6":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.1.tgz#2a53ca723717b6d85464aa7a38bd87f32e7bb715"
+  integrity sha512-jByZvRXjLYrgmdM5qOz+EHNq5+k0b1etqfw4xIhr//L0sBD6z+/jBSGh1UTC59m24DABtrTQlGDae5jcdQ1hhw==
   dependencies:
     "@cosmjs/amino" "^0.32.4"
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
@@ -4259,32 +4246,7 @@
     "@ethersproject/providers" "^5.0.10"
     "@injectivelabs/sdk-ts" "1.12.1"
     "@keplr-wallet/types" "^0.11.38"
-    "@oraichain/common" "1.2.6"
-    "@oraichain/oraidex-contracts-sdk" latest
-    "@ton/core" "0.56.3"
-    "@ton/crypto" "3.3.0"
-    axios "1.7.2"
-    axios-extensions "3.1.7"
-    bignumber.js "^9.1.2"
-    cosmjs-types "^0.9.0"
-    ethers "^5.0.15"
-    tronweb "6.0.0-beta.4"
-
-"@oraichain/oraidex-common@2.0.0-beta.24", "@oraichain/oraidex-common@^1.1.6":
-  version "2.0.0-beta.24"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.0-beta.24.tgz#4d728f8ff4fe1a65cc9e7bfea9f8d698a1aeb53d"
-  integrity sha512-4MxWFhrDwbn5tPbtBomUNmgX+waDWrO6fQR8At86xV8TtEHw8H92LzJ4EJytElOtkfKMVK964TixM/ehsSp/AA==
-  dependencies:
-    "@cosmjs/amino" "^0.32.4"
-    "@cosmjs/cosmwasm-stargate" "^0.32.4"
-    "@cosmjs/crypto" "^0.32.4"
-    "@cosmjs/proto-signing" "^0.32.4"
-    "@cosmjs/stargate" "^0.32.4"
-    "@cosmjs/tendermint-rpc" "^0.32.4"
-    "@ethersproject/providers" "^5.0.10"
-    "@injectivelabs/sdk-ts" "1.12.1"
-    "@keplr-wallet/types" "^0.11.38"
-    "@oraichain/common" "^1.2.1-beta13"
+    "@oraichain/common" "1.2.7"
     "@oraichain/oraidex-contracts-sdk" latest
     "@ton/core" "0.56.3"
     "@ton/crypto" "3.3.0"
@@ -17449,7 +17411,7 @@ string-env-interpolation@^1.0.1:
   resolved "https://registry.yarnpkg.com/string-env-interpolation/-/string-env-interpolation-1.0.1.tgz#ad4397ae4ac53fe6c91d1402ad6f6a52862c7152"
   integrity sha512-78lwMoCcn0nNu8LszbP1UA7g55OeE4v7rCeWnM5B453rnNr4aq+5it3FEYtZrSEiMvHZOZ9Jlqb0OD0M2VInqg==
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -17466,6 +17428,15 @@ string-width@^3.0.0, string-width@^3.1.0:
     emoji-regex "^7.0.1"
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^5.1.0"
+
+string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
 
 string-width@^5.0.1, string-width@^5.1.2:
   version "5.1.2"
@@ -17495,7 +17466,7 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -17515,6 +17486,13 @@ strip-ansi@^5.0.0, strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
   dependencies:
     ansi-regex "^4.1.0"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1:
   version "7.1.0"
@@ -18985,7 +18963,7 @@ wordwrapjs@^5.1.0:
   resolved "https://registry.yarnpkg.com/wordwrapjs/-/wordwrapjs-5.1.0.tgz#4c4d20446dcc670b14fa115ef4f8fd9947af2b3a"
   integrity sha512-JNjcULU2e4KJwUNv6CHgI46UvDGitb6dGryHajXTDiLgg1/RiGoPSDw4kZfYnwGtEXf2ZMeIewDQgFGzkCB2Sg==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -19007,6 +18985,15 @@ wrap-ansi@^6.0.1, wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"

@@ -64,8 +64,6 @@ export default function SelectToken({
   const [address] = useConfigReducer('address');
   const [isTokenOnchain, setIsTokenOnchain] = useState(false);
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
-
-  const onchainTokens = useOnchainTokensReducer('tokens');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -83,8 +81,8 @@ export default function SelectToken({
     }
   }, [textSearch, address]);
 
-  const checkedItems = selectChain === 'Oraichain' ? allOraichainTokens : items;
-  console.log({ allOraichainTokens });
+  const checkedItems =
+    selectChain === 'Oraichain' ? allOraichainTokens.filter((token) => !token.isDisabledSwap) : items;
   const listItems = checkedItems
     .filter(
       (item) =>

@@ -25,7 +25,7 @@
     "@oraichain/ethereum-multicall": "^1.0.2",
     "@oraichain/kawaiiverse-txs": "^0.0.3",
     "@oraichain/orai-bitcoin": "2.0.0",
-    "@oraichain/oraidex-common": "2.0.0-beta",
+    "@oraichain/oraidex-common": "2.0.1",
     "@oraichain/orai-token-inspector": "^0.1.17",
     "@oraichain/oraidex-common-ui": "1.0.11",
     "@oraichain/oraidex-contracts-sdk": "1.0.55",
@@ -170,7 +170,7 @@
     "axios": "0.26.1",
     "@sentry/react": "7.99.0",
     "@cosmjs/amino": "0.32.4",
-    "@oraichain/oraidex-common": "2.0.0-beta.24"
+    "@oraichain/oraidex-common": "2.0.1"
   },
   "overrides": {
     "cosmjs-types@>0.7.0 <0.8.0": "0.7.1",

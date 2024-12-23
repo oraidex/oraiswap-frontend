@@ -103,7 +103,7 @@ import { tokenInspector } from 'initTokenInspector';
 import { addToOtherChainTokens } from 'reducer/token';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
-interface BalanceProps { }
+interface BalanceProps {}
 
 export const isMaintainBridge = false;
 
@@ -185,8 +185,6 @@ const Balance: React.FC<BalanceProps> = () => {
     }
   }, [oraiAddress, isOwallet]);
 
-
-
   useOnClickOutside(ref, () => {
     setTokenBridge([undefined, undefined]);
   });
@@ -205,7 +203,7 @@ const Balance: React.FC<BalanceProps> = () => {
           chainId: filterNetworkUI
         });
 
-        dispatch(addToOtherChainTokens([onChainTokenToTokenItem(token)]))
+        dispatch(addToOtherChainTokens([onChainTokenToTokenItem(token)]));
 
         console.log('🚀 ~ token:', token);
       }
@@ -557,7 +555,7 @@ const Balance: React.FC<BalanceProps> = () => {
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
 
     // if (fromToken.denom !== MAX_ORAICHAIN_DENOM) {
-    if (fromToken.denom === "orai") {
+    if (fromToken.denom === 'orai') {
       const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
       console.log(
         'Current bridge balance transfer to sol: ',
@@ -616,26 +614,28 @@ const Balance: React.FC<BalanceProps> = () => {
       let newToToken = to;
       if (toNetworkChainId) {
         // ORAICHAIN -> EVM (BSC/ETH/TRON) ( TO: TOKEN ORAIBRIDGE)
-        newToToken = [...allOraichainTokens,
-        ...allOtherChainTokens].find(
+        newToToken = [...allOraichainTokens, ...allOtherChainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
 
         if (from.chainId === SolanaNetworkConfig.chainId) {
-          newToToken = [...allOraichainTokens,
-          ...allOtherChainTokens].find(
-            (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
-              && flat.denom.includes(from.denom)
+          newToToken = [...allOraichainTokens, ...allOtherChainTokens].find(
+            (flat) =>
+              flat.chainId === toNetworkChainId &&
+              flat.coinGeckoId === from.coinGeckoId &&
+              flat.denom.includes(from.denom)
           );
         }
 
         if (toNetworkChainId === SolanaNetworkConfig.chainId) {
           console.log('🚀 ~ onClickTransfer ~ toNetworkChainId', toNetworkChainId);
           const subDenom = from.denom.split('/')[2];
-          const targetTokenInfo = onChainTokenToTokenItem(await tokenInspector.inspectTokenFromSpecifiedChain({
-            tokenId: subDenom,
-            chainId: toNetworkChainId
-          }));
+          const targetTokenInfo = onChainTokenToTokenItem(
+            await tokenInspector.inspectTokenFromSpecifiedChain({
+              tokenId: subDenom,
+              chainId: toNetworkChainId
+            })
+          );
           newToToken = targetTokenInfo;
         }
 
