@@ -21,6 +21,8 @@ import {
 } from './hooks';
 import styles from './index.module.scss';
 import { oraichainTokensWithIcon } from 'initCommon';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/configure';
 
 export type PoolTableData = PoolInfoResponse & {
   reward: string[];
@@ -43,6 +45,7 @@ const Pools: React.FC<{}> = () => {
   const lpAddresses = pools.map((pool) => pool.liquidityAddr);
   useFetchCacheRewardAssetForAllPools(lpAddresses);
   useFetchLpPoolsV3(lpAddresses);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   const { myStakes } = useGetMyStake({
     stakerAddress: address
@@ -85,7 +88,7 @@ const Pools: React.FC<{}> = () => {
         parseAssetOnlyDenom(JSON.parse(secondAssetInfo))
       ];
       const [baseToken, quoteToken] = [baseDenom, quoteDenom].map((denom) =>
-        oraichainTokensWithIcon.find((token) => token.denom === denom || token.contractAddress === denom)
+        allOraichainTokens.find((token) => token.denom === denom || token.contractAddress === denom)
       );
       const symbols = getSymbolPools(baseDenom, quoteDenom, pool.symbols);
       // calc claimable of each pool
