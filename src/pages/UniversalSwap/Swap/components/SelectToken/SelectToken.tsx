@@ -4,7 +4,9 @@ import {
   truncDecimals,
   HMSTR_ORAICHAIN_DENOM,
   DOGE_BNB_ORAICHAIN_DENOM,
-  MAX_ORAICHAIN_DENOM
+  MAX_ORAICHAIN_DENOM,
+  RACKS_ORAICHAIN_DENOM,
+  ORAI
 } from '@oraichain/oraidex-common';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
@@ -88,7 +90,7 @@ export default function SelectToken({
       (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
   );
 
-  const prioritizeToken = MAX_ORAICHAIN_DENOM;
+  const prioritizeToken = [RACKS_ORAICHAIN_DENOM, MAX_ORAICHAIN_DENOM, ORAI];
   return (
     <>
       <div className={`${styles.selectToken} ${isSelectToken ? styles.active : ''}`}>
@@ -160,14 +162,21 @@ export default function SelectToken({
                 };
               })
               .sort((a, b) => {
-                const balanceDelta = Number(b.usd) - Number(a.usd);
-                if (a.denom === prioritizeToken && b.denom !== prioritizeToken) {
-                  return -1; // Push max elements to the top
+                const aIndex = prioritizeToken.indexOf(a.denom);
+                const bIndex = prioritizeToken.indexOf(b.denom);
+
+                if (aIndex !== -1 && bIndex === -1) {
+                  return -1;
                 }
-                if (a.denom !== prioritizeToken && b.denom === prioritizeToken) {
-                  return 1; // Keep non-'a' elements below 'a'
+                if (aIndex === -1 && bIndex !== -1) {
+                  return 1;
                 }
 
+                if (aIndex !== -1 && bIndex !== -1) {
+                  return aIndex - bIndex;
+                }
+
+                const balanceDelta = Number(b.usd) - Number(a.usd);
                 if (!balanceDelta) {
                   return (tokenRank[b.coinGeckoId] || 0) - (tokenRank[a.coinGeckoId] || 0);
                 }

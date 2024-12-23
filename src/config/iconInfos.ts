@@ -30,6 +30,7 @@ import HmstrIcon from 'assets/icons/hmstr.svg?react';
 import DogecoinIcon from 'assets/icons/dogecoin.svg?react';
 import SolanaIcon from 'assets/icons/solana.svg?react';
 import MaxIcon from 'assets/icons/max.svg?react';
+import BlackRacksIcon from 'assets/icons/blackracks.svg?react';
 import { CustomChainInfo, TokenItemType, solChainId } from '@oraichain/oraidex-common';
 import { bitcoinChainId } from 'helper/constants';
 import { TonChainId } from 'context/ton-provider';
@@ -182,6 +183,11 @@ export const tokensIconInfos: TokenIcon[] = [
     coinGeckoId: 'max-2',
     Icon: MaxIcon,
     IconLight: MaxIcon
+  },
+  {
+    coinGeckoId: 'black-rack',
+    Icon: BlackRacksIcon,
+    IconLight: BlackRacksIcon
   }
 ];
 

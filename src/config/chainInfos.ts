@@ -259,33 +259,12 @@ const customChainInfo = customChainInfos.filter((custom) => custom.chainId !== s
 
 export const oraichainNetwork: CustomChainInfo = {
   ...customOraichainNetwork,
-  currencies: [
-    ...customOraichainNetwork.currencies,
-    {
-      coinDenom: 'GALU',
-      coinGeckoId: 'galu' as any,
-      coinMinimalDenom: '',
-      bridgeTo: [solChainId],
-      coinDecimals: 8,
-      coinImageUrl: ''
-    }
-  ]
+  currencies: [...customOraichainNetwork.currencies]
 };
 
 export const solanaNetwork: CustomChainInfo = {
   ...solanaMainnet,
-  currencies: [
-    ...solanaMainnet.currencies,
-    {
-      coinDenom: 'GALU',
-      coinMinimalDenom: 's20_galu',
-      coinDecimals: 8,
-      bridgeTo: ['Oraichain'],
-      contractAddress: '',
-      coinGeckoId: 'oraichain-token',
-      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-    }
-  ]
+  currencies: [...solanaMainnet.currencies]
 };
 export const chainInfosWithSdk = [...customChainInfo, solanaNetwork, bitcoinMainnet, oraibtcNetwork];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
