@@ -100,6 +100,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       const uint8Array = new TextEncoder().encode(tokenLogoUrl);
       const hash = Buffer.from(sha256(uint8Array)).toString('hex');
 
+      const symbol = tokenSymbol.trim();
       const createDenomMsg = {
         contractAddress: TOKEN_FACTORY_CONTRACT,
         msg: {
@@ -119,9 +120,9 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 }
               ],
               description: description,
-              display: tokenSymbol,
-              name: tokenName,
-              symbol: tokenSymbol,
+              display: symbol,
+              name: tokenName.trim(),
+              symbol: symbol,
               uri: tokenLogoUrl,
               uri_hash: hash
             },

@@ -17,11 +17,11 @@ export const initPairSwap = (): [string, string] => {
   const currentToDenom = params.get(TO_QUERY_KEY);
 
   const storage = store.getState();
-  const allOraichainTokens = storage.token.allOraichainTokens;
-  const originalFromToken = allOraichainTokens.find(
+  const allOraichainTokens = storage.token.allOraichainTokens ?? [];
+  const originalFromToken = allOraichainTokens?.find(
     (token) => token.denom === currentFromDenom || token.contractAddress === currentFromDenom
   );
-  const originalToToken = allOraichainTokens.find(
+  const originalToToken = allOraichainTokens?.find(
     (token) => token.denom === currentToDenom || token.contractAddress === currentToDenom
   );
 
