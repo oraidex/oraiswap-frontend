@@ -17,6 +17,7 @@ import { FC, useRef, useState } from 'react';
 import { InitBalancesItems } from './ItemsComponent';
 import styles from './NewTokenModal.module.scss';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
+import NumberFormat from 'react-number-format';
 const cx = cn.bind(styles);
 
 const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
@@ -69,7 +70,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         message: 'Wallet address does not exist!'
       });
 
-    if (!tokenName)
+    if (!tokenName.trim())
       return displayToast(TToastType.TX_FAILED, {
         message: 'Empty token name!'
       });
@@ -240,15 +241,13 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                     Token Decimals <span>*</span>
                   </div>
                   <div className={cx('input', theme)}>
-                    <Input
-                      type="number"
+                    <NumberFormat
+                      placeholder="6"
+                      className={cx('amount')}
                       value={tokenDecimal}
-                      style={{
-                        color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                      }}
-                      min={0}
-                      max={18}
-                      className={cx('input-inner')}
+                      decimalScale={6}
+                      disabled={false}
+                      type="text"
                       onChange={(e) => {
                         if (e?.target?.value === '') {
                           setTokenDecimal(null);
@@ -259,15 +258,15 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                         setSelectedInitBalances([]);
                         setTokenDecimal(Number(e?.target?.value));
                       }}
-                      onWheel={(e) => e.currentTarget.blur()}
-                      placeholder="6"
+                      isAllowed={(values) => {
+                        const { floatValue } = values;
+                        return !floatValue || (floatValue >= 0 && floatValue <= 18);
+                      }}
                     />
                   </div>
                 </div>
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>
-                    Token Description <span>*</span>
-                  </div>
+                  <div className={cx('label')}>Token Description</div>
                   <div className={cx('description', theme)}>
                     <textarea
                       value={description}
@@ -305,9 +304,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   </div>
                 </div> */}
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>
-                    Token Logo Url <span>*</span>
-                  </div>
+                  <div className={cx('label')}>Token Logo Url</div>
                   <div className={cx('input', theme)}>
                     <div className={cx('input-image')}>
                       <Input

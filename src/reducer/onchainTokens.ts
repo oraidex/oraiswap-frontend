@@ -46,7 +46,7 @@ export const onChainTokenToTokenItem = (token: InspectedToken): TokenItemType =>
     bridgeTo: token.bridgeTo,
     coinType: token.coinType,
     gasPriceStep: token.gasPriceStep,
-    isVerified: false,
+    isVerified: false
   };
 };
 
