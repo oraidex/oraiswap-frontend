@@ -25,7 +25,7 @@
     "@oraichain/ethereum-multicall": "^1.0.2",
     "@oraichain/kawaiiverse-txs": "^0.0.3",
     "@oraichain/orai-bitcoin": "2.0.0",
-    "@oraichain/oraidex-common": "2.0.3",
+    "@oraichain/oraidex-common": "2.0.4",
     "@oraichain/orai-token-inspector": "^0.1.20",
     "@oraichain/oraidex-common-ui": "1.0.11",
     "@oraichain/oraidex-contracts-sdk": "1.0.55",
