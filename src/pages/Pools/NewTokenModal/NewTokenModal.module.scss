@@ -4,6 +4,7 @@
 
 .modal {
   max-width: 500px;
+
   .container {
     background: #181a17;
     border-radius: 16px;
@@ -11,10 +12,12 @@
     padding-bottom: 24px;
     max-height: 90vh;
     overflow-y: auto;
+
     &.light {
       background: rgba(252, 252, 253, 1);
       color: rgba(39, 43, 48, 1);
     }
+
     &-inner {
       display: flex;
       justify-content: center;
@@ -26,11 +29,14 @@
       .title {
         font-size: 18px;
         color: #f7f7f7;
+
         @include mobile {
           font-size: 18px;
         }
+
         font-weight: 600;
         padding-left: 16px;
+
         &.light {
           color: rgba(39, 43, 48, 1);
         }
@@ -41,6 +47,7 @@
       width: 100%;
       height: 60vh;
       display: flex;
+
       @include mobile {
         flex-direction: column;
         height: 50vh;
@@ -48,42 +55,50 @@
 
       .box {
         width: 100%;
+
         // background-color: #17181c;
         // border: 1px solid rgba(225, 240, 255, 0.2027);
         &.light {
           background-color: #fdfdfd;
           border: 1px solid;
-          border-image-source: linear-gradient(
-            99.99deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.15) 26.06%,
-            rgba(225, 240, 255, 0.202656) 64.17%,
-            rgba(232, 241, 255, 0) 98.89%
-          );
+          border-image-source: linear-gradient(99.99deg,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.15) 26.06%,
+              rgba(225, 240, 255, 0.202656) 64.17%,
+              rgba(232, 241, 255, 0) 98.89%);
           box-shadow: 0px 4px 24px 0px rgba(0, 0, 0, 0.05);
         }
+
         border-radius: 16px;
+
         &:nth-child(1) {
           margin-right: 4px;
         }
+
         &:nth-child(2) {
           margin-left: 4px;
         }
+
         @include mobile {
           width: 100%;
+
           &:nth-child(1) {
             margin-right: 0px;
           }
+
           &:nth-child(2) {
             margin-left: 0px;
           }
+
           margin-top: 10px;
           margin-bottom: 10px;
         }
+
         padding: 24px;
         height: 100%;
         overflow-y: auto;
         overflow-x: hidden;
+
         .token {
           width: 100%;
           border-radius: 16px;
@@ -100,6 +115,7 @@
             &.pt-16 {
               padding-top: 24px;
             }
+
             .label {
               width: full;
               font-size: 14px;
@@ -116,9 +132,11 @@
               width: 100%;
               // height: 48px;
               background-color: #232521;
+
               &.light {
                 background-color: rgba(246, 246, 246, 1);
               }
+
               border-radius: 99px;
               padding: 16px;
               font-weight: 500;
@@ -127,6 +145,7 @@
               display: flex;
               align-items: center;
               justify-content: space-between;
+
               @include mobile {
                 font-size: 15px;
                 width: 100%;
@@ -160,9 +179,11 @@
               width: 100%;
               // height: 48px;
               background-color: #232521;
+
               &.light {
                 background-color: rgba(246, 246, 246, 1);
               }
+
               border-radius: 12px;
               padding: 16px;
               font-weight: 500;
@@ -171,6 +192,7 @@
               display: flex;
               align-items: center;
               justify-content: space-between;
+
               @include mobile {
                 font-size: 15px;
                 width: 100%;
@@ -178,6 +200,10 @@
 
               &::placeholder {
                 color: #505665;
+              }
+
+              .input-inner {
+                width: 100%;
               }
             }
 
@@ -256,14 +282,17 @@
           .wrap-init-balances {
             display: flex;
             align-items: center;
+
             .wallet {
               padding-left: 20px;
               position: relative;
+
               &.light {
                 span {
                   color: rgba(255, 255, 255, 1);
                 }
               }
+
               span {
                 position: absolute;
                 left: 12px;
@@ -279,30 +308,37 @@
             }
           }
         }
+
         .rewards {
           max-height: 400px;
+
           .orai {
             padding-bottom: 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             .orai_label {
               display: flex;
               width: 50%;
               align-items: center;
+
               .logo {
                 width: 40px;
                 height: 40px;
               }
+
               .per {
                 padding-left: 14px;
                 font-weight: 500;
                 font-size: 14px;
+
                 span {
                   text-transform: uppercase;
                 }
               }
             }
+
             .input_per {
               display: flex;
               justify-content: center;
@@ -314,11 +350,13 @@
               border: 0.5px solid rgba(255, 255, 255, 0.3);
               border-radius: 8px;
               color: rgba(255, 222, 91, 1);
+
               &.light {
                 background-color: #fdfdfd;
                 border-color: rgba(204, 205, 208, 1);
                 color: rgba(126, 92, 197, 1);
               }
+
               .value {
                 padding-left: 16px;
                 padding-right: 16px;
@@ -331,6 +369,7 @@
               }
             }
           }
+
           .rewards-list {
             display: flex;
             justify-content: space-between;
@@ -338,6 +377,7 @@
             margin-top: 24px;
           }
         }
+
         .add-reward-btn {
           background: rgba(126, 92, 197, 1);
           /* Inner/Button */
@@ -381,9 +421,11 @@
             width: 100%;
             // height: 48px;
             background-color: #232521;
+
             &.light {
               background-color: rgba(246, 246, 246, 1);
             }
+
             border-radius: 99px;
             padding: 16px;
             font-weight: 500;
@@ -392,6 +434,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             @include mobile {
               font-size: 15px;
               width: 100%;
@@ -447,6 +490,7 @@
 
   .disable-btn {
     opacity: 0.5;
+
     &:hover {
       cursor: not-allowed;
     }
@@ -463,6 +507,7 @@
     max-width: 80%;
     font-size: 12px;
   }
+
   background: #23262f;
   width: 330px;
   max-height: 373px;
@@ -470,12 +515,14 @@
   overflow: auto;
   border-radius: 8px;
   padding: 16px;
+
   .label {
     padding-left: 10px;
     padding-right: 10px;
     color: rgba(255, 222, 91, 1);
     font-size: 14px;
   }
+
   .check {
     height: 48px;
     background-color: #333443;
@@ -487,13 +534,16 @@
     padding: 13px 4px 13px 16px;
     display: flex;
     align-items: center;
+
     .input {
       width: 70%;
       padding-right: 10px;
+
       @include mobile {
         font-size: 13px;
       }
     }
+
     .btn {
       width: 30%;
       max-height: 48px;
@@ -501,19 +551,23 @@
       color: rgba(217, 217, 217, 1);
       border-radius: 8px;
       cursor: pointer;
+
       div {
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 8px 4px;
+
         span {
           font-size: 10px;
         }
+
         @include mobile {
           .plus {
             width: 16px;
             height: 24px;
           }
+
           span {
             font-size: 9px;
           }
@@ -521,41 +575,52 @@
       }
     }
   }
+
   .list {
     ul {
       padding-top: 16px;
+
       li {
         display: flex;
         align-items: center;
         padding: 10px;
         cursor: pointer;
+
         .logo {
           width: 18px;
           height: 18px;
         }
+
         .name {
           padding-left: 10px;
+
           &.light {
             color: rgba(217, 217, 217, 1);
           }
         }
       }
+
       li:hover {
         background-color: rgba(43, 45, 59, 1);
       }
     }
   }
+
   .title-reward {
     font-weight: 600;
+
     &.light {
       color: rgba(222, 223, 226, 1);
     }
   }
+
   .content-reward {
     padding-top: 24px;
+
     &.light {
       color: rgba(222, 223, 226, 1);
     }
+
     span {
       color: rgba(254, 221, 91, 1);
       text-transform: uppercase;
@@ -577,6 +642,7 @@
 
 .action {
   display: flex;
+
   .btn {
     width: 50%;
     /* Inner/Button */
