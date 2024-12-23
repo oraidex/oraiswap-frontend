@@ -17,6 +17,7 @@ import { FC, useRef, useState } from 'react';
 import { InitBalancesItems } from './ItemsComponent';
 import styles from './NewTokenModal.module.scss';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
+import NumberFormat from 'react-number-format';
 const cx = cn.bind(styles);
 
 const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
@@ -69,9 +70,14 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         message: 'Wallet address does not exist!'
       });
 
-    if (!tokenName)
+    if (!tokenName.trim())
       return displayToast(TToastType.TX_FAILED, {
-        message: 'Empty token symbol!'
+        message: 'Empty token name!'
+      });
+
+    if (!tokenSymbol || tokenSymbol.trim().length < 3 || tokenSymbol.trim().length > 12)
+      return displayToast(TToastType.TX_FAILED, {
+        message: 'Invalid ticker length. It should be between 3 and 12 characters!'
       });
 
     if (isInitBalances) {
@@ -95,6 +101,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       const uint8Array = new TextEncoder().encode(tokenLogoUrl);
       const hash = Buffer.from(sha256(uint8Array)).toString('hex');
 
+      const symbol = tokenSymbol.trim();
       const createDenomMsg = {
         contractAddress: TOKEN_FACTORY_CONTRACT,
         msg: {
@@ -114,35 +121,39 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 }
               ],
               description: description,
-              display: tokenSymbol,
-              name: tokenName,
-              symbol: tokenSymbol,
+              display: symbol,
+              name: tokenName.trim(),
+              symbol: symbol,
               uri: tokenLogoUrl,
               uri_hash: hash
             },
             subdenom: tokenSymbol
           }
         },
-        funds: [{
-          denom: "orai",
-          amount: "1"
-        }],
-      }
+        funds: [
+          {
+            denom: 'orai',
+            amount: '1'
+          }
+        ]
+      };
 
-      const initBalanceMsg = isInitBalances ? initBalances.map((init) => {
-        console.log(init.amount.toString())
-        return {
-          contractAddress: TOKEN_FACTORY_CONTRACT,
-          msg: {
-            mint_tokens: {
-              amount: init.amount.toString(),
-              denom: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
-              mint_to_address: init.address
-            }
-          },
-          funds: []
-        }
-      }) : [];
+      const initBalanceMsg = isInitBalances
+        ? initBalances.map((init) => {
+            console.log(init.amount.toString());
+            return {
+              contractAddress: TOKEN_FACTORY_CONTRACT,
+              msg: {
+                mint_tokens: {
+                  amount: init.amount.toString(),
+                  denom: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
+                  mint_to_address: init.address
+                }
+              },
+              funds: []
+            };
+          })
+        : [];
 
       msgs.push(createDenomMsg);
 
@@ -157,7 +168,6 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         });
         close();
       }
-
     } catch (error) {
       console.log('error listing token: ', error);
       handleErrorTransaction(error);
@@ -182,7 +192,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
     const newInitBalances = initBalances.filter((_, i) => !arr.includes(i));
     setInitBalances(newInitBalances);
     setSelectedInitBalances([]);
-  }
+  };
 
   return (
     <Modal isOpen={isOpen} close={close} open={open} isCloseBtn={true} className={cx('modal', 'overlay')}>
@@ -195,79 +205,79 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
             <div className={cx('token')}>
               <div>
                 <div className={cx('row')}>
-                  <div className={cx('label')}>Token name <span>*</span></div>
+                  <div className={cx('label')}>
+                    Token name <span>*</span>
+                  </div>
                   <div className={cx('input', theme)}>
-                      <Input
-                        value={tokenName}
-                        style={{
-                          color: theme === 'light' && 'rgba(39, 43, 48, 1)',
-                        }}
-                        className={cx('input-inner')}
-                        onChange={(e) => setTokenName(e?.target?.value)}
-                        placeholder="Oraichain Token"
-                      />
+                    <Input
+                      value={tokenName}
+                      style={{
+                        color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                      }}
+                      className={cx('input-inner')}
+                      onChange={(e) => setTokenName(e?.target?.value)}
+                      placeholder="Oraichain Token"
+                    />
                   </div>
                 </div>
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Symbol <span>*</span></div>
+                  <div className={cx('label')}>
+                    Ticker <span>*</span>
+                  </div>
                   <div className={cx('input', theme)}>
-
-                      <Input
-                        value={tokenSymbol}
-                        style={{
-                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                        }}
-                        className={cx('input-inner')}
-                        onChange={(e) => setTokenSymbol(e?.target?.value)}
-                        placeholder="ORAI"
-                      />
-                    </div>
-
-                </div>
-                <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Decimals <span>*</span></div>
-                  <div className={cx('input', theme)}>
-
-                      <Input
-                        type='number'
-                        value={tokenDecimal}
-                        style={{
-                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                        }}
-                        min={0}
-                        max={18}
-                        className={cx('input-inner')}
-                        onChange={(e) => {
-                          if (e?.target?.value === '') {
-                            setTokenDecimal(null);
-                            return
-                          }
-                          setInitBalances([]);
-                          setIsInitBalances(false);
-                          setSelectedInitBalances([]);
-                          setTokenDecimal(Number(e?.target?.value))
-                        }}
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="6"
-                      />
-
+                    <Input
+                      value={tokenSymbol}
+                      style={{
+                        color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                      }}
+                      className={cx('input-inner')}
+                      onChange={(e) => setTokenSymbol(e?.target?.value)}
+                      placeholder="ORAI"
+                    />
                   </div>
                 </div>
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Description <span>*</span></div>
+                  <div className={cx('label')}>
+                    Token Decimals <span>*</span>
+                  </div>
+                  <div className={cx('input', theme)}>
+                    <NumberFormat
+                      placeholder="6"
+                      className={cx('amount')}
+                      value={tokenDecimal}
+                      decimalScale={6}
+                      disabled={false}
+                      type="text"
+                      onChange={(e) => {
+                        if (e?.target?.value === '') {
+                          setTokenDecimal(null);
+                          return;
+                        }
+                        setInitBalances([]);
+                        setIsInitBalances(false);
+                        setSelectedInitBalances([]);
+                        setTokenDecimal(Number(e?.target?.value));
+                      }}
+                      isAllowed={(values) => {
+                        const { floatValue } = values;
+                        return !floatValue || (floatValue >= 0 && floatValue <= 18);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className={cx('row', 'pt-16')}>
+                  <div className={cx('label')}>Token Description</div>
                   <div className={cx('description', theme)}>
-
-                      <textarea
-                        value={description}
-                        style={{
-                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
-                        }}
-                        className={cx('input-inner')}
-                        rows={3}
-                        onChange={(e) => setDescription(e?.target?.value)}
-                        placeholder="Orai is the best token"
-                      />
-
+                    <textarea
+                      value={description}
+                      style={{
+                        color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+                      }}
+                      className={cx('input-inner')}
+                      rows={3}
+                      onChange={(e) => setDescription(e?.target?.value)}
+                      placeholder="Describe new token"
+                    />
                   </div>
                 </div>
                 {/* <div className={cx('row', 'pt-16')}>
@@ -294,13 +304,13 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   </div>
                 </div> */}
                 <div className={cx('row', 'pt-16')}>
-                  <div className={cx('label')}>Token Logo Url <span>*</span></div>
+                  <div className={cx('label')}>Token Logo Url</div>
                   <div className={cx('input', theme)}>
                     <div className={cx('input-image')}>
                       <Input
                         value={tokenLogoUrl}
                         style={{
-                          color: theme === 'light' && 'rgba(39, 43, 48, 1)',
+                          color: theme === 'light' && 'rgba(39, 43, 48, 1)'
                         }}
                         className={cx('input-inner')}
                         onChange={(e) => setTokenLogoUrl(e?.target?.value)}
@@ -312,13 +322,13 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 </div>
                 <div className={cx('row', 'pt-16')}>
                   <div className={cx('init-balance', theme)} onClick={() => setIsInitBalances(!isInitBalances)}>
-                    <span>
-                      Init Balances
-                    </span>
-                    <div style={{
-                      transform: isInitBalances ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.5s',
-                    }}>
+                    <span>Init Balances</span>
+                    <div
+                      style={{
+                        transform: isInitBalances ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.5s'
+                      }}
+                    >
                       <ArrowDownIcon />
                     </div>
                   </div>
@@ -340,7 +350,6 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                         </div>
                       </div>
                     )} */}
-
 
                     {isInitBalances &&
                       initBalances.map((item, ind) => {
@@ -387,9 +396,9 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         <div
           className={cx(
             'create-btn',
-            (isLoading || (!tokenName) || (!tokenSymbol) || (!tokenDecimal) || (!tokenLogoUrl)) && 'disable-btn'
+            (isLoading || !tokenName || !tokenSymbol || !tokenDecimal || !tokenLogoUrl) && 'disable-btn'
           )}
-          onClick={() => !isLoading && (tokenName) && handleCreateToken()}
+          onClick={() => !isLoading && tokenName && handleCreateToken()}
         >
           {isLoading && <Loader width={20} height={20} />}
           {isLoading && <div style={{ width: 8 }}></div>}

@@ -22,7 +22,7 @@ export const RewardItems = ({ item, ind, selectedReward, setSelectedReward, setR
     coinGeckoId: originalFromToken?.coinGeckoId,
     width: 30,
     height: 30
-  })
+  });
   return (
     <div className={cx('orai')}>
       <CheckBox
@@ -114,14 +114,21 @@ export const InitBalancesItems = ({
                   })
                 )
               }
+              isAllowed={(values) => {
+                const { floatValue } = values;
+                return !floatValue || (floatValue >= 0 && floatValue <= 1e14);
+              }}
               placeholder="0"
             />
           </div>
         </div>
       </div>
-      <div className={cx('trash')}
+      <div
+        className={cx('trash')}
         onClick={() => {
-          const arr = selectedInitBalances.includes(ind) ? selectedInitBalances.filter((e) => e !== ind) : [...selectedInitBalances, ind];
+          const arr = selectedInitBalances.includes(ind)
+            ? selectedInitBalances.filter((e) => e !== ind)
+            : [...selectedInitBalances, ind];
           deleteSelectedItem(arr);
         }}
       >

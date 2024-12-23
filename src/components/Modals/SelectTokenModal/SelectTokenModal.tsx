@@ -15,7 +15,6 @@ import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { inspectToken } from 'reducer/onchainTokens';
-import { RootState } from 'store/configure';
 import styles from './SelectTokenModal.module.scss';
 
 const cx = cn.bind(styles);
