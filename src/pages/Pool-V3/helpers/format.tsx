@@ -7,6 +7,7 @@ import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { POOL_TYPE } from '../index';
 import { oraichainTokensWithIcon } from 'initCommon';
 import { store } from 'store/configure';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {
   FromTokenIcon: React.FunctionComponent<
@@ -37,25 +38,20 @@ export const getTokenInfo = (address, isLight) => {
 };
 
 export const getIconPoolData = async (tokenX: string, tokenY: string, isLight: boolean) => {
-  let [FromTokenIcon, ToTokenIcon] = [null, null];
-
   const storage = store.getState();
   const allOraichainTokens = storage.token.allOraichainTokens;
   const tokenXinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenX));
   const tokenYinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenY));
 
-  if (tokenXinfo)
-    FromTokenIcon = isLight ? (
-      <img style={{ borderRadius: '100%' }} src={tokenXinfo.iconLight} alt="iconlight" />
-    ) : (
-      <img style={{ borderRadius: '100%' }} src={tokenXinfo.icon} alt="iconlight" />
-    );
-  if (tokenYinfo)
-    ToTokenIcon = isLight ? (
-      <img style={{ borderRadius: '100%' }} src={tokenYinfo.iconLight} alt="iconlight" />
-    ) : (
-      <img style={{ borderRadius: '100%' }} src={tokenYinfo.icon} alt="iconlight" />
-    );
+  let iconTokenXUrl = isLight ? tokenXinfo?.iconLight : tokenXinfo?.icon;
+  if (!iconTokenXUrl) iconTokenXUrl = DEFAULT_TOKEN_ICON_URL;
+
+  let iconTokenYUrl = isLight ? tokenYinfo?.iconLight : tokenYinfo?.icon;
+  if (!iconTokenYUrl) iconTokenYUrl = DEFAULT_TOKEN_ICON_URL;
+
+  const FromTokenIcon = <img style={{ borderRadius: '100%' }} src={iconTokenXUrl} alt="iconlight" />;
+  const ToTokenIcon = <img style={{ borderRadius: '100%' }} src={iconTokenYUrl} alt="iconlight" />;
+
   return { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo };
 };
 

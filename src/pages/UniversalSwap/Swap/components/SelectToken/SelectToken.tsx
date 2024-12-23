@@ -17,6 +17,7 @@ import { inspectToken } from 'reducer/onchainTokens';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './SelectToken.module.scss';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 
 interface InputSwapProps {
   isSelectToken: boolean;
@@ -135,8 +136,7 @@ export default function SelectToken({
             {/* TODO: check filter here */}
             {listItems
               .map((token) => {
-                const tokenIconUrl =
-                  (isLightTheme ? token.iconLight : token.icon) || 'https://i.ibb.co/W5J0Gyk/question-16341539.png';
+                const tokenIconUrl = (isLightTheme ? token.iconLight : token.icon) || DEFAULT_TOKEN_ICON_URL;
                 const tokenIcon = (
                   <img style={{ borderRadius: '100%' }} src={tokenIconUrl} alt="icon" width={30} height={30} />
                 );

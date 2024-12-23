@@ -7,8 +7,8 @@ import { TokenInfo } from 'types/token';
 import styles from './InputSwap.module.scss';
 import { Themes } from 'context/theme-context';
 import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
-import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP } from 'helper/constants';
-import { chainInfos, flattenTokens } from 'initCommon';
+import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP, DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
+import { chainInfos } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -112,13 +112,7 @@ export default function InputSwap({
               {token.icon ? (
                 <img className={cx('logo')} src={token.icon} alt="icon" width={30} height={30} />
               ) : (
-                <img
-                  className={cx('logo')}
-                  src={'https://i.ibb.co/W5J0Gyk/question-16341539.png'}
-                  alt="icon"
-                  width={30}
-                  height={30}
-                />
+                <img className={cx('logo')} src={DEFAULT_TOKEN_ICON_URL} alt="icon" width={30} height={30} />
               )}
             </div>
 

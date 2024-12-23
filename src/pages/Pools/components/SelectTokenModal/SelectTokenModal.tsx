@@ -16,6 +16,7 @@ import { inspectToken } from 'reducer/onchainTokens';
 import { RootState } from 'store/configure';
 import styles from './SelectTokenModal.module.scss';
 import IconVerified from 'assets/icons/ic_verified.svg?react';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 
 const cx = cn.bind(styles);
 
@@ -97,8 +98,7 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
 
             balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
 
-            const tokenIconUrl =
-              (theme === 'light' ? token.iconLight : token.icon) || 'https://i.ibb.co/W5J0Gyk/question-16341539.png';
+            const tokenIconUrl = (theme === 'light' ? token.iconLight : token.icon) || DEFAULT_TOKEN_ICON_URL;
             const icon = <img style={{ borderRadius: '100%' }} src={tokenIconUrl} alt="icon" width={30} height={30} />;
 
             return (
