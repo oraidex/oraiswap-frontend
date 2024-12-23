@@ -51,7 +51,6 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
 
   const listItems = items.filter(
     (item) =>
-      item.decimals !== 18 &&
       (textSearch
         ? item.name.toLowerCase().includes(textSearch.toLowerCase()) ||
           item.denom.toLowerCase() === textSearch.toLowerCase()
