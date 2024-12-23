@@ -12,6 +12,7 @@ import {
   TON_ALL_OSMOSIS_CONTRACT,
   TON_OSMOSIS_CONTRACT,
   solChainId,
+  solanaMainnet,
   tonNetworkMainnet,
   TON_CONTRACT,
   TON20_USDT_CONTRACT,
@@ -200,11 +201,6 @@ export const tonNetworkTokens = getTokensFromNetwork(tonNetworkMainnet);
 export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];
 export const flattenTokensWithIcon = flatten(tokensWithIcon);
 
-export const oraichainNetwork: CustomChainInfo = {
-  ...customOraichainNetwork,
-  currencies: [...customOraichainNetwork.currencies]
-};
-
 export const OraiBTCBridgeNetwork = {
   chainId: 'oraibtc-mainnet-1',
   chainName: 'OraiBtc Bridge',
@@ -259,7 +255,39 @@ export const OraiBTCBridgeNetwork = {
   }
 };
 
-export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork];
+const customChainInfo = customChainInfos.filter((custom) => custom.chainId !== solChainId);
+
+export const oraichainNetwork: CustomChainInfo = {
+  ...customOraichainNetwork,
+  currencies: [
+    ...customOraichainNetwork.currencies,
+    {
+      coinDenom: 'GALU',
+      coinGeckoId: 'galu' as any,
+      coinMinimalDenom: '',
+      bridgeTo: [solChainId],
+      coinDecimals: 8,
+      coinImageUrl: ''
+    }
+  ]
+};
+
+export const solanaNetwork: CustomChainInfo = {
+  ...solanaMainnet,
+  currencies: [
+    ...solanaMainnet.currencies,
+    {
+      coinDenom: 'GALU',
+      coinMinimalDenom: 's20_galu',
+      coinDecimals: 8,
+      bridgeTo: ['Oraichain'],
+      contractAddress: '',
+      coinGeckoId: 'oraichain-token',
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+    }
+  ]
+};
+export const chainInfosWithSdk = [...customChainInfo, solanaNetwork, bitcoinMainnet, oraibtcNetwork];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 
 // exclude kawaiverse subnet and other special evm that has different cointype

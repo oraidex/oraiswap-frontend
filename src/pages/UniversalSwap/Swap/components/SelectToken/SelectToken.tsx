@@ -20,6 +20,7 @@ import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
 import { getSubAmountDetails } from 'rest/api';
 import useConfigReducer from 'hooks/useConfigReducer';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 
 const cx = cn.bind(styles);
 interface InputSwapProps {
@@ -45,6 +46,7 @@ interface GetIconInterface {
 const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
   if (type === 'token') {
     const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === coinGeckoId);
+    if (!tokenIcon) return <DefaultIcon className={cx('logo')} width={width} height={height} />;
     return isLightTheme ? (
       <tokenIcon.IconLight className={cx('logo')} width={width} height={height} />
     ) : (
@@ -52,6 +54,7 @@ const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: Ge
     );
   } else {
     const networkIcon = chainIcons.find((chain) => chain.chainId === chainId);
+    if (!networkIcon) return <DefaultIcon className={cx('logo')} width={width} height={height} />;
     return isLightTheme ? (
       <networkIcon.IconLight className={cx('logo')} width={width} height={height} />
     ) : (
