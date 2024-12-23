@@ -4015,6 +4015,31 @@
     ethers "^5.0.15"
     tronweb "6.0.0-beta.4"
 
+"@oraichain/oraidex-common@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.3.tgz#b7020a6f053499fcf265ec61132f7b38fc7c9b36"
+  integrity sha512-TqO5DHHxCfzVy9nYaQ60hIC+tU38doNHPwwHDfyzR/jdVeqFuFMRCSLANNnIOtX+uLD3UFWaf08DmlmoBX+uEA==
+  dependencies:
+    "@cosmjs/amino" "^0.32.4"
+    "@cosmjs/cosmwasm-stargate" "^0.32.4"
+    "@cosmjs/crypto" "^0.32.4"
+    "@cosmjs/proto-signing" "^0.32.4"
+    "@cosmjs/stargate" "^0.32.4"
+    "@cosmjs/tendermint-rpc" "^0.32.4"
+    "@ethersproject/providers" "^5.0.10"
+    "@injectivelabs/sdk-ts" "1.12.1"
+    "@keplr-wallet/types" "^0.11.38"
+    "@oraichain/common" "1.2.7"
+    "@oraichain/oraidex-contracts-sdk" latest
+    "@ton/core" "0.56.3"
+    "@ton/crypto" "3.3.0"
+    axios "1.7.2"
+    axios-extensions "3.1.7"
+    bignumber.js "^9.1.2"
+    cosmjs-types "^0.9.0"
+    ethers "^5.0.15"
+    tronweb "6.0.0-beta.4"
+
 "@oraichain/oraidex-contracts-build@1.0.22":
   version "1.0.22"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-build/-/oraidex-contracts-build-1.0.22.tgz#70b765dd8ea3b500a77cc37e6a45ea9d75f0c5c4"

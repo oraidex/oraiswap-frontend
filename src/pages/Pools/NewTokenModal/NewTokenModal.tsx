@@ -38,6 +38,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [description, setDescription] = useState('');
   const [tokenLogoUrl, setTokenLogoUrl] = useState('');
   const [selectedInitBalances, setSelectedInitBalances] = useState([]);
+  const [oraiAddress] = useConfigReducer('address');
 
   const [typeDelete, setTypeDelete] = useState('');
 
@@ -65,7 +66,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
     const { client, defaultAddress: address } = await getCosmWasmClient({
       chainId: network.chainId
     });
-    if (!address)
+    if (!oraiAddress)
       return displayToast(TToastType.TX_FAILED, {
         message: 'Wallet address does not exist!'
       });
@@ -256,7 +257,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                         setInitBalances([]);
                         setIsInitBalances(false);
                         setSelectedInitBalances([]);
-                        setTokenDecimal(Number(e?.target?.value));
+                        setTokenDecimal(Math.trunc(Number(e?.target?.value)));
                       }}
                       isAllowed={(values) => {
                         const { floatValue } = values;
@@ -391,18 +392,20 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 )}
               </div>
             </div>
+            <button
+              disabled={isLoading || !tokenName || !tokenSymbol || !tokenDecimal || !oraiAddress}
+              className={cx(
+                'create-btn',
+                (isLoading || !tokenName || !tokenSymbol || !tokenDecimal || !oraiAddress) && 'disable-btn'
+              )}
+              onClick={() => !isLoading && tokenName && handleCreateToken()}
+            >
+              {isLoading && <Loader width={20} height={20} />}
+              {isLoading && <div style={{ width: 8 }}></div>}
+
+              <span>{!oraiAddress ? 'Please connect wallet' : 'Create'}</span>
+            </button>
           </div>
-        </div>
-        <div
-          className={cx(
-            'create-btn',
-            (isLoading || !tokenName || !tokenSymbol || !tokenDecimal || !tokenLogoUrl) && 'disable-btn'
-          )}
-          onClick={() => !isLoading && tokenName && handleCreateToken()}
-        >
-          {isLoading && <Loader width={20} height={20} />}
-          {isLoading && <div style={{ width: 8 }}></div>}
-          <span>Create</span>
         </div>
       </div>
     </Modal>

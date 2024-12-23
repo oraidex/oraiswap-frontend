@@ -123,31 +123,31 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
   const minimumReceive =
     isAverageRatio && fromAmountTokenBalance
       ? calculateMinReceive(
-        // @ts-ignore
-        new BigDecimal(averageRatio.amount).div(SIMULATE_INIT_AMOUNT).toString(),
-        fromAmountTokenBalance.toString(),
-        userSlippage,
-        originalFromToken.decimals
-      )
+          // @ts-ignore
+          new BigDecimal(averageRatio.amount).div(SIMULATE_INIT_AMOUNT).toString(),
+          fromAmountTokenBalance.toString(),
+          userSlippage,
+          originalFromToken.decimals
+        )
       : '0';
   const isWarningSlippage = +minimumReceive > +simulateData?.amount;
   const simulateDisplayAmount = simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
   const bridgeTokenFee =
     simulateDisplayAmount && (fromTokenFee || toTokenFee)
       ? new BigDecimal(simulateDisplayAmount)
-        .mul(fromTokenFee)
-        .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee).toString())
-        .div(100)
-        .toNumber()
+          .mul(fromTokenFee)
+          .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee).toString())
+          .div(100)
+          .toNumber()
       : 0;
 
   const minimumReceiveDisplay = isSimulateDataDisplay
     ? new BigDecimal(simulateDisplayAmount)
-      .sub(new BigDecimal(simulateDisplayAmount).mul(userSlippage).div(100).toString())
-      // TODO:  Fee has been deducted from simulated price
-      // .sub(relayerFee)
-      .sub(bridgeTokenFee)
-      .toNumber()
+        .sub(new BigDecimal(simulateDisplayAmount).mul(userSlippage).div(100).toString())
+        // TODO:  Fee has been deducted from simulated price
+        // .sub(relayerFee)
+        .sub(bridgeTokenFee)
+        .toNumber()
     : 0;
 
   const expectOutputDisplay = isSimulateDataDisplay
