@@ -37,7 +37,6 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
   const [textSearch, setTextSearch] = useState('');
   const dispatch = useDispatch();
   const amounts = useSelector((state: RootState) => state.token.amounts);
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch) {
@@ -55,10 +54,10 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
       item.decimals !== 18 &&
       (textSearch
         ? item.name.toLowerCase().includes(textSearch.toLowerCase()) ||
-          item.denom.toLowerCase().includes(textSearch.toLowerCase())
+          item.denom.toLowerCase() === textSearch.toLowerCase()
         : true)
   );
-  console.log({ listItems });
+
   return (
     <Modal theme={theme} isOpen={isOpen} close={close} open={open} isCloseBtn={true}>
       <div className={cx('select', theme)}>
@@ -78,10 +77,8 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
         <div className={cx('options')}>
           {listItems?.map((item: TokenItemType | CustomChainInfo) => {
             let key: string, title: string, balance: string;
-            let tokenAndChainIcons;
 
             const token = item as TokenItemType;
-            console.log({ token });
             key = token.denom;
             title = token.name;
             let sumAmountDetails: AmountDetails = {};
@@ -94,7 +91,6 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
               sumAmountDetails = { ...sumAmountDetails, ...subAmounts };
               sumAmount = toSumDisplay(sumAmountDetails);
             }
-            tokenAndChainIcons = tokensIcon.find((tokenIcon) => tokenIcon.coinGeckoId === token.coinGeckoId);
 
             balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
 
