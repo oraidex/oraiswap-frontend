@@ -194,7 +194,21 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
-export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
+export const oraichainNetwork: CustomChainInfo = {
+  ...customOraichainNetwork,
+  currencies: [...customOraichainNetwork.currencies]
+};
+
+export const solanaNetwork: CustomChainInfo = {
+  ...solanaMainnet,
+  currencies: [...solanaMainnet.currencies]
+};
+
+export const oraichainTokensWithIcon = mapListWithIcon(
+  getTokensFromNetwork(oraichainNetwork),
+  tokensIcon,
+  'coinGeckoId'
+);
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
 export const tonNetworkTokens = getTokensFromNetwork(tonNetworkMainnet);
 
@@ -257,15 +271,6 @@ export const OraiBTCBridgeNetwork = {
 
 const customChainInfo = customChainInfos.filter((custom) => custom.chainId !== solChainId);
 
-export const oraichainNetwork: CustomChainInfo = {
-  ...customOraichainNetwork,
-  currencies: [...customOraichainNetwork.currencies]
-};
-
-export const solanaNetwork: CustomChainInfo = {
-  ...solanaMainnet,
-  currencies: [...solanaMainnet.currencies]
-};
 export const chainInfosWithSdk = [...customChainInfo, solanaNetwork, bitcoinMainnet, oraibtcNetwork];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 

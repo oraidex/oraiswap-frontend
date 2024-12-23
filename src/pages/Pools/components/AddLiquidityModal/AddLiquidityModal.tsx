@@ -51,7 +51,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
   const amounts = useSelector((state: RootState) => state.token.amounts);
 
   const poolDetail = useGetPoolDetail({ pairDenoms });
-  const stakeStatus = canStake(poolDetail.info.rewardPerSec);
+  const stakeStatus = canStake(poolDetail.info?.rewardPerSec);
   const { token1, token2, info: pairInfoData } = poolDetail;
   const { lpTokenInfoData, pairAmountInfoData } = useGetPairInfo(poolDetail);
   const totalBaseAmount = BigInt(pairAmountInfoData?.token1Amount ?? 0);

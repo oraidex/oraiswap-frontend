@@ -19,6 +19,7 @@ import { AssetInfoResponse } from 'types/swap';
 import styles from './AssetsTab.module.scss';
 import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { updateTotalLpv3 } from 'reducer/token';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 
 const cx = cn.bind(styles);
 
@@ -122,11 +123,14 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
       accessor: (data) => (
         <div className={styles.assets}>
           <div className={styles.left}>
-            {theme === 'light' ? (
-              <data.iconLight className={styles.tokenIcon} />
-            ) : (
-              <data.icon className={styles.tokenIcon} />
-            )}
+            {data?.icon &&
+              (theme === 'light' ? (
+                <data.iconLight className={styles.tokenIcon} />
+              ) : (
+                <data.icon className={styles.tokenIcon} />
+              ))}
+
+            {!data.icon && <DefaultIcon className={styles.tokenIcon} />}
           </div>
           <div className={styles.right}>
             <div className={styles.assetName}>{data.asset}</div>
