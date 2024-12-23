@@ -1,4 +1,4 @@
-import { buildMultipleExecuteMessages, DEFAULT_SLIPPAGE, ORAI, toAmount } from '@oraichain/oraidex-common';
+import { buildMultipleExecuteMessages, DEFAULT_SLIPPAGE, ORAI, parseTokenInfo, toAmount } from '@oraichain/oraidex-common';
 import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
@@ -10,7 +10,7 @@ import { getIconToken, handleCheckAddress, handleErrorTransaction } from 'helper
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { network } from 'initCommon';
-import CosmJs from 'libs/cosmjs';
+import CosmJs, { getCosmWasmClient } from 'libs/cosmjs';
 import { getUsd, toSumDisplay } from 'libs/utils';
 import { canStake, estimateShare } from 'pages/Pools/helpers';
 import { useGetPoolDetail } from 'pages/Pools/hooks';
@@ -131,10 +131,8 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
       gasAmount: { denom: ORAI, amount: '0' },
       funds: msg.funds
     });
-    console.log('result increase allowance tx hash: ', result);
 
     if (result) {
-      console.log('in correct result');
       displayToast(TToastType.TX_SUCCESSFUL, {
         customLink: `${network.explorer}/txs/${result.transactionHash}`
       });
@@ -149,41 +147,83 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
     try {
       const oraiAddress = await handleCheckAddress('Oraichain');
 
-      if (token1AllowanceToPair < amount1) {
-        await increaseAllowance('9'.repeat(30), token1!.contractAddress!, oraiAddress);
-        refetchToken1Allowance();
-      }
-      if (token2AllowanceToPair < amount2) {
-        await increaseAllowance('9'.repeat(30), token2!.contractAddress!, oraiAddress);
-        refetchToken2Allowance();
-      }
-
-      // hard copy of from & to token info data to prevent data from changing when calling the function
-      const firstTokenConverts = generateConvertErc20Cw20Message(amounts, token1, oraiAddress);
-      const secTokenConverts = generateConvertErc20Cw20Message(amounts, token2, oraiAddress);
-
-      const msg = generateContractMessages({
-        type: Type.PROVIDE,
-        sender: oraiAddress,
-        fromInfo: token1!,
-        toInfo: token2!,
-        fromAmount: amount1.toString(),
-        toAmount: amount2.toString(),
-        pair: pairInfoData.pairAddr,
-        slippage: (userSlippage / 100).toString()
-      } as ProvideQuery);
-
-      const messages = buildMultipleExecuteMessages([msg], ...firstTokenConverts, ...secTokenConverts);
-
-      const result = await CosmJs.executeMultiple({
-        msgs: messages,
-        walletAddr: oraiAddress,
-        gasAmount: { denom: ORAI, amount: '0' }
+      const { client, defaultAddress: address } = await getCosmWasmClient({
+        chainId: network.chainId
       });
-      console.log('result provide tx hash: ', result);
+      const msgs = [];
+
+      const funds: { denom: string; amount: string }[] = [];
+
+      if (token1.contractAddress) {
+        msgs.push({
+          contractAddress: token1.contractAddress,
+          msg: {
+            increase_allowance: {
+              amount: amount1.toString(),
+              expires: undefined,
+              spender: pairInfoData.pairAddr
+            }
+          }
+        });
+      } else {
+        funds.push({
+          denom: token1.denom,
+          amount: amount1.toString()
+        });
+      }
+
+      if (token2.contractAddress) {
+        msgs.push({
+          contractAddress: token2.contractAddress,
+          msg: {
+            increase_allowance: {
+              amount: amount2.toString(),
+              expires: undefined,
+              spender: pairInfoData.pairAddr
+            }
+          }
+        });
+      } else {
+        funds.push({
+          denom: token2.denom,
+          amount: amount2.toString()
+        });
+      }
+
+      const { info: token1Info } = parseTokenInfo(
+        token1,
+        amount1.toString()
+      );
+      const { info: token2Info } = parseTokenInfo(
+        token2,
+        amount2.toString()
+      );
+
+      const provideLiquidityMsg = {
+        contractAddress: pairInfoData.pairAddr,
+        msg: {
+          provide_liquidity: {
+            assets: [
+              {
+                info: token1Info,
+                amount: amount1.toString()
+              },
+              { 
+                info: token2Info, 
+                amount: amount2.toString()
+              }
+            ],
+            slippage_tolerance: (userSlippage / 100).toString()
+          }
+        },
+        funds
+      }
+
+      msgs.push(provideLiquidityMsg);
+
+      const result = await client.executeMultiple(address.address, msgs, 'auto');
 
       if (result) {
-        console.log('in correct result');
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: `${network.explorer}/txs/${result.transactionHash}`
         });
@@ -250,10 +290,8 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
         walletAddr: oraiAddress,
         gasAmount: { denom: ORAI, amount: '0' }
       });
-      console.log('result provide tx hash: ', result);
 
       if (result) {
-        console.log('in correct result');
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: `${network.explorer}/txs/${result.transactionHash}`
         });
