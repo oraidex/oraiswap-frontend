@@ -123,7 +123,13 @@ export default function InputSwap({
         <div className={cx('box-select')} onClick={() => setIsSelectToken(true)}>
           <div className={cx('left')}>
             <div className={cx('icon')}>
-              {isLightMode ? <tokenInfo.IconLight className={cx('logo')} /> : <tokenInfo.Icon className={cx('logo')} />}
+              {!tokenInfo && <DefaultIcon className={cx('logo')} />}
+              {tokenInfo &&
+                (isLightMode ? (
+                  <tokenInfo.IconLight className={cx('logo')} />
+                ) : (
+                  <tokenInfo.Icon className={cx('logo')} />
+                ))}
             </div>
 
             <div className={cx('section')}>

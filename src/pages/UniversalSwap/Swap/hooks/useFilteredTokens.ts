@@ -1,6 +1,7 @@
 import { SwapDirection, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { useEffect, useState } from 'react';
 import { TokenItemType, BTC_CONTRACT } from '@oraichain/oraidex-common';
+import { filterNonPoolEvmTokens } from 'pages/UniversalSwap/helpers';
 
 const useFilteredTokens = (
   originalFromToken: TokenItemType,
@@ -13,7 +14,7 @@ const useFilteredTokens = (
   const [filteredFromTokens, setFilteredFromTokens] = useState<TokenItemType[]>([]);
 
   useEffect(() => {
-    const filteredToTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
+    const filteredToTokens = filterNonPoolEvmTokens(
       originalFromToken.chainId,
       originalFromToken.coinGeckoId,
       originalFromToken.denom,
@@ -22,7 +23,7 @@ const useFilteredTokens = (
     );
     setFilteredToTokens(filteredToTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT));
 
-    const filteredFromTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
+    const filteredFromTokens = filterNonPoolEvmTokens(
       originalToToken.chainId,
       originalToToken.coinGeckoId,
       originalToToken.denom,

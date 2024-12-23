@@ -12,6 +12,7 @@ import {
   TON_ALL_OSMOSIS_CONTRACT,
   TON_OSMOSIS_CONTRACT,
   solChainId,
+  solanaMainnet,
   tonNetworkMainnet,
   TON_CONTRACT,
   TON20_USDT_CONTRACT,
@@ -193,17 +194,26 @@ export const bitcoinMainnet: CustomChainInfo = {
   }
 };
 
-export const oraichainTokensWithIcon = mapListWithIcon(oraichainTokens, tokensIcon, 'coinGeckoId');
+export const oraichainNetwork: CustomChainInfo = {
+  ...customOraichainNetwork,
+  currencies: [...customOraichainNetwork.currencies]
+};
+
+export const solanaNetwork: CustomChainInfo = {
+  ...solanaMainnet,
+  currencies: [...solanaMainnet.currencies]
+};
+
+export const oraichainTokensWithIcon = mapListWithIcon(
+  getTokensFromNetwork(oraichainNetwork),
+  tokensIcon,
+  'coinGeckoId'
+);
 export const otherTokensWithIcon = mapListWithIcon(otherChainTokens, tokensIcon, 'coinGeckoId');
 export const tonNetworkTokens = getTokensFromNetwork(tonNetworkMainnet);
 
 export const tokensWithIcon = [otherTokensWithIcon, oraichainTokensWithIcon];
 export const flattenTokensWithIcon = flatten(tokensWithIcon);
-
-export const oraichainNetwork: CustomChainInfo = {
-  ...customOraichainNetwork,
-  currencies: [...customOraichainNetwork.currencies]
-};
 
 export const OraiBTCBridgeNetwork = {
   chainId: 'oraibtc-mainnet-1',
@@ -259,7 +269,9 @@ export const OraiBTCBridgeNetwork = {
   }
 };
 
-export const chainInfosWithSdk = [...customChainInfos, bitcoinMainnet, oraibtcNetwork];
+const customChainInfo = customChainInfos.filter((custom) => custom.chainId !== solChainId);
+
+export const chainInfosWithSdk = [...customChainInfo, solanaNetwork, bitcoinMainnet, oraibtcNetwork];
 export const chainInfos = mapListWithIcon(chainInfosWithSdk, chainIcons, 'chainId');
 
 // exclude kawaiverse subnet and other special evm that has different cointype

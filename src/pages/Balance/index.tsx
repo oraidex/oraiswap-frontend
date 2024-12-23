@@ -16,7 +16,9 @@ import {
   toDisplay,
   tronToEthAddress,
   MAX_ORAICHAIN_DENOM,
-  MAX_SOL_CONTRACT_ADDRESS
+  MAX_SOL_CONTRACT_ADDRESS,
+  ORAI_SOL_CONTRACT_ADDRESS,
+  ORAI
 } from '@oraichain/oraidex-common';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -534,7 +536,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
 
-    if (fromToken.denom !== MAX_ORAICHAIN_DENOM) {
+    if (fromToken.denom === ORAI) {
       const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
       console.log(
         'Current bridge balance transfer to sol: ',
