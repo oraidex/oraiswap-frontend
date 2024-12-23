@@ -91,12 +91,6 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       const assetInfos: AssetInfo[] = [];
       const assets: Asset[] = [];
 
-      console.log({
-        tokenObj1,
-        tokenObj2,
-        amountToken1,
-        amountToken2
-      });
 
       if (tokenObj1.contractAddress) {
         msgs.push({
