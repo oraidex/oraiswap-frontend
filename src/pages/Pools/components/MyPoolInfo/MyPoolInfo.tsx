@@ -64,7 +64,7 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInacti
 
     const myLiquidityInUsdt = Number(myLpBalance) * lpPrice;
     setLpBalance({
-      myLiquidityInUsdt: BigInt(Math.trunc(myLiquidityInUsdt)),
+      myLiquidityInUsdt: myLiquidityInUsdt ? BigInt(Math.trunc(myLiquidityInUsdt)) : 0n,
       lpPrice
     });
   }, [lpTokenInfoData, myLpBalance, poolDetail.info]);

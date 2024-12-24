@@ -120,7 +120,13 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                           <div className={styles.titleItem}>Receive amount</div>
                           <div className={styles.amount}>
                             <div>
-                              <img style={{ borderRadius: '100%' }} width={20} height={20} src={QuoteTokenIcon} alt="" />
+                              <img
+                                style={{ borderRadius: '100%' }}
+                                width={20}
+                                height={20}
+                                src={QuoteTokenIcon}
+                                alt=""
+                              />
                             </div>
                             <span>
                               {numberWithCommas(toDisplay(item.returnAmount), undefined, { maximumFractionDigits: 6 })}
@@ -196,7 +202,13 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                           <td className={`${styles.pay}`}>
                             <div className={styles.amount}>
                               <div>
-                                <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} width={20} height={20} alt="" />
+                                <img
+                                  style={{ borderRadius: '100%' }}
+                                  src={BaseTokenIcon}
+                                  width={20}
+                                  height={20}
+                                  alt=""
+                                />
                               </div>
                               <span>
                                 {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
@@ -212,7 +224,13 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                           <td className={`${styles.receive}`}>
                             <div className={styles.amount}>
                               <div>
-                                <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} width={20} height={20} alt="" />
+                                <img
+                                  style={{ borderRadius: '100%' }}
+                                  src={QuoteTokenIcon}
+                                  width={20}
+                                  height={20}
+                                  alt=""
+                                />
                               </div>
                               <span>
                                 {numberWithCommas(toDisplay(item.returnAmount), undefined, {

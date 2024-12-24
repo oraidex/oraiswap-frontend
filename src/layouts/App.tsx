@@ -68,7 +68,6 @@ const App = () => {
   });
 
   useEffect(() => {
-    console.log('here');
     initializeOraidexCommon(dispatch, allOraichainTokens);
   }, [allOraichainTokens]);
 

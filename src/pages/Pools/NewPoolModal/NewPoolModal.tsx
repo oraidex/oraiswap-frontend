@@ -236,7 +236,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 (() => {
                   return (
                     <>
-                      {Token1Icon && <img src={Token1Icon} className={cx('logo', theme)} alt="" />}
+                      {Token1Icon && <img style={{ borderRadius: '100%' }} src={Token1Icon} className={cx('logo', theme)} alt="" />}
                       <div className={cx('title', theme)}>
                         <div>{token1InfoData?.symbol ?? ''}</div>
                       </div>
@@ -262,7 +262,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                     disabled={!token1InfoData}
                     type="text"
                     value={amountToken1 ? amountToken1 : ''}
-                    onChange={() => {}}
+                    onChange={() => { }}
                     isAllowed={(values) => {
                       const { floatValue } = values;
                       // allow !floatValue to let user can clear their input
@@ -317,7 +317,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 (() => {
                   return (
                     <>
-                      {Token2Icon && <img src={Token2Icon} className={cx('logo', theme)} alt="" />}
+                      {Token2Icon && <img style={{ borderRadius: '100%' }} src={Token2Icon} className={cx('logo', theme)} alt="" />}
                       <div className={cx('title', theme)}>
                         <div>{token2InfoData?.symbol ?? ''}</div>
                       </div>
@@ -343,7 +343,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                     disabled={!token2InfoData}
                     type="text"
                     value={amountToken2 ? amountToken2 : ''}
-                    onChange={() => {}}
+                    onChange={() => { }}
                     isAllowed={(values) => {
                       const { floatValue } = values;
                       // allow !floatValue to let user can clear their input
@@ -409,7 +409,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         <div className={cx('stats_info', theme)}>
           <div className={cx('stats_info_wrapper', theme)}>
             <div className={cx('stats_info_row', theme)}>
-              <div>{Token1Icon && <img src={Token1Icon} className={cx('stats_info_lg', theme)} alt="" />}</div>
+              <div>{Token1Icon && <img style={{ borderRadius: '100%' }} src={Token1Icon} className={cx('stats_info_lg', theme)} alt="" />}</div>
               <div>
                 <span className={cx('stats_info_value_amount', theme)}>{amountToken1} </span>
                 <span className={cx('stats_info_name', theme)}>{token1InfoData?.symbol}</span>
@@ -427,7 +427,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
           <div className={cx('stats_info_wrapper', theme)}>
             <div className={cx('stats_info_row', theme)}>
-              {Token2Icon && <img src={Token2Icon} className={cx('stats_info_lg', theme)} alt="" />}
+              {Token2Icon && <img style={{ borderRadius: '100%' }} src={Token2Icon} className={cx('stats_info_lg', theme)} alt="" />}
               <div>
                 <span className={cx('stats_info_value_amount', theme)}>{amountToken2} </span>
                 <span className={cx('stats_info_name', theme)}>{token2InfoData?.symbol}</span>
@@ -457,10 +457,10 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               type="text"
               value={0.3}
               disabled={true}
-              // value={supplyToken2 ? supplyToken2 : ''}
-              // onValueChange={({ floatValue }) => {
-              //   setSupplyToken2(floatValue);
-              // }}
+            // value={supplyToken2 ? supplyToken2 : ''}
+            // onValueChange={({ floatValue }) => {
+            //   setSupplyToken2(floatValue);
+            // }}
             />
             <span>%</span>
           </div>
