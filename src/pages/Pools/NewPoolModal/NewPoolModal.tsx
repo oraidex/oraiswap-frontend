@@ -91,7 +91,6 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       const assetInfos: AssetInfo[] = [];
       const assets: Asset[] = [];
 
-
       if (tokenObj1.contractAddress) {
         msgs.push({
           contractAddress: tokenObj1.contractAddress,
@@ -503,26 +502,30 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         })()}
       </div>
 
-      <SelectTokenModal
-        isOpen={isSelectingToken === 'token1'}
-        open={() => setIsSelectingToken('token1')}
-        close={() => setIsSelectingToken(null)}
-        setToken={(token1: string) => {
-          setToken1(token1);
-          setListToken2Option(listToken2Option.filter((t) => t.denom !== token1));
-        }}
-        items={listToken1Option}
-      />
-      <SelectTokenModal
-        isOpen={isSelectingToken === 'token2'}
-        open={() => setIsSelectingToken('token2')}
-        close={() => setIsSelectingToken(null)}
-        setToken={(token2: string) => {
-          setToken2(token2);
-          setListToken1Option(listToken1Option.filter((t) => t.denom !== token2));
-        }}
-        items={listToken2Option}
-      />
+      {isSelectingToken === 'token1' && (
+        <SelectTokenModal
+          isOpen={isSelectingToken === 'token1'}
+          open={() => setIsSelectingToken('token1')}
+          close={() => setIsSelectingToken(null)}
+          setToken={(token1: string) => {
+            setToken1(token1);
+            setListToken2Option(listToken2Option.filter((t) => t.denom !== token1));
+          }}
+          items={listToken1Option}
+        />
+      )}
+      {isSelectingToken === 'token2' && (
+        <SelectTokenModal
+          isOpen={isSelectingToken === 'token2'}
+          open={() => setIsSelectingToken('token2')}
+          close={() => setIsSelectingToken(null)}
+          setToken={(token2: string) => {
+            setToken2(token2);
+            setListToken1Option(listToken1Option.filter((t) => t.denom !== token2));
+          }}
+          items={listToken2Option}
+        />
+      )}
     </Modal>
   );
 };

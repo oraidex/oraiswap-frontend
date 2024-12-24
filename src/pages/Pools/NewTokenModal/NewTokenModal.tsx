@@ -23,6 +23,7 @@ import { useDispatch } from 'react-redux';
 const cx = cn.bind(styles);
 
 const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
+const DEFAULT_COSMOS_DECIMALS = 6;
 
 interface ModalProps {
   className?: string;
@@ -36,26 +37,21 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [theme] = useConfigReducer('theme');
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
-  const [tokenDecimal, setTokenDecimal] = useState(null);
   const [description, setDescription] = useState('');
   const [tokenLogoUrl, setTokenLogoUrl] = useState('');
   const [selectedInitBalances, setSelectedInitBalances] = useState([]);
   const [oraiAddress] = useConfigReducer('address');
-
   const [typeDelete, setTypeDelete] = useState('');
-
   const [isInitBalances, setIsInitBalances] = useState(false);
   const [initBalances, setInitBalances] = useState([
     {
       address: '',
-      amount: BigInt(10 ** (tokenDecimal || 0))
+      amount: BigInt(10 ** DEFAULT_COSMOS_DECIMALS)
     }
   ]);
 
   const dispatch = useDispatch();
-
   const [isAddListToken, setIsAddListToken] = useState(false);
-  const [cap, setCap] = useState(BigInt(0));
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOutsideClick = () => {
@@ -121,7 +117,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 },
                 {
                   denom: tokenSymbol,
-                  exponent: tokenDecimal,
+                  exponent: DEFAULT_COSMOS_DECIMALS,
                   aliases: []
                 }
               ],
@@ -250,26 +246,10 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   </div>
                   <div className={cx('input', theme)}>
                     <NumberFormat
-                      placeholder="6"
                       className={cx('amount')}
-                      value={tokenDecimal}
+                      value={DEFAULT_COSMOS_DECIMALS}
                       decimalScale={6}
-                      disabled={false}
-                      type="text"
-                      onChange={(e) => {
-                        if (e?.target?.value === '') {
-                          setTokenDecimal(null);
-                          return;
-                        }
-                        setInitBalances([]);
-                        setIsInitBalances(false);
-                        setSelectedInitBalances([]);
-                        setTokenDecimal(Math.trunc(Number(e?.target?.value)));
-                      }}
-                      isAllowed={(values) => {
-                        const { floatValue } = values;
-                        return !floatValue || (floatValue >= 0 && floatValue <= 18);
-                      }}
+                      disabled={true}
                     />
                   </div>
                 </div>
@@ -341,7 +321,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                     </div>
                   </div>
                 </div>
-                {isInitBalances && tokenDecimal > 0 && (
+                {isInitBalances && (
                   <div>
                     {/* {isInitBalances && (
                       <div className={cx('header-init')}>
@@ -371,7 +351,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                               setInitBalances={setInitBalances}
                               initBalances={initBalances}
                               theme={theme}
-                              decimals={tokenDecimal}
+                              decimals={DEFAULT_COSMOS_DECIMALS}
                               deleteSelectedItem={deleteSelectedItem}
                             />
                           </div>
@@ -386,7 +366,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                             ...initBalances,
                             {
                               address: '',
-                              amount: BigInt(10 ** (tokenDecimal || 0))
+                              amount: BigInt(10 ** DEFAULT_COSMOS_DECIMALS)
                             }
                           ])
                         }
@@ -400,11 +380,8 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               </div>
             </div>
             <button
-              disabled={isLoading || !tokenName || !tokenSymbol || !tokenDecimal || !oraiAddress}
-              className={cx(
-                'create-btn',
-                (isLoading || !tokenName || !tokenSymbol || !tokenDecimal || !oraiAddress) && 'disable-btn'
-              )}
+              disabled={isLoading || !tokenName || !tokenSymbol || !oraiAddress}
+              className={cx('create-btn', (isLoading || !tokenName || !tokenSymbol || !oraiAddress) && 'disable-btn')}
               onClick={() => !isLoading && tokenName && handleCreateToken()}
             >
               {isLoading && <Loader width={20} height={20} />}

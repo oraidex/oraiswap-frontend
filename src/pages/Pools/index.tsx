@@ -122,16 +122,44 @@ const Pools: React.FC<{}> = () => {
     if (isReverseLogo) {
       return (
         <div className={styles.symbols}>
-          <img width={32} height={32} src={QuoteTokenIcon} className={styles.symbols_logo_left} alt="" />
-          <img width={32} height={32} src={BaseTokenIcon} className={styles.symbols_logo_right} alt="" />
+          <img
+            width={32}
+            height={32}
+            src={QuoteTokenIcon}
+            className={styles.symbols_logo_left}
+            style={{ borderRadius: '100%' }}
+            alt=""
+          />
+          <img
+            width={32}
+            height={32}
+            src={BaseTokenIcon}
+            className={styles.symbols_logo_right}
+            style={{ borderRadius: '100%' }}
+            alt=""
+          />
         </div>
       );
     }
 
     return (
       <div className={styles.symbols}>
-        <img width={32} height={32} src={BaseTokenIcon} className={styles.symbols_logo_left} alt="" />
-        <img width={32} height={32} src={QuoteTokenIcon} className={styles.symbols_logo_right} alt="" />
+        <img
+          width={32}
+          height={32}
+          src={BaseTokenIcon}
+          className={styles.symbols_logo_left}
+          style={{ borderRadius: '100%' }}
+          alt=""
+        />
+        <img
+          width={32}
+          height={32}
+          src={QuoteTokenIcon}
+          className={styles.symbols_logo_right}
+          style={{ borderRadius: '100%' }}
+          alt=""
+        />
       </div>
     );
   };

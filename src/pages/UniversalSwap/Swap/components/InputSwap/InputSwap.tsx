@@ -9,6 +9,7 @@ import { Themes } from 'context/theme-context';
 import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
 import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP, DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { chainInfos } from 'initCommon';
+import { ConfirmUnverifiedToken } from '../../index';
 
 const cx = cn.bind(styles);
 
@@ -31,6 +32,7 @@ interface InputSwapProps {
   theme: Themes;
   loadingSimulate?: boolean;
   impactWarning?: number;
+  isConfirmToken?: ConfirmUnverifiedToken;
 }
 
 export default function InputSwap({
@@ -51,10 +53,10 @@ export default function InputSwap({
   theme,
   coe,
   loadingSimulate,
-  impactWarning
+  impactWarning,
+  isConfirmToken
 }: InputSwapProps) {
   let chainInfo = chainInfos.find((chain) => chain.chainId === selectChain);
-  const isLightMode = theme === 'light';
 
   return (
     <>
@@ -109,7 +111,7 @@ export default function InputSwap({
         <div className={cx('box-select')} onClick={() => setIsSelectToken(true)}>
           <div className={cx('left')}>
             <div className={cx('icon')}>
-              {token.icon ? (
+              {(token.icon && isConfirmToken === 'init') || isConfirmToken === 'confirmed' ? (
                 <img className={cx('logo')} src={token.icon} alt="icon" width={30} height={30} />
               ) : (
                 <img className={cx('logo')} src={DEFAULT_TOKEN_ICON_URL} alt="icon" width={30} height={30} />
@@ -117,7 +119,11 @@ export default function InputSwap({
             </div>
 
             <div className={cx('section')}>
-              <div className={cx('name')}>{token?.name || 'UNKNOWN'}</div>
+              {isConfirmToken === 'pending' || isConfirmToken === 'reject' ? (
+                <></>
+              ) : (
+                <div className={cx('name')}>{token?.name || 'UNKNOWN'}</div>
+              )}
             </div>
             <img src={ArrowImg} alt="arrow" />
           </div>
@@ -133,7 +139,7 @@ export default function InputSwap({
               style={{
                 opacity: loadingSimulate ? '0.4' : '1'
               }}
-              disabled={loadingSimulate || disable}
+              disabled={loadingSimulate || disable || isConfirmToken === 'pending' || isConfirmToken === 'reject'}
               type="text"
               value={amount}
               onChange={() => {

@@ -61,7 +61,7 @@ import {
   isAllowIBCWasm,
   refreshBalances
 } from 'pages/UniversalSwap/helpers';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentAddressBookStep, setCurrentAddressBookStep } from 'reducer/addressBook';
 import { AddressManagementStep } from 'reducer/type';
@@ -85,9 +85,11 @@ import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculate
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
+import ModalConfirmUnverifiedToken from 'components/Modals/ModalConfirmUnverifiedToken/ModalConfirmUnverifiedToken';
 
 const cx = cn.bind(styles);
 
+export type ConfirmUnverifiedToken = 'init' | 'reject' | 'confirmed' | 'pending';
 const SwapComponent: React.FC<{
   fromTokenDenom: string;
   toTokenDenom: string;
@@ -129,6 +131,9 @@ const SwapComponent: React.FC<{
   const [indSmartRoute, setIndSmartRoute] = useState([0, 0]);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [openSwapWarning, setOpenSwapWarning] = useState(false);
+
+  const [isConfirmTokenFrom, setIsConfirmTokenFrom] = useState<ConfirmUnverifiedToken>('init');
+  const [isConfirmTokenTo, setIsConfirmTokenTo] = useState<ConfirmUnverifiedToken>('init');
 
   // value state
   const [coe, setCoe] = useState(0);
@@ -201,6 +206,23 @@ const SwapComponent: React.FC<{
     setOpenSmartRoute(false);
     setIndSmartRoute([0, 0]);
   });
+
+  useEffect(() => {
+    if (!originalFromToken.isVerified) {
+      setIsConfirmTokenFrom('pending');
+    } else {
+      console.log('initttt from');
+      setIsConfirmTokenFrom('init');
+    }
+  }, [originalFromToken]);
+
+  useEffect(() => {
+    if (!originalToToken.isVerified) {
+      setIsConfirmTokenTo('pending');
+    } else {
+      setIsConfirmTokenTo('init');
+    }
+  }, [originalToToken]);
 
   const onChangeFromAmount = (amount: number | undefined) => {
     if (!amount) {
@@ -733,6 +755,7 @@ const SwapComponent: React.FC<{
                 setCoe={setCoe}
                 coe={coe}
                 usdPrice={usdPriceShowFrom}
+                isConfirmToken={isConfirmTokenFrom}
               />
             </div>
           </div>
@@ -770,6 +793,7 @@ const SwapComponent: React.FC<{
                 usdPrice={usdPriceShowTo}
                 loadingSimulate={isPreviousSimulate}
                 impactWarning={impactWarning}
+                isConfirmToken={isConfirmTokenTo}
               />
             </div>
           </div>
@@ -1026,6 +1050,29 @@ const SwapComponent: React.FC<{
         }}
         impact={impactWarning}
       />
+
+      {isConfirmTokenFrom === 'pending' && (
+        <ModalConfirmUnverifiedToken
+          token={originalFromToken}
+          handleReject={() => {
+            setIsConfirmTokenFrom('reject');
+          }}
+          handleConfirm={() => {
+            setIsConfirmTokenFrom('confirmed');
+          }}
+        />
+      )}
+      {isConfirmTokenTo === 'pending' && (
+        <ModalConfirmUnverifiedToken
+          token={originalToToken}
+          handleReject={() => {
+            setIsConfirmTokenTo('reject');
+          }}
+          handleConfirm={() => {
+            setIsConfirmTokenTo('confirmed');
+          }}
+        />
+      )}
     </div>
   );
 };
