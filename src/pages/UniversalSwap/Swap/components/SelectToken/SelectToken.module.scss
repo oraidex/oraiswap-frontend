@@ -248,6 +248,20 @@
                 }
               }
             }
+
+            span {
+              svg {
+                width: 17px;
+                height: 17px;
+                margin: 0px 0px -2px 4px;
+
+                path {
+                  @include theme {
+                    stroke: theme-get('primary-highlight-section');
+                  }
+                }
+              }
+            }
           }
 
           .selectTokenItemTokenOrg {

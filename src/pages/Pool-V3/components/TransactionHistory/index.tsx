@@ -96,7 +96,7 @@ const TransactionHistory = ({
                         <div className={`${styles.pay}`}>
                           <div className={styles.titleItem}>Pay amount</div>
                           <div className={styles.amount}>
-                            <img src={BaseTokenIcon} alt="" width={20} height={20} />
+                            <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="" width={20} height={20} />
                             <span>
                               {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -107,7 +107,7 @@ const TransactionHistory = ({
                         <div className={`${styles.receive}`}>
                           <div className={styles.titleItem}>Receive amount</div>
                           <div className={styles.amount}>
-                            <img src={QuoteTokenIcon} alt="" width={20} height={20} />
+                            <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} alt="" width={20} height={20} />
                             <span>
                               {numberWithCommas(toDisplay(item.returnAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -181,7 +181,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.pay}`}>
                             <div className={styles.amount}>
-                              <img src={BaseTokenIcon} alt="" width={20} height={20} />
+                              <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="" width={20} height={20} />
                               <span>
                                 {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                               </span>
@@ -190,7 +190,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.receive}`}>
                             <div className={styles.amount}>
-                              <img src={QuoteTokenIcon} width={20} height={20} alt="" />
+                              <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} width={20} height={20} alt="" />
                               <span>
                                 {numberWithCommas(toDisplay(item.returnAmount), undefined, {
                                   maximumFractionDigits: 6

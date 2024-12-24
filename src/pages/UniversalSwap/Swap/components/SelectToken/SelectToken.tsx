@@ -89,8 +89,8 @@ export default function SelectToken({
         (textChain ? item.chainId === textChain : true) &&
         (textSearch
           ? [item.name.toLowerCase(), item.denom.toLowerCase(), item.contractAddress?.toLowerCase()].includes(
-              textSearch.toLowerCase()
-            )
+            textSearch.toLowerCase()
+          )
           : true)
     )
     .reduce((unique, item) => {
@@ -202,7 +202,9 @@ export default function SelectToken({
                       <div>
                         <div className={styles.selectTokenItemTokenName}>
                           {token.name || 'UNKNOWN'}
-                          {token.isVerified && <IconVerified />}
+                          <span>
+                            {token.isVerified && <IconVerified />}
+                          </span>
                         </div>
                         <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>
                       </div>
