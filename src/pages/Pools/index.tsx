@@ -74,7 +74,7 @@ const Pools: React.FC<{}> = () => {
       // calculate my stake in usdt, we calculate by bond_amount from contract and totalLiquidity from backend.
       const myStakedLP = stakingToken
         ? totalRewardInfoData?.reward_infos.find((item) => isEqual(item.staking_token, stakingToken))?.bond_amount ||
-        '0'
+          '0'
         : 0;
       const lpPrice = Number(totalSupply) ? totalLiquidity / Number(totalSupply) : 0;
       const myStakeLPInUsdt = +myStakedLP * lpPrice;
@@ -122,16 +122,44 @@ const Pools: React.FC<{}> = () => {
     if (isReverseLogo) {
       return (
         <div className={styles.symbols}>
-          <img style={{ borderRadius: '100%' }} width={32} height={32} src={QuoteTokenIcon} className={styles.symbols_logo_left} alt="" />
-          <img style={{ borderRadius: '100%' }} width={32} height={32} src={BaseTokenIcon} className={styles.symbols_logo_right} alt="" />
+          <img
+            style={{ borderRadius: '100%' }}
+            width={32}
+            height={32}
+            src={QuoteTokenIcon}
+            className={styles.symbols_logo_left}
+            alt=""
+          />
+          <img
+            style={{ borderRadius: '100%' }}
+            width={32}
+            height={32}
+            src={BaseTokenIcon}
+            className={styles.symbols_logo_right}
+            alt=""
+          />
         </div>
       );
     }
 
     return (
       <div className={styles.symbols}>
-        <img style={{ borderRadius: '100%' }} width={32} height={32} src={BaseTokenIcon} className={styles.symbols_logo_left} alt="" />
-        <img style={{ borderRadius: '100%' }} width={32} height={32} src={QuoteTokenIcon} className={styles.symbols_logo_right} alt="" />
+        <img
+          style={{ borderRadius: '100%' }}
+          width={32}
+          height={32}
+          src={BaseTokenIcon}
+          className={styles.symbols_logo_left}
+          alt=""
+        />
+        <img
+          style={{ borderRadius: '100%' }}
+          width={32}
+          height={32}
+          src={QuoteTokenIcon}
+          className={styles.symbols_logo_right}
+          alt=""
+        />
       </div>
     );
   };
