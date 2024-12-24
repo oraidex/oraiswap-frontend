@@ -51,7 +51,7 @@ export const SelectTokenModal: FC<ModalProps> = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (listItems.length === 0 && textSearch) {
+    if (listItems.length === 0 && textSearch && type === 'token') {
       dispatch<any>(
         inspectToken({
           tokenId: textSearch,
@@ -61,18 +61,26 @@ export const SelectTokenModal: FC<ModalProps> = ({
     }
   }, [textSearch]);
 
-  const listItems = items.filter(
-    (item) => item.decimals !== 18 && (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
+  const listItems = type === 'network' ? 
+  items.filter(
+    (item) => (textSearch ? (item as any).chainName.toLowerCase().includes(textSearch.toLowerCase()) : true)
+  )
+  : items.filter(
+    (item) => (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
   );
+
   return (
-    <Modal theme={theme} isOpen={isOpen} close={close} open={open} isCloseBtn={true}>
+    <Modal theme={theme} isOpen={isOpen} close={() => {
+      close();
+      setTextSearch('');
+    }} open={open} isCloseBtn={true}>
       <div className={cx('select', theme)}>
         <div className={cx('title', theme)}>
           <div>{type === 'token' ? 'Select a token' : 'Select a network'}</div>
         </div>
 
         <SearchInput
-          placeholder="Find token by name or address"
+          placeholder={type === 'network' ? "Find network by name" :"Find token by name or address"}
           className={styles.selectTokenSearchInput}
           onSearch={(text) => {
             setTextSearch(text);
@@ -81,7 +89,7 @@ export const SelectTokenModal: FC<ModalProps> = ({
         />
 
         <div className={cx('options')}>
-          {items
+          {listItems
             ?.map((item: TokenItemType | CustomChainInfo) => {
               let key: string, title: string, balance: string, rawBalance: string;
               let tokenAndChainIcons;
