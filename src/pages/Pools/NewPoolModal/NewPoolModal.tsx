@@ -22,6 +22,7 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import Loader from 'components/Loader';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { getTransactionUrl } from 'helper';
+import { extractAddress } from 'pages/Pool-V3/helpers/format';
 
 const cx = cn.bind(styles);
 interface ModalProps {
@@ -91,13 +92,19 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       const assetInfos: AssetInfo[] = [];
       const assets: Asset[] = [];
 
+      let [tokenKey1, tokenKey2] = [tokenObj1, tokenObj2];
+      let [amount1, amount2] = [amountToken1, amountToken2];
+      if (extractAddress(tokenObj1) > extractAddress(tokenObj2)) {
+        [tokenKey1, tokenKey2] = [tokenObj2, tokenObj1];
+        [amount1, amount2] = [amountToken2, amountToken1];
+      }
 
-      if (tokenObj1.contractAddress) {
+      if (tokenKey1.contractAddress) {
         msgs.push({
-          contractAddress: tokenObj1.contractAddress,
+          contractAddress: tokenKey1.contractAddress,
           msg: {
             increase_allowance: {
-              amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString(),
+              amount: (amount1 * 10 ** token1InfoData?.decimals).toString(),
               expires: undefined,
               spender: FACTORY_V2_CONTRACT
             }
@@ -105,43 +112,43 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         });
         assetInfos.push({
           token: {
-            contract_addr: tokenObj1.contractAddress
+            contract_addr: tokenKey1.contractAddress
           }
         });
         assets.push({
           info: {
             token: {
-              contract_addr: tokenObj1.contractAddress
+              contract_addr: tokenKey1.contractAddress
             }
           },
-          amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString()
+          amount: (amount1 * 10 ** token1InfoData?.decimals).toString()
         });
       } else {
         funds.push({
-          denom: tokenObj1.denom,
-          amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString()
+          denom: tokenKey1.denom,
+          amount: (amount1 * 10 ** token1InfoData?.decimals).toString()
         });
         assetInfos.push({
           native_token: {
-            denom: tokenObj1.denom
+            denom: tokenKey1.denom
           }
         });
         assets.push({
           info: {
             native_token: {
-              denom: tokenObj1.denom
+              denom: tokenKey1.denom
             }
           },
-          amount: (amountToken1 * 10 ** token1InfoData?.decimals).toString()
+          amount: (amount1 * 10 ** token1InfoData?.decimals).toString()
         });
       }
 
-      if (tokenObj2.contractAddress) {
+      if (tokenKey2.contractAddress) {
         msgs.push({
-          contractAddress: tokenObj2.contractAddress,
+          contractAddress: tokenKey2.contractAddress,
           msg: {
             increase_allowance: {
-              amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString(),
+              amount: (amount2 * 10 ** token2InfoData?.decimals).toString(),
               expires: undefined,
               spender: FACTORY_V2_CONTRACT
             }
@@ -149,34 +156,34 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
         });
         assetInfos.push({
           token: {
-            contract_addr: tokenObj2.contractAddress
+            contract_addr: tokenKey2.contractAddress
           }
         });
         assets.push({
           info: {
             token: {
-              contract_addr: tokenObj2.contractAddress
+              contract_addr: tokenKey2.contractAddress
             }
           },
-          amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString()
+          amount: (amount2 * 10 ** token2InfoData?.decimals).toString()
         });
       } else {
         funds.push({
-          denom: tokenObj2.denom,
-          amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString()
+          denom: tokenKey2.denom,
+          amount: (amount2 * 10 ** token2InfoData?.decimals).toString()
         });
         assetInfos.push({
           native_token: {
-            denom: tokenObj2.denom
+            denom: tokenKey2.denom
           }
         });
         assets.push({
           info: {
             native_token: {
-              denom: tokenObj2.denom
+              denom: tokenKey2.denom
             }
           },
-          amount: (amountToken2 * 10 ** token2InfoData?.decimals).toString()
+          amount: (amount2 * 10 ** token2InfoData?.decimals).toString()
         });
       }
 
