@@ -103,7 +103,7 @@ import { tokenInspector } from 'initTokenInspector';
 import { addToOtherChainTokens } from 'reducer/token';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
-interface BalanceProps {}
+interface BalanceProps { }
 
 export const isMaintainBridge = false;
 
@@ -118,8 +118,6 @@ const Balance: React.FC<BalanceProps> = () => {
   const tokenUrl = searchParams.get('token');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const feeConfig = useSelector((state: RootState) => state.token.feeConfigs);
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
-  const allOtherChainTokens = useSelector((state: RootState) => state.token.allOtherChainTokens);
   const nomic = useContext(NomicContext);
   const cwBitcoinContext = useContext(CwBitcoinContext);
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
@@ -149,7 +147,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const wallet = useWallet();
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const { handleBridgeFromCosmos, handleBridgeFromTon } = useTonBridgeHandler({
     token: from,
@@ -196,18 +194,17 @@ const Balance: React.FC<BalanceProps> = () => {
   useEffect(() => {
     if (!tokenUrl) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
 
-    (async () => {
-      if (tokenUrl && filterNetworkUI === SolanaNetworkConfig.chainId) {
-        const token = await tokenInspector.inspectTokenFromSpecifiedChain({
-          tokenId: tokenUrl,
-          chainId: filterNetworkUI
-        });
+    // TODO: vuonghuuhung support dynamic bridge orai <-> solana
+    // (async () => {
+    //   if (tokenUrl && filterNetworkUI === SolanaNetworkConfig.chainId) {
+    //     const token = await tokenInspector.inspectTokenFromSpecifiedChain({
+    //       tokenId: tokenUrl,
+    //       chainId: filterNetworkUI
+    //     });
 
-        dispatch(addToOtherChainTokens([onChainTokenToTokenItem(token)]));
-
-        console.log('🚀 ~ token:', token);
-      }
-    })();
+    //     dispatch(addToOtherChainTokens([onChainTokenToTokenItem(token)]));
+    //   }
+    // })();
 
     setTokens(
       [otherChainTokens, oraichainTokens].map((childTokens) =>
@@ -286,7 +283,6 @@ const Balance: React.FC<BalanceProps> = () => {
         return;
       }
       const toToken = findDefaultToToken(token);
-      console.log('🚀 ~ onClickToken ~ toToken', toToken);
       setTokenBridge([token, toToken]);
     },
     [otherChainTokens, oraichainTokens, from, to]
@@ -554,8 +550,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
 
-    // if (fromToken.denom !== MAX_ORAICHAIN_DENOM) {
-    if (fromToken.denom === 'orai') {
+    if (fromToken.denom !== MAX_ORAICHAIN_DENOM) {
       const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
       console.log(
         'Current bridge balance transfer to sol: ',
@@ -614,32 +609,33 @@ const Balance: React.FC<BalanceProps> = () => {
       let newToToken = to;
       if (toNetworkChainId) {
         // ORAICHAIN -> EVM (BSC/ETH/TRON) ( TO: TOKEN ORAIBRIDGE)
-        newToToken = [...allOraichainTokens, ...allOtherChainTokens].find(
+        newToToken = [...otherChainTokens, ...oraichainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
 
-        if (from.chainId === SolanaNetworkConfig.chainId) {
-          newToToken = [...allOraichainTokens, ...allOtherChainTokens].find(
-            (flat) =>
-              flat.chainId === toNetworkChainId &&
-              flat.coinGeckoId === from.coinGeckoId &&
-              flat.denom.includes(from.denom)
-          );
-        }
+        // TODO: vuonghuuhung support dynamic bridge orai <-> solana
+        // if (from.chainId === SolanaNetworkConfig.chainId) {
+        //   newToToken = [...allOraichainTokens, ...allOtherChainTokens].find(
+        //     (flat) =>
+        //       flat.chainId === toNetworkChainId &&
+        //       flat.coinGeckoId === from.coinGeckoId &&
+        //       flat.denom.includes(from.denom)
+        //   );
+        // }
 
-        if (toNetworkChainId === SolanaNetworkConfig.chainId) {
-          console.log('🚀 ~ onClickTransfer ~ toNetworkChainId', toNetworkChainId);
-          const subDenom = from.denom.split('/')[2];
-          const targetTokenInfo = onChainTokenToTokenItem(
-            await tokenInspector.inspectTokenFromSpecifiedChain({
-              tokenId: subDenom,
-              chainId: toNetworkChainId
-            })
-          );
-          newToToken = targetTokenInfo;
-        }
+        // if (toNetworkChainId === SolanaNetworkConfig.chainId) {
+        //   console.log('🚀 ~ onClickTransfer ~ toNetworkChainId', toNetworkChainId);
+        //   const subDenom = from.denom.split('/')[2];
+        //   const targetTokenInfo = onChainTokenToTokenItem(
+        //     await tokenInspector.inspectTokenFromSpecifiedChain({
+        //       tokenId: subDenom,
+        //       chainId: toNetworkChainId
+        //     })
+        //   );
+        //   newToToken = targetTokenInfo;
+        // }
 
-        console.log('🚀 ~ onClickTransfer ~ newToToken', newToToken);
+        // console.log('🚀 ~ onClickTransfer ~ newToToken', newToToken);
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
@@ -763,7 +759,7 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const getFilterTokens = (chainId: string | number): TokenItemType[] => {
-    return [...allOtherChainTokens, ...allOraichainTokens]
+    return [...otherChainTokens, ...oraichainTokens]
       .filter((token) => {
         if (hideOtherSmallAmount && !toTotalDisplay(amounts, token)) return false;
         if (UniversalSwapHelper.isSupportedNoPoolSwapEvm(token.coinGeckoId)) return false;
@@ -776,7 +772,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const listTokens = useMemo(() => {
     return getFilterTokens(filterNetworkUI);
-  }, [allOtherChainTokens, allOraichainTokens, filterNetworkUI]);
+  }, [filterNetworkUI, otherChainTokens, oraichainTokens]);
 
   const totalUsd = getTotalUsd(amounts, prices);
 
@@ -917,7 +913,6 @@ const Balance: React.FC<BalanceProps> = () => {
                         }
                       }}
                       onClickTransfer={async (fromAmount: number, filterNetwork?: NetworkChainId) => {
-                        console.log({ fromAmount, filterNetwork, from, to });
                         await onClickTransfer(fromAmount, from, to, filterNetwork);
                       }}
                       convertKwt={async (transferAmount: number, fromToken: TokenItemType) => {

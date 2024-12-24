@@ -175,7 +175,7 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
     const { totalSupply, totalLiquidity } = pool;
     const myStakedLP = pool.liquidityAddr
       ? totalRewardInfoData?.reward_infos.find((item) => isEqual(item.staking_token, pool.liquidityAddr))
-          ?.bond_amount || '0'
+        ?.bond_amount || '0'
       : 0;
 
     const lpPrice = Number(totalSupply) ? totalLiquidity / Number(totalSupply) : 0;
@@ -186,9 +186,9 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
 
   const totalEarned = myStakes
     ? myStakes.reduce((total, current) => {
-        total += current.earnAmountInUsdt;
-        return total;
-      }, 0)
+      total += current.earnAmountInUsdt;
+      return total;
+    }, 0)
     : 0;
 
   return {
@@ -220,23 +220,28 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
   useEffect(() => {
     if (!pairDenoms) return;
     (async function fetchTokens() {
-      const pairRawData = pairDenoms.split('_');
-      const tokenTypes = pairRawData.map((raw) =>
-        oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
-      );
+      try {
 
-      let token1 = tokenTypes[0];
-      let token2 = tokenTypes[1];
+        const pairRawData = pairDenoms.split('_');
+        const tokenTypes = pairRawData.map((raw) =>
+          oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
+        );
 
-      if (!tokenTypes[0]) {
-        const inspectedToken1 = await tokenInspector.inspectToken({ tokenId: pairRawData[0], getOffChainData: true });
-        token1 = onChainTokenToTokenItem(inspectedToken1);
+        let token1 = tokenTypes[0];
+        let token2 = tokenTypes[1];
+
+        if (!tokenTypes[0]) {
+          const inspectedToken1 = await tokenInspector.inspectToken({ tokenId: pairRawData[0], getOffChainData: true });
+          token1 = onChainTokenToTokenItem(inspectedToken1);
+        }
+        if (!tokenTypes[1]) {
+          const inspectedToken2 = await tokenInspector.inspectToken({ tokenId: pairRawData[1], getOffChainData: true });
+          token2 = onChainTokenToTokenItem(inspectedToken2);
+        }
+        setTokens([token1, token2]);
+      } catch (e) {
+        console.error('error fetchTokens: ', e);
       }
-      if (!tokenTypes[1]) {
-        const inspectedToken2 = await tokenInspector.inspectToken({ tokenId: pairRawData[1], getOffChainData: true });
-        token2 = onChainTokenToTokenItem(inspectedToken2);
-      }
-      setTokens([token1, token2]);
     })();
   }, [pairDenoms]);
 

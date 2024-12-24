@@ -1,13 +1,15 @@
-import { AssetsTab, HeaderTab, HeaderTop, HistoryTab, TabsTxs } from './Component';
-import SwapComponent from './Swap';
-import { TransactionProcess } from './Modals';
-import ModalCustom from 'components/ModalCustom';
 import { isMobile } from '@walletconnect/browser-utils';
+import classNames from 'classnames';
+import cn from 'classnames/bind';
+import ModalCustom from 'components/ModalCustom';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import useTheme from 'hooks/useTheme';
 import Content from 'layouts/Content';
 import { DuckDb } from 'libs/duckdb';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import { selectCurrentSwapFilterTime, selectCurrentSwapTabChart } from 'reducer/chartSlice';
 import {
   selectChartTimeFrame,
@@ -16,17 +18,15 @@ import {
   selectCurrentToken,
   setChartTimeFrame
 } from 'reducer/tradingSlice';
+import { FILTER_TIME_CHART } from 'reducer/type';
+import { AssetsTab, HeaderTab, HeaderTop, HistoryTab, TabsTxs } from './Component';
 import ChartUsdPrice from './Component/ChartUsdPrice';
+import { TransactionProcess } from './Modals';
+import SwapComponent from './Swap';
 import { initPairSwap } from './Swap/hooks/useFillToken';
 import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from './helpers';
 import { ChartTokenType, useChartUsdPrice } from './hooks/useChartUsdPrice';
-import { FILTER_TIME_CHART } from 'reducer/type';
-import cn from 'classnames/bind';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
 import styles from './index.module.scss';
-import classNames from 'classnames';
 
 const cx = cn.bind(styles);
 
