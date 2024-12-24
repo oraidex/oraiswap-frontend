@@ -73,12 +73,7 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
         amountDetails[t.denom] = '0';
       });
 
-    const storage = store.getState();
-    const allOraichainTokens = storage.token.allOraichainTokens;
-    const allOraichainTokensMap = Object.fromEntries(allOraichainTokens.map((c) => [c.denom, c]));
-    const tokensAmount = amountAll
-      .filter((coin) => allOraichainTokensMap[coin.denom])
-      .map((coin) => [coin.denom, coin.amount]);
+    const tokensAmount = amountAll.map((coin) => [coin.denom, coin.amount]);
     Object.assign(amountDetails, Object.fromEntries(tokensAmount));
 
     dispatch(updateAmounts(amountDetails));
@@ -115,9 +110,7 @@ async function loadTokens(
         timer[oraiAddress] = setTimeout(async () => {
           await Promise.all([
             loadTokensCosmos(dispatch, kawaiiAddress, oraiAddress),
-            loadCw20Balance(dispatch, oraiAddress),
-            // different cointype but also require keplr connected by checking oraiAddress
-            loadKawaiiSubnetAmount(dispatch, kawaiiAddress)
+            loadCw20Balance(dispatch, oraiAddress)
           ]);
         }, 2000);
       }
@@ -184,6 +177,7 @@ async function loadTokensCosmos(dispatch: Dispatch, kwtAddress: string, oraiAddr
       // TODO: ignore oraibtc
       chainInfo.chainId !== ('oraibtc-mainnet-1' as string)
   );
+
   for (const chainInfo of cosmosInfos) {
     const { cosmosAddress } = genAddressCosmos(chainInfo, kwtAddress, oraiAddress);
     if (!cosmosAddress) continue;
@@ -419,18 +413,6 @@ async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: Cu
   } catch (error) {
     console.log('error: loadBtcAmounts', error);
   }
-}
-
-async function loadKawaiiSubnetAmount(dispatch: Dispatch, kwtAddress: string) {
-  if (!kwtAddress) return;
-  const kawaiiInfo = chainInfos.find((c) => c.chainId === 'kawaii_6886-1');
-  loadNativeBalance(dispatch, kwtAddress, kawaiiInfo);
-
-  const kwtSubnetAddress = getEvmAddress(kwtAddress);
-  const kawaiiEvmInfo = chainInfos.find((c) => c.chainId === '0x1ae6');
-  let amountDetails = Object.fromEntries(await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo));
-  // update amounts
-  dispatch(updateAmounts(amountDetails));
 }
 
 const loadBalanceByToken = async (dispatch: Dispatch, addressTon: string, addressToken?: string) => {
