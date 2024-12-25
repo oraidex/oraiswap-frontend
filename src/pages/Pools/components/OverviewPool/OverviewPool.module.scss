@@ -145,9 +145,15 @@
           font-size: 16px;
           font-weight: 500;
           line-height: 150%;
-          /* 24px */
 
-          img,
+          /* 24px */
+          img {
+            width: 30px;
+            height: 30px;
+            border-radius: 100%;
+            margin-right: 10px;
+          }
+
           svg {
             width: 24px;
             height: 24px;
@@ -160,10 +166,24 @@
             }
 
             font-size: 14px;
-            font-weight: 400;
+            font-weight: 600;
             line-height: 150%;
             /* 21px */
             letter-spacing: 0.1px;
+          }
+
+          .denom {
+            font-weight: 400;
+            font-size: 13px;
+          }
+
+          .copyBtn {
+            display: flex;
+            align-items: center;
+
+            div {
+              display: flex;
+            }
           }
 
           // &.light {
@@ -171,6 +191,30 @@
           //     filter: invert(1);
           //   }
           // }
+        }
+
+        .tokensAddress {
+          display: flex;
+          justify-content: space-evenly;
+          flex-grow: 1;
+
+          .showMore {
+            display: flex;
+            gap: 9px;
+
+            .tokenName {
+              font-weight: 600;
+            }
+          }
+        }
+
+        .copyBtn {
+          cursor: pointer;
+
+          svg {
+            width: 20px;
+            height: 20px;
+          }
         }
       }
     }
