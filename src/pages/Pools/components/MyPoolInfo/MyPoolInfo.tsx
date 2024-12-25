@@ -70,7 +70,7 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInacti
   }, [lpTokenInfoData, myLpBalance, poolDetail.info]);
 
   const totalBondAmount = BigInt(totalRewardInfoData?.reward_infos[0]?.bond_amount || '0');
-  const totalBondAmountInUsdt = BigInt(Math.trunc(lpBalance.lpPrice ? Number(totalBondAmount) * lpBalance.lpPrice : 0));
+  const totalBondAmountInUsdt = BigInt(Math.trunc(lpBalance.lpPrice ? Number(totalBondAmount) * lpBalance.lpPrice : 0) || 0);
 
   const thirdType = 'secondary-sm';
   const secondaryType = 'third-sm';

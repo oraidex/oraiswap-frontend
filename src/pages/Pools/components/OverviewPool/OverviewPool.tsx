@@ -112,13 +112,13 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <img src={BaseTokenIcon} alt="" />
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0'), false)}
+                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0'), false, token1?.decimals)}
                 </span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <img src={QuoteTokenIcon} alt="" />
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0'), false)}
+                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0'), false, token2?.decimals)}
                 </span>
               </div>
             </div>

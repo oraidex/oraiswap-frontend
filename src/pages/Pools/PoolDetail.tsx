@@ -168,8 +168,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  <img src={BaseTokenIcon} alt="icon" width={30} height={30} />
-                  <img src={QuoteTokenIcon} alt="icon" width={30} height={30} />
+                  <img style={{borderRadius: '100%'}} src={BaseTokenIcon} alt="icon" width={30} height={30} />
+                  <img style={{borderRadius: '100%'}} src={QuoteTokenIcon} alt="icon" width={30} height={30} />
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} /{' '}

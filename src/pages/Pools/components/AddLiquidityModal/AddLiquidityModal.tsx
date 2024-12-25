@@ -145,8 +145,6 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
     displayToast(TToastType.TX_BROADCASTING);
 
     try {
-      const oraiAddress = await handleCheckAddress('Oraichain');
-
       const { client, defaultAddress: address } = await getCosmWasmClient({
         chainId: network.chainId
       });
@@ -213,13 +211,15 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
                 amount: amount2.toString()
               }
             ],
-            slippage_tolerance: (userSlippage / 100).toString()
+            slippage_tolerance: lpTokenInfoData.total_supply === '0' ? undefined : (userSlippage / 100).toString()
           }
         },
         funds
       }
 
       msgs.push(provideLiquidityMsg);
+
+      console.log('msgs: ', msgs);
 
       const result = await client.executeMultiple(address.address, msgs, 'auto');
 
@@ -232,6 +232,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
 
         if (typeof onLiquidityChange == 'function') {
           onLiquidityChange(amountUsdt);
+          // window.invalidateQueries('token-info');
         }
       }
     } catch (error) {
