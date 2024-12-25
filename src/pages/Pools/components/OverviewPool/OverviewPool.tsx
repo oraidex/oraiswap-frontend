@@ -1,16 +1,18 @@
-import { BTC_CONTRACT, CW20_DECIMALS, fetchRetry, OraiIcon, toDisplay } from '@oraichain/oraidex-common';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
+import { BTC_CONTRACT, fetchRetry, OraiIcon, toDisplay } from '@oraichain/oraidex-common';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import IconCopyAddress from 'assets/icons/ic_copy_address.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import classNames from 'classnames';
-import TokenBalance from 'components/TokenBalance';
+import { formatDisplayUsdt, formatNumberKMB } from 'helper/format';
+import useConfigReducer from 'hooks/useConfigReducer';
+import { useCopyClipboard } from 'hooks/useCopyClipboard';
 import useTheme from 'hooks/useTheme';
+import { reduceString } from 'libs/utils';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useEffect, useState } from 'react';
 import { PoolDetail } from 'types/pool';
-import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
-import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import styles from './OverviewPool.module.scss';
-import { formatDisplayUsdt, formatNumberKMB, numberWithCommas } from 'helper/format';
-import useConfigReducer from 'hooks/useConfigReducer';
 
 export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail }) => {
   const theme = useTheme();
@@ -25,6 +27,8 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
   const [isShowMore] = useState(false);
   const isLight = theme === 'light';
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
+
+  const { isCopied, handleCopy, copiedValue } = useCopyClipboard();
 
   let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
   if (token1) BaseTokenIcon = theme === 'light' ? token1.iconLight || token1.icon : token1.icon;
@@ -47,6 +51,11 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
   const listBTCAddresses = [
     BTC_CONTRACT,
     'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+  ];
+
+  const [token1Denom, token2Denom] = [
+    token1?.contractAddress || token1?.denom,
+    token2?.contractAddress || token2?.denom
   ];
 
   useEffect(() => {
@@ -110,16 +119,36 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
           ) : (
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                <img src={BaseTokenIcon} alt="" />
                 <span className={styles.value}>
                   {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals, 0), false, token1?.decimals)}
                 </span>
+                <img src={BaseTokenIcon} alt="" />
+                <span className={styles.denom}>{reduceString(token1Denom, 7, 6)}</span>
+                <div className={styles.copyBtn}>
+                  {isCopied && copiedValue === token1Denom ? (
+                    <SuccessIcon />
+                  ) : (
+                    <div onClick={(e) => handleCopy(token1Denom)}>
+                      <IconCopyAddress />
+                    </div>
+                  )}
+                </div>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                <img src={QuoteTokenIcon} alt="" />
                 <span className={styles.value}>
                   {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals, 0), false, token2?.decimals)}
                 </span>
+                <img src={QuoteTokenIcon} alt="" />
+                <span className={styles.denom}>{reduceString(token2Denom, 7, 6)}</span>
+                <div className={styles.copyBtn}>
+                  {isCopied && copiedValue === token2Denom ? (
+                    <SuccessIcon />
+                  ) : (
+                    <div onClick={(e) => handleCopy(token2Denom)}>
+                      <IconCopyAddress />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
