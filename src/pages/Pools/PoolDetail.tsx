@@ -185,7 +185,8 @@ const PoolDetail: React.FC = () => {
                     maximumFractionDigits: 6
                   })}`
                 : `1 ${baseToken?.name} = ${numberWithCommas(
-                    Number(pairAmountInfoData?.token2Amount) / Number(pairAmountInfoData?.token1Amount) || 0,
+                    toDisplay(pairAmountInfoData?.token2Amount, token2?.decimals, 0) /
+                      toDisplay(pairAmountInfoData?.token1Amount, token1?.decimals, 0) || 0,
                     undefined,
                     {
                       maximumFractionDigits: 6
@@ -197,7 +198,8 @@ const PoolDetail: React.FC = () => {
               {ratioOraiBtc
                 ? `${numberWithCommas(ratioOraiBtc || 0, undefined, { maximumFractionDigits: 6 })} ${baseToken?.name}`
                 : `${numberWithCommas(
-                    Number(pairAmountInfoData?.token1Amount) / Number(pairAmountInfoData?.token2Amount) || 0,
+                  toDisplay(pairAmountInfoData?.token1Amount, token1?.decimals, 0) /
+                  toDisplay(pairAmountInfoData?.token2Amount, token2?.decimals, 0) || 0,
                     undefined,
                     { maximumFractionDigits: 6 }
                   )} ${baseToken?.name}`}
