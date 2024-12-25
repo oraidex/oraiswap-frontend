@@ -3853,10 +3853,10 @@
     react-use "^17.4.0"
     react-use-websocket "^4.5.0"
 
-"@oraichain/oraidex-common@1.1.40", "@oraichain/oraidex-common@^1.1.27", "@oraichain/oraidex-common@^1.1.32", "@oraichain/oraidex-common@^1.1.6":
-  version "1.1.40"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.40.tgz#406958661ed9d5cd686e03c5f186e0d7ff862375"
-  integrity sha512-ZOK94Hb0HcMkQamcwuZPs1pzUgLMjIYxy76sLYBsYEngRccb1PlAmALbYGMuqKceYhTdzN0hAVJceC1rKFYLHg==
+"@oraichain/oraidex-common@1.1.44", "@oraichain/oraidex-common@^1.1.27", "@oraichain/oraidex-common@^1.1.32", "@oraichain/oraidex-common@^1.1.6":
+  version "1.1.44"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.44.tgz#a21e25bd0d2f5d78e9b61237e6cf64dc2ff0e797"
+  integrity sha512-lXvM7RtYVQqWa/VveJntYPK+EqvniABKI/S6zbjIlx8vuVsMxo3rZjy12yjiJHrFZKOM7mPO6mtceceF1yMelw==
   dependencies:
     "@cosmjs/amino" "^0.32.4"
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
@@ -3868,6 +3868,9 @@
     "@injectivelabs/sdk-ts" "1.12.1"
     "@keplr-wallet/types" "^0.11.38"
     "@oraichain/oraidex-contracts-sdk" latest
+    "@ton/core" "0.56.3"
+    "@ton/crypto" "3.3.0"
+    "@ton/ton" "14.0.0"
     axios "1.7.2"
     axios-extensions "3.1.7"
     bignumber.js "^9.1.2"
@@ -5534,7 +5537,7 @@
   dependencies:
     tippy.js "^6.3.1"
 
-"@ton/core@^0.56.3":
+"@ton/core@0.56.3", "@ton/core@^0.56.3":
   version "0.56.3"
   resolved "https://registry.yarnpkg.com/@ton/core/-/core-0.56.3.tgz#1162764573abb76032eba70f8497e5cb2ea532ee"
   integrity sha512-HVkalfqw8zqLLPehtq0CNhu5KjVzc7IrbDwDHPjGoOSXmnqSobiWj8a5F+YuWnZnEbQKtrnMGNOOjVw4LG37rg==
@@ -5548,7 +5551,7 @@
   dependencies:
     jssha "3.2.0"
 
-"@ton/crypto@^3.3.0":
+"@ton/crypto@3.3.0", "@ton/crypto@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@ton/crypto/-/crypto-3.3.0.tgz#019103df6540fbc1d8102979b4587bc85ff9779e"
   integrity sha512-/A6CYGgA/H36OZ9BbTaGerKtzWp50rg67ZCH2oIjV1NcrBaCK9Z343M+CxedvM7Haf3f/Ee9EhxyeTp0GKMUpA==
@@ -5557,7 +5560,7 @@
     jssha "3.2.0"
     tweetnacl "1.0.3"
 
-"@ton/ton@^14.0.0":
+"@ton/ton@14.0.0", "@ton/ton@^14.0.0":
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/@ton/ton/-/ton-14.0.0.tgz#a66fbbfb159200892557442039a0341cda71fc2d"
   integrity sha512-xb2CY6U0AlHUKc7DV7xK/K4Gqn6YoR253yUrM2E7L5WegVFsDF0CQRUIfpYACCuj1oUywQc5J2oMolYNu/uGkA==
