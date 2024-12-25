@@ -123,19 +123,19 @@ const Pools: React.FC<{}> = () => {
       return (
         <div className={styles.symbols}>
           <img
-            style={{ borderRadius: '100%' }}
             width={32}
             height={32}
             src={QuoteTokenIcon}
             className={styles.symbols_logo_left}
+            style={{ borderRadius: '100%' }}
             alt=""
           />
           <img
-            style={{ borderRadius: '100%' }}
             width={32}
             height={32}
             src={BaseTokenIcon}
             className={styles.symbols_logo_right}
+            style={{ borderRadius: '100%' }}
             alt=""
           />
         </div>
@@ -145,19 +145,19 @@ const Pools: React.FC<{}> = () => {
     return (
       <div className={styles.symbols}>
         <img
-          style={{ borderRadius: '100%' }}
           width={32}
           height={32}
           src={BaseTokenIcon}
           className={styles.symbols_logo_left}
+          style={{ borderRadius: '100%' }}
           alt=""
         />
         <img
-          style={{ borderRadius: '100%' }}
           width={32}
           height={32}
           src={QuoteTokenIcon}
           className={styles.symbols_logo_right}
+          style={{ borderRadius: '100%' }}
           alt=""
         />
       </div>

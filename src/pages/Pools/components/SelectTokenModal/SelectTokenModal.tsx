@@ -43,18 +43,18 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
       dispatch<any>(
         inspectToken({
           tokenId: textSearch,
-          address
+          address,
+          isUserAdded: true
         })
       );
     }
   }, [textSearch]);
 
-  const listItems = items.filter(
-    (item) =>
-      (textSearch
-        ? item.name.toLowerCase().includes(textSearch.toLowerCase()) ||
-          item.denom.toLowerCase() === textSearch.toLowerCase()
-        : true)
+  const listItems = items.filter((item) =>
+    textSearch
+      ? item.name.toLowerCase().includes(textSearch.toLowerCase()) ||
+        item.denom.toLowerCase() === textSearch.toLowerCase()
+      : true
   );
 
   return (

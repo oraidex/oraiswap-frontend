@@ -12,6 +12,7 @@ export interface TokenState {
   totalLpv3: number;
   allOraichainTokens: TokenItemType[];
   allOtherChainTokens: TokenItemType[];
+  addedTokens: TokenItemType[];
 }
 
 const initialState: TokenState = {
@@ -31,7 +32,8 @@ const initialState: TokenState = {
     token_fees: []
   },
   allOraichainTokens: [],
-  allOtherChainTokens: []
+  allOtherChainTokens: [],
+  addedTokens: []
 };
 
 export const tokenSlice = createSlice({
@@ -94,19 +96,21 @@ export const tokenSlice = createSlice({
     },
     addToOtherChainTokens: (state, action: PayloadAction<any>) => {
       try {
-        // console.log('action.payload', action.payload);
-      state.allOtherChainTokens = [
-        ...state.allOtherChainTokens,
-        ...action.payload.filter(
-          (token: TokenItemType) => !state.allOtherChainTokens.find((t) => t.denom === token.denom)
-        )
-      ];
-      // console.log("done")
-
-      // console.log('state.allOtherChainTokens', state.allOtherChainTokens);
+        state.allOtherChainTokens = [
+          ...state.allOtherChainTokens,
+          ...action.payload.filter(
+            (token: TokenItemType) => !state.allOtherChainTokens.find((t) => t.denom === token.denom)
+          )
+        ];
       } catch (error) {
         console.log('error', error);
       }
+    },
+    updateAddedTokens: (state, action: PayloadAction<any>) => {
+      state.addedTokens = [
+        ...state.addedTokens,
+        ...action.payload.filter((token: TokenItemType) => !state.addedTokens.find((t) => t.denom === token.denom))
+      ];
     }
   }
 });
@@ -123,7 +127,8 @@ export const {
   updateAllOraichainTokens,
   addToOraichainTokens,
   updateAllOtherChainTokens,
-  addToOtherChainTokens
+  addToOtherChainTokens,
+  updateAddedTokens
 } = tokenSlice.actions;
 
 export default tokenSlice.reducer;

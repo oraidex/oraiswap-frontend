@@ -4,7 +4,7 @@ import { TokenItemType } from '@oraichain/oraidex-common';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
 import { tokenInspector } from 'initTokenInspector';
-import { addToOraichainTokens, updateAmounts } from './token';
+import { addToOraichainTokens, updateAddedTokens, updateAmounts } from './token';
 
 export interface OnchainTokensState {
   tokens: TokenItemType[];
@@ -55,10 +55,12 @@ export const inspectToken = createAsyncThunk(
   async (
     {
       tokenId,
-      address
+      address,
+      isUserAdded
     }: {
       tokenId: string;
       address?: string;
+      isUserAdded?: boolean;
     },
     thunkAPI
   ): Promise<{
@@ -93,7 +95,9 @@ export const inspectToken = createAsyncThunk(
       })
     );
 
-    thunkAPI.dispatch(addToOraichainTokens([onChainTokenToTokenItem(token)]));
+    const tokenItem = onChainTokenToTokenItem(token);
+    thunkAPI.dispatch(addToOraichainTokens([tokenItem]));
+    if (isUserAdded) thunkAPI.dispatch(updateAddedTokens([tokenItem]));
 
     return {
       token,

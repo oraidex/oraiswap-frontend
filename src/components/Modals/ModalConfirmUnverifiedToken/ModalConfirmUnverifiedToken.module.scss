@@ -1,0 +1,109 @@
+.confirmationContainer {
+    z-index: 1021;
+
+    .confirmationModalWrapper {
+        width: 470px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        color: #232521;
+        border-radius: 12px;
+        padding: 24px;
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 600;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #494949;
+
+            .closeIcon {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+            }
+        }
+
+        .confirmInfo {
+            font-size: 16px;
+            margin-top: 20px;
+
+            .title {
+                font-weight: 600;
+                color: #fff;
+                margin-bottom: 10px;
+                font-size: 16px
+            }
+
+            .description {
+                font-weight: 400;
+                color: #979995;
+                font-size: 16px
+            }
+        }
+
+        .infoToken {
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #494949;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 30px;
+            background-color: #232521;
+
+            .mainInfoToken {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+
+                .tokenName {
+                    font-weight: 500;
+                    color: #f7f7f7;
+                }
+
+                .address {
+                    color: #979995;
+                }
+            }
+
+            .copyBtn {
+                cursor: pointer;
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+
+        .cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 32px;
+            width: 100%;
+
+            button {
+                width: 47%;
+                padding: 12px;
+            }
+        }
+    }
+}
+
+.dark {
+    .confirmationModalWrapper {
+        color: #f7f7f7;
+        // background: #232521;
+        background: #181a17;
+    }
+}
