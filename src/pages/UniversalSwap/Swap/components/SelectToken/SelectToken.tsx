@@ -8,7 +8,7 @@ import { Themes } from 'context/theme-context';
 import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { chainInfos } from 'initCommon';
+import { chainInfos, oraichainTokens } from 'initCommon';
 import { toSumDisplay } from 'libs/utils';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
@@ -61,7 +61,7 @@ export default function SelectToken({
   const isLightTheme = theme === 'light';
   const [tokenRank = {}] = useConfigReducer('tokenRank');
   const [address] = useConfigReducer('address');
-  const { allOraichainTokens, addedTokens } = useSelector((state: RootState) => state.token);
+  const { addedTokens } = useSelector((state: RootState) => state.token);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -70,15 +70,13 @@ export default function SelectToken({
 
   useEffect(() => {
     if (listItems.length === 0 && textSearch && textChain && selectChain === 'Oraichain') {
-      dispatch<any>(inspectToken({ tokenId: textSearch, address }));
+      dispatch<any>(inspectToken({ tokenId: textSearch, address, isUserAdded: true }));
     }
   }, [textSearch, address]);
 
   const checkedItems =
     // selectChain === 'Oraichain' ? oraichainTokens.filter((token) => !token.isDisabledSwap).concat(addedTokens) : items;
-    selectChain === 'Oraichain'
-      ? allOraichainTokens.filter((token) => !token.isDisabledSwap).concat(addedTokens)
-      : items;
+    selectChain === 'Oraichain' ? oraichainTokens.filter((token) => !token.isDisabledSwap).concat(addedTokens) : items;
 
   const listItems = checkedItems
     .filter(Boolean)

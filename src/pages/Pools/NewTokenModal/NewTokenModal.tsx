@@ -165,7 +165,11 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
 
       if (res.transactionHash) {
         dispatch<any>(
-          inspectToken({ tokenId: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`, address: oraiAddress })
+          inspectToken({
+            tokenId: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
+            address: oraiAddress,
+            isUserAdded: true
+          })
         );
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl('Oraichain', res.transactionHash)
