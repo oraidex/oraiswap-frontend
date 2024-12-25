@@ -105,6 +105,7 @@ const SwapComponent: React.FC<{
   const isLightMode = theme === 'light';
   const currentAddressManagementStep = useSelector(selectCurrentAddressBookStep);
   const amounts = useSelector((state: RootState) => state.token.amounts);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
   const dispatch = useDispatch();
 
   const [event] = useTemporaryConfigReducer('event');
@@ -981,15 +982,15 @@ const SwapComponent: React.FC<{
                 ]);
 
                 return flattenSmartRouters?.map((action, index, actions) => {
-                  const tokenInData = flattenTokensWithIcon.find((flat) =>
+                  const tokenInData = [...flattenTokens, ...allOraichainTokens].find((flat) =>
                     [flat.denom, flat.contractAddress].filter(Boolean).includes(action.tokenIn)
                   );
-                  const TokenInIcon = tokenInData?.Icon;
+                  const TokenInIcon = tokenInData?.icon;
                   const symbolIn = tokenInData?.name;
-                  const tokenOutData = flattenTokensWithIcon.find((flat) =>
+                  const tokenOutData = [...flattenTokens, ...allOraichainTokens].find((flat) =>
                     [flat.denom, flat.contractAddress].filter(Boolean).includes(action.tokenOut)
                   );
-                  const TokenOutIcon = tokenOutData?.Icon;
+                  const TokenOutIcon = tokenOutData?.icon;
                   const symbolOut = tokenOutData?.name;
 
                   const hasTypeConvert = actions.find((act) => act.type === 'Convert');
