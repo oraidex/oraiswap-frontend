@@ -47,7 +47,7 @@ const Bidding = ({ openExplainModal, isEnd, round, isStarted, isCurrentRound, ba
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
   const loadOraichainToken = useLoadOraichainTokens();
-  const balance = amounts['oraix'];
+  const balance = amounts['cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:ORAIX'];
   const ORAIX_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'oraidex');
   const USDC_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'usd-coin');
 

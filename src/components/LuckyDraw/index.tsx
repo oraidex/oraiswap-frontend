@@ -71,7 +71,7 @@ const LuckyDraw: FC<{}> = () => {
 
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const loadOraichainToken = useLoadOraichainTokens();
-  const balance = amounts['oraix'];
+  const balance = amounts['cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:ORAIX'];
 
   const { spinConfig } = useLuckyDrawConfig();
   const { fee = LUCKY_DRAW_FEE, feeDenom = ORAIX_CONTRACT, feeToken } = spinConfig || {};

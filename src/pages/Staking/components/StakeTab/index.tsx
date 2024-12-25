@@ -18,8 +18,7 @@ const StakeTab = () => {
   const [address] = useConfigReducer('address');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const loadOraichainToken = useLoadOraichainTokens();
-
-  const balance = amounts['oraix'];
+  const balance = amounts['cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:ORAIX'];
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState<boolean>(false);
 
