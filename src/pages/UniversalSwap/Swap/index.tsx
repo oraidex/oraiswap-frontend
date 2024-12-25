@@ -86,6 +86,7 @@ import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
 import ModalConfirmUnverifiedToken from 'components/Modals/ModalConfirmUnverifiedToken/ModalConfirmUnverifiedToken';
+import { set } from 'lodash';
 
 const cx = cn.bind(styles);
 
@@ -142,7 +143,6 @@ const SwapComponent: React.FC<{
   // loading state
   const [swapLoading, setSwapLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
-
   const {
     originalFromToken,
     originalToToken,
