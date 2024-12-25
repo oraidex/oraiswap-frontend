@@ -70,7 +70,9 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInacti
   }, [lpTokenInfoData, myLpBalance, poolDetail.info]);
 
   const totalBondAmount = BigInt(totalRewardInfoData?.reward_infos[0]?.bond_amount || '0');
-  const totalBondAmountInUsdt = BigInt(Math.trunc(lpBalance.lpPrice ? Number(totalBondAmount) * lpBalance.lpPrice : 0));
+  const totalBondAmountInUsdt = BigInt(
+    Math.trunc(lpBalance.lpPrice ? Number(totalBondAmount || 0) * lpBalance.lpPrice : 0)
+  );
 
   const thirdType = 'secondary-sm';
   const secondaryType = 'third-sm';
@@ -156,7 +158,12 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInacti
           >
             Unstake LP
           </Button>
-          <Button type={thirdType} onClick={() => setModal('stake')} icon={<StakingIcon />} disabled={isInactive || !canStakeLP}>
+          <Button
+            type={thirdType}
+            onClick={() => setModal('stake')}
+            icon={<StakingIcon />}
+            disabled={isInactive || !canStakeLP}
+          >
             Stake LP
           </Button>
         </div>
