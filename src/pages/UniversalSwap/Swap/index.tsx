@@ -136,6 +136,9 @@ const SwapComponent: React.FC<{
   const [isConfirmTokenFrom, setIsConfirmTokenFrom] = useState<ConfirmUnverifiedToken>('init');
   const [isConfirmTokenTo, setIsConfirmTokenTo] = useState<ConfirmUnverifiedToken>('init');
 
+  const [isStatusTokenFrom, setIsConfirmStatusTokenFrom] = useState<boolean>(false);
+  const [isStatusTokenTo, setIsConfirmStatusTokenTo] = useState<boolean>(false);
+
   // value state
   const [coe, setCoe] = useState(0);
 
@@ -214,7 +217,7 @@ const SwapComponent: React.FC<{
     } else {
       setIsConfirmTokenFrom('init');
     }
-  }, [originalFromToken]);
+  }, [originalFromToken, isStatusTokenFrom]);
 
   useEffect(() => {
     if (!originalToToken.isVerified) {
@@ -222,7 +225,7 @@ const SwapComponent: React.FC<{
     } else {
       setIsConfirmTokenTo('init');
     }
-  }, [originalToToken]);
+  }, [originalToToken, isStatusTokenTo]);
 
   const onChangeFromAmount = (amount: number | undefined) => {
     if (!amount) {
@@ -499,6 +502,13 @@ const SwapComponent: React.FC<{
     let setSelectChain = setSelectChainTo;
     let setIsSelect = setIsSelectTokenTo;
     let tokenDenomSwap = fromTokenDenomSwap;
+
+    if (isFrom) {
+      isConfirmTokenFrom !== 'confirmed' && setIsConfirmStatusTokenFrom(!isStatusTokenFrom);
+    } else {
+      isConfirmTokenTo !== 'confirmed' && setIsConfirmStatusTokenTo(!isStatusTokenTo);
+    }
+
     if (isFrom) {
       setSelectChain = setSelectChainFrom;
       setIsSelect = setIsSelectTokenFrom;
@@ -508,6 +518,7 @@ const SwapComponent: React.FC<{
     if (token.denom === tokenDenomSwap) {
       setFromTokenDenom(toTokenDenomSwap);
       setToTokenDenom(fromTokenDenomSwap);
+
       setSelectChainFrom(selectChainTo);
       setSelectChainTo(selectChainFrom);
 
