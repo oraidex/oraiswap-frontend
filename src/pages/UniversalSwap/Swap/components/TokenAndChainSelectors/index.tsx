@@ -37,26 +37,30 @@ const TokenAndChainSelectors = ({
 
   return (
     <div ref={ref}>
-      <SelectToken
-        setIsSelectToken={setIsSelectTokenTo}
-        amounts={amounts}
-        prices={prices}
-        handleChangeToken={(token) => handleChangeToken(token, 'to')}
-        items={filteredToTokens}
-        theme={theme}
-        selectChain={selectChainTo}
-        isSelectToken={isSelectTokenTo}
-      />
-      <SelectToken
-        setIsSelectToken={setIsSelectTokenFrom}
-        amounts={amounts}
-        prices={prices}
-        theme={theme}
-        selectChain={selectChainFrom}
-        items={filteredFromTokens}
-        handleChangeToken={(token) => handleChangeToken(token, 'from')}
-        isSelectToken={isSelectTokenFrom}
-      />
+      {isSelectTokenTo && (
+        <SelectToken
+          setIsSelectToken={setIsSelectTokenTo}
+          amounts={amounts}
+          prices={prices}
+          handleChangeToken={(token) => handleChangeToken(token, 'to')}
+          items={filteredToTokens}
+          theme={theme}
+          selectChain={selectChainTo}
+          isSelectToken={isSelectTokenTo}
+        />
+      )}
+      {isSelectTokenFrom && (
+        <SelectToken
+          setIsSelectToken={setIsSelectTokenFrom}
+          amounts={amounts}
+          prices={prices}
+          theme={theme}
+          selectChain={selectChainFrom}
+          items={filteredFromTokens}
+          handleChangeToken={(token) => handleChangeToken(token, 'from')}
+          isSelectToken={isSelectTokenFrom}
+        />
+      )}
       <SelectChain
         filterChainId={supportedChain}
         setIsSelectToken={setIsSelectChainTo}

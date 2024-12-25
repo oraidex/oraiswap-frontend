@@ -17,18 +17,17 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateLpPools } from 'reducer/token';
+import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
 import styles from './PoolDetail.module.scss';
 import { AddLiquidityModal } from './components/AddLiquidityModal';
 import { Earning } from './components/Earning';
 import { MyPoolInfo } from './components/MyPoolInfo/MyPoolInfo';
 import { OverviewPool } from './components/OverviewPool';
+import TransactionHistory from './components/TransactionHistory';
 import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools, useGetPriceChange } from './hooks';
 import { useGetLpBalance } from './hooks/useGetLpBalance';
 import { useGetPairInfo } from './hooks/useGetPairInfo';
-import TransactionHistory from './components/TransactionHistory';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { RootState } from 'store/configure';
 
 const PoolDetail: React.FC = () => {
   const theme = useTheme();
@@ -36,13 +35,14 @@ const PoolDetail: React.FC = () => {
   let { poolUrl } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [address] = useConfigReducer('address');
   const poolDetailData = useGetPoolDetail({ pairDenoms: poolUrl });
   const loadTokenAmounts = useLoadTokens();
   const setCachedLpPools = (payload: LpPoolDetails) => dispatch(updateLpPools(payload));
   const pools = useGetPools();
   const lpAddresses = pools.map((pool) => pool.liquidityAddr);
-  const { refetchPairAmountInfo, refetchLpTokenInfoData } = useGetPairInfo(poolDetailData);
+  const { refetchPairAmountInfo, refetchLpTokenInfoData, pairAmountInfoData } = useGetPairInfo(poolDetailData);
   const queryClient = useQueryClient();
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
   const [ratioOraiBtc, setRatioOraiBtc] = useState(0);
@@ -51,8 +51,7 @@ const PoolDetail: React.FC = () => {
   const lpTokenBalance = BigInt(lpBalanceInfoData?.balance || '0');
 
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
-
-
+  console.log({ pairAmountInfoData });
   useEffect(() => {
     refetchAllLpPools();
   }, [lpAddresses]);
@@ -168,8 +167,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  <img src={BaseTokenIcon} alt="icon" width={30} height={30} />
-                  <img src={QuoteTokenIcon} alt="icon" width={30} height={30} />
+                  <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="icon" width={30} height={30} />
+                  <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} alt="icon" width={30} height={30} />
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} /{' '}
@@ -185,17 +184,23 @@ const PoolDetail: React.FC = () => {
                 ? `1 ${baseToken?.name} = ${numberWithCommas(1 / (ratioOraiBtc || 1), undefined, {
                     maximumFractionDigits: 6
                   })}`
-                : `1 ${baseToken?.name} = ${numberWithCommas(priceChange?.price || 0, undefined, {
-                    maximumFractionDigits: 6
-                  })}`}
+                : `1 ${baseToken?.name} = ${numberWithCommas(
+                    Number(pairAmountInfoData?.token2Amount) / Number(pairAmountInfoData?.token1Amount) || 0,
+                    undefined,
+                    {
+                      maximumFractionDigits: 6
+                    }
+                  )}`}
               {/* TODO: remove after pool close */} {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name}
               {isMobileMode ? <br /> : <div className={styles.divider}>|</div>}1{' '}
               {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name} ={' '}
               {ratioOraiBtc
                 ? `${numberWithCommas(ratioOraiBtc || 0, undefined, { maximumFractionDigits: 6 })} ${baseToken?.name}`
-                : `${numberWithCommas(1 / (priceChange?.price || 1) || 0, undefined, { maximumFractionDigits: 6 })} ${
-                    baseToken?.name
-                  }`}
+                : `${numberWithCommas(
+                    Number(pairAmountInfoData?.token1Amount) / Number(pairAmountInfoData?.token2Amount) || 0,
+                    undefined,
+                    { maximumFractionDigits: 6 }
+                  )} ${baseToken?.name}`}
             </div>
           </div>
           <div className={styles.addPosition}>
