@@ -12,7 +12,8 @@ import {
   OSMOSIS_ROUTER_CONTRACT,
   toAmount,
   toDisplay,
-  TokenItemType
+  TokenItemType,
+  TON_CONTRACT
 } from '@oraichain/oraidex-common';
 import { buildUniversalSwapMemo, SwapAndAction, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { BridgeAdapter, JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
@@ -37,7 +38,7 @@ import { RootState } from 'store/configure';
 import useGetFee from './useGetFee';
 import useGetStateData from './useGetStateData';
 import { chainInfos, cosmosChains, network, oraichainTokensWithIcon, tonTokens } from 'initCommon';
-import { CosmosChainId, TON_ZERO_ADDRESS } from '@oraichain/common';
+import { CosmosChainId } from '@oraichain/common';
 
 const FWD_AMOUNT = toNano(0.15);
 const TON_MESSAGE_VALID_UNTIL = 100000;
@@ -83,7 +84,7 @@ const useTonBridgeHandler = ({
   });
 
   useEffect(() => {
-    if (token?.chainId === TonChainId && token?.contractAddress === TON_ZERO_ADDRESS) {
+    if (token?.chainId === TonChainId && token?.contractAddress === TON_CONTRACT) {
       setDeductNativeAmount(BRIDGE_TON_TO_ORAI_MINIMUM_GAS);
       return;
     }
@@ -101,7 +102,7 @@ const useTonBridgeHandler = ({
         const client = new TonClient({
           endpoint
         });
-        if (token?.contractAddress === TON_ZERO_ADDRESS) {
+        if (token?.contractAddress === TON_CONTRACT) {
           setDeductNativeAmount(BRIDGE_TON_TO_ORAI_MINIMUM_GAS);
           setTokenInfo({
             jettonWalletAddress: ''
@@ -132,7 +133,7 @@ const useTonBridgeHandler = ({
       });
       const bridgeAdapter = TonInteractionContract[TonNetwork.Mainnet].bridgeAdapter;
 
-      if (token.contractAddress === TON_ZERO_ADDRESS) {
+      if (token.contractAddress === TON_CONTRACT) {
         const balance = await client.getBalance(Address.parse(bridgeAdapter));
 
         return {
@@ -300,7 +301,7 @@ const useTonBridgeHandler = ({
       }
       const bridgeAdapterAddress = Address.parse(TonInteractionContract[TonNetwork.Mainnet].bridgeAdapter);
       const fmtAmount = new BigDecimal(10).pow(token.decimals || token['coinDecimals']).mul(amount);
-      const isNativeTon: boolean = token.contractAddress === TON_ZERO_ADDRESS;
+      const isNativeTon: boolean = token.contractAddress === TON_CONTRACT;
       const toAddress: string = isNativeTon
         ? bridgeAdapterAddress.toString()
         : tokenInfo.jettonWalletAddress?.toString();

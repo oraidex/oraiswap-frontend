@@ -15,7 +15,7 @@ import {
 } from 'initCommon';
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
-import { COSMOS_CHAIN_ID_COMMON } from '@oraichain/oraidex-common';
+import { COSMOS_CHAIN_ID_COMMON, TON_CONTRACT } from '@oraichain/oraidex-common';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import {
@@ -44,7 +44,6 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { Address, TonClient } from '@ton/ton';
 import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
-import { TON_ZERO_ADDRESS } from '@oraichain/common';
 import { store } from 'store/configure';
 
 export type LoadTokenParams = {
@@ -73,12 +72,7 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
         amountDetails[t.denom] = '0';
       });
 
-    const storage = store.getState();
-    const allOraichainTokens = storage.token.allOraichainTokens;
-    const allOraichainTokensMap = Object.fromEntries(allOraichainTokens.map((c) => [c.denom, c]));
-    const tokensAmount = amountAll
-      .filter((coin) => allOraichainTokensMap[coin.denom])
-      .map((coin) => [coin.denom, coin.amount]);
+    const tokensAmount = amountAll.map((coin) => [coin.denom, coin.amount]);
     Object.assign(amountDetails, Object.fromEntries(tokensAmount));
 
     dispatch(updateAmounts(amountDetails));
@@ -115,9 +109,7 @@ async function loadTokens(
         timer[oraiAddress] = setTimeout(async () => {
           await Promise.all([
             loadTokensCosmos(dispatch, kawaiiAddress, oraiAddress),
-            loadCw20Balance(dispatch, oraiAddress),
-            // different cointype but also require keplr connected by checking oraiAddress
-            loadKawaiiSubnetAmount(dispatch, kawaiiAddress)
+            loadCw20Balance(dispatch, oraiAddress)
           ]);
         }, 2000);
       }
@@ -126,7 +118,11 @@ async function loadTokens(
     if (metamaskAddress) {
       clearTimeout(timer[metamaskAddress]);
       timer[metamaskAddress] = setTimeout(() => {
-        loadEvmAmounts(dispatch, metamaskAddress, evmChains);
+        loadEvmAmounts(
+          dispatch,
+          metamaskAddress,
+          evmChains.filter((evm) => evm.chainId !== '0x2b6653dc')
+        );
       }, 2000);
     }
 
@@ -184,6 +180,7 @@ async function loadTokensCosmos(dispatch: Dispatch, kwtAddress: string, oraiAddr
       // TODO: ignore oraibtc
       chainInfo.chainId !== ('oraibtc-mainnet-1' as string)
   );
+
   for (const chainInfo of cosmosInfos) {
     const { cosmosAddress } = genAddressCosmos(chainInfo, kwtAddress, oraiAddress);
     if (!cosmosAddress) continue;
@@ -421,18 +418,6 @@ async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: Cu
   }
 }
 
-async function loadKawaiiSubnetAmount(dispatch: Dispatch, kwtAddress: string) {
-  if (!kwtAddress) return;
-  const kawaiiInfo = chainInfos.find((c) => c.chainId === 'kawaii_6886-1');
-  loadNativeBalance(dispatch, kwtAddress, kawaiiInfo);
-
-  const kwtSubnetAddress = getEvmAddress(kwtAddress);
-  const kawaiiEvmInfo = chainInfos.find((c) => c.chainId === '0x1ae6');
-  let amountDetails = Object.fromEntries(await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo));
-  // update amounts
-  dispatch(updateAmounts(amountDetails));
-}
-
 const loadBalanceByToken = async (dispatch: Dispatch, addressTon: string, addressToken?: string) => {
   try {
     // get the decentralized RPC endpoint
@@ -440,7 +425,7 @@ const loadBalanceByToken = async (dispatch: Dispatch, addressTon: string, addres
     const client = new TonClient({
       endpoint
     });
-    if (addressToken === TON_ZERO_ADDRESS) {
+    if (addressToken === TON_CONTRACT) {
       const balance = await client.getBalance(Address.parse(addressTon));
 
       return { ton: balance || '0' };
@@ -477,7 +462,7 @@ const loadAllBalanceTonToken = async (dispatch: Dispatch, tonAddress: string, li
 
   const fullData = await Promise.all(
     (allTokens || []).map(async (item) => {
-      if (item.contractAddress === TON_ZERO_ADDRESS) {
+      if (item.contractAddress === TON_CONTRACT) {
         // native token: TON
         const balance = await client.getBalance(Address.parse(tonAddress));
 
