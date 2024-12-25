@@ -47,9 +47,30 @@ export const fetchLpPoolsFromContract = async (
       }
     })
   }));
-  const res = await multicall.aggregate({
-    queries
+
+  // divide queries into chunks of 30
+  const chunkSize = 30;
+  const chunkedQueries = Array.from({ length: Math.ceil(queries.length / chunkSize) }, (_, i) =>
+    queries.slice(i * chunkSize, i * chunkSize + chunkSize)
+  );
+
+  const res2 = await Promise.all(
+    chunkedQueries.map(async (chunk) => {
+      const res = await multicall.aggregate({
+        queries: chunk
+      });
+      return res;
+    })
+  );
+
+  const res = res2.reduce((acc, cur) => {
+    acc.return_data.push(...cur.return_data);
+    return acc;
   });
+
+  // const res = await multicall.aggregate({
+  //   queries
+  // });
   return calculateLpPoolsV3(lpAddresses, res);
 };
 
