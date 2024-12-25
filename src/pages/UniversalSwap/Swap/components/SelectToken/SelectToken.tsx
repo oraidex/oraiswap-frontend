@@ -81,6 +81,7 @@ export default function SelectToken({
       : items;
 
   const listItems = checkedItems
+    .fitler(Boolean)
     .filter(
       (item) =>
         (textChain ? item.chainId === textChain : true) &&

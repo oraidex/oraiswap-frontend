@@ -211,7 +211,6 @@ const SwapComponent: React.FC<{
     if (!originalFromToken.isVerified) {
       setIsConfirmTokenFrom('pending');
     } else {
-      console.log('initttt from');
       setIsConfirmTokenFrom('init');
     }
   }, [originalFromToken]);
