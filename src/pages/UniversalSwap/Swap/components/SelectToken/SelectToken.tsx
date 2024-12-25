@@ -201,7 +201,7 @@ export default function SelectToken({
                   </div>
                   <div className={styles.selectTokenItemRight}>
                     <div className={styles.selectTokenItemTokenBalance}>{balance} </div>
-                    <div className={styles.selectTokenItemTokenUsd}>{formatDisplayUsdt(usd)}</div>
+                    <div className={styles.selectTokenItemTokenUsd}>{token.coinGeckoId && formatDisplayUsdt(usd)}</div>
                   </div>
                 </div>
               );
