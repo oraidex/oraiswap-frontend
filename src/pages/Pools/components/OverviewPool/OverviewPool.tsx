@@ -120,7 +120,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0'), false, token1?.decimals)}
+                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals, 0), false, token1?.decimals)}
                 </span>
                 <img src={BaseTokenIcon} alt="" />
                 <span className={styles.denom}>{reduceString(token1Denom, 7, 6)}</span>
@@ -136,7 +136,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0'), false, token2?.decimals)}
+                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals, 0), false, token2?.decimals)}
                 </span>
                 <img src={QuoteTokenIcon} alt="" />
                 <span className={styles.denom}>{reduceString(token2Denom, 7, 6)}</span>
