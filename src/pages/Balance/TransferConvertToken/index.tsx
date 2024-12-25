@@ -507,10 +507,10 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             btcChains.find((chain) => chain.chainId !== token.chainId)
           ) {
             const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
-            // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
+            const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
             const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
             const isDisabled =
-              // isSolBridge ||
+              isSolBridge ||
               isBridgeBitcoin ||
               transferLoading ||
               !addressTransfer ||
