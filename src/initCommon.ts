@@ -8,8 +8,7 @@ export const initializeOraidexCommon = async (dispatch: Dispatch<AnyAction>, all
   const oraidexCommon = await OraidexCommon.load();
   const oraichainTokens = oraidexCommon.oraichainTokens;
   const otherChainTokens = oraidexCommon.otherChainTokens;
-  console.log({ oraichainTokens: oraichainTokens.length, allOraichainTokens: allOraichainTokens.length });
-  if (oraichainTokens.length > allOraichainTokens.length) {
+  if (oraichainTokens.length > (allOraichainTokens || []).length) {
     dispatch(updateAllOraichainTokens(oraichainTokens));
   }
   if (otherChainTokens.length > 0) {

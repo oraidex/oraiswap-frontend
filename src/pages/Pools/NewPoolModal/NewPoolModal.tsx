@@ -40,8 +40,8 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
   const { allOraichainTokens, addedTokens } = useSelector((state: RootState) => state.token);
-  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>([...oraichainTokens, ...addedTokens]);
-  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>([...oraichainTokens, ...addedTokens]);
+  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>([...oraichainTokens, ...(addedTokens || [])]);
+  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>([...oraichainTokens, ...(addedTokens || [])]);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -49,8 +49,8 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const theme = useTheme();
   const [walletAddress] = useConfigReducer('address');
 
-  const tokenObj1 = allOraichainTokens.find((token) => token?.denom === token1);
-  const tokenObj2 = allOraichainTokens.find((token) => token?.denom === token2);
+  const tokenObj1 = (allOraichainTokens || []).find((token) => token?.denom === token1);
+  const tokenObj2 = (allOraichainTokens || []).find((token) => token?.denom === token2);
 
   const { data: token1InfoData } = useQuery(['token-info', token1], () => fetchTokenInfo(tokenObj1!), {
     enabled: !!tokenObj1
@@ -63,9 +63,9 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const token2Balance = BigInt(amounts[tokenObj2?.denom] ?? '0');
 
   useEffect(() => {
-    setListToken1Option([...oraichainTokens, ...addedTokens]);
-    setListToken2Option([...oraichainTokens, ...addedTokens]);
-  }, [oraichainTokens.length, addedTokens.length]);
+    setListToken1Option([...oraichainTokens, ...(addedTokens || [])]);
+    setListToken2Option([...oraichainTokens, ...(addedTokens || [])]);
+  }, [oraichainTokens.length, (addedTokens || []).length]);
 
   // TODO: ICON CREATE POOL V2
   const Token1Icon = tokenObj1?.icon;

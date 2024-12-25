@@ -33,7 +33,7 @@ const ModalConfirmUnverifiedToken: React.FC<{
   }, [token]);
 
   const handleConfirmation = () => {
-    const isTokenAdded = addedTokens.find((addedToken) => addedToken.denom === token.denom);
+    const isTokenAdded = (addedTokens || []).find((addedToken) => addedToken.denom === token.denom);
     if (!isTokenAdded) dispatch(updateAddedTokens([token]));
     handleConfirm();
   };

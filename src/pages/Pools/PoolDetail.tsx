@@ -50,7 +50,7 @@ const PoolDetail: React.FC = () => {
   const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
   const lpTokenBalance = BigInt(lpBalanceInfoData?.balance || '0');
 
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   console.log({ pairAmountInfoData });
   useEffect(() => {
     refetchAllLpPools();
