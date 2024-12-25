@@ -376,8 +376,8 @@ export const findDefaultToToken = (from: TokenItemType) => {
 
   const storage = store.getState();
   const allTokens = [
-    ...storage.token.allOraichainTokens,
-    ...storage.token.allOtherChainTokens,
+    ...(storage.token.allOraichainTokens || []),
+    ...(storage.token.allOtherChainTokens || []),
   ]
 
   const defaultToken = allTokens.find((t) => {

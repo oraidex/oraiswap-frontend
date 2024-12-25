@@ -773,7 +773,7 @@ export function simulateIncentiveAprPosition(
   );
 
   const storage = store.getState();
-  const allOraichainTokens = storage.token.allOraichainTokens;
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
   const tokenX = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
   const tokenY = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
 

@@ -39,7 +39,7 @@ export const getTokenInfo = (address, isLight) => {
 
 export const getIconPoolData = async (tokenX: string, tokenY: string, isLight: boolean) => {
   const storage = store.getState();
-  const allOraichainTokens = storage.token.allOraichainTokens;
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
   const tokenXinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenX));
   const tokenYinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenY));
 

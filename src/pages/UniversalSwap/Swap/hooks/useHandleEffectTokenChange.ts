@@ -34,7 +34,7 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   const [initAddressTransfer, setInitAddressTransfer] = useState('');
 
   const onchainTokens = useOnchainTokensReducer('tokens');
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   // get token on oraichain to simulate swap amount.
   const originalFromToken =

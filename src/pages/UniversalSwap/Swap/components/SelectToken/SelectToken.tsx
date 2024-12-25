@@ -61,7 +61,7 @@ export default function SelectToken({
   const isLightTheme = theme === 'light';
   const [tokenRank = {}] = useConfigReducer('tokenRank');
   const [address] = useConfigReducer('address');
-  const { addedTokens } = useSelector((state: RootState) => state.token);
+  const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -201,7 +201,7 @@ export default function SelectToken({
                   </div>
                   <div className={styles.selectTokenItemRight}>
                     <div className={styles.selectTokenItemTokenBalance}>{balance} </div>
-                    <div className={styles.selectTokenItemTokenUsd}>{formatDisplayUsdt(usd)}</div>
+                    <div className={styles.selectTokenItemTokenUsd}>{token.coinGeckoId && formatDisplayUsdt(usd)}</div>
                   </div>
                 </div>
               );

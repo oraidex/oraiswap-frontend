@@ -106,7 +106,7 @@ const SwapComponent: React.FC<{
   const isLightMode = theme === 'light';
   const currentAddressManagementStep = useSelector(selectCurrentAddressBookStep);
   const amounts = useSelector((state: RootState) => state.token.amounts);
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   const dispatch = useDispatch();
 
   const [event] = useTemporaryConfigReducer('event');

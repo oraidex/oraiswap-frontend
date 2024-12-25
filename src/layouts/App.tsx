@@ -52,7 +52,7 @@ const App = () => {
   const mobileMode = isMobile();
   const { tron, evm } = walletByNetworks;
   const ethOwallet = window.eth_owallet;
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   const dispatch = useDispatch();
   const solanaWallet = useWallet();
 
