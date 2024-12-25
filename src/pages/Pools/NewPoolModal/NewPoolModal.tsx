@@ -39,9 +39,9 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [isSelectingToken, setIsSelectingToken] = useState<'token1' | 'token2' | null>(null);
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
-  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>(allOraichainTokens);
-  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>(allOraichainTokens);
+  const { allOraichainTokens, addedTokens } = useSelector((state: RootState) => state.token);
+  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>([...oraichainTokens, ...addedTokens]);
+  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>([...oraichainTokens, ...addedTokens]);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -63,9 +63,9 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const token2Balance = BigInt(amounts[tokenObj2?.denom] ?? '0');
 
   useEffect(() => {
-    setListToken1Option([...allOraichainTokens]);
-    setListToken2Option([...allOraichainTokens]);
-  }, [allOraichainTokens.length]);
+    setListToken1Option([...oraichainTokens, ...addedTokens]);
+    setListToken2Option([...oraichainTokens, ...addedTokens]);
+  }, [oraichainTokens.length, addedTokens.length]);
 
   // TODO: ICON CREATE POOL V2
   const Token1Icon = tokenObj1?.icon;

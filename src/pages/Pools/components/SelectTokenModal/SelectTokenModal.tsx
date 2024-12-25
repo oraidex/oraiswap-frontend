@@ -43,7 +43,8 @@ export const SelectTokenModal: FC<ModalProps> = ({ isOpen, close, open, items, s
       dispatch<any>(
         inspectToken({
           tokenId: textSearch,
-          address
+          address,
+          isUserAdded: true
         })
       );
     }
