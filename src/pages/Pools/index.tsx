@@ -45,7 +45,7 @@ const Pools: React.FC<{}> = () => {
   const lpAddresses = pools.map((pool) => pool.liquidityAddr);
   useFetchCacheRewardAssetForAllPools(lpAddresses);
   useFetchLpPoolsV3(lpAddresses);
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   const { myStakes } = useGetMyStake({
     stakerAddress: address

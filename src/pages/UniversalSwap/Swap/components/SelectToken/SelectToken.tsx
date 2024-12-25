@@ -61,7 +61,7 @@ export default function SelectToken({
   const isLightTheme = theme === 'light';
   const [tokenRank = {}] = useConfigReducer('tokenRank');
   const [address] = useConfigReducer('address');
-  const { addedTokens } = useSelector((state: RootState) => state.token);
+  const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);
   const dispatch = useDispatch();
 
   useEffect(() => {

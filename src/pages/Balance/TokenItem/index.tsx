@@ -45,8 +45,8 @@ const TokenItem: React.FC<TokenItemProps> = ({
   setToNetworkChainId
 }) => {
   // TODO: chain tokensIcon to tokensWithIcon
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
-  const allOtherChainTokens = useSelector((state: RootState) => state.token.allOtherChainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+  const allOtherChainTokens = useSelector((state: RootState) => state.token.allOtherChainTokens || []);
   let tokenIcon = [...allOraichainTokens, ...allOtherChainTokens].find((tok) => tok.denom === token.denom);
   // console.log('tokenIcon', tokenIcon);
 
