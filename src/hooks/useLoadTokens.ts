@@ -15,7 +15,7 @@ import {
 } from 'initCommon';
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
-import { COSMOS_CHAIN_ID_COMMON } from '@oraichain/oraidex-common';
+import { COSMOS_CHAIN_ID_COMMON, TON_CONTRACT } from '@oraichain/oraidex-common';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import {
@@ -44,7 +44,6 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { Address, TonClient } from '@ton/ton';
 import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
-import { TON_ZERO_ADDRESS } from '@oraichain/common';
 import { store } from 'store/configure';
 
 export type LoadTokenParams = {
@@ -119,7 +118,11 @@ async function loadTokens(
     if (metamaskAddress) {
       clearTimeout(timer[metamaskAddress]);
       timer[metamaskAddress] = setTimeout(() => {
-        loadEvmAmounts(dispatch, metamaskAddress, evmChains);
+        loadEvmAmounts(
+          dispatch,
+          metamaskAddress,
+          evmChains.filter((evm) => evm.chainId !== '0x2b6653dc')
+        );
       }, 2000);
     }
 
@@ -422,7 +425,7 @@ const loadBalanceByToken = async (dispatch: Dispatch, addressTon: string, addres
     const client = new TonClient({
       endpoint
     });
-    if (addressToken === TON_ZERO_ADDRESS) {
+    if (addressToken === TON_CONTRACT) {
       const balance = await client.getBalance(Address.parse(addressTon));
 
       return { ton: balance || '0' };
@@ -459,7 +462,7 @@ const loadAllBalanceTonToken = async (dispatch: Dispatch, tonAddress: string, li
 
   const fullData = await Promise.all(
     (allTokens || []).map(async (item) => {
-      if (item.contractAddress === TON_ZERO_ADDRESS) {
+      if (item.contractAddress === TON_CONTRACT) {
         // native token: TON
         const balance = await client.getBalance(Address.parse(tonAddress));
 
