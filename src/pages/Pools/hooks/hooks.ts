@@ -212,7 +212,7 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
     refetchOnWindowFocus: true,
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 5,
-    enabled: !!pairDenoms
+    enabled: !!pairDenoms,
   });
 
   const [[token1, token2], setTokens] = useState<[TokenItemType, TokenItemType]>([{}, {}]);

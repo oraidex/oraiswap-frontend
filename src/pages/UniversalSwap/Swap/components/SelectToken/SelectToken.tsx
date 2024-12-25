@@ -194,7 +194,7 @@ export default function SelectToken({
                     <div>
                       <div className={styles.selectTokenItemTokenName}>
                         {token.name || 'UNKNOWN'}
-                        {token.isVerified && <IconVerified />}
+                        <span>{token.isVerified && <IconVerified />}</span>
                       </div>
                       <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>
                     </div>
