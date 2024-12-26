@@ -1,9 +1,9 @@
+import { CW_TON_BRIDGE, TonChainId } from 'context/ton-provider';
+import { tonNetworkMainnet } from 'initCommon';
 import { BigDecimal, TokenItemType } from '@oraichain/oraidex-common';
 import { TonbridgeBridgeClient } from '@oraichain/tonbridge-contracts-sdk';
-import { CW_TON_BRIDGE, TonChainId } from 'context/ton-provider';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useEffect, useState } from 'react';
-import { tonNetworkMainnet } from 'initCommon';
 
 const useGetFee = ({
   token,

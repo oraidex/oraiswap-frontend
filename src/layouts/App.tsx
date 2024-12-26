@@ -6,6 +6,8 @@ import {
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { SolanaWalletProvider } from 'context/solana-content';
 import { ThemeProvider } from 'context/theme-context';
 import { TonNetwork } from 'context/ton-provider';
 import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron } from 'helper';
@@ -32,8 +34,6 @@ import Menu from './Menu';
 import routes from 'routes';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
-import { SolanaWalletProvider } from 'context/solana-content';
-import { useWallet } from '@solana/wallet-adapter-react';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');

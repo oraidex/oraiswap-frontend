@@ -1,4 +1,4 @@
-import { BTC_CONTRACT, fetchRetry, OraiIcon, toDisplay } from '@oraichain/oraidex-common';
+import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
 import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import IconCopyAddress from 'assets/icons/ic_copy_address.svg?react';
@@ -13,6 +13,7 @@ import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useEffect, useState } from 'react';
 import { PoolDetail } from 'types/pool';
 import styles from './OverviewPool.module.scss';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 
 export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail }) => {
   const theme = useTheme();
@@ -30,7 +31,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
 
   const { isCopied, handleCopy, copiedValue } = useCopyClipboard();
 
-  let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
+  let [BaseTokenIcon, QuoteTokenIcon] = [DEFAULT_TOKEN_ICON_URL, DEFAULT_TOKEN_ICON_URL];
   if (token1) BaseTokenIcon = theme === 'light' ? token1.iconLight || token1.icon : token1.icon;
   if (token2) QuoteTokenIcon = theme === 'light' ? token2.iconLight || token2.icon : token2.icon;
 
@@ -85,6 +86,14 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
     }
   }, [poolDetailData]);
 
+  console.log(
+    'asdasd',
+    formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals), false, token2?.decimals),
+    pairAmountInfoData?.token2Amount,
+    token2?.decimals,
+    toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals)
+  );
+
   return (
     <div className={styles.overviewWrapper}>
       <div className={styles.infos}>
@@ -121,7 +130,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
                   {formatNumberKMB(
-                    toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals, 0),
+                    toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals),
                     false,
                     token1?.decimals
                   )}
@@ -144,7 +153,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
                   {formatNumberKMB(
-                    toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals, 0),
+                    toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals),
                     false,
                     token2?.decimals
                   )}

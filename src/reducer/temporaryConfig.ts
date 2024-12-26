@@ -12,7 +12,7 @@ export interface TemporaryConfigState {
   event: EVENT_ENUM;
 }
 
-const initialState: TemporaryConfigState = {
+export const initialState: TemporaryConfigState = {
   customBanner: true,
   event: EVENT_ENUM.christmas
 };

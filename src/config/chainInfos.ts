@@ -1,7 +1,4 @@
-import {
-  TON_ALL_OSMOSIS_CONTRACT,
-  TON_OSMOSIS_CONTRACT,
-} from '@oraichain/oraidex-common';
+import { TON_ALL_OSMOSIS_CONTRACT, TON_OSMOSIS_CONTRACT } from '@oraichain/oraidex-common';
 
 import TonIcon from 'assets/icons/ton.svg?react';
 import { TonChainId } from 'context/ton-provider';

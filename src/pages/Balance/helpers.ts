@@ -20,7 +20,7 @@ import {
 } from '@oraichain/oraidex-common';
 import { feeEstimate, getNetworkGasPrice } from 'helper';
 
-import { CosmosChainId } from "@oraichain/common";
+import { CosmosChainId } from '@oraichain/common';
 import { CwIcs20LatestClient } from '@oraichain/common-contracts-sdk';
 import { TransferBackMsg } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { OraiswapTokenClient } from '@oraichain/oraidex-contracts-sdk';
@@ -28,10 +28,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BitcoinUnit } from 'bitcoin-units';
 import { opcodes, script } from 'bitcoinjs-lib';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import {
-  bitcoinLcd,
-  bitcoinLcdV2
-} from 'helper/constants';
+import { bitcoinLcd, bitcoinLcdV2 } from 'helper/constants';
 import { chainInfos, flattenTokens, kawaiiTokens, network, tokenMap } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import KawaiiverseJs from 'libs/kawaiiversejs';
@@ -41,7 +38,13 @@ import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMov
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 import { store } from 'store/configure';
-import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
+import { config } from 'libs/nomic/config';
+import QRCode from 'qrcode';
+import { useEffect, useState } from 'react';
+import { OraiBtcSubnetChain } from 'libs/nomic/models/ibc-chain';
+import { fromBech32, toBech32 } from '@cosmjs/encoding';
+import { getAccount, getMint } from '@solana/spl-token';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
@@ -375,10 +378,7 @@ export const findDefaultToToken = (from: TokenItemType) => {
   if (!from.bridgeTo) return;
 
   const storage = store.getState();
-  const allTokens = [
-    ...(storage.token.allOraichainTokens || []),
-    ...(storage.token.allOtherChainTokens || []),
-  ]
+  const allTokens = [...(storage.token.allOraichainTokens || []), ...(storage.token.allOtherChainTokens || [])];
 
   const defaultToken = allTokens.find((t) => {
     const defaultChain = from.bridgeTo[0];

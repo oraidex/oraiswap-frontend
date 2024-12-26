@@ -104,9 +104,9 @@ export const useChartUsdPrice = (
         setCurrentItem({ value: 0, time: 0, volume: 0 });
         onUpdateCurrentItem && onUpdateCurrentItem(0);
       }
-      setIsLoading(false);
     } catch (e) {
       console.log(' ERROR: e', 'background: #FF0000; color:#FFFFFF', e);
+    } finally {
       setIsLoading(false);
     }
   };
