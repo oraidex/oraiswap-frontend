@@ -120,12 +120,16 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals, 0), false, token1?.decimals)}
+                  {formatNumberKMB(
+                    toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals, 0),
+                    false,
+                    token1?.decimals
+                  )}
                 </span>
                 <img src={BaseTokenIcon} alt="" />
 
                 <span className={styles.denom}>
-                  {token1Denom.length < 13 ? token1Denom : reduceString(token1Denom, 7, 6)}
+                  {token1Denom?.length < 13 ? token1Denom : reduceString(token1Denom, 7, 6)}
                 </span>
                 <div className={styles.copyBtn}>
                   {isCopied && copiedValue === token1Denom ? (
@@ -139,11 +143,15 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals, 0), false, token2?.decimals)}
+                  {formatNumberKMB(
+                    toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals, 0),
+                    false,
+                    token2?.decimals
+                  )}
                 </span>
                 <img src={QuoteTokenIcon} alt="" />
                 <span className={styles.denom}>
-                  {token2Denom.length < 13 ? token2Denom : reduceString(token2Denom, 7, 6)}
+                  {token2Denom?.length < 13 ? token2Denom : reduceString(token2Denom, 7, 6)}
                 </span>
                 <div className={styles.copyBtn}>
                   {isCopied && copiedValue === token2Denom ? (
