@@ -326,7 +326,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   </div>
                 </div>
                 {isInitBalances && (
-                  <div>
+                  <div className={cx('row', 'pt-16')}>
                     {/* {isInitBalances && (
                       <div className={cx('header-init')}>
                         <CheckBox
@@ -346,8 +346,9 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                     {isInitBalances &&
                       initBalances.map((item, ind) => {
                         return (
-                          <div key={ind}>
+                          // <div key={ind}>
                             <InitBalancesItems
+                              key={ind}
                               item={item}
                               ind={ind}
                               selectedInitBalances={selectedInitBalances}
@@ -358,7 +359,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                               decimals={DEFAULT_COSMOS_DECIMALS}
                               deleteSelectedItem={deleteSelectedItem}
                             />
-                          </div>
+                          // </div>
                         );
                       })}
 
