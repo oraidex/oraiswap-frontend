@@ -3,7 +3,6 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import { useRef } from 'react';
 import ChartDetail from '../ChartDetailContent';
 import styles from './index.module.scss';
-import { FILTER_DAY, TAB_CHART } from 'reducer/type';
 
 const ModalChart = ({
   title,

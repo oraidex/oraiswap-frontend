@@ -1,30 +1,31 @@
 import { coin, makeStdTx } from '@cosmjs/amino';
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
 import { Decimal } from '@cosmjs/math';
-import { DeliverTxResponse, GasPrice, isDeliverTxFailure } from '@cosmjs/stargate';
+import { DeliverTxResponse, isDeliverTxFailure } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import {
-  CosmosChainId,
   getTokenOnOraichain,
-  NetworkChainId,
   toAmount,
   TokenItemType,
   calculateTimeoutTimestamp,
-  getCosmosGasPrice,
   solChainId,
-  SOLANA_RPC,
   toDisplay,
-  tronToEthAddress,
   MAX_ORAICHAIN_DENOM,
   MAX_SOL_CONTRACT_ADDRESS
 } from '@oraichain/oraidex-common';
+import {
+  chainInfos,
+  flattenTokens,
+  oraidexCommon,
+  oraichainTokens as oraichainTokensCommon,
+  otherChainTokens as otherChainTokenCommon
+} from 'initCommon';
 import { UniversalSwapHandler, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { isMobile } from '@walletconnect/browser-utils';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import RefreshIcon from 'assets/icons/reload.svg?react';
-import { BitcoinUnit } from 'bitcoin-units';
 import classNames from 'classnames';
 import CheckBox from 'components/CheckBox';
 import LoadingBox from 'components/LoadingBox';
@@ -32,8 +33,6 @@ import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
 import SearchInput from 'components/SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { flattenTokens, tokens } from 'config/bridgeTokens';
-import { chainInfos } from 'config/chainInfos';
 import { NomicContext } from 'context/nomic-context';
 import {
   assert,
@@ -58,18 +57,20 @@ import useLoadTokens from 'hooks/useLoadTokens';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import { useGetFeeConfig } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
-import Content from 'layouts/Content';
 import Metamask from 'libs/metamask';
-import { config } from 'libs/nomic/config';
-import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/nomic/models/ibc-chain';
-import { generateError, getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import isEqual from 'lodash/isEqual';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getSubAmountDetails } from 'rest/api';
-import { RootState } from 'store/configure';
+import { RootState, store } from 'store/configure';
 import styles from './Balance.module.scss';
+import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
+import { BitcoinUnit } from 'bitcoin-units';
+import Content from 'layouts/Content';
+import { config } from 'libs/nomic/config';
+import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/nomic/models/ibc-chain';
+import { getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import {
   calculatorTotalFeeBtc,
   convertKwt,
@@ -90,23 +91,21 @@ import TokenItem, { TokenItemProps } from './TokenItem';
 import { TokenItemBtc } from './TokenItem/TokenItemBtc';
 import DepositBtcModalV2 from './DepositBtcModalV2';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
-import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
-import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { MsgTransfer as MsgTransferInjective } from '@injectivelabs/sdk-ts/node_modules/cosmjs-types/ibc/applications/transfer/v1/tx';
-import { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
+import { NetworkChainId } from '@oraichain/common';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { SOL_RELAYER_ADDRESS, Web3SolanaProgramInteraction } from 'program/web3';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
 import { ORAICHAIN_RELAYER_ADDRESS } from 'program/web3';
-
-import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
-import { getAccount, getAssociatedTokenAddress, NATIVE_MINT } from '@solana/spl-token';
-import { BN } from '@coral-xyz/anchor';
+import { PublicKey } from '@solana/web3.js';
+import { NATIVE_MINT } from '@solana/spl-token';
 import { TonChainId } from 'context/ton-provider';
 import useTonBridgeHandler from './hooks/useTonBridgeHandler';
+// import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
+import { tokenInspector } from 'initTokenInspector';
+import { addToOtherChainTokens } from 'reducer/token';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
 interface BalanceProps {}
-
 export const isMaintainBridge = false;
 
 const Balance: React.FC<BalanceProps> = () => {
@@ -192,10 +191,26 @@ const Balance: React.FC<BalanceProps> = () => {
   useGetFeeConfig();
 
   useEffect(() => {
-    if (!tokenUrl) return setTokens(tokens);
-    const _tokenUrl = tokenUrl.toUpperCase();
-    setTokens(tokens.map((childTokens) => childTokens.filter((t) => t.name.includes(_tokenUrl))));
-  }, [tokenUrl]);
+    if (!tokenUrl) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
+
+    // TODO: vuonghuuhung support dynamic bridge orai <-> solana
+    // (async () => {
+    // if (tokenUrl && filterNetworkUI === SolanaNetworkConfig.chainId) {
+    //     const token = await tokenInspector.inspectTokenFromSpecifiedChain({
+    //       tokenId: tokenUrl,
+    //       chainId: filterNetworkUI
+    //     });
+
+    //     dispatch(addToOtherChainTokens([onChainTokenToTokenItem(token)]));
+    //   }
+    // })();
+
+    setTokens(
+      [otherChainTokens, oraichainTokens].map((childTokens) =>
+        childTokens.filter((t) => t.name.includes(tokenUrl.toUpperCase()))
+      )
+    );
+  }, [tokenUrl, filterNetworkUI]);
 
   useEffect(() => {
     initEthereum().catch((error) => {
@@ -593,9 +608,33 @@ const Balance: React.FC<BalanceProps> = () => {
       let newToToken = to;
       if (toNetworkChainId) {
         // ORAICHAIN -> EVM (BSC/ETH/TRON) ( TO: TOKEN ORAIBRIDGE)
-        newToToken = flattenTokens.find(
+        newToToken = [...otherChainTokens, ...oraichainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
+
+        // TODO: vuonghuuhung support dynamic bridge orai <-> solana
+        // if (from.chainId === SolanaNetworkConfig.chainId) {
+        //   newToToken = [...allOraichainTokens, ...allOtherChainTokens].find(
+        //     (flat) =>
+        //       flat.chainId === toNetworkChainId &&
+        //       flat.coinGeckoId === from.coinGeckoId &&
+        //       flat.denom.includes(from.denom)
+        //   );
+        // }
+
+        // if (toNetworkChainId === SolanaNetworkConfig.chainId) {
+        //   console.log('🚀 ~ onClickTransfer ~ toNetworkChainId', toNetworkChainId);
+        //   const subDenom = from.denom.split('/')[2];
+        //   const targetTokenInfo = onChainTokenToTokenItem(
+        //     await tokenInspector.inspectTokenFromSpecifiedChain({
+        //       tokenId: subDenom,
+        //       chainId: toNetworkChainId
+        //     })
+        //   );
+        //   newToToken = targetTokenInfo;
+        // }
+
+        // console.log('🚀 ~ onClickTransfer ~ newToToken', newToToken);
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
@@ -645,15 +684,15 @@ const Balance: React.FC<BalanceProps> = () => {
       // remaining tokens, we override from & to of onClickTransfer on index.tsx of Balance based on the user's token destination choice
       // to is Oraibridge tokens
       // or other token that have same coingeckoId that show in at least 2 chain.
-      const cosmosAddress = await handleCheckAddress(from.cosmosBased ? (from.chainId as CosmosChainId) : 'Oraichain');
+      const cosmosAddress = await handleCheckAddress(from.cosmosBased ? from.chainId : 'Oraichain');
       const latestEvmAddress = await getLatestEvmAddress(toNetworkChainId);
       let amountsBalance = amounts;
       let simulateAmount = toAmount(fromAmount, from.decimals).toString();
 
       const { isSpecialFromCoingecko } = getSpecialCoingecko(from.coinGeckoId, newToToken.coinGeckoId);
       if (isSpecialFromCoingecko && from.chainId === 'Oraichain') {
-        const tokenInfo = getTokenOnOraichain(from.coinGeckoId);
-        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, true);
+        const tokenInfo = getTokenOnOraichain(from.coinGeckoId, oraichainTokens);
+        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, oraichainTokens, true);
         const [nativeAmount, cw20Amount] = await Promise.all([
           window.client.getBalance(oraiAddress, fromTokenInOrai.denom),
           window.client.queryContractSmart(tokenInfo.contractAddress, {
@@ -698,12 +737,14 @@ const Balance: React.FC<BalanceProps> = () => {
           simulatePrice: '1000000'
         },
         {
+          // @ts-ignore
           cosmosWallet: window.Keplr,
           evmWallet: new Metamask(window.tronWebDapp),
           swapOptions: {
             isIbcWasm: false
           }
-        }
+        },
+        oraidexCommon
       );
 
       result = await universalSwapHandler.processUniversalSwap();
@@ -727,6 +768,10 @@ const Balance: React.FC<BalanceProps> = () => {
         return toTotalDisplay(amounts, b) * prices[b.coinGeckoId] - toTotalDisplay(amounts, a) * prices[a.coinGeckoId];
       });
   };
+
+  const listTokens = useMemo(() => {
+    return getFilterTokens(filterNetworkUI);
+  }, [filterNetworkUI, otherChainTokens, oraichainTokens]);
 
   const totalUsd = getTotalUsd(amounts, prices);
 
@@ -770,13 +815,9 @@ const Balance: React.FC<BalanceProps> = () => {
                   <div className={styles.search_flex}>
                     <div className={styles.search_logo}>
                       {theme === 'light' ? (
-                        network.IconLight ? (
-                          <network.IconLight />
-                        ) : (
-                          <network.Icon />
-                        )
+                        <img width={30} height={30} src={network.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                       ) : (
-                        <network.Icon />
+                        <img width={30} height={30} src={network.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                       )}
                     </div>
                     <span className={classNames(styles.search_text, styles[theme])}>{network.chainName}</span>
@@ -821,7 +862,7 @@ const Balance: React.FC<BalanceProps> = () => {
         <LoadingBox loading={loadingRefresh}>
           <div className={styles.tokens}>
             <div className={styles.tokens_form} ref={ref}>
-              {getFilterTokens(filterNetworkUI).map((t: TokenItemType) => {
+              {listTokens.map((t: TokenItemType) => {
                 // check balance cw20
                 let amount = BigInt(amounts[t.denom] ?? 0);
                 let usd = getUsd(amount, t, prices);

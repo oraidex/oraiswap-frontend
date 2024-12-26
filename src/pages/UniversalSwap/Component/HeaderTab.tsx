@@ -1,7 +1,5 @@
 import { isMobile } from '@walletconnect/browser-utils';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
 import cn from 'classnames/bind';
-import { flattenTokensWithIcon } from 'config/chainInfos';
 import { minimize } from 'helper';
 import useTheme from 'hooks/useTheme';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +8,7 @@ import { selectCurrentFromToken, selectCurrentToChain, selectCurrentToToken } fr
 import { FILTER_TIME_CHART, TAB_CHART_SWAP } from 'reducer/type';
 import { ChartTokenType } from '../hooks/useChartUsdPrice';
 import styles from './HeaderTab.module.scss';
+import { flattenTokens } from 'initCommon';
 
 const cx = cn.bind(styles);
 
@@ -131,23 +130,25 @@ export const HeaderTop = ({
   const currentFromToken = useSelector(selectCurrentFromToken);
   const currentToChain = useSelector(selectCurrentToChain);
   const currentToToken = useSelector(selectCurrentToToken);
-
   const mobileMode = isMobile();
-  let [ToTokenIcon, FromTokenIcon] = [DefaultIcon, DefaultIcon];
+  let [ToTokenIcon, FromTokenIcon] = [null, null];
 
   const generateIconTokenByTheme = (token) => {
-    return theme === 'light' ? token.IconLight : token.Icon;
+    return theme === 'light' ? (
+      <img style={{ borderRadius: '100%' }} src={token.iconLight} width={30} height={30} alt="token" />
+    ) : (
+      <img style={{ borderRadius: '100%' }} src={token.icon} alt="token" width={30} height={30} />
+    );
   };
 
   if (currentToToken) {
-    const tokenIcon = flattenTokensWithIcon.find(
-      (tokenWithIcon) => tokenWithIcon.coinGeckoId === currentToToken.coinGeckoId
-    );
-    if (tokenIcon) ToTokenIcon = generateIconTokenByTheme(tokenIcon);
+    ToTokenIcon = generateIconTokenByTheme(currentToToken);
   }
   if (currentFromToken) {
-    const tokenIcon = flattenTokensWithIcon.find(
-      (tokenWithIcon) => tokenWithIcon.coinGeckoId === currentFromToken.coinGeckoId
+    const tokenIcon = flattenTokens.find(
+      (tokenWithIcon) =>
+        tokenWithIcon.contractAddress === currentFromToken.contractAddress ||
+        tokenWithIcon.denom === currentFromToken.denom
     );
     if (tokenIcon) FromTokenIcon = generateIconTokenByTheme(tokenIcon);
   }
@@ -158,26 +159,18 @@ export const HeaderTop = ({
         {showTokenInfo && (
           <div>
             {tab === TAB_CHART_SWAP.TOKEN
-              ? currentToToken &&
-                currentToChain && (
+              ? currentToChain && (
                   <div className={cx('tokenInfo')}>
-                    <div>
-                      <ToTokenIcon />
-                    </div>
+                    {ToTokenIcon}
                     <span>{currentToToken?.name || currentToToken?.denom}</span>
                     <span className={cx('tokenName')}>{currentToChain}</span>
                   </div>
                 )
-              : currentToToken &&
-                currentFromToken && (
+              : currentFromToken && (
                   <div className={cx('tokenInfo')}>
                     <div className={cx('icons')}>
-                      <div className={cx('formIcon')}>
-                        <FromTokenIcon />
-                      </div>
-                      <div className={cx('toIcon')}>
-                        <ToTokenIcon />
-                      </div>
+                      <div className={cx('formIcon')}>{FromTokenIcon}</div>
+                      <div className={cx('toIcon')}>{ToTokenIcon}</div>
                     </div>
                     <span>
                       {currentFromToken?.name || currentFromToken?.denom}/

@@ -1,26 +1,11 @@
 import { CosmWasmClient, fromBinary, SigningCosmWasmClient, toBinary } from '@cosmjs/cosmwasm-stargate';
-import {
-  Tickmap,
-  getMaxTick,
-  getMinTick,
-  PoolKey,
-  LiquidityTick,
-  positionToTick,
-  calculateSqrtPrice,
-  getChunkSize,
-  getLiquidityTicksLimit,
-  getMaxTickmapQuerySize,
-  OraiswapV3Handler,
-  parsePoolKey,
-  calculateAmountDelta
-} from '@oraichain/oraiswap-v3';
-import { network } from 'config/networks';
+import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { AXIOS_THROTTLE_THRESHOLD, AXIOS_TIMEOUT, CoinGeckoId, toDisplay } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
   OraiswapTokenClient,
   OraiswapTokenQueryClient,
-  OraiswapV3Client,
-  OraiswapV3QueryClient
+  OraiswapV3Client
 } from '@oraichain/oraidex-contracts-sdk';
 import {
   ArrayOfAsset,
@@ -32,17 +17,31 @@ import {
   Position,
   Tick
 } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
+import {
+  calculateAmountDelta,
+  calculateSqrtPrice,
+  extractAddress,
+  getChunkSize,
+  getLiquidityTicksLimit,
+  getMaxTick,
+  getMaxTickmapQuerySize,
+  getMinTick,
+  LiquidityTick,
+  OraiswapV3Handler,
+  parsePoolKey,
+  PoolKey,
+  positionToTick,
+  Tickmap
+} from '@oraichain/oraiswap-v3';
+import Axios from 'axios';
+import { retryAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions';
+import { network, oraichainTokens } from 'initCommon';
+
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { TokenDataOnChain } from 'pages/Pool-V3/components/PriceRangePlot/utils';
-import Axios from 'axios';
-import { throttleAdapterEnhancer, retryAdapterEnhancer } from 'axios-extensions';
-import { AXIOS_TIMEOUT, AXIOS_THROTTLE_THRESHOLD, toDisplay } from '@oraichain/oraidex-common';
-import { CoinGeckoId } from '@oraichain/oraidex-common';
-import { oraichainTokens } from '@oraichain/oraidex-common';
 import { getPools } from 'rest/graphClient';
-import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { PoolInfoResponse } from 'types/pool';
+import { store } from 'store/configure';
 
 export const ALL_FEE_TIERS_DATA: FeeTier[] = [
   { fee: 100000000, tick_spacing: 1 },
@@ -656,18 +655,6 @@ function calculateLiquidityForRanges(liquidityChanges: LiquidityTick[], tickRang
   }));
 }
 
-const axios = Axios.create({
-  timeout: AXIOS_TIMEOUT,
-  retryTimes: 3,
-  // cache will be enabled by default in 2 seconds
-  adapter: retryAdapterEnhancer(
-    throttleAdapterEnhancer(Axios.defaults.adapter!, {
-      threshold: AXIOS_THROTTLE_THRESHOLD
-    })
-  ),
-  baseURL: 'https://api-staging.oraidex.io/v1/'
-});
-
 export type PositionAprInfo = {
   swapFee: number;
   incentive: number;
@@ -773,8 +760,10 @@ export function simulateIncentiveAprPosition(
     pool.current_tick_index ? pool.current_tick_index : 0
   );
 
-  const tokenX = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
-  const tokenY = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+  const tokenX = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
+  const tokenY = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
 
   const positionLiquidityUsdX = ((prices[tokenX?.coinGeckoId] ?? 0) * Number(res.x)) / 10 ** tokenX.decimals;
   const positionLiquidityUsdY = ((prices[tokenY?.coinGeckoId] ?? 0) * Number(res.y)) / 10 ** tokenY.decimals;
@@ -904,7 +893,7 @@ export async function fetchPoolAprInfo(
           const token = oraichainTokens.find(
             (token) => extractAddress(token) === parseAssetInfo(incentive.reward_token)
           );
-          return token.denom.toUpperCase();
+          return token.name.toUpperCase();
         })
         .filter((incentive) => incentive !== null),
       swapFee: {

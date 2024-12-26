@@ -3,18 +3,15 @@ import {
   WEBSOCKET_RECONNECT_ATTEMPTS,
   WEBSOCKET_RECONNECT_INTERVAL
 } from '@oraichain/oraidex-common';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { SolanaWalletProvider } from 'context/solana-content';
 import { ThemeProvider } from 'context/theme-context';
 import { TonNetwork } from 'context/ton-provider';
 import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
-import useLoadTokens from 'hooks/useLoadTokens';
-import { useTronEventListener } from 'hooks/useTronLink';
 import useWalletReducer from 'hooks/useWalletReducer';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
@@ -23,14 +20,18 @@ import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
 import { useLoadWalletsTon } from 'pages/Balance/hooks/useLoadWalletsTon';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
 import { setAddressBookList } from 'reducer/addressBook';
-import routes from 'routes';
-import { persistor } from 'store/configure';
+import { persistor, RootState } from 'store/configure';
 import { ADDRESS_BOOK_KEY_BACKUP, PERSIST_VER } from 'store/constants';
 import './index.scss';
+import { initializeOraidexCommon, network } from 'initCommon';
+import useLoadTokens from 'hooks/useLoadTokens';
+import { useTronEventListener } from 'hooks/useTronLink';
 import Menu from './Menu';
+
+import routes from 'routes';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
 
@@ -51,7 +52,7 @@ const App = () => {
   const mobileMode = isMobile();
   const { tron, evm } = walletByNetworks;
   const ethOwallet = window.eth_owallet;
-
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   const dispatch = useDispatch();
   const solanaWallet = useWallet();
 
@@ -65,6 +66,10 @@ const App = () => {
   useLoadWalletsTon({
     tonNetwork: TonNetwork.Mainnet
   });
+
+  useEffect(() => {
+    initializeOraidexCommon(dispatch, allOraichainTokens);
+  }, [allOraichainTokens]);
 
   useEffect(() => {
     (async () => {

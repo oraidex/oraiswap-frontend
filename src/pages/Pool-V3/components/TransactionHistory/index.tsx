@@ -1,14 +1,13 @@
-import { TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
+import { OraiIcon, TokenItemType, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import LinkIcon from 'assets/icons/link.svg?react';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
 import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
 import NoData from 'assets/images/nodata-bid.svg?react';
 import LoadingBox from 'components/LoadingBox';
-import { network } from 'config/networks';
 import { getTransactionUrl } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { network } from 'initCommon';
 import { reduceString } from 'libs/utils';
 import { formatDateV2, formatTime } from 'pages/CoHarvest/helpers';
 import { useTransactionHistory } from 'pages/Pool-V3/hooks/useTransactionHistory';
@@ -24,11 +23,12 @@ const TransactionHistory = ({
   quoteToken: TokenItemType;
   poolKey: string;
 }) => {
+
   const [theme] = useConfigReducer('theme');
   const mobileMode = isMobile();
   const { data: prices } = useCoinGeckoPrices();
 
-  let [BaseTokenIcon, QuoteTokenIcon] = [DefaultIcon, DefaultIcon];
+  let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
 
   const baseDenom = baseToken && parseTokenInfoRawDenom(baseToken);
   const quoteDenom = quoteToken && parseTokenInfoRawDenom(quoteToken);
@@ -57,10 +57,9 @@ const TransactionHistory = ({
                   const offerToken = item.offerDenom === baseDenom ? baseToken : quoteToken;
                   const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
 
-                  if (offerToken)
-                    BaseTokenIcon = theme === 'light' ? offerToken.IconLight || offerToken.Icon : offerToken.Icon;
-                  if (returnToken)
-                    QuoteTokenIcon = theme === 'light' ? returnToken.IconLight || returnToken.Icon : returnToken.Icon;
+
+                  if (offerToken) BaseTokenIcon = theme === 'light' ? offerToken.iconLight : offerToken.icon;
+                  if (returnToken) QuoteTokenIcon = theme === 'light' ? returnToken.iconLight : returnToken.icon;
 
                   const returnUSD = item.volumeUSD;
                   const feeUSD = item.commissionAmount;
@@ -82,19 +81,6 @@ const TransactionHistory = ({
                               </a>
                             </div>
                           </div>
-                          {/* <div className={styles.addressWrapper}>
-                            <div className={styles.titleItem}>Address</div>
-                            <div className={styles.address}>
-                              <span className={styles.txt}>
-                                {!item.sender ? '-' : reduceString(item.sender || '', 5, 5)}
-                              </span>
-                              {!item.sender ? null : (
-                                <a href={getAccountUrl(item.sender || '')} target="_blank" rel="noopener noreferrer">
-                                  <LinkIcon />
-                                </a>
-                              )}
-                            </div>
-                          </div> */}
                           <div className={styles.time}>
                             <div>
                               <span>{formatDateV2(new Date(item.timestamp))}</span>
@@ -102,12 +88,6 @@ const TransactionHistory = ({
                             </div>
                           </div>
                         </div>
-                        {/* <div className={styles.time}>
-                          <div>
-                            <span>{formatDateV2(item.timestamp * 1000)}</span>
-                            <span>{formatTime(item.timestamp * 1000)}</span>
-                          </div>
-                        </div> */}
                       </div>
 
                       <div className={styles.divider}></div>
@@ -116,9 +96,7 @@ const TransactionHistory = ({
                         <div className={`${styles.pay}`}>
                           <div className={styles.titleItem}>Pay amount</div>
                           <div className={styles.amount}>
-                            <div>
-                              <BaseTokenIcon />
-                            </div>
+                            <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="" width={20} height={20} />
                             <span>
                               {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -129,9 +107,7 @@ const TransactionHistory = ({
                         <div className={`${styles.receive}`}>
                           <div className={styles.titleItem}>Receive amount</div>
                           <div className={styles.amount}>
-                            <div>
-                              <QuoteTokenIcon />
-                            </div>
+                            <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} alt="" width={20} height={20} />
                             <span>
                               {numberWithCommas(toDisplay(item.returnAmount), undefined, { maximumFractionDigits: 6 })}
                             </span>
@@ -177,10 +153,10 @@ const TransactionHistory = ({
                       const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
 
                       if (offerToken)
-                        BaseTokenIcon = theme === 'light' ? offerToken.IconLight || offerToken.Icon : offerToken.Icon;
+                        BaseTokenIcon = theme === 'light' ? offerToken.iconLight || offerToken.icon : offerToken.icon;
                       if (returnToken)
                         QuoteTokenIcon =
-                          theme === 'light' ? returnToken.IconLight || returnToken.Icon : returnToken.Icon;
+                          theme === 'light' ? returnToken.iconLight || returnToken.icon : returnToken.icon;
 
                       const returnUSD = item.volumeUSD;
                       const feeUSD = item.commissionAmount;
@@ -205,9 +181,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.pay}`}>
                             <div className={styles.amount}>
-                              <div>
-                                <BaseTokenIcon />
-                              </div>
+                              <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="" width={20} height={20} />
                               <span>
                                 {numberWithCommas(toDisplay(item.offerAmount), undefined, { maximumFractionDigits: 6 })}
                               </span>
@@ -216,9 +190,7 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.receive}`}>
                             <div className={styles.amount}>
-                              <div>
-                                <QuoteTokenIcon />
-                              </div>
+                              <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} width={20} height={20} alt="" />
                               <span>
                                 {numberWithCommas(toDisplay(item.returnAmount), undefined, {
                                   maximumFractionDigits: 6

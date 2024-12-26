@@ -1,24 +1,23 @@
-import { CW20_DECIMALS, CoinIcon, getSubAmountDetails, toAmount, toDisplay, tokenMap } from '@oraichain/oraidex-common';
+import { CW20_DECIMALS, getSubAmountDetails, toAmount, toDisplay, tokensIcon } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import StakeIcon from 'assets/icons/stake.svg';
 import WalletIcon from 'assets/icons/wallet-v3.svg';
 import cn from 'classnames/bind';
 import { Table, TableHeaderProps } from 'components/Table';
 import ToggleSwitch from 'components/ToggleSwitch';
-import { flattenTokens } from 'config/bridgeTokens';
-import { tokensIcon } from 'config/chainInfos';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { flattenTokens, flattenTokensWithIcon, tokenMap, tokensWithIcon } from 'initCommon';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
+import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { formatDisplayUsdt, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetMyStake } from 'pages/Pools/hooks';
-import { FC, useState, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { updateTotalLpv3 } from 'reducer/token';
 import { RootState } from 'store/configure';
 import { AssetInfoResponse } from 'types/swap';
 import styles from './AssetsTab.module.scss';
-import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
-import { updateTotalLpv3 } from 'reducer/token';
 
 const cx = cn.bind(styles);
 
@@ -52,7 +51,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   }, [totalLpV3Info]);
 
   let listAsset: {
-    src?: CoinIcon;
+    src?: any;
     label?: string;
     balance?: number | string;
   }[] = [
@@ -96,12 +95,12 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
 
           if (checkShouldHide(value)) return result;
 
-          const tokenIcon = tokensIcon.find((tIcon) => tIcon.coinGeckoId === token.coinGeckoId);
+          const tokenIcon = flattenTokensWithIcon.find((tIcon) => tIcon.coinGeckoId === token.coinGeckoId);
           result.push({
             asset: token.name,
             chain: token.org,
-            icon: tokenIcon?.Icon,
-            iconLight: tokenIcon?.IconLight,
+            icon: tokenIcon?.icon,
+            iconLight: tokenIcon?.iconLight,
             price: tokenPrice,
             balance: toDisplay(totalAmount.toString(), token.decimals),
             denom: token.denom,
@@ -123,10 +122,15 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
         <div className={styles.assets}>
           <div className={styles.left}>
             {theme === 'light' ? (
+              <img src={data.icon} alt="icon" width={30} height={30} />
+            ) : (
+              <img className={cx('logo')} src={data.icon} alt="icon" width={30} height={30} />
+            )}
+            {/* {theme === 'light' ? (
               <data.iconLight className={styles.tokenIcon} />
             ) : (
               <data.icon className={styles.tokenIcon} />
-            )}
+            )} */}
           </div>
           <div className={styles.right}>
             <div className={styles.assetName}>{data.asset}</div>

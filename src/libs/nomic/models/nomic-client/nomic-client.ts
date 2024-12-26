@@ -37,6 +37,7 @@ export class NomicClient implements NomicClientInterface {
     }).then((data) => data.json());
   }
   public async getConfig(): Promise<ResConfigOraiBTC> {
+    return null;
     return await fetch(`${Config.restUrl}/bitcoin/config`, {
       method: 'GET'
     }).then((data) => data.json());

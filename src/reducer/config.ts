@@ -1,12 +1,12 @@
+import { TokenItemType } from '@oraichain/oraidex-common';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { Themes } from 'context/theme-context';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { PoolAprInfo } from 'libs/contractSingleton';
-import { DepositInfo } from 'pages/BitcoinDashboard/@types';
+import { DepositInfo } from 'pages/BitcoinDashboardV2/@types';
 import { KeyFilterPool } from 'pages/Pools/components/Filter';
 import { PERSIST_VER } from 'store/constants';
-// import { PERSIST_VERSION } from 'store/configure';
 
 export type ChainInfoType = {
   networkType?: string;

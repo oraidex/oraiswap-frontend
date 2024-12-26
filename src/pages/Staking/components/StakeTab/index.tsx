@@ -1,9 +1,9 @@
 import { ORAI, toAmount } from '@oraichain/oraidex-common';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
 import { handleCheckAddress, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { ORAIX_TOKEN_INFO } from 'pages/Staking/constants';
 import { useGetMyStakeRewardInfo, useGetStakeInfo } from 'pages/Staking/hooks';
@@ -18,8 +18,7 @@ const StakeTab = () => {
   const [address] = useConfigReducer('address');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const loadOraichainToken = useLoadOraichainTokens();
-
-  const balance = amounts['oraix'];
+  const balance = amounts['cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:ORAIX'];
   const [amount, setAmount] = useState<number>();
   const [loading, setLoading] = useState<boolean>(false);
 

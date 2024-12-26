@@ -1,4 +1,5 @@
-import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
+import { oraichainTokens } from 'initCommon';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';

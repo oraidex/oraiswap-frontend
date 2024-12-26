@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { PoolFeeAndLiquidityDaily } from 'libs/contractSingleton';
 import { useEffect, useState } from 'react';
-import { FeeDailyData, getFeeDailyData, getPoolDetail, PoolDetail } from 'rest/graphClient';
+import { getPoolDetail, PoolDetail } from 'rest/graphClient';
 import { toDisplay } from '@oraichain/oraidex-common';
 
 export type LiquidityDistribution = {

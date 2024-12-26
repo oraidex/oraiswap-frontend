@@ -1,30 +1,27 @@
-import { oraichainTokens } from '@oraichain/oraidex-common';
 import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { useQuery } from '@tanstack/react-query';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
+import { oraichainTokens } from 'initCommon';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getPools } from 'pages/Pools/hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PoolInfoResponse } from 'types/pool';
 import { calcPrice } from '../components/PriceRangePlot/utils';
 import { extractAddress, formatPoolData } from '../helpers/format';
+import { parseAssetInfo } from '@oraichain/oraidex-common';
+import { tokenInspector } from 'initTokenInspector';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToOraichainTokens } from 'reducer/token';
+import { RootState } from 'store/configure';
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const theme = useTheme();
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
-  const [cachePrices, setCachePrices] = useConfigReducer('coingecko');
-  const [loading, setLoading] = useState(false);
   const [dataPool, setDataPool] = useState([...Array(0)]);
-
-  const formatPoolDataCallback = useCallback(
-    (p) => {
-      const isLight = theme === 'light';
-      return formatPoolData(p, isLight);
-    },
-    [theme]
-  );
+  const dispatch = useDispatch();
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   const {
     data: poolList,
@@ -40,16 +37,14 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     const newPrice = { ...coingeckoPrices };
-    const newCgkPrice = { ...cachePrices };
-    let numberOfRecordsUpdate = 0;
 
     for (const pool of poolList) {
       if ('liquidityAddr' in pool) {
         continue;
       }
 
-      const tokenX = oraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_x);
-      const tokenY = oraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_y);
+      const tokenX = allOraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_x);
+      const tokenY = allOraichainTokens.find((token) => extractAddress(token) === pool.pool_key.token_y);
 
       if (!tokenX || !tokenY) continue;
       if (tokenX && !prices[tokenX.coinGeckoId]) {
@@ -57,9 +52,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           // calculate price of X in Y from current sqrt price
           const price = calcPrice(pool.pool.current_tick_index, true, tokenX.decimals, tokenY.decimals);
           newPrice[tokenX.coinGeckoId || tokenX.denom] = price * prices[tokenY.coinGeckoId];
-
-          // newCgkPrice[tokenX.coinGeckoId || tokenX.denom] = price * prices[tokenY.coinGeckoId];
-          // numberOfRecordsUpdate = numberOfRecordsUpdate + 1;
         }
       }
 
@@ -68,22 +60,54 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           // calculate price of Y in X from current sqrt price
           const price = calcPrice(pool.pool.current_tick_index, false, tokenX.decimals, tokenY.decimals);
           newPrice[tokenY.coinGeckoId || tokenY.denom] = price * prices[tokenX.coinGeckoId];
-
-          // newCgkPrice[tokenY.coinGeckoId || tokenY.denom] = price * prices[tokenX.coinGeckoId];
-          // numberOfRecordsUpdate = numberOfRecordsUpdate + 1;
         }
       }
     }
 
     setPrices(newPrice);
-    // setCachePrices(newCgkPrice);
   }, [poolList]);
 
   useEffect(() => {
     if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
-    const fmtPools = (poolList || []).map(formatPoolDataCallback).filter((e) => e.isValid);
-    setDataPool(fmtPools);
+    (async function formatListPools() {
+      const tokenAddresses = new Set<string>();
+      poolList.forEach((pool) => {
+        if ('liquidityAddr' in pool) {
+          tokenAddresses.add(parseAssetInfo(JSON.parse(pool.firstAssetInfo)));
+          tokenAddresses.add(parseAssetInfo(JSON.parse(pool.secondAssetInfo)));
+        } else {
+          tokenAddresses.add(pool.pool_key.token_x);
+          tokenAddresses.add(pool.pool_key.token_y);
+        }
+      });
+
+      // loop through oraichainTokens, if token is already in oraichainTokens, remove it from tokenAddresses
+      allOraichainTokens.forEach((token) => {
+        if (tokenAddresses.has(extractAddress(token))) {
+          tokenAddresses.delete(extractAddress(token));
+        }
+      });
+
+      if (tokenAddresses.size > 0) {
+        if (
+          !(
+            tokenAddresses.size === 1 &&
+            // deprecate HMSTR token
+            tokenAddresses.has('factory/orai17hyr3eg92fv34fdnkend48scu32hn26gqxw3hnwkfy904lk9r09qqzty42/HMSTR')
+          )
+        ) {
+          const extendedInfos = await tokenInspector.inspectMultiTokens([...tokenAddresses]);
+          const convertToTokensType = extendedInfos.map((info) => onChainTokenToTokenItem(info));
+          dispatch(addToOraichainTokens(convertToTokensType));
+        }
+      }
+
+      const listPools = (poolList || []).map((p) => formatPoolData(p));
+
+      const fmtPools = (await Promise.all(listPools)).filter((e) => e.isValid);
+      setDataPool(fmtPools);
+    })();
   }, [poolList, coingeckoPrices]);
 
   return {
@@ -97,8 +121,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
 
 const getPoolList = async (): Promise<PoolWithPoolKey[]> => {
   try {
-    // const pools = await SingletonOraiswapV3.getPools();
-
     const [poolV3, poolV2] = await Promise.allSettled([SingletonOraiswapV3.getPools(), getPools()]);
 
     const res = [...(poolV3['value'] || []), ...(poolV2['value'] || [])];

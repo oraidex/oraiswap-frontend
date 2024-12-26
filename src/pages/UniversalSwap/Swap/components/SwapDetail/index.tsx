@@ -2,7 +2,6 @@ import CloseIcon from 'assets/icons/close.svg?react';
 import IconOirSettings from 'assets/icons/iconoir_settings.svg?react';
 import styles from './index.module.scss';
 import classNames from 'classnames';
-import { floatToPercent } from 'helper';
 import { useRef } from 'react';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 

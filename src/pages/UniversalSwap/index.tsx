@@ -1,4 +1,5 @@
 import { isMobile } from '@walletconnect/browser-utils';
+import classNames from 'classnames';
 import cn from 'classnames/bind';
 import ModalCustom from 'components/ModalCustom';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
@@ -6,18 +7,11 @@ import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import useTheme from 'hooks/useTheme';
 import Content from 'layouts/Content';
 import { DuckDb } from 'libs/duckdb';
-// import { useGetPriceChange } from 'pages/Pools/hooks';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { selectCurrentSwapFilterTime, selectCurrentSwapTabChart } from 'reducer/chartSlice';
-import {
-  selectChartTimeFrame,
-  selectCurrentFromToken,
-  selectCurrentToToken,
-  selectCurrentToken,
-  setChartTimeFrame
-} from 'reducer/tradingSlice';
+import { selectCurrentSwapFilterTime } from 'reducer/chartSlice';
+import { selectCurrentToToken, setChartTimeFrame } from 'reducer/tradingSlice';
 import { FILTER_TIME_CHART } from 'reducer/type';
 import { AssetsTab, HeaderTab, HeaderTop, HistoryTab, TabsTxs } from './Component';
 import ChartUsdPrice from './Component/ChartUsdPrice';
@@ -27,7 +21,6 @@ import { initPairSwap } from './Swap/hooks/useFillToken';
 import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from './helpers';
 import { ChartTokenType, useChartUsdPrice } from './hooks/useChartUsdPrice';
 import styles from './index.module.scss';
-import classNames from 'classnames';
 import Lottie from 'lottie-react';
 
 const cx = cn.bind(styles);
@@ -47,9 +40,7 @@ const Swap: React.FC = () => {
   const [percentChangeUsd, setPercentChangeUsd] = useState<string | number>(0);
   const [initPriceUsd, setInitPriceUsd] = useState(0);
   const [initPercentChangeUsd, setInitPercentChangeUsd] = useState<string | number>(0);
-  const currentPair = useSelector(selectCurrentToken);
   const tokenTo = useSelector(selectCurrentToToken);
-  const tf = useSelector(selectChartTimeFrame);
 
   // get data for mobile
   useChartUsdPrice(
@@ -59,12 +50,6 @@ const Swap: React.FC = () => {
     setInitPriceUsd,
     setInitPercentChangeUsd
   );
-
-  // const { priceChange } = useGetPriceChange({
-  //   base_denom: currentPair.info.split('-')[0],
-  //   quote_denom: currentPair.info.split('-')[1],
-  //   tf
-  // });
 
   const initDuckdb = async () => {
     window.duckDb = await DuckDb.create();
@@ -189,18 +174,7 @@ const Chart = ({
   const [isTxsProcess, setIsTxsProcress] = useState<boolean>(false);
   const [chartTokenType, setChartTokenType] = useState(ChartTokenType.Price);
 
-  const currentPair = useSelector(selectCurrentToken);
-  const currentFromToken = useSelector(selectCurrentFromToken);
-  const currentToToken = useSelector(selectCurrentToToken);
   const filterTimeChartUsd = useSelector(selectCurrentSwapFilterTime);
-  const tabChart = useSelector(selectCurrentSwapTabChart);
-  const tf = useSelector(selectChartTimeFrame);
-
-  // const { priceChange } = useGetPriceChange({
-  //   base_denom: currentPair.info.split('-')[0],
-  //   quote_denom: currentPair.info.split('-')[1],
-  //   tf
-  // });
 
   const handleChangeChartTimeFrame = (resolution: number) => {
     dispatch(setChartTimeFrame(resolution));
@@ -215,7 +189,6 @@ const Chart = ({
         hideChart={hideChart}
         toTokenDenom={toTokenDenom}
         priceUsd={priceUsd}
-        // priceChange={priceChange}
         percentChangeUsd={percentChangeUsd}
         showTokenInfo={showTokenInfo}
       />

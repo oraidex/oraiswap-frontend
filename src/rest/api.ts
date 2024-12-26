@@ -4,6 +4,7 @@ import { CwIcs20LatestQueryClient, MulticallQueryClient, Uint128 } from '@oraich
 import { ConfigResponse, RelayerFeeResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
   BTC_CONTRACT,
+  FACTORY_V2_CONTRACT,
   IBCInfo,
   IBC_WASM_CONTRACT,
   KWT_DENOM,
@@ -16,7 +17,6 @@ import {
   handleSentFunds,
   ibcInfos,
   ibcInfosOld,
-  isFactoryV1,
   parseTokenInfo,
   toAmount,
   toDecimal,
@@ -25,6 +25,7 @@ import {
 } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
+  CoharvestBidPoolQueryClient,
   OraiswapFactoryQueryClient,
   OraiswapOracleQueryClient,
   OraiswapPairQueryClient,
@@ -34,18 +35,17 @@ import {
   OraiswapStakingTypes,
   OraiswapTokenQueryClient,
   OraiswapTokenTypes,
-  PairInfo,
-  CoharvestBidPoolQueryClient,
-  CoharvestBidPoolTypes
+  PairInfo
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
+import { generateSwapOperationMsgs, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { generateSwapOperationMsgs, simulateSwap } from '@oraichain/oraidex-universal-swap';
-import { oraichainTokens, tokenMap, tokens } from 'config/bridgeTokens';
-import { network } from 'config/networks';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
+import { flattenTokens, network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
+import { listFactoryV1Pools } from 'pages/Pools/helpers';
+import { getRouterConfig } from 'pages/UniversalSwap/Swap/hooks';
 import { BondLP, MiningLP, UnbondLP, WithdrawLP } from 'types/pool';
 import { PairInfoExtend, TokenInfo } from 'types/token';
 
@@ -118,19 +118,32 @@ export async function fetchPairPriceWithStablecoin(
   fromTokenInfo: TokenItemType,
   toTokenInfo: TokenItemType
 ): Promise<string> {
+  if (!fromTokenInfo.denom || !toTokenInfo.denom) return '0';
   const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
   const result = await Promise.allSettled([
-    simulateSwap({
-      fromInfo: fromTokenInfo,
-      toInfo: tokenMap[STABLE_DENOM],
-      amount: toAmount(1, fromTokenInfo!.decimals).toString(),
-      routerClient
+    UniversalSwapHelper.handleSimulateSwap({
+      flattenTokens: flattenTokens,
+      oraichainTokens: oraichainTokens,
+      originalFromInfo: fromTokenInfo,
+      originalToInfo: tokenMap[STABLE_DENOM],
+      originalAmount: 1,
+      routerClient,
+      routerOption: {
+        useIbcWasm: true
+      },
+      routerConfig: getRouterConfig()
     }),
-    simulateSwap({
-      fromInfo: toTokenInfo,
-      toInfo: tokenMap[STABLE_DENOM],
-      amount: toAmount(1, toTokenInfo!.decimals).toString(),
-      routerClient
+    UniversalSwapHelper.handleSimulateSwap({
+      flattenTokens: flattenTokens,
+      oraichainTokens: oraichainTokens,
+      originalFromInfo: toTokenInfo,
+      originalToInfo: tokenMap[STABLE_DENOM],
+      originalAmount: 1,
+      routerClient,
+      routerOption: {
+        useIbcWasm: true
+      },
+      routerConfig: getRouterConfig()
     })
   ]).then((results) => {
     for (let res of results) {
@@ -146,6 +159,7 @@ async function fetchPoolInfoAmount(
   cachedPairs?: PairDetails,
   pairInfo?: PairInfo
 ): Promise<PoolInfo> {
+  if (!fromTokenInfo.denom || !toTokenInfo.denom) return { offerPoolAmount: BigInt(0), askPoolAmount: BigInt(0) };
   const { info: fromInfo } = parseTokenInfo(fromTokenInfo);
   const { info: toInfo } = parseTokenInfo(toTokenInfo);
 
@@ -196,8 +210,10 @@ async function fetchCachedPairInfo(
 }
 
 async function fetchPairInfo(tokenTypes: [TokenItemType, TokenItemType]): Promise<PairInfo> {
-  // scorai is in factory_v2
-  const factoryAddr = isFactoryV1([parseTokenInfo(tokenTypes[0]).info, parseTokenInfo(tokenTypes[1]).info])
+  const factoryAddr = listFactoryV1Pools.find(
+    (factoryV1Pool) =>
+      factoryV1Pool.symbols.includes(tokenTypes[0]?.name) && factoryV1Pool.symbols.includes(tokenTypes[1]?.name)
+  )
     ? network.factory
     : network.factory_v2;
   let { info: firstAsset } = parseTokenInfo(tokenTypes[0]);
@@ -667,10 +683,11 @@ function generateMoveOraib2OraiMessages(
   fromAddress: string,
   toAddress: string
 ) {
-  const [, toTokens] = tokens;
+  // const [, toTokens] = tokens;
   let transferMsgs: MsgTransfer[] = [];
   for (const fromToken of remainingOraib) {
-    const toToken = toTokens.find((t) => t.chainId === 'Oraichain' && t.name === fromToken.name);
+    // FIXME: what type of token?
+    const toToken = tokens.find((t) => t.chainId === 'Oraichain' && t.name === fromToken.name);
     let ibcInfo: IBCInfo = ibcInfos[fromToken.chainId][toToken.chainId];
     // hardcode for MILKY & KWT because they use the old IBC channel
     if (fromToken.denom === MILKY_DENOM || fromToken.denom === KWT_DENOM)
@@ -723,16 +740,17 @@ async function getPairAmountInfo(
 
 export {
   fetchCachedPairInfo,
+  fetchLpBalance,
   fetchPairInfo,
   fetchPoolInfoAmount,
   fetchRelayerFee,
   fetchRewardPerSecInfo,
+  fetchRoundBid,
   fetchStakingPoolInfo,
   fetchTaxRate,
   fetchTokenAllowance,
   fetchTokenInfo,
   fetchTokenInfos,
-  fetchLpBalance,
   generateContractMessages,
   generateConvertCw20Erc20Message,
   generateConvertErc20Cw20Message,
@@ -740,6 +758,5 @@ export {
   generateMiningMsgs,
   generateMoveOraib2OraiMessages,
   getPairAmountInfo,
-  getSubAmountDetails,
-  fetchRoundBid
+  getSubAmountDetails
 };

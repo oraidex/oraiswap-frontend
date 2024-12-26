@@ -1,10 +1,8 @@
 import React from 'react';
 import styles from './TransactionMobile.module.scss';
 import { toDisplay } from '@oraichain/oraidex-common';
-import { sortAddress } from 'pages/BitcoinDashboard/utils/bitcoin';
-import RenderIf from 'pages/BitcoinDashboard/components/RenderIf/RenderIf';
-import { isNull } from 'pages/BitcoinDashboard/utils/validate';
-
+import { sortAddress } from 'pages/BitcoinDashboardV2/utils/bitcoin';
+import { isNull } from 'pages/BitcoinDashboardV2/utils/validate';
 export interface TransactionInfo {
   txid?: String;
   address?: String;

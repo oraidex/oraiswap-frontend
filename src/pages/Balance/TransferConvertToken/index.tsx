@@ -1,8 +1,6 @@
 import {
   BigDecimal,
   getTokensFromNetwork,
-  // flattenTokens
-  NetworkChainId,
   toDisplay,
   TokenItemType,
   BTC_CONTRACT,
@@ -19,8 +17,6 @@ import Loader from 'components/Loader';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
-import { btcChains, evmChains } from 'config/chainInfos';
 import copy from 'copy-to-clipboard';
 import { filterChainBridge, findChainByChainId, getAddressTransfer, networks } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -42,10 +38,11 @@ import styles from './index.module.scss';
 import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { CWBitcoinFactoryDenom } from 'helper/constants';
+import { btcChains, cosmosTokens, evmChains, flattenTokens, tokenMap, tonTokens } from 'initCommon';
+import { NetworkChainId } from '@oraichain/common';
 import useGetFee from '../hooks/useGetFee';
 import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
 import { TonChainId } from 'context/ton-provider';
-import { network } from 'config/networks';
 import useGetFeeSol from '../hooks/useGetFeeSol';
 
 interface TransferConvertProps {
@@ -235,7 +232,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     useEffect(() => {
       (async () => {
         if (toNetworkChainId === TonChainId) {
-          const tokenOnTon = [...getTokensFromNetwork(tonNetworkMainnet)].find(
+          const tokenOnTon = tonTokens.find(
             (tk) => tk.chainId === toNetworkChainId && tk.coinGeckoId === token.coinGeckoId
           );
 
@@ -318,6 +315,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
 
+  console.log({ networks });
+
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
       <div className={styles.tokenSubAmouts}>
@@ -376,13 +375,9 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <div className={styles.search_logo}>
                         {theme === 'light' ? (
-                          toNetwork.IconLight ? (
-                            <toNetwork.IconLight width={44} height={44} />
-                          ) : (
-                            <toNetwork.Icon width={44} height={44} />
-                          )
+                          <img width={44} height={44} src={toNetwork.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                         ) : (
-                          <toNetwork.Icon width={44} height={44} />
+                          <img width={44} height={44} src={toNetwork.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                         )}
                       </div>
                       <span className={classNames(styles.search_text, styles[theme])}>{toNetwork.chainName}</span>

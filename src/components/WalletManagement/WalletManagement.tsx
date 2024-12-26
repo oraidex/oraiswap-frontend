@@ -1,21 +1,21 @@
 import { isMobile } from '@walletconnect/browser-utils';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
-import { keplrCheck } from 'helper';
+import styles from './WalletManagement.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useInactiveConnect } from 'hooks/useMetamask';
 import useWalletReducer from 'hooks/useWalletReducer';
 import { FC, useEffect, useState } from 'react';
-import Connected from './Connected';
 import { ConnectedMobile } from './ConnectedMobile';
 import { ModalChooseWallet } from './ModalChooseWallet';
 import { MyWallet } from './MyWallet';
 import { MyWalletMobile } from './MyWalletMobile';
-import styles from './WalletManagement.module.scss';
 import type { Wallet as WalletResetType } from './useResetBalance';
-import { useResetBalance } from './useResetBalance';
 import { WalletNetwork, WalletProvider, walletProvider } from './walletConfig';
+import Connected from './Connected';
+import { keplrCheck } from 'helper';
+import { useResetBalance } from './useResetBalance';
 const cx = cn.bind(styles);
 
 export const WalletManagement: FC<{}> = () => {

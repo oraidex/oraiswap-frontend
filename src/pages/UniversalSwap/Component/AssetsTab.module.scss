@@ -93,7 +93,17 @@
     .tokenIcon {
       width: 44px;
       height: 44px;
-      border-radius: 50%;
+      border-radius: 100%;
+      @include mobile() {
+        width: 25px;
+        height: 25px;
+      }
+    }
+
+    img {
+      width: 44px;
+      height: 44px;
+      border-radius: 100%;
       @include mobile() {
         width: 25px;
         height: 25px;

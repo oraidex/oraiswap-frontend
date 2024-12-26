@@ -1,6 +1,6 @@
 import cn from 'classnames/bind';
 import styles from './TransactionProcess.module.scss';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import ImagesCrossChain from 'assets/images/img_cross-chain.png';
 
 const cx = cn.bind(styles);

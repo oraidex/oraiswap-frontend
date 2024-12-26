@@ -1,11 +1,13 @@
 import { PoolKey, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { poolKeyToString } from 'libs/contractSingleton';
 import { TokenItemType } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { PoolInfoResponse } from 'types/pool';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { POOL_TYPE } from '../index';
+import { oraichainTokensWithIcon } from 'initCommon';
+import { store } from 'store/configure';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {
   FromTokenIcon: React.FunctionComponent<
@@ -35,17 +37,26 @@ export const getTokenInfo = (address, isLight) => {
   return { Icon, tokenInfo };
 };
 
-export const getIconPoolData = (tokenX, tokenY, isLight) => {
-  let [FromTokenIcon, ToTokenIcon] = [DefaultIcon, DefaultIcon];
-  const tokenXinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenX));
-  const tokenYinfo = oraichainTokensWithIcon.find((token) => [token.denom, token.contractAddress].includes(tokenY));
+export const getIconPoolData = async (tokenX: string, tokenY: string, isLight: boolean) => {
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+  const tokenXinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenX));
+  const tokenYinfo = allOraichainTokens.find((token) => [token.denom, token.contractAddress].includes(tokenY));
 
-  if (tokenXinfo) FromTokenIcon = isLight ? tokenXinfo.IconLight : tokenXinfo.Icon;
-  if (tokenYinfo) ToTokenIcon = isLight ? tokenYinfo.IconLight : tokenYinfo.Icon;
+  let iconTokenXUrl = isLight ? tokenXinfo?.iconLight : tokenXinfo?.icon;
+  if (!iconTokenXUrl) iconTokenXUrl = DEFAULT_TOKEN_ICON_URL;
+
+  let iconTokenYUrl = isLight ? tokenYinfo?.iconLight : tokenYinfo?.icon;
+  if (!iconTokenYUrl) iconTokenYUrl = DEFAULT_TOKEN_ICON_URL;
+
+  const FromTokenIcon = <img style={{ borderRadius: '100%' }} src={iconTokenXUrl} alt="iconlight" />;
+  const ToTokenIcon = <img style={{ borderRadius: '100%' }} src={iconTokenYUrl} alt="iconlight" />;
+
   return { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo };
 };
 
-export const formatPoolData = (p: PoolWithPoolKey | PoolInfoResponse, isLight: boolean = false) => {
+export const formatPoolData = async (p: PoolWithPoolKey | PoolInfoResponse, isLight: boolean = false) => {
+  // pools v2
   if ('liquidityAddr' in p) {
     const { firstAssetInfo, secondAssetInfo } = p;
     const [baseDenom, quoteDenom] = [
@@ -53,7 +64,11 @@ export const formatPoolData = (p: PoolWithPoolKey | PoolInfoResponse, isLight: b
       parseAssetOnlyDenom(JSON.parse(secondAssetInfo))
     ];
 
-    const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(baseDenom, quoteDenom, isLight);
+    const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = await getIconPoolData(
+      baseDenom,
+      quoteDenom,
+      isLight
+    );
 
     return {
       ...p,
@@ -68,8 +83,11 @@ export const formatPoolData = (p: PoolWithPoolKey | PoolInfoResponse, isLight: b
   }
 
   const [tokenX, tokenY] = [p?.pool_key.token_x, p?.pool_key.token_y];
+  if (!tokenX || !tokenY) {
+    console.log({ tokenX, tokenY });
+  }
   const feeTier = p?.pool_key.fee_tier.fee || 0;
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(tokenX, tokenY, isLight);
+  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = await getIconPoolData(tokenX, tokenY, isLight);
   const spread = p?.pool_key.fee_tier.tick_spacing || 100;
 
   const poolKey = p?.pool_key ? poolKeyToString(p.pool_key) : '';

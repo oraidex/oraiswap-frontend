@@ -61,11 +61,11 @@
           }
         }
 
-        &.light {
-          img {
-            filter: invert(1);
-          }
-        }
+        // &.light {
+        //   img {
+        //     filter: invert(1);
+        //   }
+        // }
       }
 
       .fee {
@@ -328,11 +328,11 @@
                 height: 20px;
               }
 
-              &.light {
-                img {
-                  filter: invert(1);
-                }
-              }
+              // &.light {
+              //   img {
+              //     filter: invert(1);
+              //   }
+              // }
             }
           }
         }

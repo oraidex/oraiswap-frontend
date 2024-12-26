@@ -1,10 +1,9 @@
 import { checkValidateAddressWithNetwork } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import { tokenMap } from 'config/bridgeTokens';
 import { getAddressTransfer, networks } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useWalletReducer from 'hooks/useWalletReducer';
-import { genCurrentChain, generateNewSymbolV2, getFromToToken } from 'pages/UniversalSwap/helpers';
+import { genCurrentChain, getFromToToken } from 'pages/UniversalSwap/helpers';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -12,10 +11,12 @@ import {
   selectCurrentToken,
   setCurrentFromToken,
   setCurrentToChain,
-  setCurrentToken,
   setCurrentToToken
 } from 'reducer/tradingSlice';
 import useFilteredTokens from './useFilteredTokens';
+import { cosmosChains, tokenMap } from 'initCommon';
+import useOnchainTokensReducer from 'hooks/useOnchainTokens';
+import { RootState } from 'store/configure';
 
 const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) => {
   const dispatch = useDispatch();
@@ -32,15 +33,21 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   const [addressTransfer, setAddressTransfer] = useState('');
   const [initAddressTransfer, setInitAddressTransfer] = useState('');
 
+  const onchainTokens = useOnchainTokensReducer('tokens');
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+
   // get token on oraichain to simulate swap amount.
-  const originalFromToken = tokenMap[fromTokenDenomSwap];
-  const originalToToken = tokenMap[toTokenDenomSwap];
+  const originalFromToken =
+    allOraichainTokens?.find((token) => token.denom === fromTokenDenomSwap) || tokenMap[fromTokenDenomSwap];
+  const originalToToken =
+    allOraichainTokens?.find((token) => token.denom === toTokenDenomSwap) || tokenMap[toTokenDenomSwap];
 
   const { fromToken, toToken } = getFromToToken(
     originalFromToken,
     originalToToken,
     fromTokenDenomSwap,
-    toTokenDenomSwap
+    toTokenDenomSwap,
+    onchainTokens
   );
 
   const { filteredToTokens, filteredFromTokens } = useFilteredTokens(
@@ -99,13 +106,6 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   ]);
 
   useEffect(() => {
-    const newTVPair = generateNewSymbolV2(fromToken, toToken, currentPair);
-
-    if (newTVPair) dispatch(setCurrentToken(newTVPair));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromToken, toToken]);
-
-  useEffect(() => {
     const newCurrentToChain = genCurrentChain({ toToken: originalToToken, currentToChain });
 
     if (toToken && originalToToken) {
@@ -127,7 +127,8 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
     isValid: true
   };
 
-  if (isConnectedWallet) validAddress = checkValidateAddressWithNetwork(addressTransfer, originalToToken?.chainId);
+  if (isConnectedWallet)
+    validAddress = checkValidateAddressWithNetwork(addressTransfer, originalToToken?.chainId, cosmosChains);
 
   return {
     originalFromToken,

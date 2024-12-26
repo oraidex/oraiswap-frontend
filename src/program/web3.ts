@@ -1,7 +1,5 @@
 import {
-  ComputeBudgetProgram,
   Connection,
-  Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
   Transaction,
@@ -9,19 +7,15 @@ import {
   TransactionInstruction
 } from '@solana/web3.js';
 import {
-  createAssociatedTokenAccount,
   createAssociatedTokenAccountInstruction,
   createTransferCheckedInstruction,
   getAssociatedTokenAddressSync
 } from '@solana/spl-token';
-import * as anchor from '@coral-xyz/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
-import { BN, Program } from '@coral-xyz/anchor';
 import BigNumber from 'bignumber.js';
 import {
   toAmount,
   TokenItemType,
-  SOLANA_RPC as DEFAULT_SOLANA_RPC,
   SOLANA_WEBSOCKET as DEFAULT_SOLANA_WEBSOCKET,
   MEMO_PROGRAM_ID
 } from '@oraichain/oraidex-common';

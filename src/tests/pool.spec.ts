@@ -1,15 +1,16 @@
 import {
-  ORAI,
-  buildMultipleExecuteMessages,
   INJECTIVE_CONTRACT,
-  USDC_CONTRACT,
+  ORAI,
   ORAIX_CONTRACT,
-  WETH_CONTRACT
+  USDC_CONTRACT,
+  WETH_CONTRACT,
+  buildMultipleExecuteMessages
 } from '@oraichain/oraidex-common';
-import { flattenTokens } from 'config/bridgeTokens';
 import { getPoolTokens } from 'config/pools';
+import { flattenTokens } from 'initCommon';
 import { estimateShare, formatDisplayUsdt, getSymbolPools, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { ProvideQuery, Type, generateContractMessages } from 'rest/api';
+import { describe, expect, it } from 'vitest';
 import { constants } from './listing-simulate';
 
 /**

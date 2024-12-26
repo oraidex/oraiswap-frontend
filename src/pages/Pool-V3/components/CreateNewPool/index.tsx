@@ -7,39 +7,36 @@ import SettingIcon from 'assets/icons/setting.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import { ALL_FEE_TIERS_DATA } from 'libs/contractSingleton';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from 'react';
+import CreateNewPosition from '../CreateNewPosition';
 import CreatePoolForm from '../CreatePoolForm';
 import { extractDenom } from '../PriceRangePlot/utils';
 import SelectToken from '../SelectToken';
-import styles from './index.module.scss';
 import SlippageSetting from '../SettingSlippage';
-import { newPoolKey, poolKeyToString } from '@oraichain/oraiswap-v3';
-import CreateNewPosition from '../CreateNewPosition';
+import styles from './index.module.scss';
 
-export enum STEP_CREATE_POOL {
+enum STEP_CREATE_POOL {
   SELECT_POOL,
   ADD_LIQUIDITY
 }
 
-export const openInNewTab = (url: string): void => {
-  const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-  if (newWindow) newWindow.opener = null;
-};
-
-const CreateNewPool = ({ pools }: { pools: PoolWithPoolKey[] }) => {
+export const CreateNewPool = ({
+  pools,
+  showModal,
+  setShowModal
+}: {
+  pools: PoolWithPoolKey[];
+  showModal: boolean;
+  setShowModal: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [tokenFrom, setTokenFrom] = useState<TokenItemType>();
   const [tokenTo, setTokenTo] = useState<TokenItemType>();
   const [fee, setFee] = useState<FeeTier>(ALL_FEE_TIERS_DATA[0]);
   const [step, setStep] = useState<STEP_CREATE_POOL>(STEP_CREATE_POOL.SELECT_POOL);
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState(false);
   const [slippage, setSlippage] = useState(1);
   const [moveToAddLiquidity, setMoveToAddLiquidity] = useState(false);
   const refContent = useRef();
-
-  // useOnClickOutside(refContent, () => {
-  //   setShowModal(false);
-  // });
 
   const isPoolExisted = useCallback(
     (fee: FeeTier) =>
@@ -62,15 +59,13 @@ const CreateNewPool = ({ pools }: { pools: PoolWithPoolKey[] }) => {
   return (
     <>
       {moveToAddLiquidity ? (
-        <CreateNewPosition showModal={moveToAddLiquidity} setShowModal={setMoveToAddLiquidity} pool={isPoolExisted(fee)} />
+        <CreateNewPosition
+          showModal={moveToAddLiquidity}
+          setShowModal={setMoveToAddLiquidity}
+          pool={isPoolExisted(fee)}
+        />
       ) : (
         <div className={styles.createNewPool}>
-          <div className={styles.btnAdd}>
-            <Button type="primary-sm" onClick={() => setShowModal(true)}>
-              Create new pool
-            </Button>
-          </div>
-
           <div
             onClick={() => setShowModal(false)}
             className={classNames(styles.overlay, { [styles.activeOverlay]: showModal })}
@@ -199,5 +194,3 @@ const CreateNewPool = ({ pools }: { pools: PoolWithPoolKey[] }) => {
     </>
   );
 };
-
-export default CreateNewPool;

@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import styles from './index.module.scss';
 import { ConcentratedLiquidityDepthChart } from '../ConcentratedLiquidityDepthChart';
 import { LiquidityChartData } from 'reducer/poolDetailV3';

@@ -1,24 +1,23 @@
 import { HttpClient, Tendermint37Client, WebsocketClient } from '@cosmjs/tendermint-rpc';
-
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import * as Sentry from '@sentry/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContext, ToastProvider } from 'components/Toasts/context';
-import { network } from 'config/networks';
-import { getWalletByNetworkCosmosFromStorage } from 'helper';
-import { getCosmWasmClient } from 'libs/cosmjs';
 import mixpanel from 'mixpanel-browser';
-import 'polyfill';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Bounce, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from 'store/configure';
+import 'react-toastify/dist/ReactToastify.css';
 import './index.scss';
-import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
+import { getWalletByNetworkCosmosFromStorage } from 'helper';
+import { getCosmWasmClient } from 'libs/cosmjs';
+import 'polyfill';
+import App from './layouts/App';
+import { network } from 'initCommon';
 import { TonProvider } from 'context/ton-provider';
 
 const queryClient = new QueryClient();
@@ -81,7 +80,6 @@ const initApp = async () => {
       </PersistGate>
     </Provider>
   );
-
   // init cosmwasm client when user connected cosmos wallet
   const walletType = getWalletByNetworkCosmosFromStorage();
   if (walletType) {

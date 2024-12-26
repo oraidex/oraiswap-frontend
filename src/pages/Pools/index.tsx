@@ -1,10 +1,7 @@
-import { CW20_DECIMALS, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
+import { CW20_DECIMALS, OraiIcon, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
-import Content from 'layouts/Content';
 import isEqual from 'lodash/isEqual';
 import React, { useState } from 'react';
 import { PoolInfoResponse } from 'types/pool';
@@ -23,6 +20,9 @@ import {
   useGetRewardInfo
 } from './hooks';
 import styles from './index.module.scss';
+import { oraichainTokensWithIcon } from 'initCommon';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/configure';
 
 export type PoolTableData = PoolInfoResponse & {
   reward: string[];
@@ -45,6 +45,7 @@ const Pools: React.FC<{}> = () => {
   const lpAddresses = pools.map((pool) => pool.liquidityAddr);
   useFetchCacheRewardAssetForAllPools(lpAddresses);
   useFetchLpPoolsV3(lpAddresses);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   const { myStakes } = useGetMyStake({
     stakerAddress: address
@@ -87,7 +88,7 @@ const Pools: React.FC<{}> = () => {
         parseAssetOnlyDenom(JSON.parse(secondAssetInfo))
       ];
       const [baseToken, quoteToken] = [baseDenom, quoteDenom].map((denom) =>
-        oraichainTokensWithIcon.find((token) => token.denom === denom || token.contractAddress === denom)
+        allOraichainTokens.find((token) => token.denom === denom || token.contractAddress === denom)
       );
       const symbols = getSymbolPools(baseDenom, quoteDenom, pool.symbols);
       // calc claimable of each pool
@@ -109,10 +110,10 @@ const Pools: React.FC<{}> = () => {
     });
 
   const generateIcon = (baseToken: TokenItemType, quoteToken: TokenItemType): JSX.Element => {
-    let [BaseTokenIcon, QuoteTokenIcon] = [DefaultIcon, DefaultIcon];
+    let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
 
-    if (baseToken) BaseTokenIcon = theme === 'light' ? baseToken.IconLight : baseToken.Icon;
-    if (quoteToken) QuoteTokenIcon = theme === 'light' ? quoteToken.IconLight : quoteToken.Icon;
+    if (baseToken) BaseTokenIcon = theme === 'light' ? baseToken.iconLight : baseToken.icon;
+    if (quoteToken) QuoteTokenIcon = theme === 'light' ? quoteToken.iconLight : quoteToken.icon;
 
     // TODO: hardcode reverse logo for ORAI/INJ,USDC/ORAIX, need to update later
     const isReverseLogo = reverseSymbolArr.some(
@@ -121,16 +122,44 @@ const Pools: React.FC<{}> = () => {
     if (isReverseLogo) {
       return (
         <div className={styles.symbols}>
-          <QuoteTokenIcon className={styles.symbols_logo_left} />
-          <BaseTokenIcon className={styles.symbols_logo_right} />
+          <img
+            width={32}
+            height={32}
+            src={QuoteTokenIcon}
+            className={styles.symbols_logo_left}
+            style={{ borderRadius: '100%' }}
+            alt=""
+          />
+          <img
+            width={32}
+            height={32}
+            src={BaseTokenIcon}
+            className={styles.symbols_logo_right}
+            style={{ borderRadius: '100%' }}
+            alt=""
+          />
         </div>
       );
     }
 
     return (
       <div className={styles.symbols}>
-        <BaseTokenIcon className={styles.symbols_logo_left} />
-        <QuoteTokenIcon className={styles.symbols_logo_right} />
+        <img
+          width={32}
+          height={32}
+          src={BaseTokenIcon}
+          className={styles.symbols_logo_left}
+          style={{ borderRadius: '100%' }}
+          alt=""
+        />
+        <img
+          width={32}
+          height={32}
+          src={QuoteTokenIcon}
+          className={styles.symbols_logo_right}
+          style={{ borderRadius: '100%' }}
+          alt=""
+        />
       </div>
     );
   };

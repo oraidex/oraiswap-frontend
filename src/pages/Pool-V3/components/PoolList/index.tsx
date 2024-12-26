@@ -147,7 +147,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
     if (Object.values(poolLiquidities).length > 0) {
       const totalLiqudity = Object.values(poolLiquidities).reduce((acc, cur) => acc + cur, 0);
       setLiquidityPools(poolLiquidities);
-      // const totalAllPoolLiq = new BigDecimal(totalLiqudity).add(liquidityV2).toNumber();
       setTotalLiquidity(totalLiqudity);
     }
   }, [poolLiquidities, dataPool]);

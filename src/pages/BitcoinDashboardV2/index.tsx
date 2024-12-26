@@ -7,7 +7,6 @@ import { PendingDeposits } from './components/PendingDeposits';
 import { Tabs, KeysFilter } from './components/Tabs/Tabs';
 import { useSearchParams } from 'react-router-dom';
 import { PendingWithdraws } from './components/PendingWithdraws';
-import ConvertBitcoinV2 from './components/ConvertBitcoinV2';
 import { NomicContext } from 'context/nomic-context';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
 import useConfigReducer from 'hooks/useConfigReducer';

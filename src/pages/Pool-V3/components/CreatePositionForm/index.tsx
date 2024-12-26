@@ -420,19 +420,19 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
             <div className={styles.zapWrapper}>
               <ZapInTab
                 apr={zapApr}
-                amounts={amounts} //
-                matchRate={matchRate} //
-                setFocusId={setFocusId} //
-                setTokenZap={setTokenZap} //
-                setZapAmount={setZapAmount} //
-                simulating={simulating} //
-                swapFee={swapFee} //
+                amounts={amounts}
+                matchRate={matchRate}
+                setFocusId={setFocusId}
+                setTokenZap={setTokenZap}
+                setZapAmount={setZapAmount}
+                simulating={simulating}
+                swapFee={swapFee}
                 tokenFrom={tokenX}
                 tokenFromIcon={TokenFromIcon}
                 tokenTo={tokenY}
                 tokenToIcon={TokenToIcon}
                 tokenZap={tokenZap}
-                zapAmount={zapAmount} //
+                zapAmount={zapAmount}
                 totalFee={totalFee}
                 xUsd={Number(zapXUsd)}
                 yUsd={Number(zapYUsd)}
@@ -448,21 +448,21 @@ const CreatePositionForm: FC<CreatePositionFormProps> = ({ poolId, slippage, sho
             <div className={styles.manuallyWrapper}>
               {tokenX && tokenY && (
                 <ManuallyAddLiquidity
-                  apr={apr} //
-                  TokenFromIcon={TokenFromIcon} //
-                  TokenToIcon={TokenToIcon} //
-                  amountFrom={amountX} //
-                  amountTo={amountY} //
-                  amounts={amounts} //
-                  fromUsd={fromUsd} //
-                  toUsd={toUsd} //
-                  isFromBlocked={isXBlocked} //
-                  isToBlocked={isYBlocked} //
-                  setAmountFrom={setAmountX} //
-                  setAmountTo={setAmountY} //
-                  setFocusId={setFocusId} //
-                  tokenFrom={tokenX} //
-                  tokenTo={tokenY} //
+                  apr={apr}
+                  TokenFromIcon={TokenFromIcon}
+                  TokenToIcon={TokenToIcon}
+                  amountFrom={amountX}
+                  amountTo={amountY}
+                  amounts={amounts}
+                  fromUsd={fromUsd}
+                  toUsd={toUsd}
+                  isFromBlocked={isXBlocked}
+                  isToBlocked={isYBlocked}
+                  setAmountFrom={setAmountX}
+                  setAmountTo={setAmountY}
+                  setFocusId={setFocusId}
+                  tokenFrom={tokenX}
+                  tokenTo={tokenY}
                 />
               )}
             </div>
