@@ -22,7 +22,10 @@ import { TonProvider } from 'context/ton-provider';
 
 const queryClient = new QueryClient();
 
-if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
+if (
+  import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' ||
+  import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'staging'
+) {
   Sentry.init({
     environment: import.meta.env.VITE_APP_SENTRY_ENVIRONMENT,
     dsn: 'https://763cf7889ff3440d86c7c1fbc72c8780@o1323226.ingest.sentry.io/6580749',
