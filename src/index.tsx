@@ -22,39 +22,40 @@ import { TonProvider } from 'context/ton-provider';
 
 const queryClient = new QueryClient();
 
-if (
-  import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' ||
-  import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'staging'
-) {
-  Sentry.init({
-    environment: import.meta.env.VITE_APP_SENTRY_ENVIRONMENT,
-    dsn: 'https://763cf7889ff3440d86c7c1fbc72c8780@o1323226.ingest.sentry.io/6580749',
-    denyUrls: [
-      /extensions\//i,
-      /extension/i,
-      /vendor/i,
-      /^chrome:\/\//i,
-      /^chrome-extension:\/\//i,
-      /^moz-extension:\/\//i
-    ],
-    ignoreErrors: [
-      'Request rejected',
-      'Failed to fetch',
-      'Load failed',
-      'User rejected the request',
-      'Network Error',
-      'Object captured as promise rejection',
-      "Failed to execute 'insertBefore' on 'Node'"
-    ],
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
-    tracesSampleRate: 1
-  });
+// if (
+//   import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' ||
+//   import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'staging'
+// ) {
+Sentry.init({
+  // environment: import.meta.env.VITE_APP_SENTRY_ENVIRONMENT,
+  environment: 'production',
+  dsn: 'https://f03a5cb7dc25f5620b20999e9453579d@o4508534030729216.ingest.us.sentry.io/4508534031908864',
+  denyUrls: [
+    /extensions\//i,
+    /extension/i,
+    /vendor/i,
+    /^chrome:\/\//i,
+    /^chrome-extension:\/\//i,
+    /^moz-extension:\/\//i
+  ],
+  ignoreErrors: [
+    'Request rejected',
+    'Failed to fetch',
+    'Load failed',
+    'User rejected the request',
+    'Network Error',
+    'Object captured as promise rejection',
+    "Failed to execute 'insertBefore' on 'Node'"
+  ],
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1
+});
 
-  // init mixpanel track event
-  mixpanel.init(import.meta.env.VITE_APP_MIX_PANEL_ENVIRONMENT);
-}
+// init mixpanel track event
+// mixpanel.init(import.meta.env.VITE_APP_MIX_PANEL_ENVIRONMENT);
+// }
 
 // init queryClient
 const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
