@@ -21,7 +21,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
   const [dataPool, setDataPool] = useState([...Array(0)]);
   const dispatch = useDispatch();
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   const {
     data: poolList,

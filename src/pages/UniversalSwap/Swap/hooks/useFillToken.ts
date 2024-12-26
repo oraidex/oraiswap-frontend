@@ -40,7 +40,7 @@ export const useFillToken = (setSwapTokens: (denoms: [string, string]) => void) 
   const location = useLocation();
   const navigate = useNavigate();
 
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   const handleUpdateQueryURL = ([fromDenom, toDenom]: [string, string]) => {
     const queryString = location.search;

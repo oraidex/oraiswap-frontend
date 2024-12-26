@@ -299,7 +299,7 @@ export const getFromToToken = (
   });
 
   const storage = store.getState();
-  const allOraichainTokens = storage.token.allOraichainTokens;
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
   const fromToken =
     (isEvmSwap
       ? tokenMap[fromTokenDenomSwap]

@@ -40,7 +40,7 @@ const SelectToken = ({
   const isLightTheme = theme === 'light';
 
   const dispatch = useDispatch();
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   // useEffect(() => {
   //   if (listItems.length === 0 && textSearch) {

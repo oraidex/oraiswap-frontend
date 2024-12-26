@@ -364,7 +364,7 @@ async function loadSolEntries(
     });
 
     const storage = store.getState();
-    const allSolTokens = storage.token.allOtherChainTokens.filter((t) => t.chainId === chain.chainId);
+    const allSolTokens = (storage.token.allOtherChainTokens || []).filter((t) => t.chainId === chain.chainId);
     let entries: [string, string][] = allSolTokens.map((item) => {
       let amount = '0';
       if (item?.contractAddress) {

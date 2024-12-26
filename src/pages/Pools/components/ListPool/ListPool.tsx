@@ -24,7 +24,7 @@ export const ListPools: React.FC<ListPoolProps> = ({ poolTableData, generateIcon
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
   const [theme] = useConfigReducer('theme');
   const navigate = useNavigate();
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   const headers: TableHeaderProps<PoolTableData> = {
     symbols: {

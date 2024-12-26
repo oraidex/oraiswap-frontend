@@ -680,7 +680,7 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
 
 export const getIconToken = ({ isLightTheme, denom, width = 30, height = 30 }) => {
   const storage = store.getState();
-  const allOraichainTokens = storage.token.allOraichainTokens;
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
   const tokenIcon = allOraichainTokens.find((tokenWithIcon) =>
     [tokenWithIcon.contractAddress, tokenWithIcon.denom].includes(denom)
   );
