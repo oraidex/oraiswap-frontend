@@ -1,28 +1,26 @@
+import { FACTORY_V2_CONTRACT, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
+import IcBack from 'assets/icons/ic_back.svg?react';
 import cn from 'classnames/bind';
+import Loader from 'components/Loader';
 import Modal from 'components/Modal';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { FACTORY_V2_CONTRACT, TokenItemType } from '@oraichain/oraidex-common';
+import { getTransactionUrl } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
-import { toDisplay } from '@oraichain/oraidex-common';
+import useConfigReducer from 'hooks/useConfigReducer';
+import useTheme from 'hooks/useTheme';
+import { network, oraichainTokens } from 'initCommon';
+import { getCosmWasmClient } from 'libs/cosmjs';
+import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { FC, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import { useSelector } from 'react-redux';
 import { fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
-import styles from './NewPoolModal.module.scss';
-import { assetInfoMap, flattenTokens, network, oraichainTokens } from 'initCommon';
-import { getCosmWasmClient } from 'libs/cosmjs';
-import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { SelectTokenModal } from '../components/SelectTokenModal';
-import IcBack from 'assets/icons/ic_back.svg?react';
-import useTheme from 'hooks/useTheme';
-import { numberWithCommas } from 'helper/format';
-import useConfigReducer from 'hooks/useConfigReducer';
-import Loader from 'components/Loader';
-import { displayToast, TToastType } from 'components/Toasts/Toast';
-import { getTransactionUrl } from 'helper';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import styles from './NewPoolModal.module.scss';
 
 const cx = cn.bind(styles);
 interface ModalProps {
@@ -39,9 +37,15 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const [isSelectingToken, setIsSelectingToken] = useState<'token1' | 'token2' | null>(null);
   const [token1, setToken1] = useState<string | null>(null);
   const [token2, setToken2] = useState<string | null>(null);
-  const { allOraichainTokens, addedTokens } = useSelector((state: RootState) => state.token);
-  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>([...oraichainTokens, ...(addedTokens || [])]);
-  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>([...oraichainTokens, ...(addedTokens || [])]);
+  const { allOraichainTokens = [], addedTokens = [] } = useSelector((state: RootState) => state.token);
+  const [listToken1Option, setListToken1Option] = useState<TokenItemType[]>([
+    ...oraichainTokens,
+    ...(addedTokens || [])
+  ]);
+  const [listToken2Option, setListToken2Option] = useState<TokenItemType[]>([
+    ...oraichainTokens,
+    ...(addedTokens || [])
+  ]);
   const [amountToken1, setAmountToken1] = useState(0);
   const [amountToken2, setAmountToken2] = useState(0);
   const [loading, setLoading] = useState(false);

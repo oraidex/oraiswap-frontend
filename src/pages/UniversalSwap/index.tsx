@@ -10,14 +10,8 @@ import { DuckDb } from 'libs/duckdb';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { selectCurrentSwapFilterTime, selectCurrentSwapTabChart } from 'reducer/chartSlice';
-import {
-  selectChartTimeFrame,
-  selectCurrentFromToken,
-  selectCurrentToToken,
-  selectCurrentToken,
-  setChartTimeFrame
-} from 'reducer/tradingSlice';
+import { selectCurrentSwapFilterTime } from 'reducer/chartSlice';
+import { selectCurrentToToken, setChartTimeFrame } from 'reducer/tradingSlice';
 import { FILTER_TIME_CHART } from 'reducer/type';
 import { AssetsTab, HeaderTab, HeaderTop, HistoryTab, TabsTxs } from './Component';
 import ChartUsdPrice from './Component/ChartUsdPrice';
@@ -55,12 +49,6 @@ const Swap: React.FC = () => {
     setInitPriceUsd,
     setInitPercentChangeUsd
   );
-
-  // const { priceChange } = useGetPriceChange({
-  //   base_denom: currentPair.info.split('-')[0],
-  //   quote_denom: currentPair.info.split('-')[1],
-  //   tf
-  // });
 
   const initDuckdb = async () => {
     window.duckDb = await DuckDb.create();
@@ -170,18 +158,7 @@ const Chart = ({
   const [isTxsProcess, setIsTxsProcress] = useState<boolean>(false);
   const [chartTokenType, setChartTokenType] = useState(ChartTokenType.Price);
 
-  const currentPair = useSelector(selectCurrentToken);
-  const currentFromToken = useSelector(selectCurrentFromToken);
-  const currentToToken = useSelector(selectCurrentToToken);
   const filterTimeChartUsd = useSelector(selectCurrentSwapFilterTime);
-  const tabChart = useSelector(selectCurrentSwapTabChart);
-  const tf = useSelector(selectChartTimeFrame);
-
-  // const { priceChange } = useGetPriceChange({
-  //   base_denom: currentPair.info.split('-')[0],
-  //   quote_denom: currentPair.info.split('-')[1],
-  //   tf
-  // });
 
   const handleChangeChartTimeFrame = (resolution: number) => {
     dispatch(setChartTimeFrame(resolution));
@@ -196,7 +173,6 @@ const Chart = ({
         hideChart={hideChart}
         toTokenDenom={toTokenDenom}
         priceUsd={priceUsd}
-        // priceChange={priceChange}
         percentChangeUsd={percentChangeUsd}
         showTokenInfo={showTokenInfo}
       />
