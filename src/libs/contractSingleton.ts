@@ -655,18 +655,6 @@ function calculateLiquidityForRanges(liquidityChanges: LiquidityTick[], tickRang
   }));
 }
 
-const axios = Axios.create({
-  timeout: AXIOS_TIMEOUT,
-  retryTimes: 3,
-  // cache will be enabled by default in 2 seconds
-  adapter: retryAdapterEnhancer(
-    throttleAdapterEnhancer(Axios.defaults.adapter!, {
-      threshold: AXIOS_THROTTLE_THRESHOLD
-    })
-  ),
-  baseURL: 'https://api-staging.oraidex.io/v1/'
-});
-
 export type PositionAprInfo = {
   swapFee: number;
   incentive: number;

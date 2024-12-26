@@ -45,6 +45,7 @@ import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { Address, TonClient } from '@ton/ton';
 import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
 import { store } from 'store/configure';
+import { TON_ZERO_ADDRESS } from '@oraichain/common';
 
 export type LoadTokenParams = {
   refresh?: boolean;

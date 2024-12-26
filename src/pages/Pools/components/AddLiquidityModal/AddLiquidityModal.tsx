@@ -1,4 +1,10 @@
-import { buildMultipleExecuteMessages, DEFAULT_SLIPPAGE, ORAI, parseTokenInfo, toAmount } from '@oraichain/oraidex-common';
+import {
+  buildMultipleExecuteMessages,
+  DEFAULT_SLIPPAGE,
+  ORAI,
+  parseTokenInfo,
+  toAmount
+} from '@oraichain/oraidex-common';
 import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
@@ -188,14 +194,8 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
         });
       }
 
-      const { info: token1Info } = parseTokenInfo(
-        token1,
-        amount1.toString()
-      );
-      const { info: token2Info } = parseTokenInfo(
-        token2,
-        amount2.toString()
-      );
+      const { info: token1Info } = parseTokenInfo(token1, amount1.toString());
+      const { info: token2Info } = parseTokenInfo(token2, amount2.toString());
 
       const provideLiquidityMsg = {
         contractAddress: pairInfoData.pairAddr,
@@ -206,8 +206,8 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
                 info: token1Info,
                 amount: amount1.toString()
               },
-              { 
-                info: token2Info, 
+              {
+                info: token2Info,
                 amount: amount2.toString()
               }
             ],
@@ -215,7 +215,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
           }
         },
         funds
-      }
+      };
 
       msgs.push(provideLiquidityMsg);
 

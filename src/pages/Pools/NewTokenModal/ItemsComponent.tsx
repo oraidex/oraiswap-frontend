@@ -77,8 +77,7 @@ export const InitBalancesItems = ({
   return (
     <div className={cx('init-balance-item')}>
       <div className={cx('row-item')}>
-        <div className={cx('input', theme)}>
-          <div>
+        <div className={cx('input-item', theme)}>
             <Input
               value={item.address ? reduceString(item.address, 7, 10) : null}
               style={{
@@ -94,12 +93,10 @@ export const InitBalancesItems = ({
               }}
               placeholder="Address"
             />
-          </div>
         </div>
       </div>
       <div className={cx('row-item')}>
-        <div className={cx('input', theme)}>
-          <div>
+        <div className={cx('input-item', theme)}>
             <NumberFormat
               thousandSeparator
               decimalScale={decimals || 0}
@@ -120,7 +117,6 @@ export const InitBalancesItems = ({
               }}
               placeholder="0"
             />
-          </div>
         </div>
       </div>
       <div

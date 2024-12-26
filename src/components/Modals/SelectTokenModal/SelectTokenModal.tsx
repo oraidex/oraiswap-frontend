@@ -61,26 +61,31 @@ export const SelectTokenModal: FC<ModalProps> = ({
     }
   }, [textSearch]);
 
-  const listItems = type === 'network' ? 
-  items.filter(
-    (item) => (textSearch ? (item as any).chainName.toLowerCase().includes(textSearch.toLowerCase()) : true)
-  )
-  : items.filter(
-    (item) => (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
-  );
+  const listItems =
+    type === 'network'
+      ? items.filter((item) =>
+          textSearch ? (item as any).chainName.toLowerCase().includes(textSearch.toLowerCase()) : true
+        )
+      : items.filter((item) => (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true));
 
   return (
-    <Modal theme={theme} isOpen={isOpen} close={() => {
-      close();
-      setTextSearch('');
-    }} open={open} isCloseBtn={true}>
+    <Modal
+      theme={theme}
+      isOpen={isOpen}
+      close={() => {
+        close();
+        setTextSearch('');
+      }}
+      open={open}
+      isCloseBtn={true}
+    >
       <div className={cx('select', theme)}>
         <div className={cx('title', theme)}>
           <div>{type === 'token' ? 'Select a token' : 'Select a network'}</div>
         </div>
 
         <SearchInput
-          placeholder={type === 'network' ? "Find network by name" :"Find token by name or address"}
+          placeholder={type === 'network' ? 'Find network by name' : 'Find token by name or address'}
           className={styles.selectTokenSearchInput}
           onSearch={(text) => {
             setTextSearch(text);

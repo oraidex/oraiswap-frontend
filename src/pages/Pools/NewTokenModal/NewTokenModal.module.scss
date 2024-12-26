@@ -410,14 +410,14 @@
         gap: 12px;
 
         .row-item {
-          margin-top: 16px;
-          width: 100%;
+          // margin-top: 16px;
+          // width: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
 
-          .input {
-            width: 100%;
+          .input-item {
+            max-width: fit-content;
             // height: 48px;
             background-color: #232521;
 
@@ -442,11 +442,14 @@
             &::placeholder {
               color: #505665;
             }
+
+            input {
+              width: 80%;
+            }
           }
         }
 
         .trash {
-          margin-top: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
