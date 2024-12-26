@@ -1,8 +1,8 @@
 import ArrowIcon from 'assets/icons/down-arrow.svg?react';
 import IconCreatePoolV2 from 'assets/icons/ic_create_pool_v2.svg?react';
 import IconCreatePoolV3 from 'assets/icons/ic_create_pool_v3.svg?react';
-import SearchLightSvg from 'assets/images/search-light-svg.svg?react';
-import SearchSvg from 'assets/images/search-svg.svg?react';
+import SearchLightSvg from 'assets/icons/search-svg-light.svg?react';
+import SearchSvg from 'assets/icons/search-svg.svg?react';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -57,7 +57,7 @@ const PoolV3 = () => {
   const [openFilter, setOpenFilter] = useState<boolean>(false);
   const [openOptionCreatePool, setOpenOptionCreatePool] = useState<boolean>(false);
   const [poolType, setPoolType] = useState<POOL_TYPE>(POOL_TYPE.ALL);
-  const bgUrl = theme === 'light' ? SearchLightSvg : SearchSvg;
+  const SearchIcon = theme === 'light' ? SearchLightSvg : SearchSvg;
   const { poolList } = useGetPoolList(prices);
 
   const [isOpenNewPoolModalV2, setIsOpenNewPoolModalV2] = useState(false);
@@ -75,6 +75,13 @@ const PoolV3 = () => {
   useOnClickOutside(refFilter, () => {
     setOpenFilter(false);
   });
+
+  const handleOutsideClick = () => {
+    setOpenOptionCreatePool(false);
+  };
+
+  const refOpenOptionCreatePool = useRef(null);
+  useOnClickOutside(refOpenOptionCreatePool, () => handleOutsideClick());
 
   return (
     <>
@@ -124,6 +131,9 @@ const PoolV3 = () => {
                 )}
               </div>
               <div className={styles.search}>
+                <span>
+                  <SearchIcon />
+                </span>
                 <input
                   type="text"
                   placeholder="Search pool"
@@ -132,12 +142,14 @@ const PoolV3 = () => {
                     e.preventDefault();
                     setSearch(e.target.value);
                   }}
-                  style={{
-                    paddingLeft: 40,
-                    backgroundImage: `url(${bgUrl})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: '16px center'
-                  }}
+                  style={
+                    {
+                      // paddingLeft: 40,
+                      // backgroundImage: `url(${bgUrl})`,
+                      // backgroundRepeat: 'no-repeat',
+                      // backgroundPosition: '16px center'
+                    }
+                  }
                 />
               </div>
               {isOpenNewPoolModalV3 && (
@@ -149,12 +161,17 @@ const PoolV3 = () => {
               )}
               <div className={styles.dropDown}>
                 <div className={styles.btnAdd}>
-                  <Button type="primary-sm" onClick={() => setOpenOptionCreatePool(!openOptionCreatePool)}>
+                  <Button
+                    type="primary-sm"
+                    onClick={() => {
+                      setOpenOptionCreatePool(!openOptionCreatePool);
+                    }}
+                  >
                     Create New Pool
                   </Button>
                 </div>
                 {openOptionCreatePool && (
-                  <div className={`${styles.dropdownContent} ${styles.dropdownCreate}`}>
+                  <div ref={refOpenOptionCreatePool} className={`${styles.dropdownContent} ${styles.dropdownCreate}`}>
                     <div
                       className={styles.filterItem}
                       onClick={() => {

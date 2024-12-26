@@ -9,7 +9,7 @@ import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { chainInfos, oraichainTokens } from 'initCommon';
-import { toSumDisplay } from 'libs/utils';
+import { reduceString, toSumDisplay } from 'libs/utils';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +17,10 @@ import { inspectToken } from 'reducer/onchainTokens';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './SelectToken.module.scss';
+import { useCopyClipboard } from 'hooks/useCopyClipboard';
+import IconCopyAddress from 'assets/icons/ic_copy_address.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
+import { extractAddress } from 'pages/Pool-V3/helpers/format';
 
 interface InputSwapProps {
   isSelectToken: boolean;
@@ -68,6 +72,8 @@ export default function SelectToken({
     if (selectChain && selectChain !== textChain) setTextChain(selectChain);
   }, [selectChain]);
 
+  const { isCopied, handleCopy, copiedValue } = useCopyClipboard();
+
   useEffect(() => {
     if (listItems.length === 0 && textSearch && textChain && selectChain === 'Oraichain') {
       dispatch<any>(inspectToken({ tokenId: textSearch, address, isUserAdded: true }));
@@ -75,7 +81,6 @@ export default function SelectToken({
   }, [textSearch, address]);
 
   const checkedItems =
-    // selectChain === 'Oraichain' ? oraichainTokens.filter((token) => !token.isDisabledSwap).concat(addedTokens) : items;
     selectChain === 'Oraichain' ? oraichainTokens.filter((token) => !token.isDisabledSwap).concat(addedTokens) : items;
 
   const listItems = checkedItems
@@ -176,6 +181,7 @@ export default function SelectToken({
               return balanceDelta;
             })
             .map(({ key, tokenIcon, networkIcon, balance, usd, ...token }) => {
+              const tokenDenom = extractAddress(token as TokenItemType);
               return (
                 <div
                   key={key}
@@ -196,7 +202,25 @@ export default function SelectToken({
                         {token.name || 'UNKNOWN'}
                         <span>{token.isVerified && <IconVerified />}</span>
                       </div>
-                      <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>
+                      <div className={styles.selectTokenItemTokenOrg}>
+                        <span className={styles.denom}>
+                          {tokenDenom?.length < 13 ? tokenDenom : reduceString(tokenDenom, 7, 6)}
+                        </span>
+                        <div className={styles.copyBtn}>
+                          {isCopied && copiedValue === tokenDenom ? (
+                            <SuccessIcon width={20} height={20} />
+                          ) : (
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCopy(tokenDenom);
+                              }}
+                            >
+                              <IconCopyAddress />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className={styles.selectTokenItemRight}>
