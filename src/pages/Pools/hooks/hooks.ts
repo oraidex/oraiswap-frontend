@@ -118,36 +118,6 @@ export const getPools = async (): Promise<PoolInfoResponse[]> => {
   }
 };
 
-export const useGetPriceChange = (params: { base_denom: string; quote_denom: string; tf: number }) => {
-  const getPriceChange = async (queries: { base_denom: string; quote_denom: string; tf: number }) => {
-    try {
-      const res = await axios.get('/price', { params: queries });
-      return res.data;
-    } catch (e) {
-      console.error('useGetPriceChange', e);
-      return {
-        price_change: 0,
-        price: 0,
-        isError: true
-      };
-    }
-  };
-
-  const { data: priceChange, isLoading } = useQuery(['price-change', params], () => getPriceChange(params), {
-    refetchOnWindowFocus: true,
-    staleTime: 5 * 60 * 1000,
-    placeholderData: {
-      price: 0,
-      price_change: 0
-    }
-  });
-
-  return {
-    isLoading,
-    priceChange
-  };
-};
-
 export const useGetPools = () => {
   const { data: pools } = useQuery(['pools'], getPools, {
     refetchOnWindowFocus: false,
@@ -196,7 +166,7 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
     const { totalSupply, totalLiquidity } = pool;
     const myStakedLP = pool.liquidityAddr
       ? totalRewardInfoData?.reward_infos.find((item) => isEqual(item.staking_token, pool.liquidityAddr))
-        ?.bond_amount || '0'
+          ?.bond_amount || '0'
       : 0;
 
     const lpPrice = Number(totalSupply) ? totalLiquidity / Number(totalSupply) : 0;
@@ -207,9 +177,9 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
 
   const totalEarned = myStakes
     ? myStakes.reduce((total, current) => {
-      total += current.earnAmountInUsdt;
-      return total;
-    }, 0)
+        total += current.earnAmountInUsdt;
+        return total;
+      }, 0)
     : 0;
 
   return {
@@ -233,7 +203,7 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
     refetchOnWindowFocus: true,
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 5,
-    enabled: !!pairDenoms,
+    enabled: !!pairDenoms
   });
 
   const [[token1, token2], setTokens] = useState<[TokenItemType, TokenItemType]>([{}, {}]);
@@ -242,7 +212,6 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
     if (!pairDenoms) return;
     (async function fetchTokens() {
       try {
-
         const pairRawData = pairDenoms.split('_');
         const tokenTypes = pairRawData.map((raw) =>
           oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
