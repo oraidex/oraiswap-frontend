@@ -36,15 +36,15 @@
 
     <meta property="twitter:url" content="%PUBLIC_URL%" />
     <meta property="twitter:domain" content="%PUBLIC_URL%" />
+    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+    <script>
+      var vConsole = new window.VConsole();
+    </script>
     <script>
       var exports = {};
       var require = {};
     </script>
     <script type="module" src="src/initCommon.ts"></script>
-    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-    <script>
-      var vConsole = new window.VConsole();
-    </script>
   </head>
   <body>
     <div id="oraiswap"></div>
