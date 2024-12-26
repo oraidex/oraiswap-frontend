@@ -90,6 +90,12 @@
       border-radius: 99px;
       font-weight: 400;
       font-size: 14px;
+      display: flex;
+      gap: 8px;
+      
+      span {
+        padding-left: 1rem;
+      }
 
       @include theme() {
         background-color: theme-get('neutral-surface-bg-section');
