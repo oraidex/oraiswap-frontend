@@ -11,7 +11,8 @@ const axios = Axios.create({
       threshold: AXIOS_THROTTLE_THRESHOLD
     })
   ),
-  baseURL: import.meta.env.VITE_APP_BASE_API_URL
+  // baseURL: import.meta.env.VITE_APP_BASE_API_URL
+  baseURL: 'https://api-staging.oraidex.io'
 });
 
 export default axios;
