@@ -3990,35 +3990,10 @@
     react-use "^17.4.0"
     react-use-websocket "^4.5.0"
 
-"@oraichain/oraidex-common@2.0.1", "@oraichain/oraidex-common@2.0.5", "@oraichain/oraidex-common@^1.1.6":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.1.tgz#2a53ca723717b6d85464aa7a38bd87f32e7bb715"
-  integrity sha512-jByZvRXjLYrgmdM5qOz+EHNq5+k0b1etqfw4xIhr//L0sBD6z+/jBSGh1UTC59m24DABtrTQlGDae5jcdQ1hhw==
-  dependencies:
-    "@cosmjs/amino" "^0.32.4"
-    "@cosmjs/cosmwasm-stargate" "^0.32.4"
-    "@cosmjs/crypto" "^0.32.4"
-    "@cosmjs/proto-signing" "^0.32.4"
-    "@cosmjs/stargate" "^0.32.4"
-    "@cosmjs/tendermint-rpc" "^0.32.4"
-    "@ethersproject/providers" "^5.0.10"
-    "@injectivelabs/sdk-ts" "1.12.1"
-    "@keplr-wallet/types" "^0.11.38"
-    "@oraichain/common" "1.2.7"
-    "@oraichain/oraidex-contracts-sdk" latest
-    "@ton/core" "0.56.3"
-    "@ton/crypto" "3.3.0"
-    axios "1.7.2"
-    axios-extensions "3.1.7"
-    bignumber.js "^9.1.2"
-    cosmjs-types "^0.9.0"
-    ethers "^5.0.15"
-    tronweb "6.0.0-beta.4"
-
-"@oraichain/oraidex-common@2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.4.tgz#9de529f5adccfe46838c913a5bd745a65abd8b37"
-  integrity sha512-mmvpmjJCCTAGc4K7Q0s/QMK3ZGw+UeNxH5mEhjMQzpaD7jqFjG5z/mKZEFyvCq7Jd1lZbzwUBqZe/Y51pSdgZQ==
+"@oraichain/oraidex-common@2.0.5", "@oraichain/oraidex-common@^1.1.6":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-2.0.5.tgz#5075a28e6b94af05f64d419fcf8bfbd75ba824a1"
+  integrity sha512-oWH1Ywx6Hbb8cW23zTMlQbz93saE6+enFptmd6CNUvJPwVoM42464jBR/bIN6D2Y168q88cD7ST/y+YQc3DiXg==
   dependencies:
     "@cosmjs/amino" "^0.32.4"
     "@cosmjs/cosmwasm-stargate" "^0.32.4"
