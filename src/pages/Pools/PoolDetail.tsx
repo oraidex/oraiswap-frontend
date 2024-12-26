@@ -25,7 +25,7 @@ import { Earning } from './components/Earning';
 import { MyPoolInfo } from './components/MyPoolInfo/MyPoolInfo';
 import { OverviewPool } from './components/OverviewPool';
 import TransactionHistory from './components/TransactionHistory';
-import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools, useGetPriceChange } from './hooks';
+import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools } from './hooks';
 import { useGetLpBalance } from './hooks/useGetLpBalance';
 import { useGetPairInfo } from './hooks/useGetPairInfo';
 
@@ -99,8 +99,6 @@ const PoolDetail: React.FC = () => {
     quote_denom: pair.split('-')[1],
     tf: 1440
   };
-
-  const { priceChange } = useGetPriceChange(params);
 
   const baseToken = (token1?.contractAddress || token1?.denom) === params.base_denom ? token1 : token2;
   const quoteToken = (token2?.contractAddress || token2?.denom) === params.base_denom ? token1 : token2;
@@ -198,8 +196,8 @@ const PoolDetail: React.FC = () => {
               {ratioOraiBtc
                 ? `${numberWithCommas(ratioOraiBtc || 0, undefined, { maximumFractionDigits: 6 })} ${baseToken?.name}`
                 : `${numberWithCommas(
-                  toDisplay(pairAmountInfoData?.token1Amount, token1?.decimals, 0) /
-                  toDisplay(pairAmountInfoData?.token2Amount, token2?.decimals, 0) || 0,
+                    toDisplay(pairAmountInfoData?.token1Amount, token1?.decimals, 0) /
+                      toDisplay(pairAmountInfoData?.token2Amount, token2?.decimals, 0) || 0,
                     undefined,
                     { maximumFractionDigits: 6 }
                   )} ${baseToken?.name}`}
