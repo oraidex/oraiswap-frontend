@@ -79,6 +79,8 @@ import {
   getUtxos,
   mapUtxos,
   moveOraibToOraichain,
+  transferIbcCustom,
+  transferIBCKwt,
   useDepositFeesBitcoinV2,
   useGetWithdrawlFeesBitcoinV2
 } from './helpers';
@@ -98,13 +100,12 @@ import { PublicKey } from '@solana/web3.js';
 import { NATIVE_MINT } from '@solana/spl-token';
 import { TonChainId } from 'context/ton-provider';
 import useTonBridgeHandler from './hooks/useTonBridgeHandler';
-import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
+// import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
 import { tokenInspector } from 'initTokenInspector';
 import { addToOtherChainTokens } from 'reducer/token';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
-interface BalanceProps { }
-
+interface BalanceProps {}
 export const isMaintainBridge = false;
 
 const Balance: React.FC<BalanceProps> = () => {
@@ -146,8 +147,6 @@ const Balance: React.FC<BalanceProps> = () => {
   const [btcAddress] = useConfigReducer('btcAddress');
 
   const wallet = useWallet();
-
-  // const dispatch = useDispatch();
 
   const { handleBridgeFromCosmos, handleBridgeFromTon } = useTonBridgeHandler({
     token: from,
@@ -196,7 +195,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
     // TODO: vuonghuuhung support dynamic bridge orai <-> solana
     // (async () => {
-    //   if (tokenUrl && filterNetworkUI === SolanaNetworkConfig.chainId) {
+    // if (tokenUrl && filterNetworkUI === SolanaNetworkConfig.chainId) {
     //     const token = await tokenInspector.inspectTokenFromSpecifiedChain({
     //       tokenId: tokenUrl,
     //       chainId: filterNetworkUI

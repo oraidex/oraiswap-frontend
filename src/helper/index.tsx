@@ -10,7 +10,8 @@ import {
   EVM_CHAIN_ID_COMMON,
   SOL_SCAN,
   WalletType as WalletCosmosType,
-  solChainId
+  solChainId,
+  oraichainNetwork
 } from '@oraichain/oraidex-common';
 import { serializeError } from 'serialize-error';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
@@ -86,6 +87,10 @@ export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId ==
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
   return tokenCanBridgeTo.includes(item.chainId);
+};
+
+export const findChainByChainId = (chainId: string) => {
+  return networks.find((n) => n.chainId === chainId) || oraichainNetwork;
 };
 
 export const getDenomEvm = (): EvmDenom => {

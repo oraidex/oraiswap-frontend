@@ -152,9 +152,9 @@ export const TabsTxs: React.FC<{
         })}
       </div>
       {tab !== TYPE_TAB_HISTORY.HISTORY && (
-        <div>
+        <div className={cx('right')}>
           <div
-            className={cx('right')}
+            className={cx('content')}
             onClick={() => {
               setIsNetwork(!isNetwork);
             }}

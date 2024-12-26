@@ -31,12 +31,20 @@ import IconFutureNoel from 'assets/images/christmas/ic_future_noel.svg?react';
 import IconOrderbookNoel from 'assets/images/christmas/ic_orderbook_noel.svg?react';
 import IconSleighNoel from 'assets/images/christmas/sleigh.gif';
 import IconBalloonNoel from 'assets/images/christmas/balloon.gif';
+import IconTxFailNoel from 'assets/images/christmas/tx_fail.svg';
+import IconTxSuccessNoel from 'assets/images/christmas/tx_success.svg';
+import IconTxInfoNoel from 'assets/images/christmas/tx_info.svg';
+
+import GiftBoxJson from 'assets/lottie/gift-box.json';
+import BalloonJson from 'assets/lottie/balloon.json';
 
 export type ConfigTheme = {
   logo: string;
   animation: {
     topImg: string;
     bottomImg: string;
+    topJson?: any;
+    bottomJson?: any;
   };
   menu: {
     orderBookIcon: React.FunctionComponent<
@@ -67,6 +75,11 @@ export type ConfigTheme = {
         leftImg: string;
       };
     };
+  };
+  toast?: {
+    txInfoImg: string;
+    txSuccessImg: string;
+    txFailImg: string;
   };
 };
 
@@ -132,8 +145,10 @@ export const lightConfig: Record<EVENT_ENUM, ConfigTheme> = {
   [EVENT_ENUM.christmas]: {
     logo: LogoFullImgChristmas,
     animation: {
-      topImg: IconBalloonNoel,
-      bottomImg: IconSleighNoel
+      topImg: '',
+      bottomImg: '',
+      topJson: BalloonJson,
+      bottomJson: GiftBoxJson
     },
     menu: {
       orderBookIcon: IconOrderbookNoel,
@@ -222,8 +237,10 @@ export const darkConfig: Record<EVENT_ENUM, ConfigTheme> = {
   [EVENT_ENUM.christmas]: {
     logo: LogoFullImgChristmas,
     animation: {
-      topImg: IconBalloonNoel,
-      bottomImg: IconSleighNoel
+      topImg: '',
+      bottomImg: '',
+      topJson: BalloonJson,
+      bottomJson: GiftBoxJson
     },
     menu: {
       orderBookIcon: IconOrderbookNoel,
@@ -246,6 +263,11 @@ export const darkConfig: Record<EVENT_ENUM, ConfigTheme> = {
           leftImg: btnSnowLeft
         }
       }
+    },
+    toast: {
+      txInfoImg: IconTxInfoNoel,
+      txSuccessImg: IconTxSuccessNoel,
+      txFailImg: IconTxFailNoel
     }
   }
 };

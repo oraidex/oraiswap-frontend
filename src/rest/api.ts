@@ -39,6 +39,7 @@ import {
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 import { generateSwapOperationMsgs, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
+import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { flattenTokens, network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';

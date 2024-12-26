@@ -23,7 +23,7 @@ const ModalConfirmUnverifiedToken: React.FC<{
 }> = ({ handleReject, handleConfirm, token }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const { addedTokens } = useSelector((state: RootState) => state.token);
+  const { addedTokens = [] } = useSelector((state: RootState) => state.token);
   const [isMaliciousToken, setIsMaliciousToken] = useState<boolean>(false);
 
   useEffect(() => {
@@ -57,7 +57,9 @@ const ModalConfirmUnverifiedToken: React.FC<{
         </div>
         <div className={styles.confirmInfo}>
           <div className={styles.title}>This token is not on the default token lists</div>
-          {isMaliciousToken && <div className={styles.malicious}>This token has a same name with a verified token!</div>}
+          {isMaliciousToken && (
+            <div className={styles.malicious}>This token has a same name with a verified token!</div>
+          )}
           <div className={styles.description}>
             By clicking below, you understand that you are fully responsible for confirming the token you are trading.
           </div>
