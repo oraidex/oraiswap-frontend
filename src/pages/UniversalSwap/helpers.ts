@@ -379,27 +379,15 @@ export const getProtocolsSmartRoute = (
 };
 
 export const isAllowAlphaIbcWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
-  return true;
-};
-
-const toCoinGeckoIds = ['osmosis', 'cosmos', 'oraichain-token', 'usd-coin'];
-const listAllowSmartRoute = {
-  'osmosis-1-Oraichain': {
-    fromCoinGeckoIds: ['osmosis'],
-    toCoinGeckoIds
-  },
-  'injective-1-Oraichain': {
-    fromCoinGeckoIds: ['injective-protocol'],
-    toCoinGeckoIds
-  },
-  'noble-1-Oraichain': {
-    fromCoinGeckoIds: ['usd-coin'],
-    toCoinGeckoIds: [...toCoinGeckoIds, 'injective-protocol']
-  },
-  'cosmoshub-4-Oraichain': {
-    fromCoinGeckoIds: ['cosmos'],
-    toCoinGeckoIds: [...toCoinGeckoIds]
+  // FIXME: fix case inj oraichain -> x oraichain
+  if (
+    fromToken.coinGeckoId === 'injective-protocol' &&
+    fromToken.chainId === toToken.chainId &&
+    fromToken.chainId === 'Oraichain'
+  ) {
+    return false;
   }
+  return true;
 };
 
 /**
@@ -410,6 +398,14 @@ const listAllowSmartRoute = {
  * @returns boolean
  */
 export const isAllowIBCWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
+  // FIXME: fix case inj oraichain -> x oraichain
+  if (
+    fromToken.coinGeckoId === 'injective-protocol' &&
+    fromToken.chainId === toToken.chainId &&
+    fromToken.chainId === 'Oraichain'
+  ) {
+    return true;
+  }
   return false;
 };
 
