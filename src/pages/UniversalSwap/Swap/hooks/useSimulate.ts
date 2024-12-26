@@ -16,8 +16,7 @@ export const getRouterConfig = (options?: {
   ignoreFee?: boolean;
 }) => {
   return {
-    // TODO: update to production later.
-    url: 'https://osor-staging.oraidex.io',
+    url: 'https://osor.oraidex.io',
     path: options?.path ?? '/smart-router/alpha-router',
     protocols: options?.protocols ?? ['Oraidex', 'OraidexV3'],
     dontAllowSwapAfter: options?.dontAllowSwapAfter ?? ['Oraidex', 'OraidexV3'],
