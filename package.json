@@ -138,7 +138,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "vite",
-    "build": "NODE_OPTIONS='--max-old-space-size=12288' vite build",
+    "build": "NODE_OPTIONS='--max-old-space-size=15000' vite build",
     "serve": "vite serve",
     "ts-check": "tsc --noEmit",
     "postinstall": "patch-package",
