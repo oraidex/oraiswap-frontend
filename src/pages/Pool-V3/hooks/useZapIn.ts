@@ -158,8 +158,7 @@ const useZapIn = (
     try {
       const amountAfterFee = Number(zapAmount) * (1 - zapFee);
 
-      // TODO: update to production later.
-      const routerApi = 'https://osor-staging.oraidex.io/smart-router/alpha-router';
+      const routerApi = 'https://osor.oraidex.io/smart-router/alpha-router';
 
       const zapper = new ZapConsumer({
         client,

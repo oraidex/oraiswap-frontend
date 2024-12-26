@@ -235,9 +235,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
         deviation: 0,
         dexV3Address: network.pool_v3,
         multiCallAddress: MULTICALL_CONTRACT,
-        // routerApi: 'https://osor.oraidex.io/smart-router/alpha-router',
-        // TODO: update to prod later
-        routerApi: 'https://osor-staging.oraidex.io/smart-router/alpha-router',
+        routerApi: 'https://osor.oraidex.io/smart-router/alpha-router',
         smartRouteConfig: {
           swapOptions: {
             protocols: ['OraidexV3']
