@@ -37,21 +37,29 @@ const PoolDetail: React.FC = () => {
   const dispatch = useDispatch();
 
   const [address] = useConfigReducer('address');
-  const poolDetailData = useGetPoolDetail({ pairDenoms: poolUrl });
-  const loadTokenAmounts = useLoadTokens();
-  const setCachedLpPools = (payload: LpPoolDetails) => dispatch(updateLpPools(payload));
+
+  const poolDetailData = useGetPoolDetail({ pairDenoms: poolUrl }); // ok
+
+  const loadTokenAmounts = useLoadTokens(); // ok
+
+  const setCachedLpPools = (payload: LpPoolDetails) => dispatch(updateLpPools(payload)); // ok
+
   const pools = useGetPools();
-  const lpAddresses = pools.map((pool) => pool.liquidityAddr);
+
   const { refetchPairAmountInfo, refetchLpTokenInfoData, pairAmountInfoData } = useGetPairInfo(poolDetailData);
+
+  const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
+
+  const lpAddresses = pools.map((pool) => pool.liquidityAddr);
   const queryClient = useQueryClient();
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
   const [ratioOraiBtc, setRatioOraiBtc] = useState(0);
-
-  const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
   const lpTokenBalance = BigInt(lpBalanceInfoData?.balance || '0');
 
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
-  console.log({ pairAmountInfoData });
+
+  // console.log({ pairAmountInfoData });
+
   useEffect(() => {
     refetchAllLpPools();
   }, [lpAddresses]);

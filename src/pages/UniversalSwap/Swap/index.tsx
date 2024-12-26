@@ -378,6 +378,8 @@ const SwapComponent: React.FC<{
         alphaSmartRoutes
       };
 
+      console.log({ swapData });
+
       const univeralSwapHandler = new UniversalSwapHandler(
         swapData,
         {
