@@ -1,4 +1,4 @@
-import { TokenInfo, TokenItemType } from '@oraichain/oraidex-common';
+import { TokenInfo } from '@oraichain/oraidex-common';
 import { useQuery } from '@tanstack/react-query';
 import { fetchTokenInfo, getPairAmountInfo } from 'rest/api';
 import { PoolDetail } from 'types/pool';
@@ -13,7 +13,7 @@ export const useGetPairInfo = ({ token1, token2, info: pairInfoData }: PoolDetai
     {
       enabled: !!pairInfoData,
       refetchOnWindowFocus: false,
-      keepPreviousData: true,
+      // keepPreviousData: true,
       refetchOnMount: true
     }
   );
@@ -26,7 +26,7 @@ export const useGetPairInfo = ({ token1, token2, info: pairInfoData }: PoolDetai
     {
       enabled: !!token1 && !!token2,
       refetchOnWindowFocus: false,
-      refetchInterval: 15000
+      refetchInterval: 10000
     }
   );
 
