@@ -5,21 +5,21 @@ import { toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { OraiswapStakingQueryClient, OraiswapStakingTypes } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { cw20TokenMap, network, oraichainTokens, tokenMap } from 'initCommon';
+import { cw20TokenMap, network, tokenMap } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'rest/request';
 
+import { tokenInspector } from 'initTokenInspector';
 import { getUsd } from 'libs/utils';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 import { updateLpPools } from 'reducer/token';
 import { fetchRewardPerSecInfo, fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
-import { tokenInspector } from 'initTokenInspector';
-import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -166,7 +166,7 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
     const { totalSupply, totalLiquidity } = pool;
     const myStakedLP = pool.liquidityAddr
       ? totalRewardInfoData?.reward_infos.find((item) => isEqual(item.staking_token, pool.liquidityAddr))
-          ?.bond_amount || '0'
+        ?.bond_amount || '0'
       : 0;
 
     const lpPrice = Number(totalSupply) ? totalLiquidity / Number(totalSupply) : 0;
@@ -177,9 +177,9 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
 
   const totalEarned = myStakes
     ? myStakes.reduce((total, current) => {
-        total += current.earnAmountInUsdt;
-        return total;
-      }, 0)
+      total += current.earnAmountInUsdt;
+      return total;
+    }, 0)
     : 0;
 
   return {
@@ -190,6 +190,7 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
 };
 
 export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   const getPoolDetail = async (queries: { pairDenoms: string }): Promise<PoolInfoResponse> => {
     try {
       const res = await axios.get('/v1/pool-detail/', { params: queries });
@@ -210,11 +211,13 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
 
   useEffect(() => {
     if (!pairDenoms) return;
+
     (async function fetchTokens() {
       try {
+
         const pairRawData = pairDenoms.split('_');
         const tokenTypes = pairRawData.map((raw) =>
-          oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
+          allOraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
         );
 
         let token1 = tokenTypes[0];
@@ -233,6 +236,7 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
         console.error('error fetchTokens: ', e);
       }
     })();
+
   }, [pairDenoms]);
 
   return {
