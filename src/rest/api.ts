@@ -725,10 +725,7 @@ async function getPairAmountInfo(
   poolInfo?: PoolInfo,
   oraiUsdtPoolInfo?: PoolInfo
 ): Promise<PairAmountInfo> {
-  console.log({ poolInfo });
-  console.log({ fromToken, toToken });
   const poolData = poolInfo ?? (await fetchPoolInfoAmount(fromToken, toToken, cachedPairs));
-  console.log({ poolData });
   // default is usdt
   let tokenPrice = 0;
 
