@@ -8,7 +8,13 @@ import ToggleSwitch from 'components/ToggleSwitch';
 import { type NetworkType } from 'components/WalletManagement/walletConfig';
 import { ThemeContext } from 'context/theme-context';
 import copy from 'copy-to-clipboard';
-import { btcNetworksWithIcon, cosmosNetworksWithIcon, evmNetworksIconWithoutTron, tronNetworksWithIcon } from 'helper';
+import {
+  btcNetworksWithIcon,
+  cosmosNetworksWithIcon,
+  evmNetworksIconWithoutTron,
+  solanaNetworksWithIcon,
+  tronNetworksWithIcon
+} from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
@@ -33,6 +39,7 @@ export const MyWalletMobile: React.FC<{
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [cosmosAddresses] = useConfigReducer('cosmosAddress');
   const [btcAddress] = useConfigReducer('btcAddress');
+  const [solAddress] = useConfigReducer('solAddress');
 
   const [currentDisconnectingNetwork, setCurrentDisconnectingNetwork] = useState<NetworkType>(null);
   const [isShowDisconnect, setIsShowDisconnect] = useState(false);
@@ -223,6 +230,43 @@ export const MyWalletMobile: React.FC<{
     );
   };
 
+  const renderSolAddresses = () => {
+    if (!solAddress) return <></>;
+
+    return (
+      <div className={styles.addressByNetworkItem}>
+        {solanaNetworksWithIcon.map((network) => {
+          let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
+          if (!NetworkIcon) NetworkIcon = DefaultIcon;
+          return (
+            <div key={network.chainId} className={styles.addressByChainInNetwork}>
+              <div className={styles.left}>
+                <div className={styles.icon}>
+                  <div className={styles.iconChain}>
+                    <NetworkIcon width={30} height={30} />
+                  </div>
+                </div>
+                <div className={styles.info}>
+                  <div className={styles.chainName}>{network.chainName}</div>
+                  <div className={styles.chainAddress}>
+                    <span>{reduceString(solAddress, 6, 6)}</span>
+                    <div className={styles.copyBtn} onClick={(e) => copyWalletAddress(e, solAddress)}>
+                      {copiedValue === solAddress ? (
+                        <SuccessIcon width={15} height={15} />
+                      ) : (
+                        <CopyIcon width={15} height={15} />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div
       ref={myWalletRef}
@@ -273,6 +317,7 @@ export const MyWalletMobile: React.FC<{
         </div>
         <div className={styles.listAddressByNetwork}>
           {renderCosmosAddresses()}
+          {renderSolAddresses()}
           {renderEvmAddresses()}
           {renderTronAddresses()}
           {renderBtcAddresses()}
