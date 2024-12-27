@@ -38,7 +38,6 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'build'),
     rollupOptions: {},
     target: 'esnext'
-    // sourcemap: true // Enable source maps
   },
   optimizeDeps: {
     exclude: ['node_modules/.cache']
