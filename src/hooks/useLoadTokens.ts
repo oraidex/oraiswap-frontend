@@ -1,51 +1,40 @@
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
+import { COSMOS_CHAIN_ID_COMMON, CustomChainInfo, ERC20__factory, EVM_BALANCE_RETRY_COUNT, solChainId, TON_CONTRACT, tronToEthAddress } from '@oraichain/oraidex-common';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
+import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
+import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { Dispatch } from '@reduxjs/toolkit';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { Address, TonClient } from '@ton/ton';
+import { ethers } from 'ethers';
+import {
+  genAddressCosmos,
+  getAddress,
+  getWalletByNetworkCosmosFromStorage,
+  handleCheckWallet,
+  handleErrorRateLimit
+} from 'helper';
+import { bitcoinChainId } from 'helper/constants';
 import {
   btcTokens,
   chainInfos,
-  cosmosTokens,
   evmChains,
   evmTokens,
   network,
   oraichainTokens,
-  solTokens,
   tonNetworkMainnet
 } from 'initCommon';
-import flatten from 'lodash/flatten';
-import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
-import { COSMOS_CHAIN_ID_COMMON, TON_CONTRACT } from '@oraichain/oraidex-common';
-import { Dispatch } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
-import {
-  CustomChainInfo,
-  EVM_BALANCE_RETRY_COUNT,
-  ERC20__factory,
-  getEvmAddress,
-  tronToEthAddress,
-  solChainId
-} from '@oraichain/oraidex-common';
-import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { ethers } from 'ethers';
 import { reduce } from 'lodash';
-import { bitcoinChainId } from 'helper/constants';
+import flatten from 'lodash/flatten';
 import { getUtxos } from 'pages/Balance/helpers';
-import { generateError } from '../libs/utils';
+import { useDispatch } from 'react-redux';
 import { updateAmounts } from 'reducer/token';
-import {
-  genAddressCosmos,
-  getAddress,
-  handleCheckWallet,
-  getWalletByNetworkCosmosFromStorage,
-  handleErrorRateLimit
-} from 'helper';
-import { Connection, PublicKey } from '@solana/web3.js';
-import { getHttpEndpoint } from '@orbs-network/ton-access';
-import { Address, TonClient } from '@ton/ton';
-import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
 import { store } from 'store/configure';
-import { TON_ZERO_ADDRESS } from '@oraichain/common';
+import { generateError } from '../libs/utils';
 
 export type LoadTokenParams = {
   refresh?: boolean;
@@ -65,6 +54,12 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
     const amountAll = await client.getAllBalances(address);
 
     let amountDetails: AmountDetails = {};
+
+    const storage = store.getState();
+    const allOraichainTokens = storage.token.allOraichainTokens || [];
+    const allOtherChainTokens = storage.token.allOtherChainTokens || [];
+
+    const cosmosTokens = [...allOraichainTokens, ...allOtherChainTokens].filter((token => token.denom && token.cosmosBased && !token.contractAddress));
 
     // reset native balances
     cosmosTokens
@@ -192,8 +187,11 @@ async function loadTokensCosmos(dispatch: Dispatch, kwtAddress: string, oraiAddr
 async function loadCw20Balance(dispatch: Dispatch, address: string) {
   if (!address) return;
 
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+
   // get all cw20 token contract
-  const cw20Tokens = [...oraichainTokens.filter((t) => t.contractAddress)];
+  const cw20Tokens = [...allOraichainTokens.filter((t) => t.contractAddress)];
 
   const data = toBinary({
     balance: { address }
