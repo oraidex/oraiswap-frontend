@@ -1067,6 +1067,7 @@ const SwapComponent: React.FC<{
           token={originalFromToken}
           handleReject={() => {
             setIsConfirmTokenFrom('reject');
+            setIsSelectTokenFrom(true);
           }}
           handleConfirm={() => {
             setIsConfirmTokenFrom('confirmed');
@@ -1078,6 +1079,7 @@ const SwapComponent: React.FC<{
           token={originalToToken}
           handleReject={() => {
             setIsConfirmTokenTo('reject');
+            setIsSelectTokenTo(true);
           }}
           handleConfirm={() => {
             setIsConfirmTokenTo('confirmed');

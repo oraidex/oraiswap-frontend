@@ -4,7 +4,6 @@ import { CwIcs20LatestQueryClient, MulticallQueryClient, Uint128 } from '@oraich
 import { ConfigResponse, RelayerFeeResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import {
   BTC_CONTRACT,
-  FACTORY_V2_CONTRACT,
   IBCInfo,
   IBC_WASM_CONTRACT,
   KWT_DENOM,
@@ -18,7 +17,6 @@ import {
   ibcInfos,
   ibcInfosOld,
   parseTokenInfo,
-  toAmount,
   toDecimal,
   toDisplay,
   toTokenInfo
@@ -38,14 +36,15 @@ import {
   PairInfo
 } from '@oraichain/oraidex-contracts-sdk';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
-import { generateSwapOperationMsgs, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { Position } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
+import { UniversalSwapHelper, generateSwapOperationMsgs } from '@oraichain/oraidex-universal-swap';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { flattenTokens, network, oraichainTokens, tokenMap, tokens } from 'initCommon';
+import { network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
 import { listFactoryV1Pools } from 'pages/Pools/helpers';
 import { getRouterConfig } from 'pages/UniversalSwap/Swap/hooks';
+import { store } from 'store/configure';
 import { BondLP, MiningLP, UnbondLP, WithdrawLP } from 'types/pool';
 import { PairInfoExtend, TokenInfo } from 'types/token';
 
@@ -120,10 +119,13 @@ export async function fetchPairPriceWithStablecoin(
 ): Promise<string> {
   if (!fromTokenInfo.denom || !toTokenInfo.denom) return '0';
   const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+  const allOtherChainTokens = storage.token.allOtherChainTokens || [];
   const result = await Promise.allSettled([
     UniversalSwapHelper.handleSimulateSwap({
-      flattenTokens: flattenTokens,
-      oraichainTokens: oraichainTokens,
+      flattenTokens: [...allOraichainTokens, ...allOtherChainTokens],
+      oraichainTokens: allOraichainTokens,
       originalFromInfo: fromTokenInfo,
       originalToInfo: tokenMap[STABLE_DENOM],
       originalAmount: 1,
@@ -134,8 +136,8 @@ export async function fetchPairPriceWithStablecoin(
       routerConfig: getRouterConfig()
     }),
     UniversalSwapHelper.handleSimulateSwap({
-      flattenTokens: flattenTokens,
-      oraichainTokens: oraichainTokens,
+      flattenTokens: [...allOraichainTokens, ...allOtherChainTokens],
+      oraichainTokens: allOraichainTokens,
       originalFromInfo: toTokenInfo,
       originalToInfo: tokenMap[STABLE_DENOM],
       originalAmount: 1,
@@ -145,11 +147,16 @@ export async function fetchPairPriceWithStablecoin(
       },
       routerConfig: getRouterConfig()
     })
-  ]).then((results) => {
-    for (let res of results) {
-      if (res.status === 'fulfilled') return res.value; // only collect the result of the actual existing pool. If both exist then we only need data from one pool
-    }
-  });
+  ])
+    .then((results) => {
+      for (let res of results) {
+        if (res.status === 'fulfilled') return res.value; // only collect the result of the actual existing pool. If both exist then we only need data from one pool
+      }
+    })
+    .catch((error) => {
+      console.log('error when fetching pair price with stablecoin', error);
+      return { amount: '0' };
+    });
   return result.amount;
 }
 

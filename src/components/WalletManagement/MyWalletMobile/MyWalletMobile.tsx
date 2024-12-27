@@ -117,16 +117,14 @@ export const MyWalletMobile: React.FC<{
       <div className={styles.addressByNetworkItem}>
         {evmNetworksIconWithoutTron.map((network, index) => {
           const chainAddress = metamaskAddress;
+          let NetworkIcon = theme === 'dark' ? network.chainSymbolImageUrl : network.chainSymbolImageUrl;
+          if (!NetworkIcon) NetworkIcon = OraiIcon;
           return (
             <div className={styles.addressByChainInNetwork} key={network.chainId}>
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    {theme === 'light' ? (
-                      <network.IconLight width={30} height={30} />
-                    ) : (
-                      <network.Icon width={30} height={30} />
-                    )}
+                    <img src={NetworkIcon} width={30} height={30} />
                   </div>
                 </div>
                 <div className={styles.info}>
@@ -163,7 +161,8 @@ export const MyWalletMobile: React.FC<{
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    <NetworkIcon width={30} height={30} />
+                    {/* <NetworkIcon width={30} height={30} /> */}
+                    <img src={NetworkIcon} width={30} height={30} alt="network-icon" />
                   </div>
                 </div>
                 <div className={styles.info}>
@@ -199,7 +198,8 @@ export const MyWalletMobile: React.FC<{
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    <NetworkIcon width={30} height={30} />
+                    {/* <NetworkIcon width={30} height={30} /> */}
+                    <img src={NetworkIcon} width={30} height={30} alt="network-icon" />
                   </div>
                 </div>
                 <div className={styles.info}>

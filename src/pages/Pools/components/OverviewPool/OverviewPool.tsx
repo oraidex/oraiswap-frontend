@@ -122,7 +122,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
                   {formatNumberKMB(
-                    toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals, 0),
+                    toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals),
                     false,
                     token1?.decimals
                   )}
@@ -145,7 +145,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
               <div className={classNames(styles.tokenItem, styles[theme])}>
                 <span className={styles.value}>
                   {formatNumberKMB(
-                    toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals, 0),
+                    toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals),
                     false,
                     token2?.decimals
                   )}

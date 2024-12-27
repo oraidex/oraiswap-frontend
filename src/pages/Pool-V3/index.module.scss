@@ -92,7 +92,7 @@
       font-size: 14px;
       display: flex;
       gap: 8px;
-      
+
       span {
         padding-left: 1rem;
       }
@@ -146,12 +146,13 @@
           border-color: theme-get('border-color');
         }
 
-        @media (max-width: 575px) {
+        @media (max-width: 300px) {
           width: 100%;
         }
       }
 
       .dropdownContent {
+        z-index: 1;
         cursor: pointer;
         position: absolute;
         top: 100%;
@@ -172,6 +173,7 @@
           .icon {
             &.light {
               color: black;
+
               svg {
                 path {
                   stroke: #000;
