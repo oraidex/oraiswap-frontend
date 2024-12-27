@@ -503,9 +503,11 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const handleTransferSolToOraichain = async ({
     fromToken,
+    toToken,
     transferAmount
   }: {
     fromToken: TokenItemType;
+    toToken: TokenItemType;
     transferAmount: number;
   }) => {
     if (!oraiAddress) {
@@ -514,16 +516,24 @@ const Balance: React.FC<BalanceProps> = () => {
 
     const web3Solana = new Web3SolanaProgramInteraction();
     console.log('from token address: ', fromToken.contractAddress);
+
     if (fromToken.contractAddress !== MAX_SOL_CONTRACT_ADDRESS) {
-      const bridgeBalance =
-        fromToken.contractAddress === NATIVE_MINT.toBase58()
-          ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
-          : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, fromToken.contractAddress);
-      console.log('token balance to oraichain: ', bridgeBalance, fromToken.contractAddress);
-      if (bridgeBalance < transferAmount) {
-        throw new Error(
-          `Transfer ${fromToken.denom} to Oraichain failed. The bridge balance only has ${bridgeBalance}${fromToken.denom}, wanted ${transferAmount}${fromToken.denom}`
-        );
+      // TODO: need check if support new token in solana
+      const currentBridgeBalance = await window.client.getBalance(ORAICHAIN_RELAYER_ADDRESS, toToken.denom);
+      console.log(
+        'Current bridge balance  oraichain: ',
+        toDisplay(currentBridgeBalance.amount, toToken.decimals),
+        toToken.denom
+      );
+      if (toDisplay(currentBridgeBalance.amount, toToken.decimals) < transferAmount) {
+        const message = `Transfer ${toToken.denom} to Oraichain failed. The bridge balance only has ${toDisplay(
+          currentBridgeBalance.amount,
+          toToken.decimals
+        )}${currentBridgeBalance.denom.toUpperCase()}, wanted ${transferAmount}${currentBridgeBalance.denom.toUpperCase()}`;
+        displayToast(TToastType.TX_FAILED, {
+          message
+        });
+        throw new Error(message);
       }
     }
 
@@ -538,9 +548,11 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const handleTransferOraichainToSol = async ({
     fromToken,
+    toToken,
     transferAmount
   }: {
     fromToken: TokenItemType;
+    toToken: TokenItemType;
     transferAmount: number;
   }) => {
     if (!solAddress) {
@@ -549,20 +561,19 @@ const Balance: React.FC<BalanceProps> = () => {
 
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
 
-    if (fromToken.denom !== MAX_ORAICHAIN_DENOM) {
-      const currentBridgeBalance = await window.client.getBalance(receiverAddress, fromToken.denom);
-      console.log(
-        'Current bridge balance transfer to sol: ',
-        toDisplay(currentBridgeBalance.amount, fromToken.decimals),
-        fromToken.denom
-      );
-      if (toDisplay(currentBridgeBalance.amount, fromToken.decimals) < transferAmount) {
-        throw new Error(
-          `Transfer ${fromToken.denom} to Solana failed. The bridge balance only has ${toDisplay(
-            currentBridgeBalance.amount,
-            fromToken.decimals
-          )}${currentBridgeBalance.denom.toUpperCase()}, wanted ${transferAmount}${currentBridgeBalance.denom.toUpperCase()}`
-        );
+    if (fromToken.denom === MAX_ORAICHAIN_DENOM) {
+      const web3Solana = new Web3SolanaProgramInteraction();
+      const bridgeBalance =
+        fromToken.contractAddress === NATIVE_MINT.toBase58()
+          ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
+          : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, toToken.contractAddress);
+      console.log('token balance to solana: ', bridgeBalance, toToken.contractAddress);
+      if (bridgeBalance < transferAmount) {
+        const message = `Transfer ${fromToken.denom} to Solana failed. The bridge balance only has ${bridgeBalance}${fromToken.denom}, wanted ${transferAmount}${fromToken.denom}`;
+        displayToast(TToastType.TX_FAILED, {
+          message
+        });
+        throw new Error(message);
       }
     }
 
@@ -672,11 +683,12 @@ const Balance: React.FC<BalanceProps> = () => {
 
       if (isSolToOraichain || isOraichainToSol) {
         if (isOraichainToSol) {
-          return handleTransferOraichainToSol({ fromToken: from, transferAmount: fromAmount });
+          return handleTransferOraichainToSol({ fromToken: from, toToken: newToToken, transferAmount: fromAmount });
         }
 
         return handleTransferSolToOraichain({
           fromToken: from,
+          toToken: newToToken,
           transferAmount: fromAmount
         });
       }

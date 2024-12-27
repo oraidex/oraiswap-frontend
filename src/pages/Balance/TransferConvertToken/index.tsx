@@ -409,7 +409,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                             {net && (
                               <div className={classNames(styles.items_chain)}>
                                 <div>
-                                  <net.Icon width={44} height={44} />{' '}
+                                  <img width={44} height={44} src={net.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                                 </div>
                                 <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
                               </div>
