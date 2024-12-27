@@ -2,7 +2,7 @@
     z-index: 1021;
 
     .confirmationModalWrapper {
-        width: 470px;
+
         background: #fff;
         display: flex;
         flex-direction: column;
@@ -102,6 +102,11 @@
             button {
                 width: 47%;
                 padding: 12px;
+
+                @media (max-width: 767px) {
+                    width: 49%;
+                    font-size: 13px;
+                }
             }
         }
     }

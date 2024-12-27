@@ -7,6 +7,8 @@ import { PoolTableData } from 'pages/Pools';
 import { formatDisplayUsdt, parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { useNavigate } from 'react-router-dom';
 import styles from './ItemPoolMobile.module.scss';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/configure';
 
 type PoolMobileItemProps = {
   pool: PoolTableData;
@@ -16,6 +18,7 @@ type PoolMobileItemProps = {
 export const PoolMobileItem: React.FC<PoolMobileItemProps> = ({ pool, setPairDenomsDeposit, generateIcon }) => {
   const navigate = useNavigate();
   const [theme] = useConfigReducer('theme');
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   const handleClickRow = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation();
@@ -28,12 +31,19 @@ export const PoolMobileItem: React.FC<PoolMobileItemProps> = ({ pool, setPairDen
     );
   };
 
+  const firstTokenDenom = parseAssetOnlyDenom(JSON.parse(pool.firstAssetInfo));
+  const secondTokenDenom = parseAssetOnlyDenom(JSON.parse(pool.secondAssetInfo));
+
+  const tokens = [firstTokenDenom, secondTokenDenom].map(
+    (symbol) => allOraichainTokens.find((token) => token.denom === symbol || token.contractAddress === symbol)?.name
+  );
+
   return (
     <article className={styles.pool} onClick={(e) => handleClickRow(e)}>
       <div className={styles.poolHead}>
         <div className={styles.symbols}>
           <div>{generateIcon(pool.baseToken, pool.quoteToken)}</div>
-          <span className={styles.symbols_name}>{pool.symbols}</span>
+          <span className={styles.symbols_name}>{tokens?.join('/')}</span>
         </div>
         <div className={styles.apr}>
           <div className={styles.title}>APR</div>

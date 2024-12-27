@@ -124,11 +124,6 @@ export const MyWalletMobile: React.FC<{
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    {/* {theme === 'light' ? (
-                      <network.IconLight width={30} height={30} />
-                    ) : (
-                      <network.Icon width={30} height={30} />
-                    )} */}
                     <img src={NetworkIcon} width={30} height={30} />
                   </div>
                 </div>
