@@ -161,7 +161,7 @@ export const MyWalletMobile: React.FC<{
     return (
       <div className={styles.addressByNetworkItem}>
         {tronNetworksWithIcon.map((network) => {
-          let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
+          let NetworkIcon = theme === 'dark' ? network.chainSymbolImageUrl : network.chainSymbolImageUrl;
           if (!NetworkIcon) NetworkIcon = DefaultIcon;
           return (
             <div key={network.chainId} className={styles.addressByChainInNetwork}>
@@ -197,7 +197,7 @@ export const MyWalletMobile: React.FC<{
     return (
       <div className={styles.addressByNetworkItem}>
         {btcNetworksWithIcon.map((network) => {
-          let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
+          let NetworkIcon = theme === 'dark' ? network.chainSymbolImageUrl : network.chainSymbolImageUrl;
           if (!NetworkIcon) NetworkIcon = DefaultIcon;
           return (
             <div key={network.chainId} className={styles.addressByChainInNetwork}>
@@ -234,7 +234,7 @@ export const MyWalletMobile: React.FC<{
     return (
       <div className={styles.addressByNetworkItem}>
         {solanaNetworksWithIcon.map((network) => {
-          let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
+          let NetworkIcon = theme === 'dark' ? network.chainSymbolImageUrl : network.chainSymbolImageUrl;
           if (!NetworkIcon) NetworkIcon = DefaultIcon;
           return (
             <div key={network.chainId} className={styles.addressByChainInNetwork}>
