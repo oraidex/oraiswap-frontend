@@ -1,13 +1,21 @@
+import {
+  CustomChainInfo,
+  TokenItemType,
+  getSubAmountDetails,
+  tokensIcon,
+  truncDecimals
+} from '@oraichain/oraidex-common';
 import cn from 'classnames/bind';
 import Modal from 'components/Modal';
-import { tokenMap } from 'config/bridgeTokens';
+import SearchInput from 'components/SearchInput';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { getTotalUsd, toSumDisplay } from 'libs/utils';
-import { FC } from 'react';
-import styles from './SelectTokenModal.module.scss';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { CustomChainInfo, TokenItemType, getSubAmountDetails, truncDecimals } from '@oraichain/oraidex-common';
-import { chainIcons, tokensIcon } from 'config/chainInfos';
+import { chainInfos, tokenMap } from 'initCommon';
+import { getTotalUsd, toSumDisplay } from 'libs/utils';
+import { FC, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { inspectToken } from 'reducer/onchainTokens';
+import styles from './SelectTokenModal.module.scss';
 
 const cx = cn.bind(styles);
 
@@ -19,7 +27,7 @@ interface ModalProps {
   isCloseBtn?: boolean;
   amounts: AmountDetails;
   prices: CoinGeckoPrices<string>;
-  items?: TokenItemType[] | CustomChainInfo[];
+  items?: TokenItemType[];
   setToken: (denom: string, contract_addr?: string) => void;
   type?: 'token' | 'network';
   setSymbol?: (symbol: string) => void;
@@ -37,15 +45,56 @@ export const SelectTokenModal: FC<ModalProps> = ({
   setSymbol
 }) => {
   const [theme] = useConfigReducer('theme');
+  const [textSearch, setTextSearch] = useState('');
+  const [address] = useConfigReducer('address');
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (listItems.length === 0 && textSearch && type === 'token') {
+      dispatch<any>(
+        inspectToken({
+          tokenId: textSearch,
+          address
+        })
+      );
+    }
+  }, [textSearch]);
+
+  const listItems =
+    type === 'network'
+      ? items.filter((item) =>
+          textSearch ? (item as any).chainName.toLowerCase().includes(textSearch.toLowerCase()) : true
+        )
+      : items.filter((item) => (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true));
 
   return (
-    <Modal theme={theme} isOpen={isOpen} close={close} open={open} isCloseBtn={true}>
+    <Modal
+      theme={theme}
+      isOpen={isOpen}
+      close={() => {
+        close();
+        setTextSearch('');
+      }}
+      open={open}
+      isCloseBtn={true}
+    >
       <div className={cx('select', theme)}>
         <div className={cx('title', theme)}>
           <div>{type === 'token' ? 'Select a token' : 'Select a network'}</div>
         </div>
+
+        <SearchInput
+          placeholder={type === 'network' ? 'Find network by name' : 'Find token by name or address'}
+          className={styles.selectTokenSearchInput}
+          onSearch={(text) => {
+            setTextSearch(text);
+          }}
+          theme={theme}
+        />
+
         <div className={cx('options')}>
-          {items
+          {listItems
             ?.map((item: TokenItemType | CustomChainInfo) => {
               let key: string, title: string, balance: string, rawBalance: string;
               let tokenAndChainIcons;
@@ -76,15 +125,15 @@ export const SelectTokenModal: FC<ModalProps> = ({
                   )
                 );
                 const totalUsd = getTotalUsd(subAmounts, prices);
-                tokenAndChainIcons = chainIcons.find((chainIcon) => chainIcon.chainId === network.chainId);
+                tokenAndChainIcons = chainInfos.find((chainIcon) => chainIcon.chainId === network.chainId);
                 rawBalance = totalUsd > 0 ? totalUsd.toFixed(2) : '0';
                 balance = '$' + rawBalance;
               }
               const icon =
                 tokenAndChainIcons && theme === 'light' ? (
-                  <tokenAndChainIcons.IconLight className={cx('logo')} />
+                  <img src={tokenAndChainIcons?.chainSymbolImageUrl} className={cx('logo')} alt="" />
                 ) : (
-                  <tokenAndChainIcons.Icon className={cx('logo')} />
+                  <img src={tokenAndChainIcons?.chainSymbolImageUrl} alt="" className={cx('logo')} />
                 );
 
               return {

@@ -19,9 +19,7 @@ import dayjs from 'dayjs';
 import { isNumber } from 'lodash';
 import { FC, memo } from 'react';
 import styles from './index.module.scss';
-import { isMobile } from '@walletconnect/browser-utils';
-import cn from 'classnames/bind';
-import { format, formatDefaultLocale } from '@visx/vendor/d3-format';
+import { format } from '@visx/vendor/d3-format';
 
 export const theme = {
   dark: {

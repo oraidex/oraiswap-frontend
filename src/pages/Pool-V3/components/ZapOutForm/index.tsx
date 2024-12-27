@@ -1,7 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import {
   MULTICALL_CONTRACT,
-  oraichainTokens,
   toDisplay,
   TokenItemType,
   USDT_CONTRACT,
@@ -26,7 +25,6 @@ import Loader from 'components/Loader';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TooltipHover from 'components/TooltipHover';
 import ZappingText from 'components/Zapping';
-import { network } from 'config/networks';
 import { getIcon, getTransactionUrl } from 'helper';
 import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -34,6 +32,7 @@ import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
+import { network, oraichainTokens, oraidexCommon } from 'initCommon';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import mixpanel from 'mixpanel-browser';
@@ -47,6 +46,7 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from 'store/configure';
 import SelectToken from '../SelectToken';
 import styles from './index.module.scss';
+import { NetworkChainId } from '@oraichain/common';
 
 const cx = cn.bind(styles);
 
@@ -122,8 +122,8 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
       isLightTheme,
       type: 'token',
       coinGeckoId: tokenFrom.coinGeckoId,
-      width: 30,
-      height: 30
+      width: 15,
+      height: 15
     });
 
   const TokenToIcon =
@@ -132,8 +132,8 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
       isLightTheme,
       type: 'token',
       coinGeckoId: tokenTo.coinGeckoId,
-      width: 30,
-      height: 30
+      width: 15,
+      height: 15
     });
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -240,7 +240,8 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
           swapOptions: {
             protocols: ['OraidexV3']
           }
-        }
+        },
+        oraidexCommon: oraidexCommon
       });
 
       const res = await zapper.processZapOutPositionLiquidity({
@@ -621,7 +622,7 @@ const ZapOutForm: FC<ZapOutFormProps> = ({
 
                   if (transactionHash) {
                     displayToast(TToastType.TX_SUCCESSFUL, {
-                      customLink: getTransactionUrl(network.chainId, transactionHash)
+                      customLink: getTransactionUrl(network.chainId as NetworkChainId, transactionHash)
                     });
                     onCloseModal();
                     // navigate(`/pools?type=positions`);

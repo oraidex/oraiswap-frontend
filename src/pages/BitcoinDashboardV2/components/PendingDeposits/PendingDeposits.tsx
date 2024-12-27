@@ -13,7 +13,6 @@ import { CheckpointStatus, DepositInfo, TransactionParsedInput } from '../../@ty
 import { useEffect } from 'react';
 import { useGetCheckpointData, useGetCheckpointQueue, useGetDepositFee } from 'pages/BitcoinDashboardV2/hooks';
 import { useRelayerFeeToken } from 'hooks/useTokenFee';
-import { btcTokens, oraichainTokens } from 'config/bridgeTokens';
 import TransactionsMobile from '../Checkpoint/Transactions/TransactionMobiles/TransactionMobile';
 import { isMobile } from '@walletconnect/browser-utils';
 import RenderIf from '../RenderIf/RenderIf';

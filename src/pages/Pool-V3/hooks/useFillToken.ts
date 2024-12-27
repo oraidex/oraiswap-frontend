@@ -1,5 +1,5 @@
 import { toAmount } from '@oraichain/oraidex-common';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { oraichainTokensWithIcon } from 'initCommon';
 import { ALL_FEE_TIERS_DATA } from 'libs/contractSingleton';
 import { useParams } from 'react-router-dom';
 

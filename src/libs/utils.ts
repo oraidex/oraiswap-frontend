@@ -1,6 +1,5 @@
 import {
   COSMOS_CHAIN_ID_COMMON,
-  NetworkChainId,
   TokenItemType,
   getSubAmountDetails,
   toAmount,
@@ -9,11 +8,11 @@ import {
 import { isMobile } from '@walletconnect/browser-utils';
 import WalletConnectProvider from '@walletconnect/ethereum-provider';
 import bech32 from 'bech32';
-import { cosmosTokens, tokenMap } from 'config/bridgeTokens';
-import { chainInfos } from 'config/chainInfos';
-import { network } from 'config/networks';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { chainInfos, cosmosTokens, network, oraichainTokens, tokenMap } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
+import { NetworkChainId } from '@oraichain/common';
+import { store } from 'store/configure';
 
 export const checkRegex = (str: string, regex?: RegExp) => {
   const re = regex ?? /^[a-zA-Z\-]{3,12}$/;
@@ -64,6 +63,7 @@ export const toTotalDisplay = (amounts: AmountDetails, tokenInfo: TokenItemType)
 
 export const toSubAmount = (amounts: AmountDetails, tokenInfo: TokenItemType): bigint => {
   const displayAmount = toSubDisplay(amounts, tokenInfo);
+  if (tokenInfo.decimals === 0) return BigInt(0);
   return toAmount(displayAmount, tokenInfo.decimals);
 };
 
@@ -75,7 +75,14 @@ export const toSumDisplay = (amounts: AmountDetails): number => {
     // update later
     const balance = amounts[denom];
     if (!balance) continue;
-    amount += toDisplay(balance, tokenMap[denom]?.decimals);
+    // amount += toDisplay(balance, tokenMap[denom]?.decimals);
+
+    const storage = store.getState();
+    const allOraichainTokens = storage.token.allOraichainTokens || [];
+    amount += toDisplay(
+      balance,
+      allOraichainTokens.find((t) => t.contractAddress === denom || t.denom === denom)?.decimals
+    );
   }
   return amount;
 };

@@ -1,15 +1,13 @@
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NetworkImg from 'assets/icons/network.svg';
 import cn from 'classnames/bind';
-import { tokenMap } from 'config/bridgeTokens';
-import { chainIcons } from 'config/chainInfos';
 import { Themes } from 'context/theme-context';
 import { networks } from 'helper';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
+import { chainInfos, tokenMap } from 'initCommon';
 import { getTotalUsd } from 'libs/utils';
 import { isMaintainBridge } from 'pages/Balance';
 import { formatDisplayUsdt } from 'pages/Pools/helpers';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
 import styles from './SelectChain.module.scss';
 
 const cx = cn.bind(styles);
@@ -87,14 +85,7 @@ export default function SelectChain({
               })
               .sort((a, b) => Number(b.totalUsd || 0) - Number(a.totalUsd || 0))
               .map((item) => {
-                let networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
-                if (!networkIcon) {
-                  networkIcon = {
-                    ...item,
-                    Icon: DefaultIcon,
-                    IconLight: DefaultIcon
-                  };
-                }
+                const chainInfo = chainInfos.find((chainIcon) => chainIcon.chainId === item.chainId);
                 const key = item.chainId.toString();
                 const title = item.chainName;
                 const balance = '$' + (item.totalUsd > 0 ? item.totalUsd.toFixed(2) : '0');
@@ -109,9 +100,17 @@ export default function SelectChain({
                   >
                     <div className={styles.selectChainItemLeft}>
                       {theme === 'light' ? (
-                        <networkIcon.IconLight className={styles.selectChainItemLogo} />
+                        <img
+                          className={styles.selectChainItemLogo}
+                          src={chainInfo?.chainSymbolImageUrl}
+                          alt="chain-logo"
+                        />
                       ) : (
-                        <networkIcon.Icon className={styles.selectChainItemLogo} />
+                        <img
+                          className={styles.selectChainItemLogo}
+                          src={chainInfo?.chainSymbolImageUrl}
+                          alt="chain-logo"
+                        />
                       )}
                       <div className={styles.selectChainItemTitle}>
                         <div>{title}</div>

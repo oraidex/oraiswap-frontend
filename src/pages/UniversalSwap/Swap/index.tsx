@@ -1,10 +1,7 @@
 import {
   BigDecimal,
-  CosmosChainId,
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
-  NetworkChainId,
-  TON_ORAICHAIN_DENOM,
   TRON_DENOM,
   TokenItemType,
   getTokenOnOraichain,
@@ -30,8 +27,6 @@ import Loader from 'components/Loader';
 import LoadingBox from 'components/LoadingBox';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { flattenTokens } from 'config/bridgeTokens';
-import { chainIcons, flattenTokensWithIcon } from 'config/chainInfos';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import { ethers } from 'ethers';
 import {
@@ -52,6 +47,7 @@ import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import { useGetFeeConfig } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
+import { flattenTokens, flattenTokensWithIcon, oraichainTokens, oraidexCommon } from 'initCommon';
 import Metamask from 'libs/metamask';
 import { getUsd, reduceString, toSubAmount } from 'libs/utils';
 import mixpanel from 'mixpanel-browser';
@@ -65,7 +61,7 @@ import {
   isAllowIBCWasm,
   refreshBalances
 } from 'pages/UniversalSwap/helpers';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentAddressBookStep, setCurrentAddressBookStep } from 'reducer/addressBook';
 import { AddressManagementStep } from 'reducer/type';
@@ -78,6 +74,10 @@ import AddressBook from './components/AddressBook';
 import InputCommon from './components/InputCommon';
 import InputSwap from './components/InputSwap/InputSwap';
 import SwapDetail from './components/SwapDetail';
+
+import { CosmosChainId, NetworkChainId } from '@oraichain/common';
+import TonWallet from '@oraichain/tonbridge-sdk/build/wallet';
+import classNames from 'classnames';
 import TokenAndChainSelectors from './components/TokenAndChainSelectors';
 import { TooltipSwapBridge } from './components/TooltipSwapBridge';
 import { useGetTransHistory } from './hooks';
@@ -85,11 +85,12 @@ import useCalculateDataSwap, { SIMULATE_INIT_AMOUNT } from './hooks/useCalculate
 import { useFillToken } from './hooks/useFillToken';
 import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
-import TonWallet from '@oraichain/tonbridge-sdk/build/wallet';
-import classNames from 'classnames';
+import ModalConfirmUnverifiedToken from 'components/Modals/ModalConfirmUnverifiedToken/ModalConfirmUnverifiedToken';
+import { set } from 'lodash';
 
 const cx = cn.bind(styles);
 
+export type ConfirmUnverifiedToken = 'init' | 'reject' | 'confirmed' | 'pending';
 const SwapComponent: React.FC<{
   fromTokenDenom: string;
   toTokenDenom: string;
@@ -105,6 +106,7 @@ const SwapComponent: React.FC<{
   const isLightMode = theme === 'light';
   const currentAddressManagementStep = useSelector(selectCurrentAddressBookStep);
   const amounts = useSelector((state: RootState) => state.token.amounts);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   const dispatch = useDispatch();
 
   const [event] = useTemporaryConfigReducer('event');
@@ -132,13 +134,18 @@ const SwapComponent: React.FC<{
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [openSwapWarning, setOpenSwapWarning] = useState(false);
 
+  const [isConfirmTokenFrom, setIsConfirmTokenFrom] = useState<ConfirmUnverifiedToken>('init');
+  const [isConfirmTokenTo, setIsConfirmTokenTo] = useState<ConfirmUnverifiedToken>('init');
+
+  const [isStatusTokenFrom, setIsConfirmStatusTokenFrom] = useState<boolean>(false);
+  const [isStatusTokenTo, setIsConfirmStatusTokenTo] = useState<boolean>(false);
+
   // value state
   const [coe, setCoe] = useState(0);
 
   // loading state
   const [swapLoading, setSwapLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
-
   const {
     originalFromToken,
     originalToToken,
@@ -203,6 +210,22 @@ const SwapComponent: React.FC<{
     setOpenSmartRoute(false);
     setIndSmartRoute([0, 0]);
   });
+
+  useEffect(() => {
+    if (!originalFromToken.isVerified) {
+      setIsConfirmTokenFrom('pending');
+    } else {
+      setIsConfirmTokenFrom('init');
+    }
+  }, [originalFromToken, isStatusTokenFrom]);
+
+  useEffect(() => {
+    if (!originalToToken.isVerified) {
+      setIsConfirmTokenTo('pending');
+    } else {
+      setIsConfirmTokenTo('init');
+    }
+  }, [originalToToken, isStatusTokenTo]);
 
   const onChangeFromAmount = (amount: number | undefined) => {
     if (!amount) {
@@ -291,8 +314,8 @@ const SwapComponent: React.FC<{
       );
 
       if (isSpecialFromCoingecko && originalFromToken.chainId === 'Oraichain') {
-        const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
-        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, true);
+        const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId, oraichainTokens);
+        const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, oraichainTokens, true);
         const [nativeAmount, cw20Amount] = await Promise.all([
           window.client.getBalance(oraiAddress, fromTokenInOrai.denom),
           window.client.queryContractSmart(tokenInfo.contractAddress, {
@@ -355,19 +378,23 @@ const SwapComponent: React.FC<{
         alphaSmartRoutes
       };
 
-      // @ts-ignore
-      const univeralSwapHandler = new UniversalSwapHandler(swapData, {
-        cosmosWallet: window.Keplr,
-        evmWallet: new Metamask(window.tronWebDapp),
-        tonWallet,
-        swapOptions: {
-          isAlphaIbcWasm: useAlphaIbcWasm,
-          isIbcWasm: useIbcWasm,
+      const univeralSwapHandler = new UniversalSwapHandler(
+        swapData,
+        {
+          // @ts-ignore
+          cosmosWallet: window.Keplr,
+          evmWallet: new Metamask(window.tronWebDapp),
+          tonWallet,
+          swapOptions: {
+            isAlphaIbcWasm: useAlphaIbcWasm,
+            isIbcWasm: useIbcWasm,
 
-          // FIXME: hardcode with case celestia not check balance
-          isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
-        }
-      });
+            // FIXME: hardcode with case celestia not check balance
+            isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
+          }
+        },
+        oraidexCommon
+      );
 
       const result = await univeralSwapHandler.processUniversalSwap();
       let transactionHash = result?.transactionHash;
@@ -475,6 +502,13 @@ const SwapComponent: React.FC<{
     let setSelectChain = setSelectChainTo;
     let setIsSelect = setIsSelectTokenTo;
     let tokenDenomSwap = fromTokenDenomSwap;
+
+    if (isFrom) {
+      isConfirmTokenFrom !== 'confirmed' && setIsConfirmStatusTokenFrom(!isStatusTokenFrom);
+    } else {
+      isConfirmTokenTo !== 'confirmed' && setIsConfirmStatusTokenTo(!isStatusTokenTo);
+    }
+
     if (isFrom) {
       setSelectChain = setSelectChainFrom;
       setIsSelect = setIsSelectTokenFrom;
@@ -484,6 +518,7 @@ const SwapComponent: React.FC<{
     if (token.denom === tokenDenomSwap) {
       setFromTokenDenom(toTokenDenomSwap);
       setToTokenDenom(fromTokenDenomSwap);
+
       setSelectChainFrom(selectChainTo);
       setSelectChainTo(selectChainFrom);
 
@@ -650,7 +685,7 @@ const SwapComponent: React.FC<{
         <div key={ind} className={cx('smart-router-item')}>
           <div className={cx('smart-router-item-volumn')}>{volumn.toFixed(0)}%</div>
           {route.paths.map((path, i, acc) => {
-            const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, chainIcons, assets);
+            const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, assets);
             return (
               <React.Fragment key={i}>
                 <div className={cx('smart-router-item-line')}>
@@ -658,8 +693,12 @@ const SwapComponent: React.FC<{
                 </div>
                 <div className={cx('smart-router-item-pool')} onClick={() => setOpenSmartRoute(!openSmartRoute)}>
                   <div className={cx('smart-router-item-pool-wrap')} onClick={() => setIndSmartRoute([ind, i])}>
-                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkFromIcon />}</div>
-                    <div className={cx('smart-router-item-pool-wrap-img')}>{<NetworkToIcon />}</div>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>
+                      <img src={NetworkFromIcon} alt="NetworkFromIcon" />
+                    </div>
+                    <div className={cx('smart-router-item-pool-wrap-img')}>
+                      <img src={NetworkToIcon} alt="NetworkToIcon" />
+                    </div>
                   </div>
                 </div>
                 {i === acc.length - 1 && (
@@ -727,6 +766,7 @@ const SwapComponent: React.FC<{
                 setCoe={setCoe}
                 coe={coe}
                 usdPrice={usdPriceShowFrom}
+                isConfirmToken={isConfirmTokenFrom}
               />
             </div>
           </div>
@@ -764,6 +804,7 @@ const SwapComponent: React.FC<{
                 usdPrice={usdPriceShowTo}
                 loadingSimulate={isPreviousSimulate}
                 impactWarning={impactWarning}
+                isConfirmToken={isConfirmTokenTo}
               />
             </div>
           </div>
@@ -941,7 +982,8 @@ const SwapComponent: React.FC<{
             {openSmartRoute &&
               [routersSwapData?.routes[indSmartRoute[0]]?.paths[indSmartRoute[1]]].map((path) => {
                 if (!path) return null;
-                const { NetworkFromIcon, NetworkToIcon, pathChainId } = getPathInfo(path, chainIcons, assets);
+                // TODO: chainIcons => chainInfosWithIcon to get correct icon
+                const { NetworkFromIcon, NetworkToIcon, pathChainId } = getPathInfo(path, assets);
                 const flattenSmartRouters = UniversalSwapHelper.flattenSmartRouters([
                   {
                     swapAmount: '0',
@@ -951,15 +993,15 @@ const SwapComponent: React.FC<{
                 ]);
 
                 return flattenSmartRouters?.map((action, index, actions) => {
-                  const tokenInData = flattenTokensWithIcon.find((flat) =>
+                  const tokenInData = [...flattenTokens, ...allOraichainTokens].find((flat) =>
                     [flat.denom, flat.contractAddress].filter(Boolean).includes(action.tokenIn)
                   );
-                  const TokenInIcon = tokenInData?.Icon;
+                  const TokenInIcon = tokenInData?.icon;
                   const symbolIn = tokenInData?.name;
-                  const tokenOutData = flattenTokensWithIcon.find((flat) =>
+                  const tokenOutData = [...flattenTokens, ...allOraichainTokens].find((flat) =>
                     [flat.denom, flat.contractAddress].filter(Boolean).includes(action.tokenOut)
                   );
-                  const TokenOutIcon = tokenOutData?.Icon;
+                  const TokenOutIcon = tokenOutData?.icon;
                   const symbolOut = tokenOutData?.name;
 
                   const hasTypeConvert = actions.find((act) => act.type === 'Convert');
@@ -1019,6 +1061,29 @@ const SwapComponent: React.FC<{
         }}
         impact={impactWarning}
       />
+
+      {isConfirmTokenFrom === 'pending' && (
+        <ModalConfirmUnverifiedToken
+          token={originalFromToken}
+          handleReject={() => {
+            setIsConfirmTokenFrom('reject');
+          }}
+          handleConfirm={() => {
+            setIsConfirmTokenFrom('confirmed');
+          }}
+        />
+      )}
+      {isConfirmTokenTo === 'pending' && (
+        <ModalConfirmUnverifiedToken
+          token={originalToToken}
+          handleReject={() => {
+            setIsConfirmTokenTo('reject');
+          }}
+          handleConfirm={() => {
+            setIsConfirmTokenTo('confirmed');
+          }}
+        />
+      )}
     </div>
   );
 };

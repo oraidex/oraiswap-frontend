@@ -41,7 +41,14 @@
     right: 16px;
   }
 
-  span {
+  .close-icon {
     cursor: pointer;
+    &.light {
+      svg {
+        path {
+          fill: black !important;
+        }
+      }
+    }
   }
 }

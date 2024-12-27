@@ -126,11 +126,7 @@ export const ModalDisconnect: React.FC<{
                 return (
                   <div className={styles.chainInfo} key={index}>
                     <div className={styles.chainLogo}>
-                      {theme === 'dark' ? (
-                        <chain.Icon width={20} height={20} />
-                      ) : (
-                        <chain.IconLight width={20} height={20} />
-                      )}
+                      <img src={chain.chainSymbolImageUrl} alt="" width={20} height={20} />
                     </div>
                     <div className={styles.chainName}>{chain.name}</div>
                   </div>

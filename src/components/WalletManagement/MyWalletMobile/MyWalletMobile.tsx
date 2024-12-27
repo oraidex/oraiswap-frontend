@@ -25,6 +25,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from 'store/configure';
 import { ModalDisconnect } from '../ModalDisconnect';
 import styles from './MyWalletMobile.module.scss';
+import { OraiIcon } from '@oraichain/oraidex-common';
 
 export const MyWalletMobile: React.FC<{
   setIsShowMyWallet: (isShow: boolean) => void;
@@ -85,15 +86,15 @@ export const MyWalletMobile: React.FC<{
       <div className={styles.addressByNetworkItem}>
         {cosmosNetworksWithIcon.map((network) => {
           const chainAddress = cosmosAddresses?.[network.chainId];
-          let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
-          if (!NetworkIcon) NetworkIcon = DefaultIcon;
+          let NetworkIcon = theme === 'dark' ? network.chainSymbolImageUrl : network.chainSymbolImageUrl;
+          if (!NetworkIcon) NetworkIcon = OraiIcon;
 
           return !chainAddress ? null : (
             <div className={styles.addressByChainInNetwork} key={network.chainId}>
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    <NetworkIcon width={30} height={30} />
+                    <img src={NetworkIcon} width={30} height={30} />
                   </div>
                 </div>
                 <div className={styles.info}>

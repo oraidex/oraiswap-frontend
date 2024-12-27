@@ -3,10 +3,7 @@ import {
   BSC_SCAN,
   ChainIdEnum,
   COSMOS_CHAIN_ID_COMMON,
-  CosmosChainId,
-  cosmosChains,
   ETHEREUM_SCAN,
-  evmChains,
   KWT_SCAN,
   MULTIPLIER,
   TRON_SCAN,
@@ -16,18 +13,15 @@ import {
   solChainId,
   oraichainNetwork
 } from '@oraichain/oraidex-common';
-import { network } from 'config/networks';
 import { serializeError } from 'serialize-error';
-
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { bitcoinChainId, leapSnapId } from './constants';
 import { getSnap } from '@leapwallet/cosmos-snap-provider';
 import { Bech32Config } from '@keplr-wallet/types';
-import { CustomChainInfo, EvmDenom, NetworkChainId, TokenItemType } from '@oraichain/oraidex-common';
+import { EvmDenom, TokenItemType } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { WalletType } from 'components/WalletManagement/walletConfig';
-import { chainIcons, chainInfos, chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
@@ -36,8 +30,19 @@ import { TonChainId } from 'context/ton-provider';
 import { toUserFriendlyAddress, useTonAddress } from '@tonconnect/ui-react';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { numberWithCommas } from './format';
+import {
+  chainInfos,
+  chainInfosWithIcon,
+  cosmosChains,
+  evmChains,
+  flattenTokens,
+  flattenTokensWithIcon,
+  network
+} from 'initCommon';
+import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common';
 import { getHttpEndpoint } from '@orbs-network/ton-access';
 import { TonClient } from '@ton/ton';
+import { store } from 'store/configure';
 
 export interface Tokens {
   denom?: string;
@@ -53,7 +58,7 @@ export interface InfoError {
 export type DecimalLike = string | number | bigint | BigDecimal;
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export const EVM_CHAIN_ID: NetworkChainId[] = evmChains.map((c) => c.chainId);
-export const networks = chainInfos.filter(
+export const networks = chainInfosWithIcon.filter(
   (c) => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
 );
 export const cosmosNetworks = chainInfos.filter(
@@ -62,7 +67,7 @@ export const cosmosNetworks = chainInfos.filter(
 );
 
 export const bitcoinNetworks = chainInfos.filter((c) => c.chainId === bitcoinChainId);
-export const cosmosNetworksWithIcon = chainInfosWithIcon.filter(
+export const cosmosNetworksWithIcon = chainInfos.filter(
   (c) =>
     c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
 );
@@ -654,23 +659,23 @@ export function formatMoney(num) {
 
 export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
   if (type === 'token') {
-    const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) => tokenWithIcon.coinGeckoId === coinGeckoId);
+    const tokenIcon = flattenTokens.find((token) => token.coinGeckoId === coinGeckoId);
     if (tokenIcon) {
       return isLightTheme ? (
-        <tokenIcon.IconLight width={width} height={height} />
+        <img src={tokenIcon.iconLight} alt="" width={width} height={height} />
       ) : (
-        <tokenIcon.Icon width={width} height={height} />
+        <img src={tokenIcon.icon} alt="" width={width} height={height} />
       );
     }
 
     return <DefaultIcon />;
   } else {
-    const networkIcon = chainIcons.find((chain) => chain.chainId === chainId);
+    const networkIcon = chainInfos.find((chain) => chain.chainId === chainId);
     if (networkIcon) {
       return isLightTheme ? (
-        <networkIcon.IconLight width={width} height={height} />
+        <img src={networkIcon.chainSymbolImageUrl} alt="" width={width} height={height} />
       ) : (
-        <networkIcon.Icon width={width} height={height} />
+        <img src={networkIcon.chainSymbolImageUrl} alt="" width={width} height={height} />
       );
     }
 
@@ -678,15 +683,17 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
   }
 };
 
-export const getIconToken = ({ isLightTheme, denom, width = 18, height = 18 }) => {
-  const tokenIcon = flattenTokensWithIcon.find((tokenWithIcon) =>
+export const getIconToken = ({ isLightTheme, denom, width = 30, height = 30 }) => {
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+  const tokenIcon = allOraichainTokens.find((tokenWithIcon) =>
     [tokenWithIcon.contractAddress, tokenWithIcon.denom].includes(denom)
   );
   if (tokenIcon) {
     return isLightTheme ? (
-      <tokenIcon.IconLight width={width} height={height} />
+      <img style={{ borderRadius: '100%' }} src={tokenIcon.iconLight} width={width} height={height} alt="" />
     ) : (
-      <tokenIcon.Icon width={width} height={height} />
+      <img style={{ borderRadius: '100%' }} src={tokenIcon.icon} width={width} height={height} alt="" />
     );
   }
 

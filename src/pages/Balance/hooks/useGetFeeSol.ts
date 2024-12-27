@@ -1,6 +1,6 @@
 import { BigDecimal, toDisplay, TokenItemType, toAmount, solChainId } from '@oraichain/oraidex-common';
 import axios from 'axios';
-import { flattenTokens } from 'config/bridgeTokens';
+import { flattenTokens } from 'initCommon';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useEffect, useState } from 'react';

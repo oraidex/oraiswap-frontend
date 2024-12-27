@@ -7,10 +7,10 @@ import DefaultIcon from 'assets/icons/tokens.svg?react';
 import BitcoinIcon from 'assets/icons/bitcoin.svg?react';
 import OraiDarkIcon from 'assets/icons/oraichain.svg?react';
 import OraiLightIcon from 'assets/icons/oraichain_light.svg?react';
-import { TransactionParsedOutput } from 'pages/BitcoinDashboard/@types';
 import { isMobile } from '@walletconnect/browser-utils';
 import RenderIf from '../../RenderIf/RenderIf';
 import TransactionsMobile from './TransactionMobiles/TransactionMobile';
+import { TransactionParsedOutput } from 'pages/BitcoinDashboardV2/@types';
 
 type Icons = {
   Light: any;

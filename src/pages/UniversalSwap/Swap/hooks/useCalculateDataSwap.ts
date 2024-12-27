@@ -1,10 +1,9 @@
 import { BigDecimal, calculateMinReceive, CW20_DECIMALS, toAmount } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { network } from 'config/networks';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
-import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
+import { network } from 'initCommon';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import {
   getAverageRatio,
@@ -13,10 +12,10 @@ import {
   isAllowAlphaIbcWasm,
   isAllowIBCWasm
 } from 'pages/UniversalSwap/helpers';
+import { useEffect, useState } from 'react';
 import { fetchTokenInfos } from 'rest/api';
 import { useSimulate } from './useSimulate';
 import { useSwapFee } from './useSwapFee';
-import { useEffect, useState } from 'react';
 
 export const SIMULATE_INIT_AMOUNT = 1;
 

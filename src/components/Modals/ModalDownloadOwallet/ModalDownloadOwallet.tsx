@@ -8,11 +8,11 @@ import GooglePlayOWalletDarkIcon from 'assets/icons/google_play_owallet_dark.svg
 import DownloadOwalletIcon from 'assets/icons/logo_owallet_gateway.svg?react';
 import DownloadOwalletIconDark from 'assets/icons/logo_owallet_gateway_dark.svg?react';
 import classNames from 'classnames';
-import Modal from 'components/Modal';
 import useTheme from 'hooks/useTheme';
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 import styles from './ModalDownloadOwallet.module.scss';
+import Modal from 'components/Modal';
 import { owalletAndroidDownloadUrl, owalletExtensionDownloadUrl, owalletIosDownloadUrl } from 'pages/DownloadApp';
 
 const ModalDownloadOwallet: React.FC<{

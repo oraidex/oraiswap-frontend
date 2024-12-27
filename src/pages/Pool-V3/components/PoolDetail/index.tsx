@@ -13,7 +13,7 @@ import { formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
 import SingletonOraiswapV3, { fetchPoolAprInfo, poolKeyToString } from 'libs/contractSingleton';
-import { formatPoolData, getIconPoolData, PoolWithTokenInfo } from 'pages/Pool-V3/helpers/format';
+import { formatPoolData, PoolWithTokenInfo } from 'pages/Pool-V3/helpers/format';
 import { convertPosition } from 'pages/Pool-V3/helpers/helper';
 import { useGetAllPositions } from 'pages/Pool-V3/hooks/useGetAllPosition';
 import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
@@ -29,6 +29,7 @@ import CreateNewPosition from '../CreateNewPosition';
 import PositionItem from '../PositionItem';
 import TransactionHistory from '../TransactionHistory';
 import styles from './index.module.scss';
+import { usePoolIcons } from 'pages/Pool-V3/hooks/usePoolIcons';
 
 const PoolV3Detail = () => {
   const [address] = useConfigReducer('address');
@@ -52,7 +53,7 @@ const PoolV3Detail = () => {
   const isLight = theme === 'light';
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
 
-  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = getIconPoolData(tokenX, tokenY, isLight);
+  const { FromTokenIcon, ToTokenIcon, tokenXinfo, tokenYinfo } = usePoolIcons(tokenX, tokenY, isLight);
   const isInactive = tokenXinfo?.name === 'BTC (Legacy)' || tokenYinfo?.name === 'BTC (Legacy)';
   const totalLiquidity = poolLiquidities?.[poolId] ?? 0;
   const volumn24h = poolVolume?.[poolId] ?? 0;
@@ -91,7 +92,7 @@ const PoolV3Detail = () => {
         }
         const pool = poolList.find((p) => poolKeyToString(p.pool_key) === poolKeyString);
         const isLight = theme === 'light';
-        const fmtPool = formatPoolData(pool, isLight);
+        const fmtPool = await formatPoolData(pool, isLight);
         setPoolDetail(fmtPool as any);
       }
     })();
@@ -136,7 +137,7 @@ const PoolV3Detail = () => {
         // if (dataPosition.length) return;
         const feeClaimData = await getFeeClaimData(address);
 
-        const positionsMap = convertPosition({
+        const positionsMap = await convertPosition({
           positions: userPositions.map((po, ind) => ({ ...po, ind })),
           poolsData: poolList,
           cachePrices: poolPrice,
@@ -144,6 +145,7 @@ const PoolV3Detail = () => {
           isLight,
           feeClaimData
         });
+
         const filteredPositions = positionsMap
           .filter((pos) => poolKeyToString(pos.pool_key) === poolKeyString)
           .sort((a, b) => a.token_id - b.token_id);
@@ -184,8 +186,8 @@ const PoolV3Detail = () => {
           </div>
           <div className={styles.info}>
             <div className={classNames(styles.icons, styles[theme])}>
-              {FromTokenIcon && <FromTokenIcon />}
-              {ToTokenIcon && <ToTokenIcon />}
+              {FromTokenIcon}
+              {ToTokenIcon}
             </div>
             <span>
               {tokenXinfo?.name?.toUpperCase()} / {tokenYinfo?.name?.toUpperCase()}
@@ -251,12 +253,12 @@ const PoolV3Detail = () => {
             </div> */}
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {FromTokenIcon && <FromTokenIcon />}
+                {FromTokenIcon}
                 {/* <span>{tokenXinfo?.name?.toUpperCase()}</span> */}
                 <span className={styles.value}>{formatNumberKMB(balanceX, false)}</span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {ToTokenIcon && <ToTokenIcon />}
+                {ToTokenIcon}
                 {/* <span>{tokenYinfo?.name?.toUpperCase()}</span> */}
                 <span className={styles.value}>{formatNumberKMB(balanceY, false)}</span>
               </div>

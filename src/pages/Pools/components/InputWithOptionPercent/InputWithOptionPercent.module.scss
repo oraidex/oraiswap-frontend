@@ -160,6 +160,12 @@
         width: 28px;
         height: 28px;
       }
+
+      .title {
+        &.light {
+          color: #000;
+        }
+      }
     }
 
     .input-amount {
