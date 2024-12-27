@@ -42,7 +42,7 @@ import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { network, oraichainTokens, tokenMap, tokens } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { RemainingOraibTokenItem } from 'pages/Balance/StuckOraib/useGetOraiBridgeBalances';
-import { listFactoryV1Pools } from 'pages/Pools/helpers';
+import { listFactoryV1Pools, parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { getRouterConfig } from 'pages/UniversalSwap/Swap/hooks';
 import { store } from 'store/configure';
 import { BondLP, MiningLP, UnbondLP, WithdrawLP } from 'types/pool';
@@ -217,14 +217,17 @@ async function fetchCachedPairInfo(
 }
 
 async function fetchPairInfo(tokenTypes: [TokenItemType, TokenItemType]): Promise<PairInfo> {
+  let { info: firstAsset } = parseTokenInfo(tokenTypes[0]);
+  let { info: secondAsset } = parseTokenInfo(tokenTypes[1]);
+  const firstDenom = parseAssetOnlyDenom(firstAsset);
+  const secondDenom = parseAssetOnlyDenom(secondAsset);
   const factoryAddr = listFactoryV1Pools.find(
     (factoryV1Pool) =>
-      factoryV1Pool.symbols.includes(tokenTypes[0]?.name) && factoryV1Pool.symbols.includes(tokenTypes[1]?.name)
+      factoryV1Pool.assetInfos.some((assetInfo) => parseAssetOnlyDenom(assetInfo) === firstDenom) &&
+      factoryV1Pool.assetInfos.some((assetInfo) => parseAssetOnlyDenom(assetInfo) === secondDenom)
   )
     ? network.factory
     : network.factory_v2;
-  let { info: firstAsset } = parseTokenInfo(tokenTypes[0]);
-  let { info: secondAsset } = parseTokenInfo(tokenTypes[1]);
   const factoryContract = new OraiswapFactoryQueryClient(window.client, factoryAddr);
   const data = await factoryContract.pair({
     assetInfos: [firstAsset, secondAsset]
@@ -722,8 +725,10 @@ async function getPairAmountInfo(
   poolInfo?: PoolInfo,
   oraiUsdtPoolInfo?: PoolInfo
 ): Promise<PairAmountInfo> {
+  console.log({ poolInfo });
+  console.log({ fromToken, toToken });
   const poolData = poolInfo ?? (await fetchPoolInfoAmount(fromToken, toToken, cachedPairs));
-
+  console.log({ poolData });
   // default is usdt
   let tokenPrice = 0;
 
