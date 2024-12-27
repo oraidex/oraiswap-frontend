@@ -301,6 +301,7 @@ const App = () => {
           solAddress = publicKey.toBase58();
           setSolAddress(solAddress);
         }
+        solanaWallet.select('OWallet' as any);
       }
     }
     return solAddress;
