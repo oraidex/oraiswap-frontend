@@ -58,8 +58,6 @@ const PoolDetail: React.FC = () => {
 
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
-  // console.log({ pairAmountInfoData });
-
   useEffect(() => {
     refetchAllLpPools();
   }, [lpAddresses]);

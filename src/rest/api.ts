@@ -105,7 +105,7 @@ function parsePoolAmount(poolInfo: OraiswapPairTypes.PoolResponse, trueAsset: As
         (asset) =>
           'native_token' in asset.info &&
           asset.info.native_token.denom ===
-          'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
+            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
       )?.amount || '0'
     );
   }
@@ -147,16 +147,16 @@ export async function fetchPairPriceWithStablecoin(
       },
       routerConfig: getRouterConfig()
     })
-  ]).then((results) => {
-    for (let res of results) {
-      if (res.status === 'fulfilled') return res.value; // only collect the result of the actual existing pool. If both exist then we only need data from one pool
-    }
-  }).catch((error) => {
-    console.log('error when fetching pair price with stablecoin', error);
-    return { amount: '0' };
-  });
-
-  console.log('fetchPairPriceWithStablecoin', result);
+  ])
+    .then((results) => {
+      for (let res of results) {
+        if (res.status === 'fulfilled') return res.value; // only collect the result of the actual existing pool. If both exist then we only need data from one pool
+      }
+    })
+    .catch((error) => {
+      console.log('error when fetching pair price with stablecoin', error);
+      return { amount: '0' };
+    });
   return result.amount;
 }
 
@@ -737,12 +737,6 @@ async function getPairAmountInfo(
     const poolUsdData = await fetchPairPriceWithStablecoin(fromToken, toToken);
     tokenPrice = toDisplay(poolUsdData, toToken.decimals);
   }
-
-  console.log({
-    token1Amount: poolData.offerPoolAmount.toString(),
-    token2Amount: poolData.askPoolAmount.toString(),
-    tokenUsd: 2 * toDisplay(poolData.offerPoolAmount, fromToken.decimals) * tokenPrice
-  });
 
   return {
     token1Amount: poolData.offerPoolAmount.toString(),
