@@ -1,12 +1,13 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
-import { AccountData } from '@cosmjs/proto-signing';
+import { AccountData, Registry } from '@cosmjs/proto-signing';
 import { sha256 } from '@injectivelabs/sdk-ts';
+import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import PlusIcon from 'assets/icons/plus.svg?react';
 import cn from 'classnames/bind';
 import Input from 'components/Input';
 import Loader from 'components/Loader';
 import Modal from 'components/Modal';
-import { TToastType, displayToast } from 'components/Toasts/Toast';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { getTransactionUrl, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
@@ -14,15 +15,24 @@ import { network } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { validateAddressCosmos } from 'libs/utils';
 import { FC, useRef, useState } from 'react';
+import NumberFormat from 'react-number-format';
+import { useDispatch } from 'react-redux';
 import { InitBalancesItems } from './ItemsComponent';
 import styles from './NewTokenModal.module.scss';
-import ArrowDownIcon from 'assets/icons/arrow.svg?react';
-import NumberFormat from 'react-number-format';
-import { inspectToken } from 'reducer/onchainTokens';
-import { useDispatch } from 'react-redux';
-const cx = cn.bind(styles);
+import * as cosmwasmTokenfactoryV1beta1TxRegistry from '@oraichain/proto/dist/codegen/cosmwasm/tokenfactory/v1beta1/tx.registry';
 
-const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
+import {
+  MsgCreateDenom,
+  MsgMint,
+  MsgSetDenomMetadata
+} from '@oraichain/proto/dist/codegen/cosmwasm/tokenfactory/v1beta1/tx';
+
+import { inspectToken, optimisticUpdateToken } from 'reducer/onchainTokens';
+import { GasPrice } from '@cosmjs/stargate';
+import { OraichainNetworkConfig } from '@oraichain/orai-token-inspector';
+
+const cx = cn.bind(styles);
+// const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
 const DEFAULT_COSMOS_DECIMALS = 6;
 
 interface ModalProps {
@@ -63,9 +73,21 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   useOnClickOutside(ref, () => handleOutsideClick());
 
   const handleCreateToken = async () => {
-    const { client, defaultAddress: address } = await getCosmWasmClient({
-      chainId: network.chainId
-    });
+    const {
+      client,
+      defaultAddress: address,
+      wallet
+    } = await getCosmWasmClient(
+      {
+        chainId: network.chainId
+      },
+      {
+        registry: new Registry(cosmwasmTokenfactoryV1beta1TxRegistry.registry)
+      }
+    );
+
+    console.log((await wallet.getAccounts())[0]);
+
     if (!oraiAddress)
       return displayToast(TToastType.TX_FAILED, {
         message: 'Wallet address does not exist!'
@@ -103,72 +125,96 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       const hash = Buffer.from(sha256(uint8Array)).toString('hex');
 
       const symbol = tokenSymbol.trim();
-      const createDenomMsg = {
-        contractAddress: TOKEN_FACTORY_CONTRACT,
-        msg: {
-          create_denom: {
-            metadata: {
-              base: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
-              denom_units: [
-                {
-                  denom: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
-                  exponent: 0,
-                  aliases: []
-                },
-                {
-                  denom: tokenSymbol,
-                  exponent: DEFAULT_COSMOS_DECIMALS,
-                  aliases: []
-                }
-              ],
-              description: description,
-              display: symbol,
-              name: tokenName.trim(),
-              symbol: symbol,
-              uri: tokenLogoUrl,
-              uri_hash: hash
-            },
-            subdenom: tokenSymbol
-          }
-        },
-        funds: [
-          {
-            denom: 'orai',
-            amount: '1'
-          }
-        ]
-      };
 
-      const initBalanceMsg = isInitBalances
+      const createDenomMsg = MsgCreateDenom.fromPartial({
+        sender: address.address,
+        subdenom: tokenSymbol
+      });
+
+      const setDenomMetadataMsg = MsgSetDenomMetadata.fromPartial({
+        sender: address.address,
+        metadata: {
+          base: `factory/${address.address}/${tokenSymbol}`,
+          denomUnits: [
+            {
+              denom: `factory/${address.address}/${tokenSymbol}`,
+              exponent: 0,
+              aliases: []
+            },
+            {
+              denom: tokenSymbol,
+              exponent: DEFAULT_COSMOS_DECIMALS,
+              aliases: []
+            }
+          ],
+          description: description,
+          display: symbol,
+          name: tokenName.trim(),
+          symbol: symbol,
+          uri: tokenLogoUrl,
+          uriHash: hash
+        }
+      });
+
+      const mintMsgs = isInitBalances
         ? initBalances.map((init) => {
-            console.log(init.amount.toString());
-            return {
-              contractAddress: TOKEN_FACTORY_CONTRACT,
-              msg: {
-                mint_tokens: {
-                  amount: init.amount.toString(),
-                  denom: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
-                  mint_to_address: init.address
-                }
-              },
-              funds: []
-            };
+            return MsgMint.fromPartial({
+              sender: address.address,
+              mintToAddress: init.address,
+              amount: {
+                denom: `factory/${address.address}/${tokenSymbol}`,
+                amount: init.amount.toString()
+              }
+            });
           })
         : [];
 
-      msgs.push(createDenomMsg);
+      const mintRawMsgs = mintMsgs.map((msg) => ({
+        typeUrl: '/cosmwasm.tokenfactory.v1beta1.MsgMint',
+        value: msg
+      }));
 
-      if (initBalances.length > 0) {
-        msgs.push(...initBalanceMsg);
-      }
-      const res = await client.executeMultiple(address.address, msgs, 'auto');
+      const res = await client.signAndBroadcast(
+        address.address,
+        [
+          {
+            typeUrl: '/cosmwasm.tokenfactory.v1beta1.MsgCreateDenom',
+            value: createDenomMsg
+          },
+          {
+            typeUrl: '/cosmwasm.tokenfactory.v1beta1.MsgSetDenomMetadata',
+            value: setDenomMetadataMsg
+          },
+          ...mintRawMsgs
+        ],
+        'auto',
+        'Create a new token'
+      );
 
       if (res.transactionHash) {
+        // find if the initBalances has address of creator
+        const balance = initBalances.find((init) => init.address === address.address);
+        // TODO: optimistic update here
         dispatch<any>(
-          inspectToken({
-            tokenId: `factory/${TOKEN_FACTORY_CONTRACT}/${tokenSymbol}`,
-            address: oraiAddress,
-            isUserAdded: true
+          optimisticUpdateToken({
+            token: {
+              denom: `factory/${address.address}/${tokenSymbol}`,
+              name: tokenSymbol,
+              decimals: DEFAULT_COSMOS_DECIMALS,
+              org: tokenName.trim(),
+              icon: tokenLogoUrl,
+              iconLight: tokenLogoUrl,
+              bridgeTo: [],
+              chainId: network.chainId,
+              cosmosBased: true,
+              contractAddress: '',
+              coinType: OraichainNetworkConfig.coinType,
+              description: description,
+              feeCurrencies: network.feeCurrencies,
+              gasPriceStep: network.feeCurrencies[0].gasPriceStep,
+              rpc: network.rpc
+            },
+            balance: balance ? balance.amount.toString() : '0'
           })
         );
         displayToast(TToastType.TX_SUCCESSFUL, {
@@ -347,18 +393,18 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                       initBalances.map((item, ind) => {
                         return (
                           // <div key={ind}>
-                            <InitBalancesItems
-                              key={ind}
-                              item={item}
-                              ind={ind}
-                              selectedInitBalances={selectedInitBalances}
-                              setSelectedInitBalances={setSelectedInitBalances}
-                              setInitBalances={setInitBalances}
-                              initBalances={initBalances}
-                              theme={theme}
-                              decimals={DEFAULT_COSMOS_DECIMALS}
-                              deleteSelectedItem={deleteSelectedItem}
-                            />
+                          <InitBalancesItems
+                            key={ind}
+                            item={item}
+                            ind={ind}
+                            selectedInitBalances={selectedInitBalances}
+                            setSelectedInitBalances={setSelectedInitBalances}
+                            setInitBalances={setInitBalances}
+                            initBalances={initBalances}
+                            theme={theme}
+                            decimals={DEFAULT_COSMOS_DECIMALS}
+                            deleteSelectedItem={deleteSelectedItem}
+                          />
                           // </div>
                         );
                       })}
