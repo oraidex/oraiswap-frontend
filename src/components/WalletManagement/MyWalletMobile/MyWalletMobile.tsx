@@ -168,7 +168,6 @@ export const MyWalletMobile: React.FC<{
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    {/* <NetworkIcon width={30} height={30} /> */}
                     <img src={NetworkIcon} width={30} height={30} alt="network-icon" />
                   </div>
                 </div>
@@ -205,7 +204,6 @@ export const MyWalletMobile: React.FC<{
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    {/* <NetworkIcon width={30} height={30} /> */}
                     <img src={NetworkIcon} width={30} height={30} alt="network-icon" />
                   </div>
                 </div>
@@ -243,7 +241,7 @@ export const MyWalletMobile: React.FC<{
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    <NetworkIcon width={30} height={30} />
+                    <img src={NetworkIcon} width={30} height={30} alt="network-icon" />
                   </div>
                 </div>
                 <div className={styles.info}>
