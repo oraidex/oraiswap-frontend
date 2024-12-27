@@ -197,7 +197,7 @@ export const getExplorerScan = (chainId: NetworkChainId) => {
     case '0x1ae6':
       return 'https://scan.kawaii.global/tx';
     case 'Oraichain':
-      return 'https://scan.orai.io/txs';
+      return 'https://scanium.io/Oraichain/tx';
     case 'osmosis-1':
       return 'https://www.mintscan.io/osmosis/tx';
     case 'cosmoshub-4':
@@ -211,7 +211,7 @@ export const getExplorerScan = (chainId: NetworkChainId) => {
     case 'ton':
       return 'https://tonscan.org/address';
     default:
-      return 'https://scan.orai.io/txs';
+      return 'https://scanium.io/Oraichain/tx';
   }
 };
 
