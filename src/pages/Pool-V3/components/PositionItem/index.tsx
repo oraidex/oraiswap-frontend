@@ -496,7 +496,11 @@ const PositionItem = ({ position }) => {
                       <div className={classNames(styles.itemAsset, styles[theme])}>
                         <span className={classNames(styles.token, styles[theme])}></span>
                         <span className={classNames(styles.token, styles[theme])}>
-                          {theme === 'light' ? <token.IconLight /> : <token.Icon />}
+                          {theme === 'light' ? (
+                            <img src={token.iconLight} alt="tokenIncentive" width={20} height={20} />
+                          ) : (
+                            <img src={token.icon} alt="tokenIncentive" width={20} height={20} />
+                          )}
                           {!amount || !Number(amount)
                             ? '--'
                             : toDisplay(amount.toString(), token.decimals || CW20_DECIMALS)}{' '}
