@@ -11,7 +11,9 @@ import {
   solChainId,
   toDisplay,
   MAX_ORAICHAIN_DENOM,
-  MAX_SOL_CONTRACT_ADDRESS
+  MAX_SOL_CONTRACT_ADDRESS,
+  ORAI_SOL_CONTRACT_ADDRESS,
+  ORAI
 } from '@oraichain/oraidex-common';
 import {
   chainInfos,
@@ -516,8 +518,8 @@ const Balance: React.FC<BalanceProps> = () => {
 
     const web3Solana = new Web3SolanaProgramInteraction();
     console.log('from token address: ', fromToken.contractAddress);
-
-    if (fromToken.contractAddress !== MAX_SOL_CONTRACT_ADDRESS) {
+    const isListCheckBalanceSolToOraichain = [ORAI_SOL_CONTRACT_ADDRESS];
+    if (isListCheckBalanceSolToOraichain.includes(fromToken.contractAddress)) {
       // TODO: need check if support new token in solana
       const currentBridgeBalance = await window.client.getBalance(ORAICHAIN_RELAYER_ADDRESS, toToken.denom);
       console.log(
@@ -560,8 +562,8 @@ const Balance: React.FC<BalanceProps> = () => {
     }
 
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
-
-    if (fromToken.denom === MAX_ORAICHAIN_DENOM) {
+    const listCheckNotBalanceOraichainToSol = [ORAI];
+    if (!listCheckNotBalanceOraichainToSol.includes(fromToken.denom)) {
       const web3Solana = new Web3SolanaProgramInteraction();
       const bridgeBalance =
         fromToken.contractAddress === NATIVE_MINT.toBase58()
@@ -569,7 +571,7 @@ const Balance: React.FC<BalanceProps> = () => {
           : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, toToken.contractAddress);
       console.log('token balance to solana: ', bridgeBalance, toToken.contractAddress);
       if (bridgeBalance < transferAmount) {
-        const message = `Transfer ${fromToken.denom} to Solana failed. The bridge balance only has ${bridgeBalance}${fromToken.denom}, wanted ${transferAmount}${fromToken.denom}`;
+        const message = `Transfer ${fromToken.name} to Solana failed. The bridge balance only has ${bridgeBalance}${fromToken.name}, wanted ${transferAmount}${fromToken.name}`;
         displayToast(TToastType.TX_FAILED, {
           message
         });
