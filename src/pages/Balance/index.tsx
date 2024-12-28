@@ -562,8 +562,8 @@ const Balance: React.FC<BalanceProps> = () => {
     }
 
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
-    const listCheckNotBalanceOraichainToSol = [ORAI];
-    if (!listCheckNotBalanceOraichainToSol.includes(fromToken.denom)) {
+    const listNotCheckBalanceOraichainToSol = [ORAI];
+    if (!listNotCheckBalanceOraichainToSol.includes(fromToken.denom)) {
       const web3Solana = new Web3SolanaProgramInteraction();
       const bridgeBalance =
         fromToken.contractAddress === NATIVE_MINT.toBase58()
