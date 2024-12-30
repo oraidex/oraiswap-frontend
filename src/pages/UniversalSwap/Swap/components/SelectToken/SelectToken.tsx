@@ -89,8 +89,8 @@ export default function SelectToken({
       (item) =>
         (textChain ? item.chainId === textChain : true) &&
         (textSearch
-          ? [item.name.toLowerCase(), item.denom.toLowerCase(), item.contractAddress?.toLowerCase()].includes(
-              textSearch.toLowerCase()
+          ? [item.name.toLowerCase(), item.denom.toLowerCase(), item.contractAddress?.toLowerCase()].some(
+              (tokenDenom) => tokenDenom?.includes(textSearch.toLowerCase())
             )
           : true)
     )
