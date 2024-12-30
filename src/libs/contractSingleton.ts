@@ -385,22 +385,22 @@ export default class SingletonOraiswapV3 {
     });
   }
 
-  public static approveToken = async (token: string, amount: bigint, address: string) => {
+  public static async approveToken(token: string, amount: bigint, address: string) {
     const tokenClient = new OraiswapTokenClient(this._dex.client, address, token);
 
     return await tokenClient.increaseAllowance({
       amount: amount.toString(),
       spender: this._dex.contractAddress
     });
-  };
+  }
 
-  public static getTicksAndIncentivesInfo = async (
+  public static async getTicksAndIncentivesInfo(
     lowerTick: number,
     upperTick: number,
     positionIndex: number,
     user: string,
     poolKey: PoolKey
-  ) => {
+  ) {
     try {
       await this.loadCosmwasmClient();
       const multicallClient = new MulticallQueryClient(this._cosmwasmClient, network.multicall);
@@ -449,13 +449,13 @@ export default class SingletonOraiswapV3 {
       console.log('error', error);
       return null;
     }
-  };
+  }
 
-  public static getLiquidityByPool = async (
+  public static async getLiquidityByPool(
     pool: PoolWithPoolKey,
     prices: CoinGeckoPrices<string>,
     positions: Position[]
-  ): Promise<any> => {
+  ): Promise<any> {
     const poolKey = pool.pool_key;
     const tokenX = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
     const tokenY = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
@@ -490,7 +490,7 @@ export default class SingletonOraiswapV3 {
       total: tvlLockedUSD,
       allocation
     };
-  };
+  }
 
   public static async getAllPosition(): Promise<Position[]> {
     await this.loadHandler();
@@ -498,10 +498,10 @@ export default class SingletonOraiswapV3 {
     return positions;
   }
 
-  public static getPoolLiquidities = async (
+  public static async getPoolLiquidities(
     pools: PoolWithPoolKey[],
     prices: CoinGeckoPrices<string>
-  ): Promise<Record<string, number>> => {
+  ): Promise<Record<string, number>> {
     const poolLiquidities: Record<string, number> = {};
     await this.loadHandler();
 
@@ -522,11 +522,11 @@ export default class SingletonOraiswapV3 {
     }
 
     return poolLiquidities;
-  };
+  }
 
-  public static getTotalLiquidityValue = async (): Promise<number> => {
+  public static async getTotalLiquidityValue() {
     return 1;
-  };
+  }
 }
 
 export interface PositionTest {

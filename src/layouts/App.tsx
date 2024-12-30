@@ -10,7 +10,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { SolanaWalletProvider } from 'context/solana-content';
 import { ThemeProvider } from 'context/theme-context';
 import { TonNetwork } from 'context/ton-provider';
-import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron } from 'helper';
+import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron, retry } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useWalletReducer from 'hooks/useWalletReducer';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
@@ -296,12 +296,26 @@ const App = () => {
     let solAddress;
     if (walletByNetworks.solana === 'owallet' || mobileMode) {
       if (window.owalletSolana) {
-        const { publicKey } = await window.owalletSolana.connect();
-        if (publicKey) {
-          solAddress = publicKey.toBase58();
-          setSolAddress(solAddress);
-        }
+        const provider = window?.owalletSolana;
         solanaWallet.select('OWallet' as any);
+        await retry(
+          async () => {
+            try {
+              await solanaWallet.connect();
+            } catch (err) {
+              console.log('err', err);
+            }
+            const { publicKey } = await provider.connect();
+            if (publicKey) {
+              solAddress = publicKey.toBase58();
+              setSolAddress(solAddress);
+            } else {
+              throw new Error('Cannot connect to Solana wallet');
+            }
+          },
+          3,
+          1000
+        );
       }
     }
     return solAddress;
