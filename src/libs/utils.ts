@@ -9,7 +9,7 @@ import { isMobile } from '@walletconnect/browser-utils';
 import WalletConnectProvider from '@walletconnect/ethereum-provider';
 import bech32 from 'bech32';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import { chainInfos, cosmosTokens, network, oraichainTokens, tokenMap } from 'initCommon';
+import { chainInfos, cosmosTokens, flattenTokens, network, oraichainTokens, tokenMap } from 'initCommon';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import { NetworkChainId } from '@oraichain/common';
 import { store } from 'store/configure';
@@ -75,14 +75,8 @@ export const toSumDisplay = (amounts: AmountDetails): number => {
     // update later
     const balance = amounts[denom];
     if (!balance) continue;
-    // amount += toDisplay(balance, tokenMap[denom]?.decimals);
 
-    const storage = store.getState();
-    const allOraichainTokens = storage.token.allOraichainTokens || [];
-    amount += toDisplay(
-      balance,
-      allOraichainTokens.find((t) => t.contractAddress === denom || t.denom === denom)?.decimals
-    );
+    amount += toDisplay(balance, flattenTokens.find((t) => t.contractAddress === denom || t.denom === denom)?.decimals);
   }
   return amount;
 };
