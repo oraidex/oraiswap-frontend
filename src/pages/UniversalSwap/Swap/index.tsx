@@ -219,15 +219,17 @@ const SwapComponent: React.FC<{
   });
 
   useEffect(() => {
-    if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' && simulateData.amount) {
+    if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' && simulateData?.amount) {
       const logEvent = {
         fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
         fromAmount: `${fromAmountToken}`,
         toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
+        toAmount: `${simulateData.displayAmount}`,
         useAlphaIbcWasm,
         useIbcWasm,
         simulateData,
-        averageSimulateData
+        averageSimulateData,
+        impactWarning
       };
       mixpanel.track('Universal Swap OSOR', logEvent);
     }
