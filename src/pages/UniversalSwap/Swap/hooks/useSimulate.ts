@@ -57,7 +57,11 @@ export const useSimulate = (
   const debouncedFromAmount = useDebounce(fromAmountToken, 800);
   let enabled = !!fromTokenInfoData && !!toTokenInfoData && !!debouncedFromAmount && fromAmountToken > 0;
   if (simulateOption?.isAvgSimulate) enabled = false;
-  const { data: simulateData, isPreviousData: isPreviousSimulate } = useQuery(
+  const {
+    data: simulateData,
+    isPreviousData: isPreviousSimulate,
+    isRefetching
+  } = useQuery(
     [queryKey, fromTokenInfoData, toTokenInfoData, debouncedFromAmount],
     async () => {
       try {
@@ -88,9 +92,9 @@ export const useSimulate = (
       }
     },
     {
-      // keepPreviousData: true,
-      refetchInterval: 3000,
-      staleTime: 1000,
+      keepPreviousData: true,
+      refetchInterval: 5000,
+      staleTime: 2000,
       enabled,
       onError: (error) => {
         console.log('isAvgSimulate:', simulateOption?.isAvgSimulate, 'error when simulate: ', error);
@@ -110,6 +114,7 @@ export const useSimulate = (
     toAmountToken,
     setSwapAmount,
     debouncedFromAmount,
-    isPreviousSimulate
+    isPreviousSimulate,
+    isRefetching
   };
 };

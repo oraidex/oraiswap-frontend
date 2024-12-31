@@ -187,8 +187,15 @@ const SwapComponent: React.FC<{
   const { expectOutputDisplay, minimumReceiveDisplay, isWarningSlippage } = outputs;
   const { fromAmountTokenBalance, usdPriceShowFrom, usdPriceShowTo } = tokenInfos;
   const { averageRatio, averageSimulateData, isAveragePreviousSimulate } = averageSimulateDatas;
-  const { simulateData, setSwapAmount, fromAmountToken, toAmountToken, debouncedFromAmount, isPreviousSimulate } =
-    simulateDatas;
+  const {
+    simulateData,
+    setSwapAmount,
+    fromAmountToken,
+    toAmountToken,
+    debouncedFromAmount,
+    isPreviousSimulate,
+    isRefetching
+  } = simulateDatas;
 
   const subAmountFrom = toSubAmount(amounts, originalFromToken);
   const subAmountTo = toSubAmount(amounts, originalToToken);
@@ -214,6 +221,11 @@ const SwapComponent: React.FC<{
   useEffect(() => {
     if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' && simulateData.amount) {
       const logEvent = {
+        fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
+        fromAmount: `${fromAmountToken}`,
+        toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
+        useAlphaIbcWasm,
+        useIbcWasm,
         simulateData,
         averageSimulateData
       };
@@ -812,7 +824,7 @@ const SwapComponent: React.FC<{
                 amount={toAmountToken}
                 tokenFee={toTokenFee}
                 usdPrice={usdPriceShowTo}
-                loadingSimulate={isPreviousSimulate}
+                loadingSimulate={isPreviousSimulate || isRefetching}
                 impactWarning={impactWarning}
                 isConfirmToken={isConfirmTokenTo}
               />
@@ -906,7 +918,7 @@ const SwapComponent: React.FC<{
               addressTransfer,
               validAddress,
               simulateData,
-              isLoadingSimulate: isPreviousSimulate
+              isLoadingSimulate: isPreviousSimulate || isRefetching
             });
             return (
               <button
