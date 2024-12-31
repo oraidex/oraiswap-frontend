@@ -67,8 +67,8 @@ const Swap: React.FC = () => {
   const [hasAnimations, setHasAnimations] = useState(hasAnimationsOrImages);
 
   const animations = [
-    { condition: topJson, className: styles.top, type: 'json', data: topJson, isTop: true },
-    { condition: bottomJson, className: styles.bottom, type: 'json', data: bottomJson, isBottom: true },
+    { condition: topJson, className: styles.top, type: 'json', data: topJson },
+    { condition: bottomJson, className: styles.bottom, type: 'json', data: bottomJson },
     { condition: topImg, className: styles.top, type: 'img', src: topImg },
     { condition: bottomImg, className: styles.bottom, type: 'img', src: bottomImg }
   ];
