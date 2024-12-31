@@ -7,7 +7,6 @@ import { useTonConnectUI } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { SolanaWalletProvider } from 'context/solana-content';
 import { ThemeProvider } from 'context/theme-context';
 import { TonNetwork } from 'context/ton-provider';
 import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron, retry } from 'helper';
@@ -390,20 +389,18 @@ const App = () => {
   const [openBanner, setOpenBanner] = useState(false);
 
   return (
-    <SolanaWalletProvider>
-      <ThemeProvider>
-        <div className={`app ${theme}`}>
-          {/* <button data-featurebase-feedback>Open Widget</button> */}
-          <Menu />
-          <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
-          {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
-          <div className="main">
-            <Sidebar />
-            <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
-          </div>
+    <ThemeProvider>
+      <div className={`app ${theme}`}>
+        {/* <button data-featurebase-feedback>Open Widget</button> */}
+        <Menu />
+        <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
+        {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
+        <div className="main">
+          <Sidebar />
+          <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
         </div>
-      </ThemeProvider>
-    </SolanaWalletProvider>
+      </div>
+    </ThemeProvider>
   );
 };
 

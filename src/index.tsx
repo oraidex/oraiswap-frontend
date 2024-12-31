@@ -19,6 +19,7 @@ import 'polyfill';
 import App from './layouts/App';
 import { network } from 'initCommon';
 import { TonProvider } from 'context/ton-provider';
+import { SolanaWalletProvider } from 'context/solana-content';
 
 const queryClient = new QueryClient();
 
@@ -69,7 +70,9 @@ const initApp = async () => {
             <ScrollToTop />
             <QueryClientProvider client={queryClient}>
               <TonProvider>
-                <App />
+                <SolanaWalletProvider>
+                  <App />
+                </SolanaWalletProvider>
               </TonProvider>
             </QueryClientProvider>
           </Router>
