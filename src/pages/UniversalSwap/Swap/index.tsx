@@ -212,6 +212,16 @@ const SwapComponent: React.FC<{
   });
 
   useEffect(() => {
+    if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' && simulateData.amount) {
+      const logEvent = {
+        simulateData,
+        averageSimulateData
+      };
+      mixpanel.track('Universal Swap OSOR', logEvent);
+    }
+  }, [simulateData, averageSimulateData]);
+
+  useEffect(() => {
     if (!originalFromToken.isVerified) {
       setIsConfirmTokenFrom('pending');
     } else {
@@ -920,6 +930,7 @@ const SwapComponent: React.FC<{
                 {swapLoading && <Loader width={20} height={20} />}
                 {/* hardcode check minimum tron */}
                 {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
+                  // @ts-ignore
                   <span>Minimum amount: {(fromToken.minAmountSwap || '0') + ' ' + fromToken.name} </span>
                 ) : (
                   <span>{disableMsg || 'Swap'}</span>

@@ -88,8 +88,8 @@ export const useSimulate = (
       }
     },
     {
-      keepPreviousData: true,
-      refetchInterval: 15000,
+      // keepPreviousData: true,
+      refetchInterval: 3000,
       staleTime: 1000,
       enabled,
       onError: (error) => {
