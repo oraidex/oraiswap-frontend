@@ -41,7 +41,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     useIbcWasm,
     protocols,
     maxSplits: useAlphaIbcWasm ? 1 : 10,
-    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined
+    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined,
+    keepPreviousData: true
   };
 
   const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } = useRelayerFeeToken(
