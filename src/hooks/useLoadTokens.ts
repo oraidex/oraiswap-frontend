@@ -281,51 +281,73 @@ async function loadEvmEntries(
   address: string,
   chain: CustomChainInfo,
   multicallCustomContractAddress?: string,
-  retryCount?: number
+  retryCount: number = 3
 ): Promise<[string, string][]> {
-  try {
-    const tokens = evmTokens.filter((t) => t.chainId === chain?.chainId && t.contractAddress);
-    const nativeEvmToken = evmTokens.find(
-      (t) =>
-        !t.contractAddress &&
-        UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId) &&
-        chain?.chainId === t.chainId
-    );
-    if (!tokens.length) return [];
-    const multicall = new Multicall({
-      nodeUrl: chain.rpc,
-      multicallCustomContractAddress,
-      chainId: Number(chain.chainId)
-    });
-    const input = tokens.map((token) => ({
-      reference: token.denom,
-      contractAddress: token.contractAddress,
-      abi: ERC20__factory.abi,
-      calls: [
-        {
-          reference: token.denom,
-          methodName: 'balanceOf(address)',
-          methodParameters: [address]
-        }
-      ]
-    }));
+  const tokens = evmTokens.filter((t) => t.chainId === chain?.chainId && t.contractAddress);
+  const nativeEvmToken = evmTokens.find(
+    (t) =>
+      !t.contractAddress &&
+      UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId) &&
+      chain?.chainId === t.chainId
+  );
 
-    const results: ContractCallResults = await multicall.call(input as any);
-    const nativeBalance = nativeEvmToken ? await loadNativeEvmBalance(address, chain) : 0;
-    let entries: [string, string][] = tokens.map((token) => {
-      const amount = results.results[token.denom].callsReturnContext[0].returnValues[0].hex;
-      return [token.denom, amount];
-    });
-    if (nativeEvmToken) entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
-    return entries;
-  } catch (error) {
-    console.log('error querying EVM balance: ', error);
-    let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT) console.error(`Cannot query EVM balance with error: ${error}`);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return loadEvmEntries(address, chain, multicallCustomContractAddress, retry);
+  if (!tokens.length) return [];
+
+  const multicall = new Multicall({
+    nodeUrl: chain.rpc,
+    multicallCustomContractAddress,
+    chainId: Number(chain.chainId)
+  });
+
+  const input = tokens.map((token) => ({
+    reference: token.denom,
+    contractAddress: token.contractAddress,
+    abi: ERC20__factory.abi,
+    calls: [
+      {
+        reference: token.denom,
+        methodName: 'balanceOf(address)',
+        methodParameters: [address]
+      }
+    ]
+  }));
+
+  let attempts = 0;
+  let entries: [string, string][] = [];
+
+  while (attempts < retryCount) {
+    try {
+      const results: ContractCallResults = await multicall.call(input as any);
+      const nativeBalance = nativeEvmToken ? await loadNativeEvmBalance(address, chain) : 0;
+
+      entries = tokens.map((token) => {
+        const amount = results.results[token.denom].callsReturnContext[0].returnValues[0].hex;
+        return [token.denom, amount];
+      });
+
+      if (nativeEvmToken) {
+        entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
+      }
+
+      return entries;
+    } catch (error) {
+      attempts++;
+      console.log(`Attempt ${attempts} failed. Error querying EVM balance: `, error);
+
+      if (attempts >= retryCount) {
+        console.error(`Failed to query EVM balance after ${attempts} attempts. Error: ${error}`);
+        break;
+      }
+
+      // Wait for 2 seconds before retrying
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
   }
+
+  return entries;
 }
+
+
 async function loadBtcEntries(
   address: string,
   chain: CustomChainInfo,
@@ -386,9 +408,11 @@ async function loadSolEntries(
 
 async function loadEvmAmounts(dispatch: Dispatch, evmAddress: string, chains: CustomChainInfo[]) {
   console.log('---', chains);
+  console.log('asdfasdfasdf', chains);
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map((chain) => loadEvmEntries(evmAddress, chain))))
   );
+  console.log('amountDetails', amountDetails);
 
   dispatch(updateAmounts(amountDetails));
 }
