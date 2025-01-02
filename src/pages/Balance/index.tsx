@@ -614,47 +614,23 @@ const Balance: React.FC<BalanceProps> = () => {
       const fromBalance = from && initFromBalance ? subAmount + BigInt(initFromBalance) : BigInt(0);
       const condition = fromAmount > 0 && toAmount(fromAmount, from.decimals) <= fromBalance;
       assert(condition, 'Your balance is insufficient to make this transfer');
-
       displayToast(TToastType.TX_BROADCASTING);
       let result: DeliverTxResponse | string | any;
-
       let newToToken = to;
       if (toNetworkChainId) {
-        // ORAICHAIN -> EVM (BSC/ETH/TRON) ( TO: TOKEN ORAIBRIDGE)
         newToToken = [...otherChainTokens, ...oraichainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
-
-        // TODO: vuonghuuhung support dynamic bridge orai <-> solana
-        // if (from.chainId === SolanaNetworkConfig.chainId) {
-        //   newToToken = [...allOraichainTokens, ...allOtherChainTokens].find(
-        //     (flat) =>
-        //       flat.chainId === toNetworkChainId &&
-        //       flat.coinGeckoId === from.coinGeckoId &&
-        //       flat.denom.includes(from.denom)
-        //   );
-        // }
-
-        // if (toNetworkChainId === SolanaNetworkConfig.chainId) {
-        //   console.log('🚀 ~ onClickTransfer ~ toNetworkChainId', toNetworkChainId);
-        //   const subDenom = from.denom.split('/')[2];
-        //   const targetTokenInfo = onChainTokenToTokenItem(
-        //     await tokenInspector.inspectTokenFromSpecifiedChain({
-        //       tokenId: subDenom,
-        //       chainId: toNetworkChainId
-        //     })
-        //   );
-        //   newToToken = targetTokenInfo;
-        // }
-
-        // console.log('🚀 ~ onClickTransfer ~ newToToken', newToToken);
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
+      assert(
+        newToToken.coinGeckoId === from.coinGeckoId,
+        `From token ${from.coinGeckoId} is different from to token ${newToToken.coinGeckoId}`
+      );
+
       // check transfer TON <=> ORAICHAIN,Osmosis
       const { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos } = await checkTransferTon(toNetworkChainId);
-      console.log({ isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos });
-
       if (isFromCosmosToCosmos || isFromTonToCosmos || isFromCosmosToTON) {
         return await handleTransferTon({
           isTonToCosmos: isFromTonToCosmos,
@@ -664,12 +640,7 @@ const Balance: React.FC<BalanceProps> = () => {
         });
       }
 
-      assert(
-        newToToken.coinGeckoId === from.coinGeckoId,
-        `From token ${from.coinGeckoId} is different from to token ${newToToken.coinGeckoId}`
-      );
-
-      let [isSolToOraichain, isOraichainToSol, isBTCToOraichain, isBtcBridge] = checkTransfer(
+      const [isSolToOraichain, isOraichainToSol, isBTCToOraichain, isBtcBridge] = checkTransfer(
         from.chainId,
         newToToken.chainId
       );
@@ -682,7 +653,6 @@ const Balance: React.FC<BalanceProps> = () => {
           transferAmount: fromAmount
         });
       }
-
       if (isSolToOraichain || isOraichainToSol) {
         if (isOraichainToSol) {
           return handleTransferOraichainToSol({ fromToken: from, toToken: newToToken, transferAmount: fromAmount });
@@ -725,6 +695,7 @@ const Balance: React.FC<BalanceProps> = () => {
       if (newToToken.chainId === 'injective-1' && newToToken.coinGeckoId === 'injective-protocol') {
         simulateAmount = toAmount(fromAmount, newToToken.decimals).toString();
       }
+      alert(1);
 
       let relayerFee = {
         relayerAmount: DEFAULT_RELAYER_FEE,
