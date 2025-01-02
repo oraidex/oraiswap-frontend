@@ -29,10 +29,10 @@ export const initPairSwap = (): [string, string] => {
   const toDenom = originalToToken?.denom;
 
   if (!fromDenom || !toDenom || fromDenom === toDenom) {
-    return ['usdt', 'orai'];
+    return ['cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:USDT', 'orai'];
   }
 
-  return [fromDenom || 'usdt', toDenom || 'orai'];
+  return [fromDenom || 'cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:USDT', toDenom || 'orai'];
 };
 
 // URL: /universalswap?from=orai&to=usdt
@@ -59,7 +59,6 @@ export const useFillToken = (setSwapTokens: (denoms: [string, string]) => void) 
     const originalToToken = allOraichainTokens.find(
       (token) => token.denom === toDenom || token.contractAddress === toDenom
     );
-    console.log('da den', fromDenom, toDenom, originalFromToken, originalToToken, currentFromDenom, currentToDenom);
 
     if (originalFromToken && originalToToken && (currentFromDenom !== fromDenom || currentToDenom !== toDenom)) {
       currentFromDenom !== fromDenom && params.set(FROM_QUERY_KEY, fromDenom);
