@@ -86,8 +86,6 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
       }
     );
 
-    console.log((await wallet.getAccounts())[0]);
-
     if (!oraiAddress)
       return displayToast(TToastType.TX_FAILED, {
         message: 'Wallet address does not exist!'
