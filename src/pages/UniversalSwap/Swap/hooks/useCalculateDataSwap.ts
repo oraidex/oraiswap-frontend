@@ -59,17 +59,24 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     data: [fromTokenInfoData, toTokenInfoData]
   } = useQuery(['token-infos', fromToken, toToken], () => fetchTokenInfos([fromToken!, toToken!]), { initialData: [] });
 
-  const { simulateData, setSwapAmount, fromAmountToken, toAmountToken, debouncedFromAmount, isPreviousSimulate } =
-    useSimulate(
-      'simulate-data',
-      fromTokenInfoData,
-      toTokenInfoData,
-      originalFromToken,
-      originalToToken,
-      routerClient,
-      null,
-      simulateOption
-    );
+  const {
+    simulateData,
+    setSwapAmount,
+    fromAmountToken,
+    toAmountToken,
+    debouncedFromAmount,
+    isPreviousSimulate,
+    isRefetching
+  } = useSimulate(
+    'simulate-data',
+    fromTokenInfoData,
+    toTokenInfoData,
+    originalFromToken,
+    originalToToken,
+    routerClient,
+    null,
+    simulateOption
+  );
 
   const { simulateData: averageSimulateData, isPreviousSimulate: isAveragePreviousSimulate } = useSimulate(
     'average-simulate-data',
@@ -193,7 +200,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
       fromAmountToken,
       toAmountToken,
       debouncedFromAmount,
-      isPreviousSimulate
+      isPreviousSimulate,
+      isRefetching
     }
   };
 };

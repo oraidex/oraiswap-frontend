@@ -1,6 +1,17 @@
 import { Cw20Coin } from '@oraichain/common-contracts-sdk';
 import { InstantiateMarketingInfo } from '@oraichain/common-contracts-sdk/build/Cw20Base.types';
-import { validateNumber, INJECTIVE_CONTRACT, ORAI, USDC_CONTRACT, ORAIX_CONTRACT } from '@oraichain/oraidex-common';
+import {
+  validateNumber,
+  INJECTIVE_CONTRACT,
+  ORAI,
+  USDC_CONTRACT,
+  ORAIX_CONTRACT,
+  AIRI_CONTRACT,
+  ATOM_ORAICHAIN_DENOM,
+  USDT_CONTRACT,
+  KWT_CONTRACT,
+  OSMOSIS_ORAICHAIN_DENOM
+} from '@oraichain/oraidex-common';
 import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { MinterResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapToken.types';
 import { formatDate } from 'pages/CoHarvest/helpers';
@@ -230,29 +241,99 @@ export const canStake = (rewardPerSec: string) => {
   return rewardPerSecJSON.assets.some((asset) => asset.amount !== '0');
 };
 
-export const listFactoryV1Pools = [
+export type FACTORY_V1_POOL = {
+  symbols: [string, string];
+  assetInfos: [AssetInfo, AssetInfo];
+};
+export const listFactoryV1Pools: FACTORY_V1_POOL[] = [
   {
     symbols: ['AIRI', 'ORAI'],
-    factoryV1: true
+    assetInfos: [
+      {
+        token: {
+          contract_addr: AIRI_CONTRACT
+        }
+      },
+      {
+        native_token: {
+          denom: ORAI
+        }
+      }
+    ]
   },
   {
     symbols: ['ORAIX', 'ORAI'],
-    factoryV1: true
+    assetInfos: [
+      {
+        token: {
+          contract_addr: ORAIX_CONTRACT
+        }
+      },
+      {
+        native_token: {
+          denom: ORAI
+        }
+      }
+    ]
   },
   {
     symbols: ['ORAI', 'ATOM'],
-    factoryV1: true
+    assetInfos: [
+      {
+        native_token: {
+          denom: ORAI
+        }
+      },
+      {
+        native_token: {
+          denom: ATOM_ORAICHAIN_DENOM
+        }
+      }
+    ]
   },
   {
     symbols: ['ORAI', 'USDT'],
-    factoryV1: true
+    assetInfos: [
+      {
+        native_token: {
+          denom: ORAI
+        }
+      },
+      {
+        token: {
+          contract_addr: USDT_CONTRACT
+        }
+      }
+    ]
   },
   {
     symbols: ['KWT', 'ORAI'],
-    factoryV1: true
+    assetInfos: [
+      {
+        token: {
+          contract_addr: KWT_CONTRACT
+        }
+      },
+      {
+        native_token: {
+          denom: ORAI
+        }
+      }
+    ]
   },
   {
     symbols: ['ORAI', 'OSMO'],
-    factoryV1: true
+    assetInfos: [
+      {
+        native_token: {
+          denom: ORAI
+        }
+      },
+      {
+        token: {
+          contract_addr: OSMOSIS_ORAICHAIN_DENOM
+        }
+      }
+    ]
   }
 ];

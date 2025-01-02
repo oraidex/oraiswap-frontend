@@ -86,7 +86,7 @@ export default function SelectChain({
               .sort((a, b) => Number(b.totalUsd || 0) - Number(a.totalUsd || 0))
               .map((item) => {
                 const chainInfo = chainInfos.find((chainIcon) => chainIcon.chainId === item.chainId);
-                const key = item.chainId.toString();
+                const key = item.chainId?.toString();
                 const title = item.chainName;
                 const balance = '$' + (item.totalUsd > 0 ? item.totalUsd.toFixed(2) : '0');
                 return (

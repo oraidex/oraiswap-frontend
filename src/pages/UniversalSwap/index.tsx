@@ -64,6 +64,8 @@ const Swap: React.FC = () => {
   const { topImg, bottomImg, topJson, bottomJson } = configTheme.animation;
 
   const hasAnimationsOrImages = topImg || bottomImg || topJson || bottomJson;
+  const [hasAnimations, setHasAnimations] = useState(hasAnimationsOrImages);
+
   const animations = [
     { condition: topJson, className: styles.top, type: 'json', data: topJson },
     { condition: bottomJson, className: styles.bottom, type: 'json', data: bottomJson },
@@ -73,12 +75,24 @@ const Swap: React.FC = () => {
 
   return (
     <>
-      {hasAnimationsOrImages && (
+      {hasAnimations && (
         <div className={classNames(styles.wrapperEvent, styles[event])}>
           {animations.map(({ condition, className, type, data, src }, index) =>
             condition ? (
               type === 'json' ? (
-                <Lottie key={index} className={className} animationData={data} autoPlay={true} loop={true} />
+                <Lottie
+                  onClick={(e) => {
+                    if (hasAnimations) {
+                      e.stopPropagation();
+                      setHasAnimations(!hasAnimations);
+                    }
+                  }}
+                  key={index}
+                  className={className}
+                  animationData={data}
+                  autoPlay={true}
+                  loop={true}
+                />
               ) : (
                 <img key={index} className={className} src={src} alt="" />
               )

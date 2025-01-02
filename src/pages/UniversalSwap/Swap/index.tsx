@@ -187,8 +187,15 @@ const SwapComponent: React.FC<{
   const { expectOutputDisplay, minimumReceiveDisplay, isWarningSlippage } = outputs;
   const { fromAmountTokenBalance, usdPriceShowFrom, usdPriceShowTo } = tokenInfos;
   const { averageRatio, averageSimulateData, isAveragePreviousSimulate } = averageSimulateDatas;
-  const { simulateData, setSwapAmount, fromAmountToken, toAmountToken, debouncedFromAmount, isPreviousSimulate } =
-    simulateDatas;
+  const {
+    simulateData,
+    setSwapAmount,
+    fromAmountToken,
+    toAmountToken,
+    debouncedFromAmount,
+    isPreviousSimulate,
+    isRefetching
+  } = simulateDatas;
 
   const subAmountFrom = toSubAmount(amounts, originalFromToken);
   const subAmountTo = toSubAmount(amounts, originalToToken);
@@ -210,6 +217,23 @@ const SwapComponent: React.FC<{
     setOpenSmartRoute(false);
     setIndSmartRoute([0, 0]);
   });
+
+  useEffect(() => {
+    if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' && simulateData?.amount) {
+      const logEvent = {
+        fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
+        fromAmount: `${fromAmountToken}`,
+        toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
+        toAmount: `${simulateData.displayAmount}`,
+        useAlphaIbcWasm,
+        useIbcWasm,
+        simulateData,
+        averageSimulateData,
+        impactWarning
+      };
+      mixpanel.track('Universal Swap OSOR', logEvent);
+    }
+  }, [simulateData, averageSimulateData]);
 
   useEffect(() => {
     if (!originalFromToken.isVerified) {
@@ -802,7 +826,7 @@ const SwapComponent: React.FC<{
                 amount={toAmountToken}
                 tokenFee={toTokenFee}
                 usdPrice={usdPriceShowTo}
-                loadingSimulate={isPreviousSimulate}
+                loadingSimulate={isPreviousSimulate || isRefetching}
                 impactWarning={impactWarning}
                 isConfirmToken={isConfirmTokenTo}
               />
@@ -896,7 +920,7 @@ const SwapComponent: React.FC<{
               addressTransfer,
               validAddress,
               simulateData,
-              isLoadingSimulate: isPreviousSimulate
+              isLoadingSimulate: isPreviousSimulate || isRefetching
             });
             return (
               <button
@@ -920,6 +944,7 @@ const SwapComponent: React.FC<{
                 {swapLoading && <Loader width={20} height={20} />}
                 {/* hardcode check minimum tron */}
                 {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
+                  // @ts-ignore
                   <span>Minimum amount: {(fromToken.minAmountSwap || '0') + ' ' + fromToken.name} </span>
                 ) : (
                   <span>{disableMsg || 'Swap'}</span>

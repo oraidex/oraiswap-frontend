@@ -381,6 +381,19 @@
     color: theme-get('neutral-text-title');
   }
 
+  &.dark {
+    svg {
+      path {
+        stroke: #efefef;
+      }
+    }
+  }
+  svg {
+    path {
+      stroke: #474747;
+    }
+  }
+
   &:hover {
     @include theme() {
       background-color: theme-get('neutral-border-border-bold');
