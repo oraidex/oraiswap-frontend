@@ -25,7 +25,7 @@ import { setAddressBookList } from 'reducer/addressBook';
 import { persistor, RootState } from 'store/configure';
 import { ADDRESS_BOOK_KEY_BACKUP, PERSIST_VER } from 'store/constants';
 import './index.scss';
-import { initializeOraidexCommon, isLoadingCommon, network } from 'initCommon';
+import { initializeOraidexCommon, network } from 'initCommon';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
 import Menu from './Menu';
@@ -390,27 +390,21 @@ const App = () => {
   };
 
   const [openBanner, setOpenBanner] = useState(false);
-  console.log({ isLoadingCommon });
-  if (isLoadingCommon) {
-    return <LoadingPage />;
-  }
 
-  return <LoadingPage />;
-
-  // return (
-  //   <ThemeProvider>
-  //     <div className={`app ${theme}`}>
-  //       {/* <button data-featurebase-feedback>Open Widget</button> */}
-  //       <Menu />
-  //       <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
-  //       {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
-  //       <div className="main">
-  //         <Sidebar />
-  //         <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
-  //       </div>
-  //     </div>
-  //   </ThemeProvider>
-  // );
+  return (
+    <ThemeProvider>
+      <div className={`app ${theme}`}>
+        {/* <button data-featurebase-feedback>Open Widget</button> */}
+        <Menu />
+        <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
+        {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
+        <div className="main">
+          <Sidebar />
+          <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
+        </div>
+      </div>
+    </ThemeProvider>
+  );
 };
 
 export default App;
