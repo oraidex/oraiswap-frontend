@@ -225,6 +225,7 @@ const SwapComponent: React.FC<{
         fromAmount: `${fromAmountToken}`,
         toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
         toAmount: `${simulateData.displayAmount}`,
+        status: !!simulateData.routes?.routes?.length,
         useAlphaIbcWasm,
         useIbcWasm,
         simulateData,
