@@ -93,7 +93,7 @@ export const useSimulate = (
       }
     },
     {
-      keepPreviousData: !simulateOption.keepPreviousData,
+      keepPreviousData: !simulateOption?.keepPreviousData,
       refetchInterval: 5000,
       staleTime: 2000,
       enabled,
