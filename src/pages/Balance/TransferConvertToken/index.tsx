@@ -1,12 +1,5 @@
-import {
-  BigDecimal,
-  getTokensFromNetwork,
-  toDisplay,
-  TokenItemType,
-  BTC_CONTRACT,
-  tonNetworkMainnet,
-  solChainId
-} from '@oraichain/oraidex-common';
+import { NetworkChainId } from '@oraichain/common';
+import { BigDecimal, BTC_CONTRACT, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
@@ -16,14 +9,19 @@ import Input from 'components/Input';
 import Loader from 'components/Loader';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
+import ToggleSwitch from 'components/ToggleSwitch';
 import TokenBalance from 'components/TokenBalance';
+import { TonChainId } from 'context/ton-provider';
 import copy from 'copy-to-clipboard';
-import { filterChainBridge, findChainByChainId, getAddressTransfer, networks } from 'helper';
+import { filterChainBridge, getAddressTransfer, networks } from 'helper';
+import { CWBitcoinFactoryDenom } from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
+import { btcChains, cosmosTokens, evmChains, flattenTokens, tokenMap, tonTokens } from 'initCommon';
 import { reduceString } from 'libs/utils';
+import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import { AMOUNT_BALANCE_ENTRIES } from 'pages/UniversalSwap/helpers';
 import { FC, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
@@ -34,16 +32,10 @@ import {
   useGetWithdrawlFeesBitcoin,
   useGetWithdrawlFeesBitcoinV2
 } from '../helpers';
-import styles from './index.module.scss';
-import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
-import ToggleSwitch from 'components/ToggleSwitch';
-import { CWBitcoinFactoryDenom } from 'helper/constants';
-import { btcChains, cosmosTokens, evmChains, flattenTokens, tokenMap, tonTokens } from 'initCommon';
-import { NetworkChainId } from '@oraichain/common';
 import useGetFee from '../hooks/useGetFee';
-import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
-import { TonChainId } from 'context/ton-provider';
 import useGetFeeSol from '../hooks/useGetFeeSol';
+import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
+import styles from './index.module.scss';
 
 interface TransferConvertProps {
   token: TokenItemType;

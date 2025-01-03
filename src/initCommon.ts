@@ -1,13 +1,17 @@
 import { OraidexCommon, TokenItemType } from '@oraichain/oraidex-common';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
-import { updateAllOraichainTokens, updateAllOtherChainTokens, setLoadingOraidexCommon } from 'reducer/token';
+import { updateAllOraichainTokens, updateAllOtherChainTokens } from 'reducer/token';
 
-export const oraidexCommon = await OraidexCommon.load();
+let oraidexCommonOg = await OraidexCommon.load();
+while (!oraidexCommonOg) {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  oraidexCommonOg = await OraidexCommon.load();
+}
+export const oraidexCommon = oraidexCommonOg;
 
 export const initializeOraidexCommon = async (dispatch: Dispatch<AnyAction>, allOraichainTokens: TokenItemType[]) => {
-  const oraidexCommon = await OraidexCommon.load();
-  const oraichainTokens = oraidexCommon.oraichainTokens;
-  const otherChainTokens = oraidexCommon.otherChainTokens;
+  const oraichainTokens = oraidexCommonOg.oraichainTokens;
+  const otherChainTokens = oraidexCommonOg.otherChainTokens;
   if (oraichainTokens.length > (allOraichainTokens || []).length) {
     dispatch(updateAllOraichainTokens(oraichainTokens));
   }
