@@ -33,6 +33,7 @@ import Menu from './Menu';
 import routes from 'routes';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
+import LoadingPage from './LoadingPage';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
@@ -67,7 +68,9 @@ const App = () => {
   });
 
   useEffect(() => {
+    // setInterval(() => {
     initializeOraidexCommon(dispatch, allOraichainTokens);
+    // }, 300_000);
   }, [allOraichainTokens]);
 
   useEffect(() => {

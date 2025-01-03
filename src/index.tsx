@@ -60,6 +60,8 @@ const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(ne
 // @ts-ignore
 window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 
+window.addEventListener('load', () => console.log('onload'));
+
 const initApp = async () => {
   const root = createRoot(document.getElementById('oraiswap'));
   root.render(
