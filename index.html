@@ -33,63 +33,18 @@
     <meta name="twitter:title" content="%VITE_APP_SITE_TITLE%" />
     <meta name="twitter:description" content="%VITE_APP_SITE_DESC%" />
     <meta name="twitter:image" content="%PUBLIC_URL%/thumbnail_oraidex_final.png" />
-
     <meta property="twitter:url" content="%PUBLIC_URL%" />
     <meta property="twitter:domain" content="%PUBLIC_URL%" />
     <script>
       var exports = {};
       var require = {};
     </script>
-    <script type="module">
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = 'src/initCommon.ts';
-      script.onload = () => {
-        console.log('load-ok');
-        // document.getElementById('loading-root').style.display = 'none';
-        // document.getElementById('loading-root').remove();
-
-        // Load index.tsx after initCommon.ts is loaded
-        const indexScript = document.createElement('script');
-        indexScript.type = 'module';
-        indexScript.src = '/src/index.tsx';
-        indexScript.onload = () => {
-          console.log('load-indexScript-ok');
-        };
-        document.body.appendChild(indexScript);
-      };
-      script.onerror = () => {
-        document.getElementById('loading-root').innerText = 'Failed to load script.';
-      };
-      document.body.appendChild(script);
-    </script>
-    <!-- <script type="module" src="src/initCommon.ts"></script> -->
   </head>
   <body>
-    <div id="loading-root">
-      <style>
-        #loading-root {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-        }
-      </style>
-      <img alt="loading" src="./src/assets/gif/oraidex-loading.gif" width="180" height="180" />
-    </div>
     <div id="oraiswap"></div>
 
     <script src="https://do.featurebase.app/js/sdk.js" id="featurebase-sdk"></script>
-    <!-- <script type="module" src="/src/index.tsx"></script> -->
+    <script type="module" src="/src/index.tsx"></script>
     <script type="text/javascript">
       (function (c, l, a, r, i, t, y) {
         c[a] =

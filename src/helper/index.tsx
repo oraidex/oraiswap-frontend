@@ -1,48 +1,40 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding';
+import { Bech32Config } from '@keplr-wallet/types';
+import { getSnap } from '@leapwallet/cosmos-snap-provider';
+import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common';
 import {
   BigDecimal,
   BSC_SCAN,
   ChainIdEnum,
   COSMOS_CHAIN_ID_COMMON,
   ETHEREUM_SCAN,
+  EVM_CHAIN_ID_COMMON,
+  EvmDenom,
   KWT_SCAN,
   MULTIPLIER,
-  TRON_SCAN,
-  EVM_CHAIN_ID_COMMON,
   SOL_SCAN,
-  WalletType as WalletCosmosType,
   solChainId,
-  oraichainNetwork
+  TokenItemType,
+  TRON_SCAN,
+  WalletType as WalletCosmosType
 } from '@oraichain/oraidex-common';
-import { serializeError } from 'serialize-error';
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { bitcoinChainId, leapSnapId } from './constants';
-import { getSnap } from '@leapwallet/cosmos-snap-provider';
-import { Bech32Config } from '@keplr-wallet/types';
-import { EvmDenom, TokenItemType } from '@oraichain/oraidex-common';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { TonClient } from '@ton/ton';
+import { toUserFriendlyAddress } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { WalletType } from 'components/WalletManagement/walletConfig';
+import { evmChainInfos } from 'config/evmChainInfos';
+import { TonChainId } from 'context/ton-provider';
+import { chainInfos, chainInfosWithIcon, cosmosChains, evmChains, flattenTokens, network } from 'initCommon';
 import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
-import { evmChainInfos } from 'config/evmChainInfos';
-import { TonChainId } from 'context/ton-provider';
-import { toUserFriendlyAddress, useTonAddress } from '@tonconnect/ui-react';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { numberWithCommas } from './format';
-import {
-  chainInfos,
-  chainInfosWithIcon,
-  cosmosChains,
-  evmChains,
-  flattenTokens,
-  flattenTokensWithIcon,
-  network
-} from 'initCommon';
-import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common';
-import { getHttpEndpoint } from '@orbs-network/ton-access';
-import { TonClient } from '@ton/ton';
+import { serializeError } from 'serialize-error';
 import { store } from 'store/configure';
+import { bitcoinChainId, leapSnapId } from './constants';
+import { numberWithCommas } from './format';
 
 export interface Tokens {
   denom?: string;
@@ -87,10 +79,6 @@ export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId ==
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
   return tokenCanBridgeTo.includes(item.chainId);
-};
-
-export const findChainByChainId = (chainId: string) => {
-  return networks.find((n) => n.chainId === chainId) || oraichainNetwork;
 };
 
 export const getDenomEvm = (): EvmDenom => {
