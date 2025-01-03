@@ -30,7 +30,7 @@ const getCosmWasmClient = async (
       tmClient,
       wallet,
       options
-        ? { ...options, gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom), broadcastPollIntervalMs: 600 }
+        ? { ...options, broadcastPollIntervalMs: 600 }
         : {
           gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom),
           broadcastPollIntervalMs: 600

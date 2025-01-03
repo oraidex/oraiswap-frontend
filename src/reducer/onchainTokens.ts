@@ -19,16 +19,9 @@ const initialState: OnchainTokensState = {
 export const onchainTokensSlice = createSlice({
   name: 'onchainTokens',
   initialState,
-  reducers: {
-
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(inspectToken.fulfilled, (state, action) => {
-      const { token } = action.payload;
-      state.tokens = [onChainTokenToTokenItem(token)];
-      state.allOnChainTokens = [...state.allOnChainTokens, onChainTokenToTokenItem(token)];
-    });
-    builder.addCase(optimisticUpdateToken.fulfilled, (state, action) => {
       const { token } = action.payload;
       state.tokens = [onChainTokenToTokenItem(token)];
       state.allOnChainTokens = [...state.allOnChainTokens, onChainTokenToTokenItem(token)];
@@ -56,34 +49,6 @@ export const onChainTokenToTokenItem = (token: InspectedToken): TokenItemType =>
     isVerified: false
   };
 };
-
-export const optimisticUpdateToken = createAsyncThunk(
-  'onchainTokens/optimisticUpdateToken',
-  async (
-    {
-      token,
-      balance
-    }: {
-      token: InspectedToken;
-      balance: string;
-    },
-    thunkAPI
-  ) => {
-    thunkAPI.dispatch(
-      updateAmounts({
-        [token.denom]: balance
-      })
-    );
-
-    const tokenItem = onChainTokenToTokenItem(token);
-    thunkAPI.dispatch(updateAddedTokens([tokenItem]));
-
-    return {
-      token,
-      balance
-    };
-  }
-)
 
 export const inspectToken = createAsyncThunk(
   'onchainTokens/inspectToken',
