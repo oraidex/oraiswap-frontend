@@ -11,7 +11,6 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'rest/request';
 
-import { tokenInspector } from 'initTokenInspector';
 import { getUsd } from 'libs/utils';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
@@ -20,6 +19,7 @@ import { updateLpPools } from 'reducer/token';
 import { fetchRewardPerSecInfo, fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
+import { getTokenInspectorInstance } from 'initTokenInspector';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -166,7 +166,7 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
     const { totalSupply, totalLiquidity } = pool;
     const myStakedLP = pool.liquidityAddr
       ? totalRewardInfoData?.reward_infos.find((item) => isEqual(item.staking_token, pool.liquidityAddr))
-        ?.bond_amount || '0'
+          ?.bond_amount || '0'
       : 0;
 
     const lpPrice = Number(totalSupply) ? totalLiquidity / Number(totalSupply) : 0;
@@ -177,9 +177,9 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
 
   const totalEarned = myStakes
     ? myStakes.reduce((total, current) => {
-      total += current.earnAmountInUsdt;
-      return total;
-    }, 0)
+        total += current.earnAmountInUsdt;
+        return total;
+      }, 0)
     : 0;
 
   return {
@@ -214,7 +214,6 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
 
     (async function fetchTokens() {
       try {
-
         const pairRawData = pairDenoms.split('_');
         const tokenTypes = pairRawData.map((raw) =>
           allOraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
@@ -224,10 +223,12 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
         let token2 = tokenTypes[1];
 
         if (!tokenTypes[0]) {
+          const tokenInspector = await getTokenInspectorInstance();
           const inspectedToken1 = await tokenInspector.inspectToken({ tokenId: pairRawData[0], getOffChainData: true });
           token1 = onChainTokenToTokenItem(inspectedToken1);
         }
         if (!tokenTypes[1]) {
+          const tokenInspector = await getTokenInspectorInstance();
           const inspectedToken2 = await tokenInspector.inspectToken({ tokenId: pairRawData[1], getOffChainData: true });
           token2 = onChainTokenToTokenItem(inspectedToken2);
         }
@@ -236,7 +237,6 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
         console.error('error fetchTokens: ', e);
       }
     })();
-
   }, [pairDenoms]);
 
   return {

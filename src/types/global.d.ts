@@ -11,6 +11,7 @@ import { DuckDb } from 'libs/duckdb';
 import { Class } from '@oraichain/common-contracts-sdk/build/CwIcs721Bridge.types';
 import Bitcoin, { IBitcoin } from 'libs/bitcoin';
 import { TonConnectUI } from '@tonconnect/ui-react';
+import { Inspector } from '@oraichain/orai-token-inspector';
 
 declare global {
   type AmountDetails = { [denom: string]: string };
@@ -142,6 +143,7 @@ declare global {
     eth_owallet: MetaMaskEthereumProvider;
     tronWeb_owallet: _TronWeb;
     tronLink_owallet: TronLink;
+    tokenInspector: Inspector;
   }
 
   declare const APP_SETTINGS: Record<string, any>;

@@ -10,7 +10,7 @@ import { PoolInfoResponse } from 'types/pool';
 import { calcPrice } from '../components/PriceRangePlot/utils';
 import { extractAddress, formatPoolData } from '../helpers/format';
 import { parseAssetInfo } from '@oraichain/oraidex-common';
-import { tokenInspector } from 'initTokenInspector';
+import { getTokenInspectorInstance } from 'initTokenInspector';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToOraichainTokens } from 'reducer/token';
@@ -97,6 +97,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
             tokenAddresses.has('factory/orai17hyr3eg92fv34fdnkend48scu32hn26gqxw3hnwkfy904lk9r09qqzty42/HMSTR')
           )
         ) {
+          const tokenInspector = await getTokenInspectorInstance();
           const extendedInfos = await tokenInspector.inspectMultiTokens([...tokenAddresses]);
           const convertToTokensType = extendedInfos.map((info) => onChainTokenToTokenItem(info));
           dispatch(addToOraichainTokens(convertToTokensType));
