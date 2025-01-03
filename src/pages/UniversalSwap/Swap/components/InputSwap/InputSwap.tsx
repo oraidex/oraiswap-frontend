@@ -76,7 +76,7 @@ export default function InputSwap({
               )}
             </div>
             <div className={cx('section')}>
-              <div className={cx('name')}>{chainInfo?.chainName || 'Oraichain'}</div>
+              <div className={cx('name')}>{chainInfo?.chainName}</div>
             </div>
             <img src={ArrowImg} alt="arrow" />
           </div>
