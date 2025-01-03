@@ -51,6 +51,7 @@ export const useSimulate = (
     dontAllowSwapAfter?: string[];
     maxSplits?: number;
     ignoreFee?: boolean;
+    keepPreviousData?: boolean;
   }
 ) => {
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([initAmount || null, 0]);
@@ -92,7 +93,7 @@ export const useSimulate = (
       }
     },
     {
-      keepPreviousData: true,
+      keepPreviousData: !simulateOption?.keepPreviousData,
       refetchInterval: 5000,
       staleTime: 2000,
       enabled,
