@@ -26,18 +26,15 @@ export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
 export const SOL_RELAYER_ADDRESS = 'HGPezSRSzZNXiBhzEXPw1gwCqsdbW7Psy5TjeyB78x8j';
 export const ORAICHAIN_RELAYER_ADDRESS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
-
+export const connection = 'https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ';
 export class Web3SolanaProgramInteraction {
   connection: Connection;
 
   constructor() {
-    this.connection = new Connection(
-      'https://alien-stylish-road.solana-mainnet.quiknode.pro/4a5144638133c97e486d36e03fa4a82ea99c9add/',
-      {
-        commitment: commitmentLevel,
-        wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
-      }
-    );
+    this.connection = new Connection(connection, {
+      commitment: commitmentLevel,
+      wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
+    });
   }
 
   bridgeSolToOrai = async (
