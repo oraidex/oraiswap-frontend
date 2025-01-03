@@ -1,7 +1,5 @@
 import { Inspector } from '@oraichain/orai-token-inspector';
 
-console.time('load-inspector');
-
 export const getTokenInspectorInstance = async () => {
   if (!window.tokenInspector) {
     window.tokenInspector = await Inspector.create({
