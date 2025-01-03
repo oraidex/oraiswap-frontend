@@ -232,7 +232,7 @@ const SwapComponent: React.FC<{
         averageSimulateData,
         impactWarning
       };
-      mixpanel.track('Universal Swap OSOR', logEvent);
+      mixpanel.track('OSOR Simulate', logEvent);
     }
   }, [simulateData, averageSimulateData]);
 
