@@ -95,7 +95,7 @@ const Bidding = ({ openExplainModal, isEnd, round, isStarted, isCurrentRound, ba
 
   const insufficientFund = amount && amount > toDisplay(balance);
 
-  const coingeckoOraixPrice = prices[ORAIX_TOKEN_INFO.coinGeckoId] || '0';
+  const coingeckoOraixPrice = prices[ORAIX_TOKEN_INFO?.coinGeckoId || 'oraidex'] || '0';
 
   if (!isCurrentRound) {
     return (

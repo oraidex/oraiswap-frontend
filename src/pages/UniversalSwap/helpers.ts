@@ -381,6 +381,7 @@ export const getProtocolsSmartRoute = (
 export const isAllowAlphaIbcWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
   // FIXME: fix case inj oraichain -> x oraichain
   if (
+    fromToken &&
     fromToken.coinGeckoId === 'injective-protocol' &&
     fromToken.chainId === toToken.chainId &&
     fromToken.chainId === 'Oraichain'
@@ -400,6 +401,7 @@ export const isAllowAlphaIbcWasm = (fromToken: TokenItemType, toToken: TokenItem
 export const isAllowIBCWasm = (fromToken: TokenItemType, toToken: TokenItemType) => {
   // FIXME: fix case inj oraichain -> x oraichain
   if (
+    fromToken &&
     fromToken.coinGeckoId === 'injective-protocol' &&
     fromToken.chainId === toToken.chainId &&
     fromToken.chainId === 'Oraichain'
