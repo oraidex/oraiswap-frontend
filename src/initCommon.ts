@@ -50,6 +50,7 @@ export const {
   tonTokens
 } = oraidexCommon;
 
+// FIXME: need remove when update chainInfo in oraichain-common sdk
 const IGNORE_CHAIN_IDS = new Set(['kawaii_6886-1', '0x1ae6']);
 const getFilteredChainInfos = (chainInfo) => chainInfo.filter((chain) => !IGNORE_CHAIN_IDS.has(chain.chainId));
 
