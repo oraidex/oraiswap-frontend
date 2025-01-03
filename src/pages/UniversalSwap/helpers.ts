@@ -260,7 +260,7 @@ export const getTokenIcon = (token: TokenItemType, theme: string) => {
   const tokenInfo = oraichainTokensWithIcon.find((e) => e.coinGeckoId === token?.coinGeckoId);
 
   if (tokenInfo && Object.keys(tokenInfo.IconLight || tokenInfo.Icon || {}).length > 0) {
-    tokenIcon = theme === 'light' ? tokenInfo?.IconLight || tokenInfo?.Icon : tokenInfo?.Icon;
+    tokenIcon = theme === 'light' ? tokenInfo?.iconLight : tokenInfo?.icon;
   }
   return tokenIcon;
 };

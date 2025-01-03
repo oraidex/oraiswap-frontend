@@ -71,7 +71,7 @@ const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
 
       return (
         <div className={styles.label}>
-          <div>{Icon ? <Icon /> : <DefaultIcon />}</div>
+          <div>{Icon ? <img src={Icon} width={30} height={30} /> : <DefaultIcon />}</div>
           <span>{token?.name}</span>
         </div>
       );
@@ -165,7 +165,7 @@ const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
             prefix={
               CurrentTokenIcon ? (
                 <div className={styles.tokenIcon}>
-                  <CurrentTokenIcon />
+                  <img src={CurrentTokenIcon} width={30} height={30} />
                 </div>
               ) : (
                 <div className={styles.selectTokenIcon}>

@@ -103,7 +103,7 @@ const AddressBook = ({ tokenTo, onSelected }: { tokenTo: TokenItemType; onSelect
                       >
                         {IconToken ? (
                           <div className={styles.tokenIcon}>
-                            <IconToken />
+                            <img src={IconToken} width={30} height={30} />
                           </div>
                         ) : (
                           <div className={styles.selectTokenIcon}>
@@ -155,7 +155,7 @@ const AddressBook = ({ tokenTo, onSelected }: { tokenTo: TokenItemType; onSelect
                       <div className={styles.content}>
                         {IconToken ? (
                           <div className={styles.tokenIcon}>
-                            <IconToken />
+                            <img src={IconToken} width={30} height={30} />
                           </div>
                         ) : (
                           <div className={styles.selectTokenIcon}>
