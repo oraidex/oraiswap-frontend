@@ -68,9 +68,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    // setInterval(() => {
     initializeOraidexCommon(dispatch, allOraichainTokens);
-    // }, 300_000);
   }, [allOraichainTokens]);
 
   useEffect(() => {
