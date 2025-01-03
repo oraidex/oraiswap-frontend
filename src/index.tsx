@@ -62,8 +62,6 @@ if (network?.rpc) {
   window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
 }
 
-window.addEventListener('load', () => console.log('onload'));
-
 const initApp = async () => {
   const root = createRoot(document.getElementById('oraiswap'));
   root.render(

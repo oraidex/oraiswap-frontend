@@ -2,7 +2,15 @@ import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
-import { COSMOS_CHAIN_ID_COMMON, CustomChainInfo, ERC20__factory, EVM_BALANCE_RETRY_COUNT, solChainId, TON_CONTRACT, tronToEthAddress } from '@oraichain/oraidex-common';
+import {
+  COSMOS_CHAIN_ID_COMMON,
+  CustomChainInfo,
+  ERC20__factory,
+  EVM_BALANCE_RETRY_COUNT,
+  solChainId,
+  TON_CONTRACT,
+  tronToEthAddress
+} from '@oraichain/oraidex-common';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
@@ -19,15 +27,7 @@ import {
   handleErrorRateLimit
 } from 'helper';
 import { bitcoinChainId } from 'helper/constants';
-import {
-  btcTokens,
-  chainInfos,
-  evmChains,
-  evmTokens,
-  network,
-  oraichainTokens,
-  tonNetworkMainnet
-} from 'initCommon';
+import { btcTokens, chainInfos, evmChains, evmTokens, network, oraichainTokens, tonNetworkMainnet } from 'initCommon';
 import { reduce } from 'lodash';
 import flatten from 'lodash/flatten';
 import { getUtxos } from 'pages/Balance/helpers';
@@ -59,7 +59,9 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
     const allOraichainTokens = storage.token.allOraichainTokens || [];
     const allOtherChainTokens = storage.token.allOtherChainTokens || [];
 
-    const cosmosTokens = [...allOraichainTokens, ...allOtherChainTokens].filter((token => token.denom && token.cosmosBased && !token.contractAddress));
+    const cosmosTokens = [...allOraichainTokens, ...allOtherChainTokens].filter(
+      (token) => token.denom && token.cosmosBased && !token.contractAddress
+    );
 
     // reset native balances
     cosmosTokens
@@ -347,7 +349,6 @@ async function loadEvmEntries(
   return entries;
 }
 
-
 async function loadBtcEntries(
   address: string,
   chain: CustomChainInfo,
@@ -407,8 +408,6 @@ async function loadSolEntries(
 }
 
 async function loadEvmAmounts(dispatch: Dispatch, evmAddress: string, chains: CustomChainInfo[]) {
-  console.log('---', chains);
-  console.log('asdfasdfasdf', chains);
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map((chain) => loadEvmEntries(evmAddress, chain))))
   );
