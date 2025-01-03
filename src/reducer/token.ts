@@ -13,7 +13,6 @@ export interface TokenState {
   allOraichainTokens: TokenItemType[];
   allOtherChainTokens: TokenItemType[];
   addedTokens: TokenItemType[];
-  loadingOraidexCommon: false;
 }
 
 const initialState: TokenState = {
@@ -34,8 +33,7 @@ const initialState: TokenState = {
   },
   allOraichainTokens: [],
   allOtherChainTokens: [],
-  addedTokens: [],
-  loadingOraidexCommon: false
+  addedTokens: []
 };
 
 export const tokenSlice = createSlice({
@@ -113,9 +111,6 @@ export const tokenSlice = createSlice({
         ...state.addedTokens,
         ...action.payload.filter((token: TokenItemType) => !state.addedTokens.find((t) => t.denom === token.denom))
       ];
-    },
-    setLoadingOraidexCommon: (state, action: PayloadAction<any>) => {
-      state.loadingOraidexCommon = action.payload;
     }
   }
 });
@@ -133,8 +128,7 @@ export const {
   addToOraichainTokens,
   updateAllOtherChainTokens,
   addToOtherChainTokens,
-  updateAddedTokens,
-  setLoadingOraidexCommon
+  updateAddedTokens
 } = tokenSlice.actions;
 
 export default tokenSlice.reducer;

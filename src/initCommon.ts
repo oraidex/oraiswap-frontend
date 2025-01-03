@@ -1,6 +1,6 @@
 import { OraidexCommon, TokenItemType } from '@oraichain/oraidex-common';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
-import { updateAllOraichainTokens, updateAllOtherChainTokens, setLoadingOraidexCommon } from 'reducer/token';
+import { updateAllOraichainTokens, updateAllOtherChainTokens } from 'reducer/token';
 
 let oraidexCommonOg = await OraidexCommon.load();
 while (!oraidexCommonOg) {
