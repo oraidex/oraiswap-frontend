@@ -105,6 +105,7 @@ import useTonBridgeHandler from './hooks/useTonBridgeHandler';
 // import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
 import { addToOtherChainTokens } from 'reducer/token';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
+import OraiDarkIcon from 'assets/icons/oraichain.svg?react';
 
 interface BalanceProps {}
 export const isMaintainBridge = false;
@@ -782,18 +783,22 @@ const Balance: React.FC<BalanceProps> = () => {
           <div className={styles.search}>
             <div className={classNames(styles.search_filter, styles[theme])} onClick={() => setIsSelectNetwork(true)}>
               <div className={styles.search_box}>
-                {network && (
-                  <div className={styles.search_flex}>
-                    <div className={styles.search_logo}>
-                      {theme === 'light' ? (
+                <div className={styles.search_flex}>
+                  <div className={styles.search_logo}>
+                    {network ? (
+                      theme === 'light' ? (
                         <img width={30} height={30} src={network.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                       ) : (
                         <img width={30} height={30} src={network.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
-                      )}
-                    </div>
-                    <span className={classNames(styles.search_text, styles[theme])}>{network.chainName}</span>
+                      )
+                    ) : (
+                      <OraiDarkIcon width={50} height={50} />
+                    )}
                   </div>
-                )}
+                  <span className={classNames(styles.search_text, styles[theme])}>
+                    {network?.chainName || 'Oraichain'}
+                  </span>
+                </div>
                 <div>{theme === 'light' ? <ArrowDownIconLight /> : <ArrowDownIcon />}</div>
               </div>
             </div>

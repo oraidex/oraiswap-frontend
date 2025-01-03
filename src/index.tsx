@@ -55,10 +55,12 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
 }
 
 // init queryClient
-const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
-const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
-// @ts-ignore
-window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
+if (network?.rpc) {
+  const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
+  const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
+  // @ts-ignore
+  window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
+}
 
 const initApp = async () => {
   const root = createRoot(document.getElementById('oraiswap'));

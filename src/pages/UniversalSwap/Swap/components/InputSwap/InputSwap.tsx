@@ -10,6 +10,7 @@ import { isNegative, numberWithCommas } from 'pages/Pools/helpers';
 import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP, DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { chainInfos } from 'initCommon';
 import { ConfirmUnverifiedToken } from '../../index';
+import OraiDarkIcon from 'assets/icons/oraichain.svg?react';
 
 const cx = cn.bind(styles);
 
@@ -64,10 +65,14 @@ export default function InputSwap({
         <div className={cx('select-chain')}>
           <div className={cx('left')} onClick={() => setIsSelectChain(true)}>
             <div className={cx('icon')}>
-              {theme === 'light' ? (
-                <img className={cx('logo')} src={chainInfo?.chainSymbolImageUrl} alt="chain-logo" />
+              {chainInfo ? (
+                theme === 'light' ? (
+                  <img className={cx('logo')} src={chainInfo?.chainSymbolImageUrl} alt="chain-logo" />
+                ) : (
+                  <img className={cx('logo')} src={chainInfo?.chainSymbolImageUrl} alt="chain-logo" />
+                )
               ) : (
-                <img className={cx('logo')} src={chainInfo?.chainSymbolImageUrl} alt="chain-logo" />
+                <OraiDarkIcon width={20} height={20} />
               )}
             </div>
             <div className={cx('section')}>
