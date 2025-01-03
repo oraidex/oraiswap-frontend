@@ -10,9 +10,8 @@ while (!oraidexCommonOg) {
 export const oraidexCommon = oraidexCommonOg;
 
 export const initializeOraidexCommon = async (dispatch: Dispatch<AnyAction>, allOraichainTokens: TokenItemType[]) => {
-  const oraidexCommon = await OraidexCommon.load();
-  const oraichainTokens = oraidexCommon.oraichainTokens;
-  const otherChainTokens = oraidexCommon.otherChainTokens;
+  const oraichainTokens = oraidexCommonOg.oraichainTokens;
+  const otherChainTokens = oraidexCommonOg.otherChainTokens;
   if (oraichainTokens.length > (allOraichainTokens || []).length) {
     dispatch(updateAllOraichainTokens(oraichainTokens));
   }
