@@ -3,8 +3,8 @@ import { InspectedToken } from '@oraichain/orai-token-inspector/dist/types';
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
-import { tokenInspector } from 'initTokenInspector';
 import { addToOraichainTokens, updateAddedTokens, updateAmounts } from './token';
+import { getTokenInspectorInstance } from 'initTokenInspector';
 
 export interface OnchainTokensState {
   tokens: TokenItemType[];
@@ -67,6 +67,7 @@ export const inspectToken = createAsyncThunk(
     token: InspectedToken;
     balance: string;
   }> => {
+    const tokenInspector = await getTokenInspectorInstance();
     const token = await tokenInspector.inspectToken({
       tokenId,
       getOffChainData: true

@@ -103,7 +103,6 @@ import { NATIVE_MINT } from '@solana/spl-token';
 import { TonChainId } from 'context/ton-provider';
 import useTonBridgeHandler from './hooks/useTonBridgeHandler';
 // import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
-import { tokenInspector } from 'initTokenInspector';
 import { addToOtherChainTokens } from 'reducer/token';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
@@ -194,18 +193,6 @@ const Balance: React.FC<BalanceProps> = () => {
 
   useEffect(() => {
     if (!tokenUrl) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
-
-    // TODO: vuonghuuhung support dynamic bridge orai <-> solana
-    // (async () => {
-    // if (tokenUrl && filterNetworkUI === SolanaNetworkConfig.chainId) {
-    //     const token = await tokenInspector.inspectTokenFromSpecifiedChain({
-    //       tokenId: tokenUrl,
-    //       chainId: filterNetworkUI
-    //     });
-
-    //     dispatch(addToOtherChainTokens([onChainTokenToTokenItem(token)]));
-    //   }
-    // })();
 
     setTokens(
       [otherChainTokens, oraichainTokens].map((childTokens) =>
