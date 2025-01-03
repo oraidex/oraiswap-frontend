@@ -3,8 +3,8 @@ import { InspectedToken } from '@oraichain/orai-token-inspector/dist/types';
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
-import { tokenInspector } from 'initTokenInspector';
 import { addToOraichainTokens, updateAddedTokens, updateAmounts } from './token';
+import { getTokenInspectorInstance } from 'initTokenInspector';
 
 export interface OnchainTokensState {
   tokens: TokenItemType[];
@@ -19,9 +19,16 @@ const initialState: OnchainTokensState = {
 export const onchainTokensSlice = createSlice({
   name: 'onchainTokens',
   initialState,
-  reducers: {},
+  reducers: {
+
+  },
   extraReducers: (builder) => {
     builder.addCase(inspectToken.fulfilled, (state, action) => {
+      const { token } = action.payload;
+      state.tokens = [onChainTokenToTokenItem(token)];
+      state.allOnChainTokens = [...state.allOnChainTokens, onChainTokenToTokenItem(token)];
+    });
+    builder.addCase(optimisticUpdateToken.fulfilled, (state, action) => {
       const { token } = action.payload;
       state.tokens = [onChainTokenToTokenItem(token)];
       state.allOnChainTokens = [...state.allOnChainTokens, onChainTokenToTokenItem(token)];
@@ -50,6 +57,34 @@ export const onChainTokenToTokenItem = (token: InspectedToken): TokenItemType =>
   };
 };
 
+export const optimisticUpdateToken = createAsyncThunk(
+  'onchainTokens/optimisticUpdateToken',
+  async (
+    {
+      token,
+      balance
+    }: {
+      token: InspectedToken;
+      balance: string;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(
+      updateAmounts({
+        [token.denom]: balance
+      })
+    );
+
+    const tokenItem = onChainTokenToTokenItem(token);
+    thunkAPI.dispatch(updateAddedTokens([tokenItem]));
+
+    return {
+      token,
+      balance
+    };
+  }
+)
+
 export const inspectToken = createAsyncThunk(
   'onchainTokens/inspectToken',
   async (
@@ -67,6 +102,7 @@ export const inspectToken = createAsyncThunk(
     token: InspectedToken;
     balance: string;
   }> => {
+    const tokenInspector = await getTokenInspectorInstance();
     const token = await tokenInspector.inspectToken({
       tokenId,
       getOffChainData: true

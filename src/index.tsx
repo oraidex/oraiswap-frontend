@@ -96,3 +96,26 @@ const initApp = async () => {
 };
 
 initApp();
+
+// Dynamically load the Google Tag Manager script after the app has rendered
+const loadGTM = () => {
+  const script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8T22XRLHXY';
+  script.defer = true;
+  document.head.appendChild(script);
+
+  script.onload = () => {
+    // @ts-ignore
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      // @ts-ignore
+      window.dataLayer.push(arguments);
+    }
+    // @ts-ignore
+    gtag('js', new Date());
+    // @ts-ignore
+    gtag('config', 'G-8T22XRLHXY');
+  };
+};
+
+loadGTM();
