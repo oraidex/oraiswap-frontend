@@ -18,7 +18,7 @@ import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail }) => {
   const theme = useTheme();
 
-  const { pairAmountInfoData, lpTokenInfoData } = useGetPairInfo(poolDetailData);
+  const { pairAmountInfoData } = useGetPairInfo(poolDetailData);
   const { token1, token2 } = poolDetailData;
 
   const [oraiBtcAllocation, setOraiBtcAllocation] = useState({

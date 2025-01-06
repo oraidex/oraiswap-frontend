@@ -722,28 +722,13 @@ async function getPairAmountInfo(
   fromToken: TokenItemType,
   toToken: TokenItemType,
   cachedPairs?: PairDetails,
-  poolInfo?: PoolInfo,
-  oraiUsdtPoolInfo?: PoolInfo
+  poolInfo?: PoolInfo
 ): Promise<PairAmountInfo> {
   const poolData = poolInfo ?? (await fetchPoolInfoAmount(fromToken, toToken, cachedPairs));
-  // default is usdt
-  let tokenPrice = 0;
-
-  if (fromToken.denom === ORAI) {
-    const poolOraiUsdData =
-      oraiUsdtPoolInfo ?? (await fetchPoolInfoAmount(tokenMap[ORAI], tokenMap[STABLE_DENOM], cachedPairs));
-    // orai price
-    tokenPrice = toDecimal(poolOraiUsdData.askPoolAmount, poolOraiUsdData.offerPoolAmount);
-  } else {
-    // must be stable coin for ask pool amount
-    const poolUsdData = await fetchPairPriceWithStablecoin(fromToken, toToken);
-    tokenPrice = toDisplay(poolUsdData, toToken.decimals);
-  }
 
   return {
     token1Amount: poolData.offerPoolAmount.toString(),
-    token2Amount: poolData.askPoolAmount.toString(),
-    tokenUsd: 2 * toDisplay(poolData.offerPoolAmount, fromToken.decimals) * tokenPrice
+    token2Amount: poolData.askPoolAmount.toString()
   };
 }
 
