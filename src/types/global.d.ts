@@ -30,7 +30,6 @@ declare global {
   type PairAmountInfo = {
     token1Amount: string;
     token2Amount: string;
-    tokenUsd: number;
   };
   type LpPoolDetails = {
     [key: string]: {

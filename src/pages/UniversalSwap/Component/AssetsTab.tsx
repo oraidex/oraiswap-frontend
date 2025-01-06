@@ -95,12 +95,11 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
 
           if (checkShouldHide(value)) return result;
 
-          const tokenIcon = flattenTokensWithIcon.find((tIcon) => tIcon.coinGeckoId === token.coinGeckoId);
           result.push({
             asset: token.name,
             chain: token.org,
-            icon: tokenIcon?.icon,
-            iconLight: tokenIcon?.iconLight,
+            icon: token?.icon,
+            iconLight: token?.iconLight,
             price: tokenPrice,
             balance: toDisplay(totalAmount.toString(), token.decimals),
             denom: token.denom,

@@ -62,26 +62,22 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
   const [isOpenCreatePosition, setIsOpenCreatePosition] = useState(false);
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
 
-  // const [dataPool, setDataPool] = useState([...Array(0)]);
-  const [totalVolume, setTotalVolume] = useState(0);
-  const [totalLiquidity, setTotalLiquidity] = useState(0);
   const { feeDailyData } = useGetFeeDailyData();
   const { poolList: dataPool, poolPrice, loading } = useGetPoolList(price);
   const { poolLiquidities, poolVolume } = useGetPoolLiquidityVolume(poolPrice); // volumeV2, liquidityV2
   const { poolPositionInfo } = useGetPoolPositionInfo(poolPrice);
 
-  const isMobileMode = isMobile();
-  const [openChart, setOpenChart] = useState(false); // !isMobileMode
+  const [openChart, setOpenChart] = useState(false);
   const [filterDay, setFilterDay] = useState(FILTER_DAY.DAY);
-  const [liquidityDataChart, setLiquidityDataChart] = useState(0);
-  const [volumeDataChart, setVolumeDataChart] = useState(0);
+  const [liquidityDataChart, setLiquidityDataChart] = useConfigReducer('totalLiquidityDataChart');
+  const [volumeDataChart, setVolumeDataChart] = useConfigReducer('totalVolumeDataChart');
   const prioritizePool = '';
   const liquidityData = [
     {
       name: 'Total Liquidity',
       Icon: null,
       suffix: 5.25,
-      value: liquidityDataChart, // || statisticData.totalLiquidity,
+      value: liquidityDataChart,
       isNegative: false,
       decimal: 2,
       chart: <LiquidityChart filterDay={filterDay} onUpdateCurrentItem={setLiquidityDataChart} />,
@@ -123,10 +119,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
 
   useEffect(() => {
     if (Object.values(poolVolume).length > 0) {
-      const totalVolume24h = Object.values(poolVolume).reduce((acc, cur) => acc + cur, 0);
-
-      // const totalAllPoolVol = new BigDecimal(totalVolume24h).add(volumeV2).toNumber();
-      setTotalVolume(totalVolume24h);
       setVolumnePools(
         Object.keys(poolVolume).map((poolAddress) => {
           return {
@@ -147,7 +139,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
     if (Object.values(poolLiquidities).length > 0) {
       const totalLiqudity = Object.values(poolLiquidities).reduce((acc, cur) => acc + cur, 0);
       setLiquidityPools(poolLiquidities);
-      setTotalLiquidity(totalLiqudity);
     }
   }, [poolLiquidities, dataPool]);
 
@@ -194,10 +185,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
 
       switch (sortField) {
         case PoolColumnHeader.LIQUIDITY:
-          // return (
-          //   Number(CoefficientBySort[sortOrder]) *
-          //   ((poolLiquidities?.[a?.poolKey] || 0) - (poolLiquidities?.[b?.poolKey] || 0))
-          // );
           return Number(CoefficientBySort[sortOrder]) * ((a.showLiquidity || 0) - (b.showLiquidity || 0));
         case PoolColumnHeader.POOL_NAME:
           return CoefficientBySort[sortOrder] * (a?.tokenXinfo?.name || '').localeCompare(b.tokenXinfo?.name || '');
@@ -361,13 +348,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
             {filteredPool.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
               const { showLiquidity, showVolume, showApr } = item || {};
 
-              // const { type, totalLiquidity: liquidityV2, volume24Hour: volumeV2, liquidityAddr, poolKey } = item || {};
-
-              // const showLiquidity =
-              //   type === POOL_TYPE.V3 ? poolLiquidities?.[item?.poolKey] : toDisplay(Math.trunc(liquidityV2 || 0).toString());
-              // const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
-              // const showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr];
-
               return (
                 <tr className={styles.item} key={`${index}-pool-${item?.id}`}>
                   <PoolItemTData
@@ -399,22 +379,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
     <div className={styles.poolList}>
       <div className={styles.headerTable}>
         <div className={styles.headerInfo}>
-          {/* <div className={styles.total}>
-            <p>Total liquidity</p>
-            {totalLiquidity === 0 || totalLiquidity ? (
-              <h1>{formatDisplayUsdt(Number(totalLiquidity) || 0)}</h1>
-            ) : (
-              <img src={Loading} alt="loading" width={32} height={32} />
-            )}
-          </div>
-          <div className={styles.total}>
-            <p>24H volume</p>
-            {totalVolume ? (
-              <h1>{formatDisplayUsdt(Number(totalVolume))}</h1>
-            ) : (
-              <img src={Loading} alt="loading" width={32} height={32} />
-            )}
-          </div> */}
           <div className={styles.headerInfo}>
             {liquidityData.map((e) => (
               <div key={e.name} className={`${styles.headerInfo_item} ${openChart ? styles.activeChart : ''}`}>

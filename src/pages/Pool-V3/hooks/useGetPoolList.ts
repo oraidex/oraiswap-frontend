@@ -17,7 +17,6 @@ import { addToOraichainTokens } from 'reducer/token';
 import { RootState } from 'store/configure';
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
-  const theme = useTheme();
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
   const [dataPool, setDataPool] = useState([...Array(0)]);
   const dispatch = useDispatch();
@@ -28,13 +27,12 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
     refetch: refetchPoolList,
     isLoading: isLoadingGetPoolList
   } = useQuery<(PoolWithPoolKey | PoolInfoResponse)[]>(['pool-v3-pools', coingeckoPrices], () => getPoolList(), {
-    refetchOnWindowFocus: false,
-    placeholderData: []
+    refetchOnWindowFocus: false
     // cacheTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
-    if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
+    if (!poolList || poolList?.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     const newPrice = { ...coingeckoPrices };
 
@@ -68,7 +66,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   }, [poolList]);
 
   useEffect(() => {
-    if (poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
+    if (!poolList || poolList.length === 0 || Object.keys(coingeckoPrices).length === 0) return;
 
     (async function formatListPools() {
       const tokenAddresses = new Set<string>();
@@ -112,7 +110,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   }, [poolList, coingeckoPrices]);
 
   return {
-    poolList: dataPool,
+    poolList: dataPool || [],
     poolPrice: prices,
     isLoadingGetPoolList,
     refetchPoolList,
