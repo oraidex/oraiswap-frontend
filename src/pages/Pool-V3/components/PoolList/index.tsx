@@ -157,7 +157,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
       const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
 
       let showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr] || {};
-
       if (type === POOL_TYPE.V2) {
         showApr = {
           ...showApr,
@@ -165,7 +164,7 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
             min: (showApr['apr']?.['min'] || 0) / 100,
             max: (showApr['apr']?.['max'] || 0) / 100
           },
-          swapFee: (showApr['swapFee'] || 0) / 100
+          swapFee: item.apr
         };
       }
 
