@@ -68,6 +68,8 @@ export interface ConfigState {
     tvl: number;
     volume24: number;
   }[];
+  totalLiquidityDataChart: number;
+  totalVolumeDataChart: number;
 }
 
 const initialState: ConfigState = {
@@ -100,7 +102,9 @@ const initialState: ConfigState = {
   volumnePools: [],
   filterDefaultPool: KeyFilterPool.all_pool,
   persistVersion: PERSIST_VER,
-  AIRoute: true
+  AIRoute: true,
+  totalLiquidityDataChart: 0,
+  totalVolumeDataChart: 0
 };
 
 export const configSlice = createSlice({
