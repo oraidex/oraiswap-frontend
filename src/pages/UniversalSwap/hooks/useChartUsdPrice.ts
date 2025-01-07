@@ -168,6 +168,6 @@ export const getDataPriceMarket = async (tokenDenom: string, type: FILTER_TIME_C
 };
 
 export const getPriceUsdChange = (startValue: number, endValue: number) => {
-  if (!endValue) return '0.00';
+  if (!startValue) return '0.00';
   return toFixedIfNecessary((((endValue - startValue) / startValue) * 100).toString(), 2);
 };
