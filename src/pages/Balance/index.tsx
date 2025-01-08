@@ -639,7 +639,7 @@ const Balance: React.FC<BalanceProps> = () => {
       let newToToken = to;
 
       // TODO: @haunv - why we need to find newToToken here?
-      if (toNetworkChainId && toToken) {
+      if (toNetworkChainId && !toToken) {
         newToToken = [...otherChainTokens, ...oraichainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
@@ -647,7 +647,7 @@ const Balance: React.FC<BalanceProps> = () => {
       }
 
       // add check to token here because current permissionless tokens are not have coingeckoId
-      if (toToken) {
+      if (!toToken) {
         assert(
           newToToken.coinGeckoId === from.coinGeckoId,
           `From token ${from.coinGeckoId} is different from to token ${newToToken.coinGeckoId}`
