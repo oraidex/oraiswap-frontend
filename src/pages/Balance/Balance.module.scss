@@ -63,6 +63,7 @@
 .search {
   margin-top: 25px;
   display: flex;
+  position: relative;
 
   @include desktop {
     @media (max-width: 1024px) {
@@ -162,6 +163,14 @@
       width: 100%;
     }
   }
+
+  .closeIcon {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
 }
 
 .transferTab {
@@ -172,6 +181,7 @@
 
   .tfBtn {
     background-color: $primary-bg-btn;
+
     @include theme() {
       color: theme-get('neutral-text-text-btn-default');
     }
@@ -247,6 +257,7 @@
       margin-bottom: 10px;
       border-radius: 8px;
       border: 1px solid;
+
       @include theme {
         border-color: theme-get('warning-text-default');
         background: theme-get('primary-surface-default-subtle');
