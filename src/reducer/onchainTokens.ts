@@ -3,8 +3,8 @@ import { InspectedToken } from '@oraichain/orai-token-inspector/dist/types';
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
-import { addToOraichainTokens, updateAddedTokens, updateAmounts } from './token';
 import { getTokenInspectorInstance } from 'initTokenInspector';
+import { addToOraichainTokens, updateAddedTokens, updateAmounts } from './token';
 
 export interface OnchainTokensState {
   tokens: TokenItemType[];
@@ -19,9 +19,7 @@ const initialState: OnchainTokensState = {
 export const onchainTokensSlice = createSlice({
   name: 'onchainTokens',
   initialState,
-  reducers: {
-
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(inspectToken.fulfilled, (state, action) => {
       const { token } = action.payload;
@@ -83,7 +81,7 @@ export const optimisticUpdateToken = createAsyncThunk(
       balance
     };
   }
-)
+);
 
 export const inspectToken = createAsyncThunk(
   'onchainTokens/inspectToken',
@@ -103,10 +101,7 @@ export const inspectToken = createAsyncThunk(
     balance: string;
   }> => {
     const tokenInspector = await getTokenInspectorInstance();
-    const token = await tokenInspector.inspectToken({
-      tokenId,
-      getOffChainData: true
-    });
+    const token = await tokenInspector.inspectToken(tokenId);
 
     const client = await CosmWasmClient.connect(network.rpc);
 

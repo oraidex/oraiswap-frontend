@@ -1,14 +1,8 @@
-import { Inspector } from '@oraichain/orai-token-inspector';
+import { OraichainInspector } from '@oraichain/orai-token-inspector';
 
 export const getTokenInspectorInstance = async () => {
   if (!window.tokenInspector) {
-    window.tokenInspector = await Inspector.create({
-      oraiRpcUrl: 'https://indexer.orai.io',
-      bscRpcUrl: 'https://bsc-dataseed.binance.org',
-      ethRpcUrl: 'https://eth.llamarpc.com',
-      tronRpcUrl: 'https://api.trongrid.io/',
-      solanaRpcUrl: 'https://mainnet.helius-rpc.com/?api-key=3b28a0fc-0ef6-48ef-b55c-c55ae74cb6a6'
-    });
+    window.tokenInspector = await OraichainInspector.create("https://rpc.orai.io/");
   }
   return window.tokenInspector;
 };
