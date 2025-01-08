@@ -29,7 +29,7 @@ import classNames from 'classnames';
 import CheckBox from 'components/CheckBox';
 import LoadingBox from 'components/LoadingBox';
 import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
-import SearchInput from 'components/SearchInput';
+import SearchInput from './SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
@@ -128,7 +128,6 @@ const Balance: React.FC<BalanceProps> = () => {
   const [isSelectNetwork, setIsSelectNetwork] = useState(false);
   const [isDepositBtcModal, setIsDepositBtcModal] = useState(false);
   const [, setTxHash] = useState('');
-  const [textSearch, setTextSearch] = useState('');
   const [[from, to], setTokenBridge] = useState<TokenItemType[]>([]);
   const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>();
   const [[otherChainTokens, oraichainTokens], setTokens] = useState<TokenItemType[][]>([[], []]);
@@ -160,8 +159,6 @@ const Balance: React.FC<BalanceProps> = () => {
     enabled: true,
     bitcoinAddress: btcAddress
   });
-
-  console.log({ searchTokenAddress });
 
   const getAddress = async () => {
     try {
@@ -799,6 +796,13 @@ const Balance: React.FC<BalanceProps> = () => {
     }
   };
 
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleReset = () => {
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  };
+
   const network = networks.find((n) => n.chainId === filterNetworkUI) ?? networks[0];
 
   return (
@@ -836,25 +840,24 @@ const Balance: React.FC<BalanceProps> = () => {
             <SearchInput
               placeholder={searchTokenAddress || 'Search Token'}
               onSearch={(text) => {
-                console.log({ text });
                 if (!text) navigate('');
                 else navigate(`?token=${text}`);
-                setTextSearch(text);
               }}
+              ref={inputRef}
               theme={theme}
             />
-            {searchTokenAddress && (
-              <div
-                className={styles.closeIcon}
-                title="Clear input"
-                onClick={() => {
-                  setTextSearch('');
+            <div
+              className={styles.closeIcon}
+              title="Clear input"
+              onClick={() => {
+                if (searchTokenAddress) {
+                  handleReset();
                   navigate('');
-                }}
-              >
-                <CloseIcon width={20} height={20} />
-              </div>
-            )}
+                }
+              }}
+            >
+              <CloseIcon width={20} height={20} />
+            </div>
           </div>
         </div>
         <div className={styles.balances}>
