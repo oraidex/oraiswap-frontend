@@ -22,6 +22,7 @@ export interface TokenItemProps {
   isFastMode?: boolean;
   setIsFastMode?: Function;
   setToNetworkChainId: Function;
+  toToken?: TokenItemType;
 }
 
 const TokenItem: React.FC<TokenItemProps> = ({
@@ -38,7 +39,8 @@ const TokenItem: React.FC<TokenItemProps> = ({
   isBtcToken,
   isFastMode,
   setIsFastMode,
-  setToNetworkChainId
+  setToNetworkChainId,
+  toToken
 }) => {
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
   return (
@@ -86,6 +88,7 @@ const TokenItem: React.FC<TokenItemProps> = ({
             isFastMode={isFastMode}
             setIsFastMode={setIsFastMode}
             setToNetwork={setToNetworkChainId}
+            toToken={toToken}
           />
         )}
       </div>

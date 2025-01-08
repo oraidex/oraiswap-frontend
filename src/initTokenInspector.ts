@@ -12,7 +12,7 @@ export const getTokenInspectorInstance = async () => {
 
     window.tokenInspector = new TokenInspector({
       Oraichain: oraichainInspector,
-      Solana: solanaInspector
+      'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': solanaInspector
     });
   }
   return window.tokenInspector;

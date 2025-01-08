@@ -104,6 +104,7 @@ import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 import loadingGif from 'assets/gif/loading-page.gif';
 import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import CloseIcon from 'assets/icons/close-icon.svg?react';
+import { CHAIN } from '@oraichain/orai-token-inspector';
 
 interface BalanceProps {}
 export const isMaintainBridge = false;
@@ -134,6 +135,8 @@ const Balance: React.FC<BalanceProps> = () => {
   const [addressRecovery, setAddressRecovery] = useState('');
   const [isFastMode, setIsFastMode] = useState(true);
   const [loadingInspector, setLoadingInspector] = useState(false);
+  const [toToken, setToToken] = useState<TokenItemType>();
+  const [toTokens, setToTokens] = useState();
 
   const [filterNetworkUI, setFilterNetworkUI] = useConfigReducer('filterNetwork');
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
@@ -159,6 +162,15 @@ const Balance: React.FC<BalanceProps> = () => {
     enabled: true,
     bitcoinAddress: btcAddress
   });
+
+  useEffect(() => {
+    if (!toTokens || !toNetworkChainId) return;
+    const toToken = toTokens?.[toNetworkChainId];
+    if (toToken) {
+      setToToken(onChainTokenToTokenItem(toToken));
+      setTokenBridge([from, onChainTokenToTokenItem(toToken)]);
+    }
+  }, [toTokens, toNetworkChainId, filterNetworkUI]);
 
   const getAddress = async () => {
     try {
@@ -204,25 +216,17 @@ const Balance: React.FC<BalanceProps> = () => {
           setLoadingInspector(true);
           // find token from inspector
           const tokenInspector = await getTokenInspectorInstance();
-          const inspectedToken = await tokenInspector.inspectToken(searchTokenAddress);
-
-          if (inspectedToken.chainId === 'Oraichain')
-            setTokens([
-              [],
-              [
-                {
-                  ...onChainTokenToTokenItem(inspectedToken),
-                  // FIXME: harcode to test display
-                  bridgeTo: ['solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp']
-                }
-              ]
-            ]);
+          const res = await tokenInspector.inspectTokenBridgeAtChain(searchTokenAddress, filterNetworkUI as CHAIN);
+          const inspectedToken = res.fromToken;
+          const toTokens = res.toTokens;
+          if (toTokens) setToTokens(toTokens);
+          if (inspectedToken.chainId === 'Oraichain') setTokens([[], [onChainTokenToTokenItem(inspectedToken)]]);
           else setTokens([[onChainTokenToTokenItem(inspectedToken)], []]);
         } else {
           setTokens(foundTokens);
         }
       } catch (error) {
-        console.log('Error inspect token with id: ', searchTokenAddress, error.message);
+        console.error('Error inspect token with id: ', searchTokenAddress, error);
         setTokens([[], []]);
       } finally {
         setLoadingInspector(false);
@@ -236,9 +240,9 @@ const Balance: React.FC<BalanceProps> = () => {
     });
   }, []);
 
-  useEffect(() => {
-    setTokenBridge([undefined, undefined]);
-  }, [filterNetworkUI]);
+  // useEffect(() => {
+  //   setTokenBridge([undefined, undefined]);
+  // }, [filterNetworkUI]);
 
   const processTxResult = (rpc: string, result: DeliverTxResponse, customLink?: string) => {
     if (isDeliverTxFailure(result)) {
@@ -633,17 +637,22 @@ const Balance: React.FC<BalanceProps> = () => {
       displayToast(TToastType.TX_BROADCASTING);
       let result: DeliverTxResponse | string | any;
       let newToToken = to;
-      if (toNetworkChainId) {
+
+      // TODO: @haunv - why we need to find newToToken here?
+      if (toNetworkChainId && toToken) {
         newToToken = [...otherChainTokens, ...oraichainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
-      assert(
-        newToToken.coinGeckoId === from.coinGeckoId,
-        `From token ${from.coinGeckoId} is different from to token ${newToToken.coinGeckoId}`
-      );
+      // add check to token here because current permissionless tokens are not have coingeckoId
+      if (toToken) {
+        assert(
+          newToToken.coinGeckoId === from.coinGeckoId,
+          `From token ${from.coinGeckoId} is different from to token ${newToToken.coinGeckoId}`
+        );
+      }
 
       // check transfer TON <=> ORAICHAIN,Osmosis
       const { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos } = await checkTransferTon(toNetworkChainId);
@@ -926,6 +935,7 @@ const Balance: React.FC<BalanceProps> = () => {
                         </div>
                       )}
                       <TokenItemELement
+                        toToken={toToken}
                         onDepositBtc={async () => {
                           setIsDepositBtcModal(true);
                         }}

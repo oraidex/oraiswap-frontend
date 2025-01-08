@@ -46,6 +46,7 @@ interface TransferConvertProps {
   isFastMode?: boolean;
   setIsFastMode?: Function;
   setToNetwork: Function;
+  toToken?: TokenItemType;
 }
 
 const TransferConvertToken: FC<TransferConvertProps> = ({
@@ -56,7 +57,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   subAmounts,
   isFastMode,
   setIsFastMode,
-  setToNetwork
+  setToNetwork,
+  toToken
 }) => {
   const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
@@ -139,7 +141,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   // get token fee & relayer fee
   const toNetwork = bridgeNetworks.find((n) => n.chainId === toNetworkChainId);
-  const to = flattenTokens.find((t) => t.coinGeckoId === token.coinGeckoId && t.chainId === toNetworkChainId);
+  const to =
+    toToken ?? flattenTokens.find((t) => t.coinGeckoId === token.coinGeckoId && t.chainId === toNetworkChainId);
 
   const getRemoteTokenDenom = (token: TokenItemType) => {
     if (!token) return null;
@@ -162,7 +165,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const { solFee, isOraichainToSol, isSolToOraichain } = useGetFeeSol({
     originalFromToken: token,
     toChainId: toNetworkChainId,
-    amountToken: convertAmount
+    amountToken: convertAmount,
+    toToken
   });
 
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
