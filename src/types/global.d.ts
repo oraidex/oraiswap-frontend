@@ -1,7 +1,7 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { Keplr as keplr } from '@keplr-wallet/types';
 import { Class } from '@oraichain/common-contracts-sdk/build/CwIcs721Bridge.types';
-import { OraichainInspector } from '@oraichain/orai-token-inspector';
+import { TokenInspector } from '@oraichain/orai-token-inspector';
 import { TronWeb as _TronWeb } from '@oraichain/oraidex-common/build/tronweb';
 import { OraiswapPairTypes } from '@oraichain/oraidex-contracts-sdk';
 import { TonConnectUI } from '@tonconnect/ui-react';
@@ -142,7 +142,7 @@ declare global {
     eth_owallet: MetaMaskEthereumProvider;
     tronWeb_owallet: _TronWeb;
     tronLink_owallet: TronLink;
-    tokenInspector: OraichainInspector;
+    tokenInspector: TokenInspector;
   }
 
   declare const APP_SETTINGS: Record<string, any>;
