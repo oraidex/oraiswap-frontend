@@ -207,10 +207,7 @@ const Balance: React.FC<BalanceProps> = () => {
           setLoadingInspector(true);
           // find token from inspector
           const tokenInspector = await getTokenInspectorInstance();
-          const inspectedToken = await tokenInspector.inspectToken({
-            tokenId: searchTokenAddress,
-            getOffChainData: true
-          });
+          const inspectedToken = await tokenInspector.inspectToken(searchTokenAddress);
 
           if (inspectedToken.chainId === 'Oraichain')
             setTokens([

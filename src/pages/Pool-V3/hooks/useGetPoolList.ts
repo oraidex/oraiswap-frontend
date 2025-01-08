@@ -94,7 +94,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           )
         ) {
           const tokenInspector = await getTokenInspectorInstance();
-          const extendedInfos = await tokenInspector.inspectMultiTokens([...tokenAddresses]);
+          const extendedInfos = await tokenInspector.inspectMultipleTokens([...tokenAddresses]);
           const convertToTokensType = extendedInfos.map((info) => onChainTokenToTokenItem(info));
           dispatch(addToOraichainTokens(convertToTokensType));
         }
