@@ -27,9 +27,7 @@ import RefreshIcon from 'assets/icons/reload.svg?react';
 import { BitcoinUnit } from 'bitcoin-units';
 import classNames from 'classnames';
 import CheckBox from 'components/CheckBox';
-import LoadingBox from 'components/LoadingBox';
 import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
-import SearchInput from './SearchInput';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
@@ -74,7 +72,7 @@ import isEqual from 'lodash/isEqual';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
 import { ORAICHAIN_RELAYER_ADDRESS, SOL_RELAYER_ADDRESS, Web3SolanaProgramInteraction } from 'program/web3';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
@@ -93,18 +91,20 @@ import {
 } from './helpers';
 import useTonBridgeHandler from './hooks/useTonBridgeHandler';
 import KwtModal from './KwtModal';
+import SearchInput from './SearchInput';
 import StuckOraib from './StuckOraib';
 import useGetOraiBridgeBalances from './StuckOraib/useGetOraiBridgeBalances';
 import TokenItem, { TokenItemProps } from './TokenItem';
 import { TokenItemBtc } from './TokenItem/TokenItemBtc';
 // import { SolanaNetworkConfig } from '@oraichain/orai-token-inspector';
+import { CHAIN } from '@oraichain/orai-token-inspector';
+import loadingGif from 'assets/gif/loading-page.gif';
+import CloseIcon from 'assets/icons/close-icon.svg?react';
 import OraiDarkIcon from 'assets/icons/oraichain.svg?react';
+import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { getTokenInspectorInstance } from 'initTokenInspector';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
-import loadingGif from 'assets/gif/loading-page.gif';
-import { FallbackEmptyData } from 'components/FallbackEmptyData';
-import CloseIcon from 'assets/icons/close-icon.svg?react';
-import { CHAIN } from '@oraichain/orai-token-inspector';
+import { addToOraichainTokens, addToOtherChainTokens } from 'reducer/token';
 
 interface BalanceProps {}
 export const isMaintainBridge = false;
@@ -123,6 +123,7 @@ const Balance: React.FC<BalanceProps> = () => {
   const nomic = useContext(NomicContext);
   const cwBitcoinContext = useContext(CwBitcoinContext);
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
+  const dispatch = useDispatch();
 
   // state internal
   const [loadingRefresh, setLoadingRefresh] = useState(false);
@@ -220,8 +221,13 @@ const Balance: React.FC<BalanceProps> = () => {
           const inspectedToken = res.fromToken;
           const toTokens = res.toTokens;
           if (toTokens) setToTokens(toTokens);
-          if (inspectedToken.chainId === 'Oraichain') setTokens([[], [onChainTokenToTokenItem(inspectedToken)]]);
-          else setTokens([[onChainTokenToTokenItem(inspectedToken)], []]);
+          if (inspectedToken.chainId === 'Oraichain') {
+            setTokens([[], [onChainTokenToTokenItem(inspectedToken)]]);
+            dispatch(addToOraichainTokens([inspectedToken]));
+          } else {
+            setTokens([[onChainTokenToTokenItem(inspectedToken)], []]);
+            dispatch(addToOtherChainTokens([inspectedToken]));
+          }
         } else {
           setTokens(foundTokens);
         }
@@ -230,6 +236,7 @@ const Balance: React.FC<BalanceProps> = () => {
         setTokens([[], []]);
       } finally {
         setLoadingInspector(false);
+        await loadTokenAmounts({ metamaskAddress, tronAddress, oraiAddress, btcAddress, solAddress, tonAddress });
       }
     })();
   }, [searchTokenAddress, filterNetworkUI]);

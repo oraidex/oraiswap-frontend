@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { ConfigResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { TokenItemType } from '@oraichain/oraidex-common';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 export interface TokenState {
   amounts: AmountDetails;
@@ -99,7 +99,10 @@ export const tokenSlice = createSlice({
         state.allOtherChainTokens = [
           ...state.allOtherChainTokens,
           ...action.payload.filter(
-            (token: TokenItemType) => !state.allOtherChainTokens.find((t) => t.denom === token.denom)
+            (token: TokenItemType) =>
+              !state.allOtherChainTokens.find(
+                (t) => t?.denom === token?.denom || t?.contractAddress === token?.contractAddress
+              )
           )
         ];
       } catch (error) {
@@ -109,7 +112,10 @@ export const tokenSlice = createSlice({
     updateAddedTokens: (state, action: PayloadAction<any>) => {
       state.addedTokens = [
         ...state.addedTokens,
-        ...action.payload.filter((token: TokenItemType) => !state.addedTokens.find((t) => t.denom === token.denom))
+        ...action.payload.filter(
+          (token: TokenItemType) =>
+            !state.addedTokens.find((t) => t?.denom === token?.denom || t?.contractAddress === token?.contractAddress)
+        )
       ];
     }
   }

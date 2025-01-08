@@ -13,6 +13,8 @@ export class CwBitcoinClient implements CwBitcoinClientInterface {
   public depositAddress: DepositSuccess | null = null;
 
   public async generateAddress(dest: Dest) {
+    // FIXME: TURN OFF BTC NOW
+    return null;
     try {
       // @ts-ignore-check
       const config = {
