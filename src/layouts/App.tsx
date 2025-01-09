@@ -52,6 +52,7 @@ const App = () => {
   const { tron, evm } = walletByNetworks;
   const ethOwallet = window.eth_owallet;
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+  const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);
   const dispatch = useDispatch();
   const solanaWallet = useWallet();
 
@@ -67,7 +68,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    initializeOraidexCommon(dispatch, allOraichainTokens);
+    initializeOraidexCommon(dispatch, allOraichainTokens, addedTokens);
   }, [allOraichainTokens]);
 
   useEffect(() => {
