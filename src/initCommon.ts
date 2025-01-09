@@ -2,6 +2,12 @@ import { OraidexCommon, TokenItemType } from '@oraichain/oraidex-common';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import { updateAllOraichainTokens, updateAllOtherChainTokens } from 'reducer/token';
 
+const arraysAreDifferent = (arr1: TokenItemType[], arr2: TokenItemType[]): boolean => {
+  const sortedArr1 = JSON.stringify([...arr1].sort());
+  const sortedArr2 = JSON.stringify([...arr2].sort());
+  return sortedArr1 !== sortedArr2;
+};
+
 let oraidexCommonOg = await OraidexCommon.load();
 while (!oraidexCommonOg) {
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -12,9 +18,10 @@ export const oraidexCommon = oraidexCommonOg;
 export const initializeOraidexCommon = async (dispatch: Dispatch<AnyAction>, allOraichainTokens: TokenItemType[]) => {
   const oraichainTokens = oraidexCommonOg.oraichainTokens;
   const otherChainTokens = oraidexCommonOg.otherChainTokens;
-  if (oraichainTokens.length > (allOraichainTokens || []).length) {
+  if (arraysAreDifferent(oraichainTokens, allOraichainTokens)) {
     dispatch(updateAllOraichainTokens(oraichainTokens));
   }
+
   if (otherChainTokens.length > 0) {
     dispatch(updateAllOtherChainTokens(otherChainTokens));
   }
