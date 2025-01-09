@@ -311,8 +311,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
 
-  console.log({ networks });
-
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
       <div className={styles.tokenSubAmouts}>

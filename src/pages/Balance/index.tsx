@@ -137,7 +137,7 @@ const Balance: React.FC<BalanceProps> = () => {
   const [isFastMode, setIsFastMode] = useState(true);
   const [loadingInspector, setLoadingInspector] = useState(false);
   const [toToken, setToToken] = useState<TokenItemType>();
-  const [toTokens, setToTokens] = useState();
+  const [toTokens, setToTokens] = useState<any>();
 
   const [filterNetworkUI, setFilterNetworkUI] = useConfigReducer('filterNetwork');
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
@@ -202,8 +202,8 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const loadTokenAmounts = useLoadTokens();
   const { data: prices } = useCoinGeckoPrices();
-  useGetFeeConfig();
 
+  useGetFeeConfig();
   useEffect(() => {
     if (!searchTokenAddress) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
 
@@ -246,10 +246,6 @@ const Balance: React.FC<BalanceProps> = () => {
       console.log(error);
     });
   }, []);
-
-  // useEffect(() => {
-  //   setTokenBridge([undefined, undefined]);
-  // }, [filterNetworkUI]);
 
   const processTxResult = (rpc: string, result: DeliverTxResponse, customLink?: string) => {
     if (isDeliverTxFailure(result)) {
@@ -645,8 +641,7 @@ const Balance: React.FC<BalanceProps> = () => {
       let result: DeliverTxResponse | string | any;
       let newToToken = to;
 
-      // TODO: @haunv - why we need to find newToToken here?
-      if (toNetworkChainId && !toToken) {
+      if (toNetworkChainId && (!toToken || toToken?.chainId !== toNetworkChainId)) {
         newToToken = [...otherChainTokens, ...oraichainTokens].find(
           (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
         );
