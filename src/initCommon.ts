@@ -15,11 +15,19 @@ while (!oraidexCommonOg) {
 }
 export const oraidexCommon = oraidexCommonOg;
 
-export const initializeOraidexCommon = async (dispatch: Dispatch<AnyAction>, allOraichainTokens: TokenItemType[]) => {
+export const initializeOraidexCommon = async (
+  dispatch: Dispatch<AnyAction>,
+  allOraichainTokens: TokenItemType[],
+  addedTokens: TokenItemType[]
+) => {
   const oraichainTokens = oraidexCommonOg.oraichainTokens;
   const otherChainTokens = oraidexCommonOg.otherChainTokens;
-  if (arraysAreDifferent(oraichainTokens, allOraichainTokens)) {
-    dispatch(updateAllOraichainTokens(oraichainTokens));
+
+  const allVerifiedOraichainTokens = allOraichainTokens.filter(
+    (token) => !addedTokens.find((addedToken) => addedToken.denom === token.denom)
+  );
+  if (arraysAreDifferent(oraichainTokens, allVerifiedOraichainTokens)) {
+    dispatch(updateAllOraichainTokens([...oraichainTokens, ...addedTokens]));
   }
 
   if (otherChainTokens.length > 0) {
