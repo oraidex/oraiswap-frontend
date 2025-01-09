@@ -302,6 +302,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const onClickToken = useCallback(
     (token: TokenItemType) => {
+      if (from && to && searchTokenAddress) return;
       if (isEqual(from, token)) {
         setTokenBridge([undefined, undefined]);
         return;
