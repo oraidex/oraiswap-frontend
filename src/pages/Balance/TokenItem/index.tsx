@@ -1,12 +1,8 @@
+import { TokenItemType } from '@oraichain/oraidex-common';
 import classNames from 'classnames';
-import styles from './index.module.scss';
 import TokenBalance from 'components/TokenBalance';
 import TransferConvertToken from '../TransferConvertToken';
-import { OraiIcon, TokenItemType, tokensIcon } from '@oraichain/oraidex-common';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { flattenTokens } from 'initCommon';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store/configure';
+import styles from './index.module.scss';
 
 export interface TokenItemProps {
   token: TokenItemType;
@@ -26,6 +22,7 @@ export interface TokenItemProps {
   isFastMode?: boolean;
   setIsFastMode?: Function;
   setToNetworkChainId: Function;
+  toToken?: TokenItemType;
 }
 
 const TokenItem: React.FC<TokenItemProps> = ({
@@ -42,23 +39,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
   isBtcToken,
   isFastMode,
   setIsFastMode,
-  setToNetworkChainId
+  setToNetworkChainId,
+  toToken
 }) => {
-  // TODO: chain tokensIcon to tokensWithIcon
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
-  const allOtherChainTokens = useSelector((state: RootState) => state.token.allOtherChainTokens || []);
-  let tokenIcon = [...allOraichainTokens, ...allOtherChainTokens].find((tok) => tok.denom === token.denom);
-  // console.log('tokenIcon', tokenIcon);
-
-  if (!tokenIcon) {
-    tokenIcon = {
-      ...token,
-
-      // TODO: update token icon to default token
-      icon: OraiIcon,
-      iconLight: OraiIcon
-    };
-  }
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
   return (
     <div
@@ -71,9 +54,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
       <div className={styles.balanceAmountInfo}>
         <div className={styles.token}>
           {theme === 'light' ? (
-            <img style={{ borderRadius: '100%' }} width={44} height={44} src={tokenIcon?.iconLight} alt="icon-light" />
+            <img style={{ borderRadius: '100%' }} width={44} height={44} src={token?.iconLight} alt="icon-light" />
           ) : (
-            <img style={{ borderRadius: '100%' }} width={44} height={44} src={tokenIcon?.icon} alt="icon-light" />
+            <img style={{ borderRadius: '100%' }} width={44} height={44} src={token?.icon} alt="icon-light" />
           )}
           <div className={styles.tokenInfo}>
             <div className={classNames(styles.tokenName, styles[theme])}>{token.name}</div>
@@ -105,6 +88,7 @@ const TokenItem: React.FC<TokenItemProps> = ({
             isFastMode={isFastMode}
             setIsFastMode={setIsFastMode}
             setToNetwork={setToNetworkChainId}
+            toToken={toToken}
           />
         )}
       </div>

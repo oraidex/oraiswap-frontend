@@ -1,20 +1,18 @@
+import { parseAssetInfo } from '@oraichain/oraidex-common';
 import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { useQuery } from '@tanstack/react-query';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
-import useTheme from 'hooks/useTheme';
-import { oraichainTokens } from 'initCommon';
+import { getTokenInspectorInstance } from 'initTokenInspector';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getPools } from 'pages/Pools/hooks';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
+import { addToOraichainTokens } from 'reducer/token';
+import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
 import { calcPrice } from '../components/PriceRangePlot/utils';
 import { extractAddress, formatPoolData } from '../helpers/format';
-import { parseAssetInfo } from '@oraichain/oraidex-common';
-import { getTokenInspectorInstance } from 'initTokenInspector';
-import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToOraichainTokens } from 'reducer/token';
-import { RootState } from 'store/configure';
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
@@ -96,7 +94,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
           )
         ) {
           const tokenInspector = await getTokenInspectorInstance();
-          const extendedInfos = await tokenInspector.inspectMultiTokens([...tokenAddresses]);
+          const extendedInfos = await tokenInspector.inspectMultipleTokens([...tokenAddresses]);
           const convertToTokensType = extendedInfos.map((info) => onChainTokenToTokenItem(info));
           dispatch(addToOraichainTokens(convertToTokensType));
         }

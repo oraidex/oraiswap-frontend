@@ -16,7 +16,7 @@ Tendermint37Client.prototype.status = function () {
   const chainInfo = chainInfos.find((chain) => chain.networkType === 'cosmos' && chain.rpc === this.client.url);
   return {
     nodeInfo: {
-      network: chainInfo.chainId,
+      network: chainInfo?.chainId,
       version: ''
     }
   };

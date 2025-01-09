@@ -1,10 +1,8 @@
-import { BigDecimal, toDisplay, TokenItemType, toAmount, solChainId } from '@oraichain/oraidex-common';
+import { BigDecimal, solChainId, toAmount, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import axios from 'axios';
-import { flattenTokens } from 'initCommon';
-import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
+import { flattenTokens } from 'initCommon';
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 
 export enum Direction {
   SOLANA_TO_ORAI = 'solana_to_orai',
@@ -19,11 +17,13 @@ export enum SUPPORT_TOKEN {
 const useGetFeeSol = ({
   originalFromToken,
   toChainId,
-  amountToken
+  amountToken,
+  toToken
 }: {
   amountToken: string;
   originalFromToken: TokenItemType;
   toChainId: string;
+  toToken: TokenItemType;
 }) => {
   const isSolToOraichain = originalFromToken.chainId === solChainId;
   const isOraichainToSol = toChainId === solChainId;
@@ -42,7 +42,7 @@ const useGetFeeSol = ({
     (async () => {
       try {
         if (!debouncedAmountToken || (!isSolToOraichain && !isOraichainToSol)) {
-          if (!!solFee.sendAmount) {
+          if (solFee.sendAmount) {
             setSolFee(defaultSolFee);
           }
           return;
@@ -56,9 +56,11 @@ const useGetFeeSol = ({
         const baseURL = `https://solana-relayer.orai.io`;
         const url: string = `${baseURL}/fee?direction=${direction}&amount=${amount}&supportedToken=${supportedToken}`;
         const { data } = await axios.get(url);
-        const originalToToken = flattenTokens.find(
-          (flat) => flat.coinGeckoId === originalFromToken.coinGeckoId && flat.chainId === toChainId
-        );
+        const originalToToken =
+          toToken ??
+          flattenTokens.find(
+            (flat) => flat.coinGeckoId === originalFromToken.coinGeckoId && flat.chainId === toChainId
+          );
         const totalFeeSol = new BigDecimal(data?.oraichainFee ?? data?.solanaFee)
           .add(data.tokenFeeAmount)
           .div(10 ** originalToToken.decimals)

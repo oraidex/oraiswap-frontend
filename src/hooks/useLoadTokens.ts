@@ -411,7 +411,6 @@ async function loadEvmAmounts(dispatch: Dispatch, evmAddress: string, chains: Cu
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map((chain) => loadEvmEntries(evmAddress, chain))))
   );
-  console.log('amountDetails', amountDetails);
 
   dispatch(updateAmounts(amountDetails));
 }

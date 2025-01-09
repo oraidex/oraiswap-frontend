@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'rest/request';
 
+import { getTokenInspectorInstance } from 'initTokenInspector';
 import { getUsd } from 'libs/utils';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
@@ -19,7 +20,6 @@ import { updateLpPools } from 'reducer/token';
 import { fetchRewardPerSecInfo, fetchTokenInfo } from 'rest/api';
 import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
-import { getTokenInspectorInstance } from 'initTokenInspector';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -224,12 +224,12 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
 
         if (!tokenTypes[0]) {
           const tokenInspector = await getTokenInspectorInstance();
-          const inspectedToken1 = await tokenInspector.inspectToken({ tokenId: pairRawData[0], getOffChainData: true });
+          const inspectedToken1 = await tokenInspector.inspectToken(pairRawData[0]);
           token1 = onChainTokenToTokenItem(inspectedToken1);
         }
         if (!tokenTypes[1]) {
           const tokenInspector = await getTokenInspectorInstance();
-          const inspectedToken2 = await tokenInspector.inspectToken({ tokenId: pairRawData[1], getOffChainData: true });
+          const inspectedToken2 = await tokenInspector.inspectToken(pairRawData[1]);
           token2 = onChainTokenToTokenItem(inspectedToken2);
         }
         setTokens([token1, token2]);

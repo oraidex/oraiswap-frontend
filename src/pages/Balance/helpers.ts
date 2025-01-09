@@ -717,6 +717,9 @@ export const useGetWithdrawlFeesBitcoinV2 = ({
 };
 
 export const useDepositFeesBitcoinV2 = (enabled: boolean) => {
+  // FIXME: TURN OFF BTC NOW
+  return null
+
   const getDepositFeeBTC = async () => {
     try {
       const { data } = await axios({

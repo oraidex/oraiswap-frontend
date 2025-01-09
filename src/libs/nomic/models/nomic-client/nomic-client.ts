@@ -32,6 +32,8 @@ export class NomicClient implements NomicClientInterface {
     );
   }
   public async getRecoveredAddress(accAddress: string) {
+    // FIXME: TURN OFF BTC NOW
+    return null
     return await fetch(`${Config.restUrl}/bitcoin/recovery_address/${accAddress}?network=${btcNetwork}`, {
       method: 'GET'
     }).then((data) => data.json());
@@ -50,6 +52,7 @@ export class NomicClient implements NomicClientInterface {
   }
 
   public async generateAddress() {
+    return null;
     const isKeplrActive = await window.Keplr.getKeplr();
     if (isKeplrActive) {
       // @ts-ignore-check
