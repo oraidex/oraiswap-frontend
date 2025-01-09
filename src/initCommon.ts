@@ -1,7 +1,6 @@
 import { OraidexCommon, TokenItemType } from '@oraichain/oraidex-common';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import { updateAllOraichainTokens, updateAllOtherChainTokens } from 'reducer/token';
-import { store } from 'store/configure';
 
 const arraysAreDifferent = (arr1: TokenItemType[], arr2: TokenItemType[]): boolean => {
   const sortedArr1 = JSON.stringify([...arr1].sort());
