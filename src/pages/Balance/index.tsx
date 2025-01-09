@@ -230,6 +230,7 @@ const Balance: React.FC<BalanceProps> = () => {
           }
         } else {
           setTokens(foundTokens);
+          setToTokens(null);
         }
       } catch (error) {
         console.error('Error inspect token with id: ', searchTokenAddress, error);
@@ -302,12 +303,15 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const onClickToken = useCallback(
     (token: TokenItemType) => {
-      if (from && to && searchTokenAddress) return;
       if (isEqual(from, token)) {
         setTokenBridge([undefined, undefined]);
         return;
       }
-      const toToken = findDefaultToToken(token);
+
+      let toToken = toTokens?.[toNetworkChainId];
+      if (!toToken) {
+        toToken = findDefaultToToken(token);
+      }
       setTokenBridge([token, toToken]);
     },
     [otherChainTokens, oraichainTokens, from, to]
