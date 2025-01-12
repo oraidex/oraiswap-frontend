@@ -45,7 +45,7 @@ export enum PoolColumnHeader {
 const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYPE }) => {
   const theme = useTheme();
   const { data: price } = useCoinGeckoPrices();
-  const [, setLiquidityPools] = useConfigReducer('liquidityPools');
+  const [poolLiquiditiesFromCache, setLiquidityPools] = useConfigReducer('liquidityPools');
   const [volumnePools, setVolumnePools] = useConfigReducer('volumnePools');
   const [aprInfo, setAprInfo] = useConfigReducer('aprPools');
   const [openTooltip, setOpenTooltip] = useState(false);
@@ -137,7 +137,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
 
   useEffect(() => {
     if (Object.values(poolLiquidities).length > 0) {
-      const totalLiqudity = Object.values(poolLiquidities).reduce((acc, cur) => acc + cur, 0);
       setLiquidityPools(poolLiquidities);
     }
   }, [poolLiquidities, dataPool]);
@@ -153,7 +152,9 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
       const { type, totalLiquidity: liquidityV2, volume24Hour: volumeV2, liquidityAddr, poolKey } = item || {};
 
       const showLiquidity =
-        type === POOL_TYPE.V3 ? poolLiquidities?.[item?.poolKey] : toDisplay(Math.trunc(liquidityV2 || 0).toString());
+        type === POOL_TYPE.V3
+          ? poolLiquiditiesFromCache?.[item?.poolKey]
+          : toDisplay(Math.trunc(liquidityV2 || 0).toString());
       const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
 
       let showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr] || {};
@@ -412,16 +413,7 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
         </div>
       </div>
       <LoadingBox loading={loading} styles={{ minHeight: '60vh', height: 'fit-content' }}>
-        <div className={styles.list}>
-          {filteredPool?.length > 0
-            ? renderList()
-            : !loading && (
-                <div className={styles.nodata}>
-                  {theme === 'light' ? <NoData /> : <NoDataDark />}
-                  <span>{!dataPool.length ? 'No Pools!' : !filteredPool.length && 'No Matched Pools!'}</span>
-                </div>
-              )}
-        </div>
+        <div className={styles.list}>{filteredPool?.length > 0 && renderList()}</div>
 
         <div className={styles.paginate}>
           {totalPages > 1 && (

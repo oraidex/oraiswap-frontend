@@ -1,7 +1,7 @@
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { Bech32Config } from '@keplr-wallet/types';
 import { getSnap } from '@leapwallet/cosmos-snap-provider';
-import { CosmosChainId, CustomChainInfo, NetworkChainId } from '@oraichain/common';
+import { CosmosChainId, CustomChainInfo, fetchRetry, NetworkChainId } from '@oraichain/common';
 import {
   BigDecimal,
   BSC_SCAN,
@@ -35,6 +35,7 @@ import { serializeError } from 'serialize-error';
 import { store } from 'store/configure';
 import { bitcoinChainId, leapSnapId } from './constants';
 import { numberWithCommas } from './format';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
 export interface Tokens {
   denom?: string;
@@ -746,5 +747,22 @@ export const retry = async (fn, retries = 3, delay = 1000) => {
     }
     await sleep(delay);
     return retry(fn, retries - 1, delay);
+  }
+};
+
+export const inspectTokenFromOraiCommonApi = async (denoms: string[]): Promise<TokenItemType[]> => {
+  try {
+    const BASE_URL = 'https://oraicommon.oraidex.io/api/v1/tokens/list';
+    const TOKEN_LIST = denoms.map(encodeURIComponent).join(',');
+    const URL = `${BASE_URL}/${TOKEN_LIST}`;
+    const response = await fetchRetry(URL);
+    if (response.status !== 200) throw new Error('Failed to fetch token list: ' + response.statusText);
+
+    const inspectedTokens = await response.json();
+    const tokenItemTypes = inspectedTokens.map((info) => onChainTokenToTokenItem(info));
+    return tokenItemTypes;
+  } catch (error) {
+    console.log('Error inspectTokenFromOraiCommonApi: ', error);
+    return [];
   }
 };

@@ -3,15 +3,18 @@ import {
   WEBSOCKET_RECONNECT_ATTEMPTS,
   WEBSOCKET_RECONNECT_INTERVAL
 } from '@oraichain/oraidex-common';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
-import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { ThemeProvider } from 'context/theme-context';
 import { TonNetwork } from 'context/ton-provider';
 import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron, retry } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
+import useLoadTokens from 'hooks/useLoadTokens';
+import { useTronEventListener } from 'hooks/useTronLink';
 import useWalletReducer from 'hooks/useWalletReducer';
+import { initializeOraidexCommon, network } from 'initCommon';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import Keplr from 'libs/keplr';
@@ -19,18 +22,15 @@ import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
 import { useLoadWalletsTon } from 'pages/Balance/hooks/useLoadWalletsTon';
 import { useEffect, useState } from 'react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useDispatch, useSelector } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
 import { setAddressBookList } from 'reducer/addressBook';
+import routes from 'routes';
 import { persistor, RootState } from 'store/configure';
 import { ADDRESS_BOOK_KEY_BACKUP, PERSIST_VER } from 'store/constants';
 import './index.scss';
-import { initializeOraidexCommon, network } from 'initCommon';
-import useLoadTokens from 'hooks/useLoadTokens';
-import { useTronEventListener } from 'hooks/useTronLink';
 import Menu from './Menu';
-
-import routes from 'routes';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
 
@@ -389,6 +389,7 @@ const App = () => {
       <div className={`app ${theme}`}>
         {/* <button data-featurebase-feedback>Open Widget</button> */}
         <Menu />
+        <ReactQueryDevtools />
         <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
         {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
         <div className="main">
