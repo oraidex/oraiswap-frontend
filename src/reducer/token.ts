@@ -112,10 +112,7 @@ export const tokenSlice = createSlice({
     updateAddedTokens: (state, action: PayloadAction<any>) => {
       state.addedTokens = [
         ...state.addedTokens,
-        ...action.payload.filter(
-          (token: TokenItemType) =>
-            !state.addedTokens.find((t) => t?.denom === token?.denom || t?.contractAddress === token?.contractAddress)
-        )
+        ...action.payload.filter((token: TokenItemType) => !state.addedTokens.find((t) => t?.denom === token?.denom))
       ];
     }
   }
