@@ -22,7 +22,6 @@ import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
 import { useLoadWalletsTon } from 'pages/Balance/hooks/useLoadWalletsTon';
 import { useEffect, useState } from 'react';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useDispatch, useSelector } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
 import { setAddressBookList } from 'reducer/addressBook';
@@ -389,7 +388,6 @@ const App = () => {
       <div className={`app ${theme}`}>
         {/* <button data-featurebase-feedback>Open Widget</button> */}
         <Menu />
-        <ReactQueryDevtools />
         <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
         {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
         <div className="main">
