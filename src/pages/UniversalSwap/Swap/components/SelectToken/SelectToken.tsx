@@ -41,7 +41,7 @@ interface GetIconInterface {
   onchainToken?: TokenItemType;
 }
 
-const getChainIcon = ({ isLightTheme, chainId, width, height }: GetIconInterface) => {
+export const getChainIcon = ({ isLightTheme, chainId, width, height }: GetIconInterface) => {
   const chainInfo = chainInfos.find((chain) => chain.chainId === chainId);
   return isLightTheme ? (
     <img src={chainInfo?.chainSymbolImageUrl} alt="icon" width={width} height={height} />

@@ -1,24 +1,28 @@
 import { TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
 import CloseIcon from 'assets/icons/close-icon.svg?react';
 import ArrowIcon from 'assets/icons/ic_arrow_down.svg?react';
+import IconCopyAddress from 'assets/icons/ic_copy_address.svg?react';
+import IconVerified from 'assets/icons/ic_verified.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import classNames from 'classnames';
 import SearchInput from 'components/SearchInput';
-import { getIcon } from 'helper';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { formatDisplayUsdt } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import { useCopyClipboard } from 'hooks/useCopyClipboard';
 import useTheme from 'hooks/useTheme';
-import { toSumDisplay } from 'libs/utils';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { oraichainTokensWithIcon } from 'initCommon';
+import { reduceString, toSumDisplay } from 'libs/utils';
+import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import { getChainIcon } from 'pages/UniversalSwap/Swap/components/SelectToken/SelectToken';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './index.module.scss';
-import { oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
-import { inspectToken } from 'reducer/onchainTokens';
-import useConfigReducer from 'hooks/useConfigReducer';
-import IconVerified from 'assets/icons/ic_verified.svg?react';
+import { getIcon } from '../../helpers/format';
 
 const SelectToken = ({
   token,
@@ -36,11 +40,12 @@ const SelectToken = ({
   const [isOpen, setIsOpen] = useState(false);
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
-  const [address] = useConfigReducer('address');
+  // const [address] = useConfigReducer('address');
   const isLightTheme = theme === 'light';
+  const { isCopied, handleCopy, copiedValue } = useCopyClipboard();
 
-  const dispatch = useDispatch();
-  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+  // const dispatch = useDispatch();
+  // const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   // useEffect(() => {
   //   if (listItems.length === 0 && textSearch) {
@@ -60,15 +65,7 @@ const SelectToken = ({
       (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
   );
 
-  const TokenIcon =
-    token &&
-    getIcon({
-      isLightTheme,
-      type: 'token',
-      coinGeckoId: token.coinGeckoId,
-      width: 30,
-      height: 30
-    });
+  const TokenIcon = token && getIcon(isLightTheme, token);
 
   return (
     <div className={styles.selectToken}>
@@ -77,7 +74,7 @@ const SelectToken = ({
           {TokenIcon ? (
             <>
               {TokenIcon}
-              &nbsp;{token.name}
+              &nbsp;&nbsp;{token.name}
             </>
           ) : (
             'Select Token'
@@ -113,7 +110,7 @@ const SelectToken = ({
             <div className={styles.selectTokenList}>
               {/* TODO: use allOraichainTokens after launched permissionless  */}
               {/* {allOraichainTokens */}
-              {!oraichainTokens.length && (
+              {!listItems.length && (
                 <div className={styles.selectTokenListNoResult}>
                   {isLightTheme ? <NoResultLight /> : <NoResultDark />}
                 </div>
@@ -121,19 +118,12 @@ const SelectToken = ({
 
               {/* TODO: use allOraichainTokens after launched permissionless  */}
               {/* {allOraichainTokens */}
-              {oraichainTokens
+              {listItems
                 .map((token) => {
-                  const tokenIcon = getIcon({
-                    isLightTheme,
-                    type: 'token',
-                    coinGeckoId: token.coinGeckoId,
-                    width: 30,
-                    height: 30
-                  });
+                  const tokenIcon = getIcon(isLightTheme, token);
 
-                  const networkIcon = getIcon({
+                  const networkIcon = getChainIcon({
                     isLightTheme,
-                    type: 'network',
                     chainId: token.chainId,
                     width: 16,
                     height: 16
@@ -168,6 +158,7 @@ const SelectToken = ({
                   return Number(b.usd) - Number(a.usd);
                 })
                 .map(({ key, tokenIcon, networkIcon, balance, usd, ...token }) => {
+                  const tokenDenom = extractAddress(token as TokenItemType);
                   return (
                     <div
                       key={key}
@@ -181,14 +172,32 @@ const SelectToken = ({
                         <div>
                           <div className={styles.selectTokenItemLeftImg} key={Math.random()}>
                             {tokenIcon}
-                            {/* <div className={styles.selectTokenItemLeftImgChain}>{networkIcon}</div> */}
+                            <div className={styles.selectTokenItemLeftImgChain}>{networkIcon}</div>
                           </div>
                         </div>
                         <div>
                           <div className={styles.selectTokenItemTokenName}>
                             {token.name} {token.isVerified && <IconVerified />}
                           </div>
-                          <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>
+                          <div className={styles.selectTokenItemTokenOrg}>
+                            <span className={styles.denom}>
+                              {tokenDenom?.length < 13 ? tokenDenom : reduceString(tokenDenom, 7, 6)}
+                            </span>
+                            <div className={styles.copyBtn}>
+                              {isCopied && copiedValue === tokenDenom ? (
+                                <SuccessIcon width={20} height={20} />
+                              ) : (
+                                <div
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCopy(tokenDenom);
+                                  }}
+                                >
+                                  <IconCopyAddress />
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className={styles.selectTokenItemRight}>

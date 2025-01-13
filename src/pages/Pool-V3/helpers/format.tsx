@@ -1,13 +1,13 @@
-import { PoolKey, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
-import { poolKeyToString } from 'libs/contractSingleton';
 import { TokenItemType } from '@oraichain/oraidex-common';
+import { PoolKey, PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { PoolInfoResponse } from 'types/pool';
-import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
-import { POOL_TYPE } from '../index';
-import { oraichainTokensWithIcon } from 'initCommon';
-import { store } from 'store/configure';
 import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
+import { oraichainTokensWithIcon } from 'initCommon';
+import { poolKeyToString } from 'libs/contractSingleton';
+import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
+import { store } from 'store/configure';
+import { PoolInfoResponse } from 'types/pool';
+import { POOL_TYPE } from '../index';
 
 export type PoolWithTokenInfo = PoolWithPoolKey & {
   FromTokenIcon: React.FunctionComponent<
@@ -121,3 +121,9 @@ export const parsePoolKeyString = (poolKey: string): PoolKey => {
 export function extractAddress(tokenInfo: TokenItemType) {
   return tokenInfo.contractAddress ? tokenInfo.contractAddress : tokenInfo.denom;
 }
+
+export const getIcon = (isLightTheme: boolean, token: TokenItemType) => {
+  const tokenIconUrl = (isLightTheme ? token.iconLight : token.icon) || DEFAULT_TOKEN_ICON_URL;
+  const tokenIcon = <img style={{ borderRadius: '100%' }} src={tokenIconUrl} alt="icon" width={30} height={30} />;
+  return tokenIcon
+};

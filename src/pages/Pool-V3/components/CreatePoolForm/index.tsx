@@ -1,4 +1,4 @@
-import { BigDecimal, toAmount, toDisplay, TokenItemType, CW20_DECIMALS } from '@oraichain/oraidex-common';
+import { BigDecimal, CW20_DECIMALS, toAmount, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import {
   FeeTier,
   PoolKey,
@@ -21,13 +21,14 @@ import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
-import { getIcon, getTransactionUrl } from 'helper';
+import { getTransactionUrl } from 'helper';
 import { numberWithCommas } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
+import { extractAddress, getIcon } from 'pages/Pool-V3/helpers/format';
 import {
   calculateTokenAmountsWithSlippage,
   calcYPerXPriceBySqrtPrice,
@@ -38,6 +39,7 @@ import useAddLiquidity from 'pages/Pool-V3/hooks/useAddLiquidity';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { RootState } from 'store/configure';
 import NewPositionNoPool from '../NewPositionNoPool';
 import {
@@ -57,8 +59,6 @@ import {
   trimLeadingZeros
 } from '../PriceRangePlot/utils';
 import styles from './index.module.scss';
-import { useNavigate } from 'react-router-dom';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
 
 export type PriceInfo = {
   startPrice: number;
@@ -151,25 +151,8 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({ tokenFrom, tokenTo, feeTier, 
   const toUsd = (prices?.[tokenTo?.coinGeckoId] * Number(amountTo || 0)).toFixed(6);
 
   const isLightTheme = theme === 'light';
-  const TokenFromIcon =
-    tokenFrom &&
-    getIcon({
-      isLightTheme,
-      type: 'token',
-      coinGeckoId: tokenFrom.coinGeckoId,
-      width: 30,
-      height: 30
-    });
-
-  const TokenToIcon =
-    tokenTo &&
-    getIcon({
-      isLightTheme,
-      type: 'token',
-      coinGeckoId: tokenTo.coinGeckoId,
-      width: 30,
-      height: 30
-    });
+  const TokenFromIcon = tokenFrom && getIcon(isLightTheme, tokenFrom);
+  const TokenToIcon = tokenTo && getIcon(isLightTheme, tokenTo);
 
   useEffect(() => {
     if (focusId === 'from') {

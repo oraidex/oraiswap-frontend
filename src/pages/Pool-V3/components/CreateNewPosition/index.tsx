@@ -2,17 +2,17 @@ import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/Oraiswap
 import { poolKeyToString } from '@oraichain/oraiswap-v3';
 import CloseIcon from 'assets/icons/close.svg?react';
 import classNames from 'classnames';
-import { oraichainTokens } from 'initCommon';
-import { getIcon } from 'helper';
-import useTheme from 'hooks/useTheme';
-import { useRef, useState } from 'react';
-import styles from './index.module.scss';
-import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 import useConfigReducer from 'hooks/useConfigReducer';
+import useTheme from 'hooks/useTheme';
+import { oraichainTokens } from 'initCommon';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
+import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setToDefault } from 'reducer/poolDetailV3';
+import { getIcon } from '../../helpers/format';
 import CreatePositionForm from '../CreatePositionForm';
+import styles from './index.module.scss';
 
 export const openInNewTab = (url: string): void => {
   const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -45,25 +45,8 @@ const CreateNewPosition = ({
   const tokenTo = oraichainTokens.find((e) => extractAddress(e) === pool.pool_key.token_y);
 
   const isLightTheme = theme === 'light';
-  const TokenFromIcon =
-    tokenFrom &&
-    getIcon({
-      isLightTheme,
-      type: 'token',
-      coinGeckoId: tokenFrom.coinGeckoId,
-      width: 20,
-      height: 20
-    });
-
-  const TokenToIcon =
-    tokenTo &&
-    getIcon({
-      isLightTheme,
-      type: 'token',
-      coinGeckoId: tokenTo.coinGeckoId,
-      width: 20,
-      height: 20
-    });
+  const TokenFromIcon = tokenFrom && getIcon(isLightTheme, tokenFrom);
+  const TokenToIcon = tokenTo && getIcon(isLightTheme, tokenTo);
 
   return (
     <div className={classNames(styles.createNewPool, { [styles.activeWrapper]: showModal })}>
@@ -83,33 +66,6 @@ const CreateNewPosition = ({
                 <span className={styles.pairName}>
                   {tokenFrom.name} / {tokenTo.name}
                 </span>
-                {/* <TooltipHover
-                  setIsVisible={setIsVisible}
-                  isVisible={isVisible}
-                  content={
-                    <div>
-                      <div className={classNames(styles.infoPool, styles[theme])}>
-                        <div className={classNames(styles.infoPoolName)}>
-                          {tokenFrom.name} / {tokenTo.name}
-                          <span>v3</span>
-                        </div>
-                        <div className={styles.infoPoolfee}>
-                          <span>Fee: {Number(pool.pool_key.fee_tier.fee) / 10 ** 10}%</span>
-                        </div>
-                        <div className={styles.infoPoolfee}>
-                          <span>0.01% Spread</span>
-                        </div>
-                      </div>
-                      <div className={classNames(styles.infoMarket)}>
-                        Market ID: {reduceString(poolKeyToString(pool.pool_key), 16, 20)}
-                      </div>
-                    </div>
-                  }
-                  position="bottom"
-                  children={
-                    
-                  }
-                /> */}
               </div>
 
               <div className={styles.fee}>Fee: {Number(pool.pool_key.fee_tier.fee) / 10 ** 10}%</div>
