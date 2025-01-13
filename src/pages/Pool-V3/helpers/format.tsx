@@ -125,5 +125,5 @@ export function extractAddress(tokenInfo: TokenItemType) {
 export const getIcon = (isLightTheme: boolean, token: TokenItemType) => {
   const tokenIconUrl = (isLightTheme ? token.iconLight : token.icon) || DEFAULT_TOKEN_ICON_URL;
   const tokenIcon = <img style={{ borderRadius: '100%' }} src={tokenIconUrl} alt="icon" width={30} height={30} />;
-  return tokenIcon
+  return tokenIcon;
 };

@@ -60,9 +60,9 @@ export default function SelectToken({
   theme,
   selectChain
 }: InputSwapProps) {
+  const isLightTheme = theme === 'light';
   const [textChain, setTextChain] = useState('');
   const [textSearch, setTextSearch] = useState('');
-  const isLightTheme = theme === 'light';
   const [tokenRank = {}] = useConfigReducer('tokenRank');
   const [address] = useConfigReducer('address');
   const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);

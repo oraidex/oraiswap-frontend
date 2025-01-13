@@ -8,21 +8,22 @@ import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import classNames from 'classnames';
 import SearchInput from 'components/SearchInput';
-import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { formatDisplayUsdt } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import useConfigReducer from 'hooks/useConfigReducer';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
 import useTheme from 'hooks/useTheme';
-import { oraichainTokensWithIcon } from 'initCommon';
+import { oraichainTokens } from 'initCommon';
 import { reduceString, toSumDisplay } from 'libs/utils';
 import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import { getChainIcon } from 'pages/UniversalSwap/Swap/components/SelectToken/SelectToken';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { inspectToken } from 'reducer/onchainTokens';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
-import styles from './index.module.scss';
 import { getIcon } from '../../helpers/format';
+import styles from './index.module.scss';
 
 const SelectToken = ({
   token,
@@ -36,34 +37,40 @@ const SelectToken = ({
   customClassButton?: string;
 }) => {
   const theme = useTheme();
-  const [textSearch, setTextSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const amounts = useSelector((state: RootState) => state.token.amounts);
-  const { data: prices } = useCoinGeckoPrices();
-  // const [address] = useConfigReducer('address');
   const isLightTheme = theme === 'light';
+  const [textSearch, setTextSearch] = useState('');
+  const { data: prices } = useCoinGeckoPrices();
+  const [address] = useConfigReducer('address');
+  const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);
   const { isCopied, handleCopy, copiedValue } = useCopyClipboard();
 
-  // const dispatch = useDispatch();
-  // const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   if (listItems.length === 0 && textSearch) {
-  //     dispatch<any>(
-  //       inspectToken({
-  //         tokenId: textSearch,
-  //         address
-  //       })
-  //     );
-  //   }
-  // }, [textSearch]);
+  useEffect(() => {
+    if (listItems.length === 0 && textSearch) {
+      dispatch<any>(inspectToken({ tokenId: textSearch, address, isUserAdded: true }));
+    }
+  }, [textSearch, address]);
 
-  const listItems = oraichainTokensWithIcon.filter(
-    (item) =>
-      item.decimals !== 18 &&
-      (otherTokenDenom ? item.denom !== otherTokenDenom : true) &&
-      (textSearch ? item.name.toLowerCase().includes(textSearch.toLowerCase()) : true)
-  );
+  const checkedItems = oraichainTokens.filter((token) => !token.isDisabledSwap).concat(addedTokens);
+
+  const listItems = checkedItems
+    .filter(Boolean)
+    .filter((item) =>
+      textSearch
+        ? [item.name.toLowerCase(), item.denom.toLowerCase(), item.contractAddress?.toLowerCase()].some((tokenDenom) =>
+            tokenDenom?.includes(textSearch.toLowerCase())
+          )
+        : true
+    )
+    .reduce((unique, item) => {
+      if (!unique.some((uniqueItem) => uniqueItem.denom === item.denom)) {
+        unique.push(item);
+      }
+      return unique;
+    }, []);
 
   const TokenIcon = token && getIcon(isLightTheme, token);
 
