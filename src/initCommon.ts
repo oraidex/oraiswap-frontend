@@ -23,9 +23,7 @@ export const initializeOraidexCommon = async (
   const oraichainTokens = oraidexCommonOg.oraichainTokens;
   const otherChainTokens = oraidexCommonOg.otherChainTokens;
 
-  const allVerifiedOraichainTokens = allOraichainTokens.filter(
-    (token) => !addedTokens.find((addedToken) => addedToken.denom === token.denom)
-  );
+  const allVerifiedOraichainTokens = allOraichainTokens.filter((token) => token.isVerified);
   if (arraysAreDifferent(oraichainTokens, allVerifiedOraichainTokens)) {
     dispatch(updateAllOraichainTokens([...oraichainTokens, ...addedTokens]));
   }

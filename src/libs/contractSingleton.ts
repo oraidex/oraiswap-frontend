@@ -764,6 +764,7 @@ export function simulateIncentiveAprPosition(
   const allOraichainTokens = storage.token.allOraichainTokens || [];
   const tokenX = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
   const tokenY = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
+  if (!tokenX || !tokenY) return { min: 0, max: 0 };
 
   const positionLiquidityUsdX = ((prices[tokenX?.coinGeckoId] ?? 0) * Number(res.x)) / 10 ** tokenX.decimals;
   const positionLiquidityUsdY = ((prices[tokenY?.coinGeckoId] ?? 0) * Number(res.y)) / 10 ** tokenY.decimals;
