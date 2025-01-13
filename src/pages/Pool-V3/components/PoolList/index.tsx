@@ -1,4 +1,4 @@
-import { BigDecimal, toDisplay, DOGE_BNB_ORAICHAIN_DENOM } from '@oraichain/oraidex-common';
+import { BigDecimal, toDisplay } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import Loading from 'assets/gif/loading.gif';
 import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
@@ -6,8 +6,6 @@ import SortDownIcon from 'assets/icons/down_icon.svg?react';
 import IconInfo from 'assets/icons/infomationIcon.svg?react';
 import UpIcon from 'assets/icons/up-arrow.svg?react';
 import SortUpIcon from 'assets/icons/up_icon.svg?react';
-import NoDataDark from 'assets/images/NoDataPool.svg?react';
-import NoData from 'assets/images/NoDataPoolLight.svg?react';
 import classNames from 'classnames';
 import LoadingBox from 'components/LoadingBox';
 import Pagination from 'components/Pagination';

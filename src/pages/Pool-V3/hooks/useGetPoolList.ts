@@ -1,17 +1,17 @@
 import { parseAssetInfo } from '@oraichain/oraidex-common';
 import { PoolWithPoolKey } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import { useQuery } from '@tanstack/react-query';
+import { inspectTokenFromOraiCommonApi } from 'helper';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getPools } from 'pages/Pools/hooks';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToOraichainTokens } from 'reducer/token';
-import { RootState, store } from 'store/configure';
+import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
 import { calcPrice } from '../components/PriceRangePlot/utils';
 import { extractAddress, formatPoolData } from '../helpers/format';
-import { inspectTokenFromOraiCommonApi } from 'helper';
 
 export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const dispatch = useDispatch();
@@ -92,12 +92,13 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
       if (tokenAddresses.has(HMSTR_DENOM)) tokenAddresses.delete(HMSTR_DENOM);
       if (tokenAddresses.size > 0) {
         const tokenAddressesArray = [...tokenAddresses];
-        const tokenChunks = [];
+        const tokenChunksPromise = [];
         for (let i = 0; i < tokenAddressesArray.length; i += 30) {
           const chunk = tokenAddressesArray.slice(i, i + 30);
-          tokenChunks.push(inspectTokenFromOraiCommonApi(chunk));
+          tokenChunksPromise.push(inspectTokenFromOraiCommonApi(chunk));
         }
-        dispatch(addToOraichainTokens(tokenChunks.flat()));
+        const tokens = await Promise.all(tokenChunksPromise);
+        dispatch(addToOraichainTokens(tokens.flat()));
       }
 
       const listPools = (poolList || []).map((p) => formatPoolData(p));
@@ -105,7 +106,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
       const fmtPools = (await Promise.all(listPools)).filter((e) => e.isValid);
       setDataPool(fmtPools);
     })();
-  }, [poolList, coingeckoPrices]);
+  }, [poolList]);
 
   return {
     poolList: dataPool || [],
