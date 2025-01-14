@@ -205,12 +205,16 @@ const Balance: React.FC<BalanceProps> = () => {
 
   useGetFeeConfig();
   useEffect(() => {
-    if (!searchTokenAddress) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
-
     (async () => {
       try {
+        if (!searchTokenAddress) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
+
         const foundTokens = [otherChainTokenCommon, oraichainTokensCommon].map((childTokens) =>
-          childTokens.filter((t) => t.name.includes(searchTokenAddress.toUpperCase()))
+          childTokens.filter((t) =>
+            [t.name.toUpperCase(), t.contractAddress?.toUpperCase(), t.denom?.toUpperCase()].includes(
+              searchTokenAddress.toUpperCase()
+            )
+          )
         );
 
         if (foundTokens.every((t) => t.length === 0)) {
@@ -647,9 +651,10 @@ const Balance: React.FC<BalanceProps> = () => {
       let newToToken = to;
 
       if (toNetworkChainId && (!toToken || toToken?.chainId !== toNetworkChainId)) {
-        newToToken = [...otherChainTokens, ...oraichainTokens].find(
-          (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
-        );
+        newToToken = [...otherChainTokenCommon, ...oraichainTokensCommon].find((flat) => {
+          return flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId;
+        });
+
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
