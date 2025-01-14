@@ -1,4 +1,5 @@
 import {
+  ComputeBudgetProgram,
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
@@ -61,6 +62,14 @@ export class Web3SolanaProgramInteraction {
       const parsedAmount = toAmount(tokenAmountRaw, token.decimals);
 
       let transaction = new Transaction();
+      const updateCpIx = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 1_000_000
+      });
+      const updateCuIx = ComputeBudgetProgram.setComputeUnitLimit({
+        units: 500_000
+      });
+      transaction.add(updateCpIx, updateCuIx);
+
       if (lamports == 0) {
         transaction.add(
           createAssociatedTokenAccountInstruction(wallet.publicKey, relayerTokenAccount, relayerPubkey, mintPubkey)
