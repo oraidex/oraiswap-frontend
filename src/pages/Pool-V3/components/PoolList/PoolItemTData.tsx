@@ -22,9 +22,6 @@ const PoolItemTData = ({
   setCurrentPool,
   setPairDenomsDeposit
 }) => {
-
-
-
   const navigate = useNavigate();
   const [openTooltip, setOpenTooltip] = useState(false);
 
@@ -99,10 +96,10 @@ const PoolItemTData = ({
         <div className={styles.apr}>
           <span className={styles.amount}>
             {aprInfo.apr.min === aprInfo.apr.max
-              ? `${numberWithCommas(aprInfo.apr.min * 100, undefined, { maximumFractionDigits: 1 })}`
+              ? `${numberWithCommas(aprInfo.apr.min * 100, undefined, { maximumFractionDigits: 2 })}`
               : `${numberWithCommas(aprInfo.apr.min * 100, undefined, {
                   maximumFractionDigits: 1
-                })} - ${numberWithCommas(aprInfo.apr.max * 100, undefined, { maximumFractionDigits: 1 })}`}
+                })} - ${numberWithCommas(aprInfo.apr.max * 100, undefined, { maximumFractionDigits: 2 })}`}
             %
           </span>
           <TooltipIcon
@@ -117,11 +114,11 @@ const PoolItemTData = ({
                   <span>Swap fee</span>
                   <span className={styles.value}>
                     {aprInfo.swapFee.min === aprInfo.swapFee.max
-                      ? `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, { maximumFractionDigits: 1 })}`
+                      ? `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, { maximumFractionDigits: 2 })}`
                       : `${numberWithCommas(aprInfo.swapFee.min * 100, undefined, {
-                          maximumFractionDigits: 1
+                          maximumFractionDigits: 2
                         })} - ${numberWithCommas(aprInfo.swapFee.max * 100, undefined, {
-                          maximumFractionDigits: 1
+                          maximumFractionDigits: 2
                         })}`}
                     %
                   </span>
@@ -133,11 +130,11 @@ const PoolItemTData = ({
                   </span>
                   <span className={styles.value}>
                     {aprInfo.incentivesApr.min === aprInfo.incentivesApr.max
-                      ? `${numberWithCommas(aprInfo.incentivesApr.min * 100, undefined, { maximumFractionDigits: 1 })}`
+                      ? `${numberWithCommas(aprInfo.incentivesApr.min * 100, undefined, { maximumFractionDigits: 2 })}`
                       : `${numberWithCommas(aprInfo.incentivesApr.min * 100, undefined, {
-                          maximumFractionDigits: 1
+                          maximumFractionDigits: 2
                         })} - ${numberWithCommas(aprInfo.incentivesApr.max * 100, undefined, {
-                          maximumFractionDigits: 1
+                          maximumFractionDigits: 2
                         })}`}
                     %
                   </span>
@@ -146,10 +143,10 @@ const PoolItemTData = ({
                   <span>Total APR</span>
                   <span className={styles.totalApr}>
                     {aprInfo.apr.min === aprInfo.apr.max
-                      ? `${numberWithCommas(aprInfo.apr.min * 100, undefined, { maximumFractionDigits: 1 })}`
+                      ? `${numberWithCommas(aprInfo.apr.min * 100, undefined, { maximumFractionDigits: 2 })}`
                       : `${numberWithCommas(aprInfo.apr.min * 100, undefined, {
-                          maximumFractionDigits: 1
-                        })} - ${numberWithCommas(aprInfo.apr.max * 100, undefined, { maximumFractionDigits: 1 })}`}
+                          maximumFractionDigits: 2
+                        })} - ${numberWithCommas(aprInfo.apr.max * 100, undefined, { maximumFractionDigits: 2 })}`}
                     %
                   </span>
                 </div>

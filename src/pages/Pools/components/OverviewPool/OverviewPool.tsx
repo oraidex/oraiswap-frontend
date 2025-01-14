@@ -1,22 +1,25 @@
-import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
+import { BigDecimal, BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
 import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import IconCopyAddress from 'assets/icons/ic_copy_address.svg?react';
 import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import classNames from 'classnames';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { formatDisplayUsdt, formatNumberKMB } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
 import useTheme from 'hooks/useTheme';
 import { reduceString } from 'libs/utils';
+import { numberExponentToLarge } from 'pages/Pool-V3/hooks/useCreatePositionForm';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useEffect, useState } from 'react';
 import { PoolDetail } from 'types/pool';
 import styles from './OverviewPool.module.scss';
-import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 
 export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail }) => {
   const theme = useTheme();
+
+  console.log(poolDetailData);
 
   const { pairAmountInfoData } = useGetPairInfo(poolDetailData);
   const { token1, token2 } = poolDetailData;
@@ -25,7 +28,6 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
     oraiBalanceDisplay: '0',
     btcBalanceDisplay: '0'
   });
-  const [isShowMore] = useState(false);
   const isLight = theme === 'light';
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
 
@@ -35,10 +37,24 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
   if (token1) BaseTokenIcon = theme === 'light' ? token1.iconLight || token1.icon : token1.icon;
   if (token2) QuoteTokenIcon = theme === 'light' ? token2.iconLight || token2.icon : token2.icon;
 
-  const aprBoost = Number(poolDetailData.info?.aprBoost || 0).toFixed(2);
-  const isApproximatelyZero = Number(aprBoost) === 0;
-  const totalApr = poolDetailData.info?.apr ? poolDetailData.info.apr.toFixed(2) : 0;
-  const originalApr = Number(totalApr) - Number(aprBoost);
+  // TODO: calculate incentives apr later
+  const incentiveApr = 0;
+
+  // calculate apr base on volume 24h -> swap fee
+
+  let apr = 0;
+  if (poolDetailData.info) {
+    const totalLiquidityUsd = new BigDecimal(numberExponentToLarge(poolDetailData.info?.totalLiquidity)); // usdt denom
+    const volume24hUsd = new BigDecimal(poolDetailData.info?.volume24Hour); // usdt denom
+
+    const swapFee = volume24hUsd.mul(0.002); // fee for LP is 0.2%
+    apr = totalLiquidityUsd.toNumber() !== 0 ? swapFee.div(totalLiquidityUsd).toNumber() : 0;
+  }
+
+  if (apr < 0) apr = 0;
+  const aprBoost = 0;
+  const totalApr = apr ? (apr * 100).toFixed(2) : 0;
+  const originalApr = (Number(totalApr) - Number(aprBoost)).toFixed(2);
   const [cachedReward] = useConfigReducer('rewardPools');
   let poolReward = {
     reward: []
@@ -173,17 +189,14 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
         <div className={styles.desc}>
           <div className={styles.item}>
             <span>Swap Fee</span>
-            <p>
-              {isApproximatelyZero ? '≈ ' : ''}
-              {aprBoost}%
-            </p>
+            <p>{originalApr}%</p>
           </div>
           <div className={styles.item}>
             <span className={styles.label}>
               {poolReward?.reward?.join('+')} Boost&nbsp;
               <IconBoots />
             </span>
-            <p>{`${originalApr.toFixed(2)}%`}</p>
+            <p>{`${incentiveApr}%`}</p>
           </div>
           <div className={styles.item}>
             <span>Total APR</span>
