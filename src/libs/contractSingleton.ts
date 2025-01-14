@@ -1,6 +1,6 @@
 import { CosmWasmClient, fromBinary, SigningCosmWasmClient, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { AXIOS_THROTTLE_THRESHOLD, AXIOS_TIMEOUT, CoinGeckoId, toDisplay } from '@oraichain/oraidex-common';
+import { BigDecimal, CoinGeckoId, toDisplay } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
   OraiswapTokenClient,
@@ -33,15 +33,14 @@ import {
   positionToTick,
   Tickmap
 } from '@oraichain/oraiswap-v3';
-import Axios from 'axios';
-import { retryAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions';
 import { network, oraichainTokens } from 'initCommon';
 
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { TokenDataOnChain } from 'pages/Pool-V3/components/PriceRangePlot/utils';
+import { numberExponentToLarge } from 'pages/Pool-V3/hooks/useCreatePositionForm';
 import { getPools } from 'rest/graphClient';
-import { PoolInfoResponse } from 'types/pool';
 import { store } from 'store/configure';
+import { PoolInfoResponse } from 'types/pool';
 
 export const ALL_FEE_TIERS_DATA: FeeTier[] = [
   { fee: 100000000, tick_spacing: 1 },
@@ -845,13 +844,28 @@ export async function fetchPoolAprInfo(
 
   const poolAprs: Record<string, PoolAprInfo> = {};
   for (const item of pools) {
+    // Note: this logic is for pool v2
+
     if ('liquidityAddr' in item) {
-      const { apr, aprBoost, liquidityAddr } = item;
+      const { liquidityAddr } = item;
+
+      // TODO: calculate incentive apr base on reward per sec later
+      const incentiveApr = 0;
+
+      // calculate apr base on volume 24h -> swap fee
+
+      const totalLiquidityUsd = new BigDecimal(numberExponentToLarge(item.totalLiquidity)); // usdt denom
+      const volume24hUsd = new BigDecimal(item.volume24Hour); // usdt denom
+      
+      const swapFee = volume24hUsd.mul(0.002); // fee for LP is 0.2%
+      let apr = totalLiquidityUsd.toNumber() !== 0 ? swapFee.div(totalLiquidityUsd).toNumber() : 0;
+      
+      if (apr < 0) apr = 0;
 
       poolAprs[liquidityAddr] = {
         apr: {
-          min: aprBoost || 0,
-          max: aprBoost || 0
+          min: apr || 0,
+          max: apr || 0
         },
         incentives: [],
         swapFee: {
@@ -859,8 +873,8 @@ export async function fetchPoolAprInfo(
           max: apr
         },
         incentivesApr: {
-          min: 0,
-          max: 0
+          min: incentiveApr,
+          max: incentiveApr
         }
       };
       continue;

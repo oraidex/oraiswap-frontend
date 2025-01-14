@@ -100,26 +100,26 @@ const PoolV3Detail = () => {
 
   const [aprInfo, setAprInfo] = useConfigReducer('aprPools');
 
-  useEffect(() => {
-    const getAPRInfo = async () => {
-      const res = await fetchPoolAprInfo(
-        [poolDetail],
-        poolPrice,
-        {
-          [poolKeyString]: liquidity.total
-        },
-        feeDailyData
-      );
-      setAprInfo({
-        ...aprInfo,
-        [poolKeyString]: res[poolKeyString]
-      });
-    };
+  // useEffect(() => {
+  //   const getAPRInfo = async () => {
+  //     const res = await fetchPoolAprInfo(
+  //       [poolDetail],
+  //       poolPrice,
+  //       {
+  //         [poolKeyString]: liquidity.total
+  //       },
+  //       feeDailyData
+  //     );
+  //     setAprInfo({
+  //       ...aprInfo,
+  //       [poolKeyString]: res[poolKeyString]
+  //     });
+  //   };
 
-    if (poolDetail && poolPrice && liquidity && poolDetail.poolKey === poolKeyString) {
-      getAPRInfo();
-    }
-  }, [liquidity.total, feeDailyData, poolDetail, poolPrice, poolKeyString]);
+  //   if (poolDetail && poolPrice && liquidity && poolDetail.poolKey === poolKeyString) {
+  //     getAPRInfo();
+  //   }
+  // }, [liquidity.total, feeDailyData, poolDetail, poolPrice, poolKeyString]);
 
   const { spread, pool_key } = poolDetail || {};
   const { allocation, total } = liquidity;

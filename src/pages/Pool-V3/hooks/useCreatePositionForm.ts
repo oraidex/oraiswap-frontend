@@ -572,7 +572,7 @@ export function getLiqFrom(target: number, list: ActiveLiquidityPerTickRange[]):
   return 0;
 }
 
-function numberExponentToLarge(numIn) {
+export function numberExponentToLarge(numIn) {
   numIn += ''; // To cater to numric entries
   var sign = ''; // To remember the number sign
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
