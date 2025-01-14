@@ -254,7 +254,7 @@ const ToastTxSuccess: FunctionComponent<{
   linkPairAddress?: string;
 }> = ({ link, linkCw20Token, cw20Address, linkLpAddress, linkPairAddress }) => (
   <div className={styles.toast_content}>
-    {getIconToastTx(<SuccessIcon />, configTheme?.toast.txSuccessImg)}
+    {getIconToastTx(<SuccessIcon />, configTheme?.toast?.txSuccessImg)}
     <section className={styles.toast_section}>
       <h6>Transaction Successful</h6>
       {cw20Address && (
