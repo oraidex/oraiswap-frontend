@@ -6,16 +6,15 @@ import {
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
-import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
-import { SolanaWalletProvider } from 'context/solana-content';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { ThemeProvider } from 'context/theme-context';
 import { TonNetwork } from 'context/ton-provider';
-import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron } from 'helper';
+import { getListAddressCosmos, getWalletByNetworkFromStorage, interfaceRequestTron, retry } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { useTronEventListener } from 'hooks/useTronLink';
 import useWalletReducer from 'hooks/useWalletReducer';
+import { initializeOraidexCommon, network } from 'initCommon';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import { getCosmWasmClient } from 'libs/cosmjs';
 import Keplr from 'libs/keplr';
@@ -23,11 +22,11 @@ import Metamask from 'libs/metamask';
 import { buildUnsubscribeMessage, buildWebsocketSendMessage, processWsResponseMsg } from 'libs/utils';
 import { useLoadWalletsTon } from 'pages/Balance/hooks/useLoadWalletsTon';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
 import { setAddressBookList } from 'reducer/addressBook';
 import routes from 'routes';
-import { persistor } from 'store/configure';
+import { persistor, RootState } from 'store/configure';
 import { ADDRESS_BOOK_KEY_BACKUP, PERSIST_VER } from 'store/constants';
 import './index.scss';
 import Menu from './Menu';
@@ -51,7 +50,8 @@ const App = () => {
   const mobileMode = isMobile();
   const { tron, evm } = walletByNetworks;
   const ethOwallet = window.eth_owallet;
-
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+  const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);
   const dispatch = useDispatch();
   const solanaWallet = useWallet();
 
@@ -65,6 +65,10 @@ const App = () => {
   useLoadWalletsTon({
     tonNetwork: TonNetwork.Mainnet
   });
+
+  useEffect(() => {
+    initializeOraidexCommon(dispatch, allOraichainTokens, addedTokens);
+  }, [allOraichainTokens]);
 
   useEffect(() => {
     (async () => {
@@ -120,10 +124,9 @@ const App = () => {
     });
   }, [theme]);
 
-  //Public API that will echo messages sent to it back to the client
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(
-    `wss://${new URL(network.rpc).host}/websocket`, // only get rpc.orai.io
-    {
+  const websocketUrl = network && network.rpc ? `wss://${new URL(network.rpc).host}/websocket` : null;
+  if (websocketUrl) {
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(websocketUrl, {
       onOpen: () => {
         console.log('opened websocket, subscribing...');
         // subscribe to IBC Wasm case
@@ -133,19 +136,13 @@ const App = () => {
           ),
           true
         );
-        // sendJsonMessage(buildWebsocketSendMessage(`coin_received.receiver = '${address}'`), true);
-        // subscribe to MsgSend and MsgTransfer event case
-        // sendJsonMessage(buildWebsocketSendMessage(`coin_spent.spender = '${address}'`, 2), true);
-        // subscribe to cw20 contract transfer & send case
-        // sendJsonMessage(buildWebsocketSendMessage(`wasm.to = '${address}'`, 3), true);
-        // sendJsonMessage(buildWebsocketSendMessage(`wasm.from = '${address}'`, 4), true);
+        // Các subscription khác có thể được thêm vào đây...
       },
       onClose: () => {
         console.log('unsubscribe all clients');
         sendJsonMessage(buildUnsubscribeMessage());
       },
       onReconnectStop(numAttempts) {
-        // if cannot reconnect then we unsubscribe all
         if (numAttempts === WEBSOCKET_RECONNECT_ATTEMPTS) {
           console.log('reconnection reaches above limit. Unsubscribe to all!');
           sendJsonMessage(buildUnsubscribeMessage());
@@ -154,20 +151,22 @@ const App = () => {
       shouldReconnect: (closeEvent) => true,
       reconnectAttempts: WEBSOCKET_RECONNECT_ATTEMPTS,
       reconnectInterval: WEBSOCKET_RECONNECT_INTERVAL
-    }
-  );
+    });
 
-  // this is used for debugging only
-  useEffect(() => {
-    const tokenDisplay = processWsResponseMsg(lastJsonMessage);
-    if (tokenDisplay) {
-      displayToast(TToastType.TX_INFO, {
-        message: `You have received ${tokenDisplay}`
-      });
-      // no metamaskAddress, only reload cosmos
-      loadTokenAmounts({ oraiAddress: address });
-    }
-  }, [lastJsonMessage]);
+    // this is used for debugging only
+    useEffect(() => {
+      if (lastJsonMessage) {
+        const tokenDisplay = processWsResponseMsg(lastJsonMessage);
+        if (tokenDisplay) {
+          displayToast(TToastType.TX_INFO, {
+            message: `You have received ${tokenDisplay}`
+          });
+          // no metamaskAddress, only reload cosmos
+          loadTokenAmounts({ oraiAddress: address });
+        }
+      }
+    }, [lastJsonMessage]);
+  }
 
   // clear persist storage when update version
   useEffect(() => {
@@ -291,11 +290,26 @@ const App = () => {
     let solAddress;
     if (walletByNetworks.solana === 'owallet' || mobileMode) {
       if (window.owalletSolana) {
-        const { publicKey } = await window.owalletSolana.connect();
-        if (publicKey) {
-          solAddress = publicKey.toBase58();
-          setSolAddress(solAddress);
-        }
+        const provider = window?.owalletSolana;
+        solanaWallet.select('OWallet' as any);
+        await retry(
+          async () => {
+            try {
+              await solanaWallet.connect();
+            } catch (err) {
+              console.log('err', err);
+            }
+            const { publicKey } = await provider.connect();
+            if (publicKey) {
+              solAddress = publicKey.toBase58();
+              setSolAddress(solAddress);
+            } else {
+              throw new Error('Cannot connect to Solana wallet');
+            }
+          },
+          3,
+          1000
+        );
       }
     }
     return solAddress;
@@ -370,20 +384,18 @@ const App = () => {
   const [openBanner, setOpenBanner] = useState(false);
 
   return (
-    <SolanaWalletProvider>
-      <ThemeProvider>
-        <div className={`app ${theme}`}>
-          {/* <button data-featurebase-feedback>Open Widget</button> */}
-          <Menu />
-          <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
-          {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
-          <div className="main">
-            <Sidebar />
-            <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
-          </div>
+    <ThemeProvider>
+      <div className={`app ${theme}`}>
+        {/* <button data-featurebase-feedback>Open Widget</button> */}
+        <Menu />
+        <NoticeBanner openBanner={openBanner} setOpenBanner={setOpenBanner} />
+        {/* {(!bannerTime || Date.now() > bannerTime + 86_400_000) && <FutureCompetition />} */}
+        <div className="main">
+          <Sidebar />
+          <div className={openBanner ? `bannerWithContent appRight` : 'appRight'}>{routes()}</div>
         </div>
-      </ThemeProvider>
-    </SolanaWalletProvider>
+      </div>
+    </ThemeProvider>
   );
 };
 

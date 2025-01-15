@@ -1,4 +1,4 @@
-import { CoinIcon, CustomChainInfo } from '@oraichain/oraidex-common';
+import { CustomChainInfo } from '@oraichain/oraidex-common';
 import ArrowImg from 'assets/icons/arrow_new.svg';
 import CheckImg from 'assets/icons/check.svg';
 import NetworkImg from 'assets/icons/network.svg';
@@ -10,16 +10,17 @@ import { useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from '../helpers';
 import styles from './TabsTxs.module.scss';
-import { chainIcons } from 'config/chainInfos';
 import { FROM_QUERY_KEY, TO_QUERY_KEY, TYPE_QUERY_TYPE } from '../Swap/hooks/useFillToken';
+import { chainInfos } from 'initCommon';
 
 const cx = cn.bind(styles);
 const ItemNetwork: React.FC<{
   theme: string;
   item: {
-    IconLight?: CoinIcon;
-    Icon?: CoinIcon;
+    IconLight?: any;
+    Icon?: any;
     chainName: string;
+    chainSymbolImageUrl?: string;
   };
   icons?: React.ReactElement;
   isCheck: boolean;
@@ -28,18 +29,7 @@ const ItemNetwork: React.FC<{
 }> = ({ onClick, item, theme, isCheck, icons, isAllNetwork }) => {
   return (
     <div className={cx('item', `${isAllNetwork}`)} onClick={onClick}>
-      {icons ? (
-        icons
-      ) : theme === 'light' ? (
-        item.IconLight ? (
-          <item.IconLight className={cx('logo')} />
-        ) : (
-          <item.Icon className={cx('logo')} />
-        )
-      ) : (
-        <item.Icon className={cx('logo')} />
-      )}
-
+      {icons ?? <img width={28} height={28} src={item.chainSymbolImageUrl} alt="chainSymbolImageUrl" />}
       <div className={cx('grow')}>
         <div>{item?.chainName}</div>
       </div>
@@ -72,7 +62,7 @@ const TabsNetwork: React.FC<{
       <div className={cx('options')}>
         {networks &&
           networks.map((item: CustomChainInfo) => {
-            const networkIcon = chainIcons.find((chainIcon) => chainIcon.chainId === item.chainId);
+            const networkIcon = chainInfos.find((chainIcon) => chainIcon.chainId === item.chainId);
             return (
               <div key={item.chainName}>
                 <ItemNetwork
@@ -80,15 +70,16 @@ const TabsNetwork: React.FC<{
                     setNetworkFilter({
                       label: item.chainName,
                       value: item.chainId,
-                      Icon: networkIcon.Icon,
-                      IconLight: networkIcon.IconLight
+                      Icon: networkIcon.chainSymbolImageUrl,
+                      IconLight: networkIcon.chainSymbolImageUrl,
+                      chainSymbolImageUrl: item.chainSymbolImageUrl
                     });
                     setIsNetwork(false);
                   }}
                   item={{
                     ...item,
-                    Icon: networkIcon.Icon,
-                    IconLight: networkIcon.IconLight
+                    Icon: networkIcon.chainSymbolImageUrl,
+                    IconLight: networkIcon.chainSymbolImageUrl
                   }}
                   theme={theme}
                   isCheck={networkFilter === item.chainName}
@@ -161,19 +152,15 @@ export const TabsTxs: React.FC<{
         })}
       </div>
       {tab !== TYPE_TAB_HISTORY.HISTORY && (
-        <div>
+        <div className={cx('right')}>
           <div
-            className={cx('right')}
+            className={cx('content')}
             onClick={() => {
               setIsNetwork(!isNetwork);
             }}
           >
-            {networkFilter.value ? (
-              theme === 'light' ? (
-                <networkFilter.IconLight className={cx('logo')} />
-              ) : (
-                <networkFilter.Icon className={cx('logo')} />
-              )
+            {networkFilter.chainSymbolImageUrl ? (
+              <img className={cx('logo')} src={networkFilter.chainSymbolImageUrl} alt="" />
             ) : (
               <img src={NetworkImg} alt="network" />
             )}

@@ -292,6 +292,7 @@ export interface ConfigResponse {
 }
 
 const getContractConfig = async (): Promise<ConfigResponse> => {
+  return null
   try {
     const res = await axios.get('/contract/config', {
       params: {}

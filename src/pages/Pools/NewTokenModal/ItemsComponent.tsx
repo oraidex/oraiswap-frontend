@@ -1,18 +1,28 @@
-import cn from 'classnames/bind';
-import styles from './NewTokenModal.module.scss';
-import Input from 'components/Input';
-import NumberFormat from 'react-number-format';
-import CheckBox from 'components/CheckBox';
-import { tokenMap } from 'config/bridgeTokens';
-import WalletIcon from 'assets/icons/wallet1.svg?react';
-import TokensIcon from 'assets/icons/tokens.svg?react';
 import { toAmount, toDisplay } from '@oraichain/oraidex-common';
+import TokensIcon from 'assets/icons/tokens.svg?react';
+import WalletIcon from 'assets/icons/wallet1.svg?react';
+import cn from 'classnames/bind';
+import CheckBox from 'components/CheckBox';
+import Input from 'components/Input';
+import { tokenMap } from 'initCommon';
+import NumberFormat from 'react-number-format';
+import styles from './NewTokenModal.module.scss';
+import { getIcon } from 'helper';
+import TrashIcon from 'assets/icons/ion_trash-sharp.svg?react';
+import { reduceString } from 'libs/utils';
 
 const cx = cn.bind(styles);
 
 export const RewardItems = ({ item, ind, selectedReward, setSelectedReward, setRewardTokens, rewardTokens, theme }) => {
   const originalFromToken = tokenMap?.[item?.denom];
-  let Icon = theme === 'light' ? originalFromToken?.IconLight ?? originalFromToken?.Icon : originalFromToken?.Icon;
+  let Icon = getIcon({
+    isLightTheme: theme === 'light',
+    type: 'token',
+    chainId: originalFromToken?.chainId,
+    coinGeckoId: originalFromToken?.coinGeckoId,
+    width: 30,
+    height: 30
+  });
   return (
     <div className={cx('orai')}>
       <CheckBox
@@ -24,7 +34,7 @@ export const RewardItems = ({ item, ind, selectedReward, setSelectedReward, setR
         }}
       />
       <div className={cx('orai_label')}>
-        {Icon ? <Icon className={cx('logo')} /> : <TokensIcon className={cx('logo')} />}
+        {Icon ? Icon : <TokensIcon className={cx('logo')} />}
         <div className={cx('per')}>
           <span>{item?.name}</span> /s
         </div>
@@ -60,70 +70,66 @@ export const InitBalancesItems = ({
   item,
   setInitBalances,
   initBalances,
-  theme
+  theme,
+  decimals,
+  deleteSelectedItem
 }) => {
   return (
-    <div>
-      <div className={cx('wrap-init-balances')}>
-        <div>
-          <CheckBox
-            checked={selectedInitBalances.includes(ind)}
-            onCheck={() => {
-              const arr = selectedInitBalances.includes(ind)
-                ? selectedInitBalances.filter((e) => e !== ind)
-                : [...selectedInitBalances, ind];
-              setSelectedInitBalances(arr);
-            }}
-          />
-        </div>
-        <div className={cx('wallet', theme)}>
-          <span>{ind + 1}</span>
-          <WalletIcon />
+    <div className={cx('init-balance-item')}>
+      <div className={cx('row-item')}>
+        <div className={cx('input-item', theme)}>
+            <Input
+              value={item.address ? reduceString(item.address, 7, 10) : null}
+              style={{
+                color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+              }}
+              onChange={(e) => {
+                setInitBalances(
+                  initBalances.map((ba, i) => ({
+                    amount: ba.amount,
+                    address: ind === i ? e?.target?.value : ba.address
+                  }))
+                );
+              }}
+              placeholder="Address"
+            />
         </div>
       </div>
-      <div className={cx('row')}>
-        <div className={cx('label')}>Address</div>
-        <Input
-          className={cx('input', theme)}
-          value={item.address}
-          onChange={(e) => {
-            setInitBalances(
-              initBalances.map((ba, i) => ({
-                amount: ba.amount,
-                address: ind === i ? e?.target?.value : ba.address
-              }))
-            );
-          }}
-          placeholder="ADDRESS"
-        />
+      <div className={cx('row-item')}>
+        <div className={cx('input-item', theme)}>
+            <NumberFormat
+              thousandSeparator
+              decimalScale={decimals || 0}
+              value={toDisplay(item.amount, decimals || 0, 0)}
+              style={{
+                color: theme === 'light' && 'rgba(39, 43, 48, 1)'
+              }}
+              onValueChange={({ floatValue }) =>
+                setInitBalances(
+                  initBalances.map((ba, index) => {
+                    return ind === index ? { ...ba, amount: toAmount(floatValue, decimals) } : ba;
+                  })
+                )
+              }
+              isAllowed={(values) => {
+                const { floatValue } = values;
+                return !floatValue || (floatValue >= 0 && floatValue <= 1e14);
+              }}
+              placeholder="0"
+            />
+        </div>
       </div>
       <div
-        className={cx('row')}
-        style={{
-          paddingTop: 10
+        className={cx('trash')}
+        onClick={() => {
+          const arr = selectedInitBalances.includes(ind)
+            ? selectedInitBalances.filter((e) => e !== ind)
+            : [...selectedInitBalances, ind];
+          deleteSelectedItem(arr);
         }}
       >
-        <div className={cx('label')}>Amount</div>
-        <NumberFormat
-          placeholder="0"
-          className={cx('input', theme)}
-          style={{
-            color: theme === 'light' ? 'rgba(126, 92, 197, 1)' : 'rgb(255, 222, 91)'
-          }}
-          thousandSeparator
-          decimalScale={6}
-          type="text"
-          value={toDisplay(item.amount)}
-          onValueChange={({ floatValue }) =>
-            setInitBalances(
-              initBalances.map((ba, index) => {
-                return ind === index ? { ...ba, amount: toAmount(floatValue) } : ba;
-              })
-            )
-          }
-        />
+        <TrashIcon />
       </div>
-      <hr />
     </div>
   );
 };

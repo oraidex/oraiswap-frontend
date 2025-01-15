@@ -1,7 +1,7 @@
-import { BigDecimal, toDisplay, TokenItemType, tonNetworkMainnet } from '@oraichain/oraidex-common';
+import { CW_TON_BRIDGE, TonChainId } from 'context/ton-provider';
+import { tonNetworkMainnet } from 'initCommon';
+import { BigDecimal, TokenItemType } from '@oraichain/oraidex-common';
 import { TonbridgeBridgeClient } from '@oraichain/tonbridge-contracts-sdk';
-import { network } from 'config/networks';
-import { TonChainId } from 'context/ton-provider';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useEffect, useState } from 'react';
 
@@ -37,7 +37,7 @@ const useGetFee = ({
             return;
           }
 
-          const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, network.CW_TON_BRIDGE);
+          const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, CW_TON_BRIDGE);
 
           const tokenFeeConfig = await tonBridgeClient.tokenFee({
             remoteTokenDenom: walletTon
@@ -77,7 +77,7 @@ const useGetFee = ({
           return;
         }
 
-        const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, network.CW_TON_BRIDGE);
+        const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, CW_TON_BRIDGE);
 
         const config = await tonBridgeClient.pairMapping({
           key: walletTon

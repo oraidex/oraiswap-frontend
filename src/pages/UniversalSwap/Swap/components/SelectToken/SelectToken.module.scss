@@ -248,14 +248,44 @@
                 }
               }
             }
+
+            span {
+              svg {
+                width: 17px;
+                height: 17px;
+                margin: 0px 0px -2px 4px;
+
+                path {
+                  @include theme {
+                    stroke: theme-get('primary-highlight-section');
+                  }
+                }
+              }
+            }
           }
 
           .selectTokenItemTokenOrg {
             font-size: 12px;
             font-weight: 500;
+            display: flex;
+            gap: 6px;
 
             @include theme() {
               color: theme-get('colors-neutral-text-body');
+            }
+
+            .denom {
+              font-weight: 400;
+              font-size: 13px;
+            }
+
+            .copyBtn {
+              display: flex;
+              align-items: center;
+
+              div {
+                display: flex;
+              }
             }
           }
         }

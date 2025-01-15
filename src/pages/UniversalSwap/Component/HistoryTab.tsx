@@ -3,7 +3,6 @@ import OpenNewWindowImg from 'assets/icons/open_new_window.svg';
 import cn from 'classnames/bind';
 import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { Table, TableHeaderProps } from 'components/Table';
-import { chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
 import useTheme from 'hooks/useTheme';
 import { TransactionHistory } from 'libs/duckdb';
 import { reduceString, timeSince } from 'libs/utils';
@@ -12,6 +11,7 @@ import { useState } from 'react';
 import { getExplorerScan } from '../helpers';
 import { useGetTransHistory } from '../Swap/hooks';
 import styles from './HistoryTab.module.scss';
+import { chainInfosWithIcon, flattenTokensWithIcon } from 'initCommon';
 
 const cx = cn.bind(styles);
 const RowsComponent: React.FC<{
@@ -42,15 +42,15 @@ const RowsComponent: React.FC<{
           <div className={styles.list}>
             <div className={styles.img}>
               {theme === 'light' ? (
-                <fromToken.IconLight width={26} height={26} />
+                <img src={fromToken.iconLight} alt="" width={26} height={26} />
               ) : (
-                <fromToken.Icon width={26} height={26} />
+                <img src={fromToken.icon} alt="" width={26} height={26} />
               )}
               <div className={styles.imgChain}>
                 {theme === 'light' ? (
-                  <fromChain.IconLight width={14} height={14} />
+                  <img src={fromChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 ) : (
-                  <fromChain.Icon width={14} height={14} />
+                  <img src={fromChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 )}
               </div>
             </div>
@@ -71,15 +71,15 @@ const RowsComponent: React.FC<{
           <div className={styles.list}>
             <div className={styles.img}>
               {theme === 'light' ? (
-                <toToken.IconLight width={26} height={26} />
+                <img src={toToken.iconLight} alt="" width={26} height={26} />
               ) : (
-                <toToken.Icon width={26} height={26} />
+                <img src={toToken.icon} alt="" width={26} height={26} />
               )}
               <div className={styles.imgChain}>
                 {theme === 'light' ? (
-                  <toChain.IconLight width={14} height={14} />
+                  <img src={toChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 ) : (
-                  <toChain.Icon width={14} height={14} />
+                  <img src={toChain.chainSymbolImageUrl} alt="" width={14} height={14} />
                 )}
               </div>
             </div>

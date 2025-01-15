@@ -1,44 +1,40 @@
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
+import {
+  COSMOS_CHAIN_ID_COMMON,
+  CustomChainInfo,
+  ERC20__factory,
+  EVM_BALANCE_RETRY_COUNT,
+  solChainId,
+  TON_CONTRACT,
+  tronToEthAddress
+} from '@oraichain/oraidex-common';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
-import { btcTokens, cosmosTokens, evmTokens, oraichainTokens, solTokens, tokenMap } from 'config/bridgeTokens';
+import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
+import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { Dispatch } from '@reduxjs/toolkit';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { Address, TonClient } from '@ton/ton';
+import { ethers } from 'ethers';
 import {
   genAddressCosmos,
   getAddress,
-  handleCheckWallet,
   getWalletByNetworkCosmosFromStorage,
+  handleCheckWallet,
   handleErrorRateLimit
 } from 'helper';
-import flatten from 'lodash/flatten';
-import { updateAmounts } from 'reducer/token';
-import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
-import { generateError } from '../libs/utils';
-import { COSMOS_CHAIN_ID_COMMON } from '@oraichain/oraidex-common';
-import { Dispatch } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
-
-import {
-  CustomChainInfo,
-  EVM_BALANCE_RETRY_COUNT,
-  ERC20__factory,
-  getEvmAddress,
-  tronToEthAddress,
-  solChainId,
-  tonNetworkMainnet
-} from '@oraichain/oraidex-common';
-import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { chainInfos, evmChains, TON_ZERO_ADDRESS } from 'config/chainInfos';
-import { network } from 'config/networks';
-import { ethers } from 'ethers';
-import axios from 'rest/request';
-import { reduce } from 'lodash';
-import { getUtxos } from 'pages/Balance/helpers';
 import { bitcoinChainId } from 'helper/constants';
-import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
-import { getHttpEndpoint } from '@orbs-network/ton-access';
-import { Address, TonClient } from '@ton/ton';
-import { JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
+import { btcTokens, chainInfos, evmChains, evmTokens, network, oraichainTokens, tonNetworkMainnet } from 'initCommon';
+import { reduce } from 'lodash';
+import flatten from 'lodash/flatten';
+import { getUtxos } from 'pages/Balance/helpers';
+import { useDispatch } from 'react-redux';
+import { updateAmounts } from 'reducer/token';
+import { store } from 'store/configure';
+import { generateError } from '../libs/utils';
 
 export type LoadTokenParams = {
   refresh?: boolean;
@@ -59,6 +55,14 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
 
     let amountDetails: AmountDetails = {};
 
+    const storage = store.getState();
+    const allOraichainTokens = storage.token.allOraichainTokens || [];
+    const allOtherChainTokens = storage.token.allOtherChainTokens || [];
+
+    const cosmosTokens = [...allOraichainTokens, ...allOtherChainTokens].filter(
+      (token) => token.denom && token.cosmosBased && !token.contractAddress
+    );
+
     // reset native balances
     cosmosTokens
       .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
@@ -66,7 +70,7 @@ async function loadNativeBalance(dispatch: Dispatch, address: string, tokenInfo:
         amountDetails[t.denom] = '0';
       });
 
-    const tokensAmount = amountAll.filter((coin) => tokenMap[coin.denom]).map((coin) => [coin.denom, coin.amount]);
+    const tokensAmount = amountAll.map((coin) => [coin.denom, coin.amount]);
     Object.assign(amountDetails, Object.fromEntries(tokensAmount));
 
     dispatch(updateAmounts(amountDetails));
@@ -103,9 +107,7 @@ async function loadTokens(
         timer[oraiAddress] = setTimeout(async () => {
           await Promise.all([
             loadTokensCosmos(dispatch, kawaiiAddress, oraiAddress),
-            loadCw20Balance(dispatch, oraiAddress),
-            // different cointype but also require keplr connected by checking oraiAddress
-            loadKawaiiSubnetAmount(dispatch, kawaiiAddress)
+            loadCw20Balance(dispatch, oraiAddress)
           ]);
         }, 2000);
       }
@@ -114,7 +116,11 @@ async function loadTokens(
     if (metamaskAddress) {
       clearTimeout(timer[metamaskAddress]);
       timer[metamaskAddress] = setTimeout(() => {
-        loadEvmAmounts(dispatch, metamaskAddress, evmChains);
+        loadEvmAmounts(
+          dispatch,
+          metamaskAddress,
+          evmChains.filter((evm) => evm.chainId !== '0x2b6653dc')
+        );
       }, 2000);
     }
 
@@ -172,6 +178,7 @@ async function loadTokensCosmos(dispatch: Dispatch, kwtAddress: string, oraiAddr
       // TODO: ignore oraibtc
       chainInfo.chainId !== ('oraibtc-mainnet-1' as string)
   );
+
   for (const chainInfo of cosmosInfos) {
     const { cosmosAddress } = genAddressCosmos(chainInfo, kwtAddress, oraiAddress);
     if (!cosmosAddress) continue;
@@ -182,8 +189,11 @@ async function loadTokensCosmos(dispatch: Dispatch, kwtAddress: string, oraiAddr
 async function loadCw20Balance(dispatch: Dispatch, address: string) {
   if (!address) return;
 
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+
   // get all cw20 token contract
-  const cw20Tokens = [...oraichainTokens.filter((t) => t.contractAddress)];
+  const cw20Tokens = [...allOraichainTokens.filter((t) => t.contractAddress)];
 
   const data = toBinary({
     balance: { address }
@@ -273,51 +283,72 @@ async function loadEvmEntries(
   address: string,
   chain: CustomChainInfo,
   multicallCustomContractAddress?: string,
-  retryCount?: number
+  retryCount: number = 3
 ): Promise<[string, string][]> {
-  try {
-    const tokens = evmTokens.filter((t) => t.chainId === chain?.chainId && t.contractAddress);
-    const nativeEvmToken = evmTokens.find(
-      (t) =>
-        !t.contractAddress &&
-        UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId) &&
-        chain?.chainId === t.chainId
-    );
-    if (!tokens.length) return [];
-    const multicall = new Multicall({
-      nodeUrl: chain.rpc,
-      multicallCustomContractAddress,
-      chainId: Number(chain.chainId)
-    });
-    const input = tokens.map((token) => ({
-      reference: token.denom,
-      contractAddress: token.contractAddress,
-      abi: ERC20__factory.abi,
-      calls: [
-        {
-          reference: token.denom,
-          methodName: 'balanceOf(address)',
-          methodParameters: [address]
-        }
-      ]
-    }));
+  const tokens = evmTokens.filter((t) => t.chainId === chain?.chainId && t.contractAddress);
+  const nativeEvmToken = evmTokens.find(
+    (t) =>
+      !t.contractAddress &&
+      UniversalSwapHelper.isEvmNetworkNativeSwapSupported(chain?.chainId) &&
+      chain?.chainId === t.chainId
+  );
 
-    const results: ContractCallResults = await multicall.call(input as any);
-    const nativeBalance = nativeEvmToken ? await loadNativeEvmBalance(address, chain) : 0;
-    let entries: [string, string][] = tokens.map((token) => {
-      const amount = results.results[token.denom].callsReturnContext[0].returnValues[0].hex;
-      return [token.denom, amount];
-    });
-    if (nativeEvmToken) entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
-    return entries;
-  } catch (error) {
-    console.log('error querying EVM balance: ', error);
-    let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT) console.error(`Cannot query EVM balance with error: ${error}`);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return loadEvmEntries(address, chain, multicallCustomContractAddress, retry);
+  if (!tokens.length) return [];
+
+  const multicall = new Multicall({
+    nodeUrl: chain.rpc,
+    multicallCustomContractAddress,
+    chainId: Number(chain.chainId)
+  });
+
+  const input = tokens.map((token) => ({
+    reference: token.denom,
+    contractAddress: token.contractAddress,
+    abi: ERC20__factory.abi,
+    calls: [
+      {
+        reference: token.denom,
+        methodName: 'balanceOf(address)',
+        methodParameters: [address]
+      }
+    ]
+  }));
+
+  let attempts = 0;
+  let entries: [string, string][] = [];
+
+  while (attempts < retryCount) {
+    try {
+      const results: ContractCallResults = await multicall.call(input as any);
+      const nativeBalance = nativeEvmToken ? await loadNativeEvmBalance(address, chain) : 0;
+
+      entries = tokens.map((token) => {
+        const amount = results.results[token.denom].callsReturnContext[0].returnValues[0].hex;
+        return [token.denom, amount];
+      });
+
+      if (nativeEvmToken) {
+        entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
+      }
+
+      return entries;
+    } catch (error) {
+      attempts++;
+      console.log(`Attempt ${attempts} failed. Error querying EVM balance: `, error);
+
+      if (attempts >= retryCount) {
+        console.error(`Failed to query EVM balance after ${attempts} attempts. Error: ${error}`);
+        break;
+      }
+
+      // Wait for 2 seconds before retrying
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
   }
+
+  return entries;
 }
+
 async function loadBtcEntries(
   address: string,
   chain: CustomChainInfo,
@@ -354,7 +385,9 @@ async function loadSolEntries(
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
     });
 
-    let entries: [string, string][] = solTokens.map((item) => {
+    const storage = store.getState();
+    const allSolTokens = (storage.token.allOtherChainTokens || []).filter((t) => t.chainId === chain.chainId);
+    let entries: [string, string][] = allSolTokens.map((item) => {
       let amount = '0';
       if (item?.contractAddress) {
         const findAmount = tokenAmount.value.find(
@@ -375,7 +408,6 @@ async function loadSolEntries(
 }
 
 async function loadEvmAmounts(dispatch: Dispatch, evmAddress: string, chains: CustomChainInfo[]) {
-  console.log('---', chains);
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map((chain) => loadEvmEntries(evmAddress, chain))))
   );
@@ -407,18 +439,6 @@ async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: Cu
   }
 }
 
-async function loadKawaiiSubnetAmount(dispatch: Dispatch, kwtAddress: string) {
-  if (!kwtAddress) return;
-  const kawaiiInfo = chainInfos.find((c) => c.chainId === 'kawaii_6886-1');
-  loadNativeBalance(dispatch, kwtAddress, kawaiiInfo);
-
-  const kwtSubnetAddress = getEvmAddress(kwtAddress);
-  const kawaiiEvmInfo = chainInfos.find((c) => c.chainId === '0x1ae6');
-  let amountDetails = Object.fromEntries(await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo));
-  // update amounts
-  dispatch(updateAmounts(amountDetails));
-}
-
 const loadBalanceByToken = async (dispatch: Dispatch, addressTon: string, addressToken?: string) => {
   try {
     // get the decentralized RPC endpoint
@@ -426,7 +446,7 @@ const loadBalanceByToken = async (dispatch: Dispatch, addressTon: string, addres
     const client = new TonClient({
       endpoint
     });
-    if (addressToken === TON_ZERO_ADDRESS) {
+    if (addressToken === TON_CONTRACT) {
       const balance = await client.getBalance(Address.parse(addressTon));
 
       return { ton: balance || '0' };
@@ -463,7 +483,7 @@ const loadAllBalanceTonToken = async (dispatch: Dispatch, tonAddress: string, li
 
   const fullData = await Promise.all(
     (allTokens || []).map(async (item) => {
-      if (item.contractAddress === TON_ZERO_ADDRESS) {
+      if (item.contractAddress === TON_CONTRACT) {
         // native token: TON
         const balance = await client.getBalance(Address.parse(tonAddress));
 

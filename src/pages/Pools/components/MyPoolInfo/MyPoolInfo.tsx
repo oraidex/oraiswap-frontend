@@ -21,6 +21,7 @@ import { UnstakeLPModal } from '../UnstakeLPModal';
 import { WithdrawLiquidityModal } from '../WithdrawLiquidityModal';
 import styles from './MyPoolInfo.module.scss';
 import IconInfo from 'assets/icons/infomationIcon.svg?react';
+import { canStake } from 'pages/Pools/helpers';
 
 type ModalPool = 'deposit' | 'withdraw' | 'stake' | 'unstake';
 type Props = { myLpBalance: bigint; onLiquidityChange: () => void; isInactive?: boolean };
@@ -32,6 +33,7 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInacti
   const isMobileMode = isMobile();
   const { poolUrl } = useParams();
   const [address] = useConfigReducer('address');
+  const [canStakeLP, setCanStakeLP] = useState(false);
 
   const poolDetail = useGetPoolDetail({ pairDenoms: poolUrl });
   const { lpTokenInfoData } = useGetPairInfo(poolDetail);
@@ -55,15 +57,22 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInacti
     const lpPrice = poolDetail.info.totalLiquidity / Number(totalSupply);
     if (!lpPrice) return;
 
+    const stakeStatus = canStake(poolDetail?.info?.rewardPerSec);
+    if (stakeStatus) {
+      setCanStakeLP(true);
+    }
+
     const myLiquidityInUsdt = Number(myLpBalance) * lpPrice;
     setLpBalance({
-      myLiquidityInUsdt: BigInt(Math.trunc(myLiquidityInUsdt)),
+      myLiquidityInUsdt: myLiquidityInUsdt ? BigInt(Math.trunc(myLiquidityInUsdt)) : 0n,
       lpPrice
     });
   }, [lpTokenInfoData, myLpBalance, poolDetail.info]);
 
   const totalBondAmount = BigInt(totalRewardInfoData?.reward_infos[0]?.bond_amount || '0');
-  const totalBondAmountInUsdt = BigInt(Math.trunc(lpBalance.lpPrice ? Number(totalBondAmount) * lpBalance.lpPrice : 0));
+  const totalBondAmountInUsdt = BigInt(
+    Math.trunc(lpBalance.lpPrice ? Number(totalBondAmount) * lpBalance.lpPrice : 0) || 0
+  );
 
   const thirdType = 'secondary-sm';
   const secondaryType = 'third-sm';
@@ -145,10 +154,16 @@ export const MyPoolInfo: FC<Props> = ({ myLpBalance, onLiquidityChange, isInacti
             type={secondaryType}
             onClick={() => setModal('unstake')}
             icon={theme === 'dark' ? <UnstakeIcon /> : <UnstakeLightIcon />}
+            disabled={isInactive || !totalBondAmount}
           >
             Unstake LP
           </Button>
-          <Button type={thirdType} onClick={() => setModal('stake')} icon={<StakingIcon />} disabled={isInactive}>
+          <Button
+            type={thirdType}
+            onClick={() => setModal('stake')}
+            icon={<StakingIcon />}
+            disabled={isInactive || !canStakeLP}
+          >
             Stake LP
           </Button>
         </div>

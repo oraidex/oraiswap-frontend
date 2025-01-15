@@ -5,17 +5,20 @@ import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import classNames from 'classnames';
 import SearchInput from 'components/SearchInput';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { getIcon } from 'helper';
 import { formatDisplayUsdt } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useTheme from 'hooks/useTheme';
 import { toSumDisplay } from 'libs/utils';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { getSubAmountDetails } from 'rest/api';
 import { RootState } from 'store/configure';
 import styles from './index.module.scss';
+import { oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
+import { inspectToken } from 'reducer/onchainTokens';
+import useConfigReducer from 'hooks/useConfigReducer';
+import IconVerified from 'assets/icons/ic_verified.svg?react';
 
 const SelectToken = ({
   token,
@@ -33,7 +36,22 @@ const SelectToken = ({
   const [isOpen, setIsOpen] = useState(false);
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
+  const [address] = useConfigReducer('address');
   const isLightTheme = theme === 'light';
+
+  const dispatch = useDispatch();
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+
+  // useEffect(() => {
+  //   if (listItems.length === 0 && textSearch) {
+  //     dispatch<any>(
+  //       inspectToken({
+  //         tokenId: textSearch,
+  //         address
+  //       })
+  //     );
+  //   }
+  // }, [textSearch]);
 
   const listItems = oraichainTokensWithIcon.filter(
     (item) =>
@@ -93,13 +111,17 @@ const SelectToken = ({
 
           {!isOpen ? null : (
             <div className={styles.selectTokenList}>
-              {!listItems.length && (
+              {/* TODO: use allOraichainTokens after launched permissionless  */}
+              {/* {allOraichainTokens */}
+              {!oraichainTokens.length && (
                 <div className={styles.selectTokenListNoResult}>
                   {isLightTheme ? <NoResultLight /> : <NoResultDark />}
                 </div>
               )}
 
-              {listItems
+              {/* TODO: use allOraichainTokens after launched permissionless  */}
+              {/* {allOraichainTokens */}
+              {oraichainTokens
                 .map((token) => {
                   const tokenIcon = getIcon({
                     isLightTheme,
@@ -163,7 +185,9 @@ const SelectToken = ({
                           </div>
                         </div>
                         <div>
-                          <div className={styles.selectTokenItemTokenName}>{token.name}</div>
+                          <div className={styles.selectTokenItemTokenName}>
+                            {token.name} {token.isVerified && <IconVerified />}
+                          </div>
                           <div className={styles.selectTokenItemTokenOrg}>{token.org}</div>
                         </div>
                       </div>

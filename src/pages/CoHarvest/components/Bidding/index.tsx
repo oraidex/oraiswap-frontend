@@ -1,5 +1,5 @@
 import { toBinary } from '@cosmjs/cosmwasm-stargate';
-import { BigDecimal, ORAIX_CONTRACT, oraichainTokens, toAmount, toDisplay, tokenMap } from '@oraichain/oraidex-common';
+import { BigDecimal, ORAIX_CONTRACT, toAmount, toDisplay } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import OraiXIcon from 'assets/icons/oraix.svg?react';
@@ -8,12 +8,12 @@ import UsdcIcon from 'assets/icons/usd_coin.svg?react';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
 import { getTransactionUrl, handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useDebounce } from 'hooks/useDebounce';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
+import { network, oraichainTokens, tokenMap } from 'initCommon';
 import { getUsd } from 'libs/utils';
 import { INIT_AMOUNT_SIMULATE, TIMER } from 'pages/CoHarvest/constants';
 import {
@@ -30,6 +30,7 @@ import { RootState } from 'store/configure';
 import InputBalance from '../InputBalance';
 import InputRange from '../InputRange';
 import styles from './index.module.scss';
+import { NetworkChainId } from '@oraichain/common';
 
 export type BiddingProps = {
   openExplainModal: () => void;
@@ -46,7 +47,7 @@ const Bidding = ({ openExplainModal, isEnd, round, isStarted, isCurrentRound, ba
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
   const loadOraichainToken = useLoadOraichainTokens();
-  const balance = amounts['oraix'];
+  const balance = amounts['cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:ORAIX'];
   const ORAIX_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'oraidex');
   const USDC_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'usd-coin');
 
@@ -94,7 +95,7 @@ const Bidding = ({ openExplainModal, isEnd, round, isStarted, isCurrentRound, ba
 
   const insufficientFund = amount && amount > toDisplay(balance);
 
-  const coingeckoOraixPrice = prices[ORAIX_TOKEN_INFO.coinGeckoId] || '0';
+  const coingeckoOraixPrice = prices['oraidex'] || '0';
 
   if (!isCurrentRound) {
     return (
@@ -196,7 +197,7 @@ const Bidding = ({ openExplainModal, isEnd, round, isStarted, isCurrentRound, ba
               );
               if (result?.transactionHash) {
                 displayToast(TToastType.TX_SUCCESSFUL, {
-                  customLink: getTransactionUrl(network.chainId, result.transactionHash)
+                  customLink: getTransactionUrl(network.chainId as NetworkChainId, result.transactionHash)
                 });
                 refetchAllBidPoolRound();
                 refetchHistoryBidPool();

@@ -1,5 +1,6 @@
-import { CW20_DECIMALS, oraichainTokens, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
+import { CW20_DECIMALS, parseTokenInfoRawDenom, toDisplay } from '@oraichain/oraidex-common';
 import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
+import { oraichainTokens } from 'initCommon';
 import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useEffect, useState } from 'react';
 import { FILTER_TIME_CHART } from 'reducer/type';
@@ -103,9 +104,9 @@ export const useChartUsdPrice = (
         setCurrentItem({ value: 0, time: 0, volume: 0 });
         onUpdateCurrentItem && onUpdateCurrentItem(0);
       }
-      setIsLoading(false);
     } catch (e) {
       console.log(' ERROR: e', 'background: #FF0000; color:#FFFFFF', e);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -167,6 +168,6 @@ export const getDataPriceMarket = async (tokenDenom: string, type: FILTER_TIME_C
 };
 
 export const getPriceUsdChange = (startValue: number, endValue: number) => {
-  if (!endValue) return '0.00';
-  return toFixedIfNecessary((((endValue - startValue) / endValue) * 100).toString(), 2);
+  if (!startValue) return '0.00';
+  return toFixedIfNecessary((((endValue - startValue) / startValue) * 100).toString(), 2);
 };

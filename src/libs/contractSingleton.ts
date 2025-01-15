@@ -1,26 +1,11 @@
 import { CosmWasmClient, fromBinary, SigningCosmWasmClient, toBinary } from '@cosmjs/cosmwasm-stargate';
-import {
-  Tickmap,
-  getMaxTick,
-  getMinTick,
-  PoolKey,
-  LiquidityTick,
-  positionToTick,
-  calculateSqrtPrice,
-  getChunkSize,
-  getLiquidityTicksLimit,
-  getMaxTickmapQuerySize,
-  OraiswapV3Handler,
-  parsePoolKey,
-  calculateAmountDelta
-} from '@oraichain/oraiswap-v3';
-import { network } from 'config/networks';
+import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { BigDecimal, CoinGeckoId, toDisplay } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
   OraiswapTokenClient,
   OraiswapTokenQueryClient,
-  OraiswapV3Client,
-  OraiswapV3QueryClient
+  OraiswapV3Client
 } from '@oraichain/oraidex-contracts-sdk';
 import {
   ArrayOfAsset,
@@ -32,16 +17,29 @@ import {
   Position,
   Tick
 } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
+import {
+  calculateAmountDelta,
+  calculateSqrtPrice,
+  extractAddress,
+  getChunkSize,
+  getLiquidityTicksLimit,
+  getMaxTick,
+  getMaxTickmapQuerySize,
+  getMinTick,
+  LiquidityTick,
+  OraiswapV3Handler,
+  parsePoolKey,
+  PoolKey,
+  positionToTick,
+  Tickmap
+} from '@oraichain/oraiswap-v3';
+import { network, oraichainTokens } from 'initCommon';
+
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { TokenDataOnChain } from 'pages/Pool-V3/components/PriceRangePlot/utils';
-import Axios from 'axios';
-import { throttleAdapterEnhancer, retryAdapterEnhancer } from 'axios-extensions';
-import { AXIOS_TIMEOUT, AXIOS_THROTTLE_THRESHOLD, toDisplay } from '@oraichain/oraidex-common';
-import { CoinGeckoId } from '@oraichain/oraidex-common';
-import { oraichainTokens } from '@oraichain/oraidex-common';
+import { numberExponentToLarge } from 'pages/Pool-V3/hooks/useCreatePositionForm';
 import { getPools } from 'rest/graphClient';
-import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import { store } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
 
 export const ALL_FEE_TIERS_DATA: FeeTier[] = [
@@ -386,22 +384,22 @@ export default class SingletonOraiswapV3 {
     });
   }
 
-  public static approveToken = async (token: string, amount: bigint, address: string) => {
+  public static async approveToken(token: string, amount: bigint, address: string) {
     const tokenClient = new OraiswapTokenClient(this._dex.client, address, token);
 
     return await tokenClient.increaseAllowance({
       amount: amount.toString(),
       spender: this._dex.contractAddress
     });
-  };
+  }
 
-  public static getTicksAndIncentivesInfo = async (
+  public static async getTicksAndIncentivesInfo(
     lowerTick: number,
     upperTick: number,
     positionIndex: number,
     user: string,
     poolKey: PoolKey
-  ) => {
+  ) {
     try {
       await this.loadCosmwasmClient();
       const multicallClient = new MulticallQueryClient(this._cosmwasmClient, network.multicall);
@@ -450,13 +448,13 @@ export default class SingletonOraiswapV3 {
       console.log('error', error);
       return null;
     }
-  };
+  }
 
-  public static getLiquidityByPool = async (
+  public static async getLiquidityByPool(
     pool: PoolWithPoolKey,
     prices: CoinGeckoPrices<string>,
     positions: Position[]
-  ): Promise<any> => {
+  ): Promise<any> {
     const poolKey = pool.pool_key;
     const tokenX = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
     const tokenY = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
@@ -491,7 +489,7 @@ export default class SingletonOraiswapV3 {
       total: tvlLockedUSD,
       allocation
     };
-  };
+  }
 
   public static async getAllPosition(): Promise<Position[]> {
     await this.loadHandler();
@@ -499,10 +497,10 @@ export default class SingletonOraiswapV3 {
     return positions;
   }
 
-  public static getPoolLiquidities = async (
+  public static async getPoolLiquidities(
     pools: PoolWithPoolKey[],
     prices: CoinGeckoPrices<string>
-  ): Promise<Record<string, number>> => {
+  ): Promise<Record<string, number>> {
     const poolLiquidities: Record<string, number> = {};
     await this.loadHandler();
 
@@ -523,11 +521,11 @@ export default class SingletonOraiswapV3 {
     }
 
     return poolLiquidities;
-  };
+  }
 
-  public static getTotalLiquidityValue = async (): Promise<number> => {
+  public static async getTotalLiquidityValue() {
     return 1;
-  };
+  }
 }
 
 export interface PositionTest {
@@ -656,18 +654,6 @@ function calculateLiquidityForRanges(liquidityChanges: LiquidityTick[], tickRang
   }));
 }
 
-const axios = Axios.create({
-  timeout: AXIOS_TIMEOUT,
-  retryTimes: 3,
-  // cache will be enabled by default in 2 seconds
-  adapter: retryAdapterEnhancer(
-    throttleAdapterEnhancer(Axios.defaults.adapter!, {
-      threshold: AXIOS_THROTTLE_THRESHOLD
-    })
-  ),
-  baseURL: 'https://api-staging.oraidex.io/v1/'
-});
-
 export type PositionAprInfo = {
   swapFee: number;
   incentive: number;
@@ -773,8 +759,11 @@ export function simulateIncentiveAprPosition(
     pool.current_tick_index ? pool.current_tick_index : 0
   );
 
-  const tokenX = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
-  const tokenY = oraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+  const tokenX = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_x);
+  const tokenY = allOraichainTokens.find((token) => extractAddress(token) === poolKey.token_y);
+  if (!tokenX || !tokenY) return { min: 0, max: 0 };
 
   const positionLiquidityUsdX = ((prices[tokenX?.coinGeckoId] ?? 0) * Number(res.x)) / 10 ** tokenX.decimals;
   const positionLiquidityUsdY = ((prices[tokenY?.coinGeckoId] ?? 0) * Number(res.y)) / 10 ** tokenY.decimals;
@@ -855,13 +844,28 @@ export async function fetchPoolAprInfo(
 
   const poolAprs: Record<string, PoolAprInfo> = {};
   for (const item of pools) {
+    // Note: this logic is for pool v2
+
     if ('liquidityAddr' in item) {
-      const { apr, aprBoost, liquidityAddr } = item;
+      const { liquidityAddr } = item;
+
+      // TODO: calculate incentive apr base on reward per sec later
+      const incentiveApr = 0;
+
+      // calculate apr base on volume 24h -> swap fee
+
+      const totalLiquidityUsd = new BigDecimal(numberExponentToLarge(item.totalLiquidity)); // usdt denom
+      const volume24hUsd = new BigDecimal(item.volume24Hour); // usdt denom
+      
+      const swapFee = volume24hUsd.mul(0.002); // fee for LP is 0.2%
+      let apr = totalLiquidityUsd.toNumber() !== 0 ? swapFee.div(totalLiquidityUsd).toNumber() : 0;
+      
+      if (apr < 0) apr = 0;
 
       poolAprs[liquidityAddr] = {
         apr: {
-          min: aprBoost || 0,
-          max: aprBoost || 0
+          min: apr || 0,
+          max: apr || 0
         },
         incentives: [],
         swapFee: {
@@ -869,8 +873,8 @@ export async function fetchPoolAprInfo(
           max: apr
         },
         incentivesApr: {
-          min: 0,
-          max: 0
+          min: incentiveApr,
+          max: incentiveApr
         }
       };
       continue;
@@ -904,7 +908,7 @@ export async function fetchPoolAprInfo(
           const token = oraichainTokens.find(
             (token) => extractAddress(token) === parseAssetInfo(incentive.reward_token)
           );
-          return token.denom.toUpperCase();
+          return token.name.toUpperCase();
         })
         .filter((incentive) => incentive !== null),
       swapFee: {

@@ -1,43 +1,41 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding';
+import { Bech32Config } from '@keplr-wallet/types';
+import { getSnap } from '@leapwallet/cosmos-snap-provider';
+import { CosmosChainId, CustomChainInfo, fetchRetry, NetworkChainId } from '@oraichain/common';
 import {
   BigDecimal,
   BSC_SCAN,
   ChainIdEnum,
   COSMOS_CHAIN_ID_COMMON,
-  CosmosChainId,
-  cosmosChains,
   ETHEREUM_SCAN,
-  evmChains,
+  EVM_CHAIN_ID_COMMON,
+  EvmDenom,
   KWT_SCAN,
   MULTIPLIER,
-  TRON_SCAN,
-  EVM_CHAIN_ID_COMMON,
   SOL_SCAN,
-  WalletType as WalletCosmosType,
   solChainId,
-  oraichainNetwork
+  TokenItemType,
+  TRON_SCAN,
+  WalletType as WalletCosmosType
 } from '@oraichain/oraidex-common';
-import { network } from 'config/networks';
-import { serializeError } from 'serialize-error';
-
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { bitcoinChainId, leapSnapId } from './constants';
-import { getSnap } from '@leapwallet/cosmos-snap-provider';
-import { Bech32Config } from '@keplr-wallet/types';
-import { CustomChainInfo, EvmDenom, NetworkChainId, TokenItemType } from '@oraichain/oraidex-common';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { TonClient } from '@ton/ton';
+import { toUserFriendlyAddress } from '@tonconnect/ui-react';
 import { isMobile } from '@walletconnect/browser-utils';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { WalletType } from 'components/WalletManagement/walletConfig';
-import { chainIcons, chainInfos, chainInfosWithIcon, flattenTokensWithIcon } from 'config/chainInfos';
+import { evmChainInfos } from 'config/evmChainInfos';
+import { TonChainId } from 'context/ton-provider';
+import { chainInfos, chainInfosWithIcon, cosmosChains, evmChains, flattenTokens, network } from 'initCommon';
 import { MetamaskOfflineSigner } from 'libs/eip191';
 import Keplr from 'libs/keplr';
 import { WalletsByNetwork } from 'reducer/wallet';
-import { evmChainInfos } from 'config/evmChainInfos';
-import { TonChainId } from 'context/ton-provider';
-import { toUserFriendlyAddress, useTonAddress } from '@tonconnect/ui-react';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
+import { serializeError } from 'serialize-error';
+import { store } from 'store/configure';
+import { bitcoinChainId, leapSnapId } from './constants';
 import { numberWithCommas } from './format';
-import { getHttpEndpoint } from '@orbs-network/ton-access';
-import { TonClient } from '@ton/ton';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 
 export interface Tokens {
   denom?: string;
@@ -51,39 +49,37 @@ export interface InfoError {
 }
 
 export type DecimalLike = string | number | bigint | BigDecimal;
-export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-export const EVM_CHAIN_ID: NetworkChainId[] = evmChains.map(c => c.chainId);
-export const networks = chainInfos.filter(
-  c => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+export const EVM_CHAIN_ID: NetworkChainId[] = evmChains.map((c) => c.chainId);
+export const networks = chainInfosWithIcon.filter(
+  (c) => c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any) && c.chainId !== '0x1ae6'
 );
 export const cosmosNetworks = chainInfos.filter(
-  c => c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
+  (c) =>
+    c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
 );
 
-export const bitcoinNetworks = chainInfos.filter(c => c.chainId === bitcoinChainId);
-export const cosmosNetworksWithIcon = chainInfosWithIcon.filter(
-  c => c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
+export const bitcoinNetworks = chainInfos.filter((c) => c.chainId === bitcoinChainId);
+export const cosmosNetworksWithIcon = chainInfos.filter(
+  (c) =>
+    c.networkType === 'cosmos' && c.chainId !== ChainIdEnum.OraiBridge && c.chainId !== ('oraibtc-mainnet-1' as any)
 );
 
-export const evmNetworksWithoutTron = chainInfos.filter(c => c.networkType === 'evm' && c.chainId !== '0x2b6653dc');
+export const evmNetworksWithoutTron = chainInfos.filter((c) => c.networkType === 'evm' && c.chainId !== '0x2b6653dc');
 export const evmNetworksIconWithoutTron = chainInfosWithIcon.filter(
-  c => c.networkType === 'evm' && c.chainId !== '0x2b6653dc'
+  (c) => c.networkType === 'evm' && c.chainId !== '0x2b6653dc'
 );
 
 // export const bitcoinNetworks = chainInfos.filter((c) => c.chainId === ChainIdEnum.Bitcoin);
-export const tronNetworks = chainInfos.filter(c => c.chainId === '0x2b6653dc');
-export const tronNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === '0x2b6653dc');
-export const btcNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === bitcoinChainId);
-export const solanaNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === solChainId);
-export const tonNetworksWithIcon = chainInfosWithIcon.filter(c => c.chainId === TonChainId);
+export const tronNetworks = chainInfos.filter((c) => c.chainId === '0x2b6653dc');
+export const tronNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === '0x2b6653dc');
+export const btcNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === bitcoinChainId);
+export const solanaNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === solChainId);
+export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === TonChainId);
 
 export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
   return tokenCanBridgeTo.includes(item.chainId);
-};
-
-export const findChainByChainId = (chainId: string) => {
-  return networks.find(n => n.chainId === chainId) || oraichainNetwork;
 };
 
 export const getDenomEvm = (): EvmDenom => {
@@ -98,7 +94,7 @@ export const getDenomEvm = (): EvmDenom => {
 };
 
 export const getSpecialCoingecko = (fromCoingecko: string, toCoingecko: string) => {
-  const isSpecialCoingecko = coinGeckoId =>
+  const isSpecialCoingecko = (coinGeckoId) =>
     ['kawaii-islands', 'milky-token', 'injective-protocol'].includes(coinGeckoId);
   const isSpecialFromCoingecko = isSpecialCoingecko(fromCoingecko);
   const isSpecialToCoingecko = isSpecialCoingecko(toCoingecko);
@@ -141,7 +137,7 @@ export const getAccountUrl = (account: string) => {
 export const getNetworkGasPrice = async (chainId): Promise<number> => {
   try {
     const chainInfosWithoutEndpoints = await window.Keplr?.getChainInfosWithoutEndpoints(chainId);
-    const findToken = chainInfosWithoutEndpoints.find(e => e.chainId === chainId);
+    const findToken = chainInfosWithoutEndpoints.find((e) => e.chainId === chainId);
     if (findToken) {
       return findToken.feeCurrencies[0].gasPriceStep.average;
     }
@@ -189,11 +185,11 @@ export const handleCheckWallet = async () => {
   }
 };
 
-export const handleCheckChainEvmWallet = async fromChainId => {
+export const handleCheckChainEvmWallet = async (fromChainId) => {
   const supportedChainIds = ['0x01', '0x38'];
 
   if (supportedChainIds.includes(fromChainId)) {
-    const fromChainInfo = evmChainInfos.find(evm => Number(evm.chainId) === Number(fromChainId));
+    const fromChainInfo = evmChainInfos.find((evm) => Number(evm.chainId) === Number(fromChainId));
     if (fromChainInfo) {
       try {
         await window.ethereumDapp.request({
@@ -245,7 +241,7 @@ const transferMsgError = (message: string, info?: InfoError) => {
     return `Your previous transaction has not been included in a block. Please wait until it is included before creating a new transaction!`;
 
   const network = info?.chainName
-    ? [...evmChains, ...cosmosChains].find(evm => evm.chainId === info.chainName)?.chainName
+    ? [...evmChains, ...cosmosChains].find((evm) => evm.chainId === info.chainName)?.chainName
     : '';
   if (message.includes('Insufficient funds to redeem voucher') || message.includes('checking balance channel ibc'))
     return `Insufficient ${info?.tokenName ?? ''} liquidity on ${network} Bridge`;
@@ -420,16 +416,16 @@ export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwor
 export const getAddressTransfer = async (network: CustomChainInfo, walletByNetworks: WalletsByNetwork) => {
   try {
     let address = '';
-    if (network.networkType === 'ton' && walletByNetworks.ton) {
+    if (network.networkType === 'ton' && isConnectSpecificNetwork(walletByNetworks.ton)) {
       address =
         JSON.parse(JSON.parse(localStorage.getItem('persist:root'))?.config)?.tonAddress ||
         toUserFriendlyAddress(window.Ton?.account?.address);
       // address = useTonAddress();
-    } else if (network.networkType === 'evm') {
+    } else if (network.networkType === 'evm' && isConnectSpecificNetwork(walletByNetworks.evm)) {
       address = await getAddressTransferForEvm(walletByNetworks, network);
-    } else if (network.networkType == 'svm' && walletByNetworks.solana) {
+    } else if (network.networkType == 'svm' && isConnectSpecificNetwork(walletByNetworks.solana)) {
       let provider = window?.solana;
-      if (walletByNetworks.solana === 'owallet') {
+      if (walletByNetworks.solana === 'owallet' || isMobile()) {
         provider = window?.owalletSolana;
       }
       const { publicKey } = await provider.connect();
@@ -493,7 +489,7 @@ export const getChainSupported = async () => {
     }
   });
 };
-export const getAddressBySnap = async chainId => {
+export const getAddressBySnap = async (chainId) => {
   await window.Keplr.suggestChain(chainId);
   const rs = await getChainSupported();
   if (rs?.[chainId]) {
@@ -519,7 +515,7 @@ type ChainInfoWithoutIcons = Omit<CustomChainInfo, 'currencies' | 'Icon' | 'Icon
   currencies: Array<Omit<CustomChainInfo['currencies'][number], 'Icon' | 'IconLight'>>;
   bech32Config: Bech32Config;
 };
-const checkErrorObj = info => {
+const checkErrorObj = (info) => {
   if (info?.Icon && info?.IconLight) {
     const { Icon, IconLight, ...data } = info;
     return data;
@@ -534,16 +530,16 @@ const checkErrorObj = info => {
 };
 export const chainInfoWithoutIcon = (): ChainInfoWithoutIcons[] => {
   let chainInfoData = [...chainInfos];
-  return chainInfoData.map(info => {
+  return chainInfoData.map((info) => {
     const infoWithoutIcon = checkErrorObj(info);
 
-    const currenciesWithoutIcons = info.currencies.map(currency => {
+    const currenciesWithoutIcons = info.currencies.map((currency) => {
       const currencyWithoutIcons = checkErrorObj(currency);
       return currencyWithoutIcons;
     });
 
     const stakeCurrencyyWithoutIcons = checkErrorObj(info.stakeCurrency);
-    const feeCurrenciesWithoutIcons = info?.feeCurrencies?.map(feeCurrency => {
+    const feeCurrenciesWithoutIcons = info?.feeCurrencies?.map((feeCurrency) => {
       const feeCurrencyyWithoutIcon = checkErrorObj(feeCurrency);
 
       return feeCurrencyyWithoutIcon;
@@ -610,7 +606,7 @@ export interface GetIconInterface {
 export const minimize = (priceUsd: string) => {
   const regex = /^0\.0*(\d+)/;
   const match = priceUsd.match(regex);
-  const getSubscript = num => String.fromCharCode(0x2080 + num);
+  const getSubscript = (num) => String.fromCharCode(0x2080 + num);
 
   if (match) {
     const leadingZeros = match[0].length - match[1].length - 2;
@@ -652,23 +648,23 @@ export function formatMoney(num) {
 
 export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, height }: GetIconInterface) => {
   if (type === 'token') {
-    const tokenIcon = flattenTokensWithIcon.find(tokenWithIcon => tokenWithIcon.coinGeckoId === coinGeckoId);
+    const tokenIcon = flattenTokens.find((token) => token.coinGeckoId === coinGeckoId);
     if (tokenIcon) {
       return isLightTheme ? (
-        <tokenIcon.IconLight width={width} height={height} />
+        <img src={tokenIcon.iconLight} alt="" width={width} height={height} />
       ) : (
-        <tokenIcon.Icon width={width} height={height} />
+        <img src={tokenIcon.icon} alt="" width={width} height={height} />
       );
     }
 
     return <DefaultIcon />;
   } else {
-    const networkIcon = chainIcons.find(chain => chain.chainId === chainId);
+    const networkIcon = chainInfos.find((chain) => chain.chainId === chainId);
     if (networkIcon) {
       return isLightTheme ? (
-        <networkIcon.IconLight width={width} height={height} />
+        <img src={networkIcon.chainSymbolImageUrl} alt="" width={width} height={height} />
       ) : (
-        <networkIcon.Icon width={width} height={height} />
+        <img src={networkIcon.chainSymbolImageUrl} alt="" width={width} height={height} />
       );
     }
 
@@ -676,15 +672,17 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
   }
 };
 
-export const getIconToken = ({ isLightTheme, denom, width = 18, height = 18 }) => {
-  const tokenIcon = flattenTokensWithIcon.find(tokenWithIcon =>
+export const getIconToken = ({ isLightTheme, denom, width = 30, height = 30 }) => {
+  const storage = store.getState();
+  const allOraichainTokens = storage.token.allOraichainTokens || [];
+  const tokenIcon = allOraichainTokens.find((tokenWithIcon) =>
     [tokenWithIcon.contractAddress, tokenWithIcon.denom].includes(denom)
   );
   if (tokenIcon) {
     return isLightTheme ? (
-      <tokenIcon.IconLight width={width} height={height} />
+      <img style={{ borderRadius: '100%' }} src={tokenIcon.iconLight} width={width} height={height} alt="" />
     ) : (
-      <tokenIcon.Icon width={width} height={height} />
+      <img style={{ borderRadius: '100%' }} src={tokenIcon.icon} width={width} height={height} alt="" />
     );
   }
 
@@ -749,5 +747,22 @@ export const retry = async (fn, retries = 3, delay = 1000) => {
     }
     await sleep(delay);
     return retry(fn, retries - 1, delay);
+  }
+};
+
+export const inspectTokenFromOraiCommonApi = async (denoms: string[]): Promise<TokenItemType[]> => {
+  try {
+    const BASE_URL = 'https://oraicommon.oraidex.io/api/v1/tokens/list';
+    const TOKEN_LIST = denoms.map(encodeURIComponent).join(',');
+    const URL = `${BASE_URL}/${TOKEN_LIST}`;
+    const response = await fetchRetry(URL);
+    if (response.status !== 200) throw new Error('Failed to fetch token list: ' + response.statusText);
+
+    const inspectedTokens = await response.json();
+    const tokenItemTypes = inspectedTokens.map((info) => onChainTokenToTokenItem(info));
+    return tokenItemTypes;
+  } catch (error) {
+    console.log('Error inspectTokenFromOraiCommonApi: ', error);
+    return [];
   }
 };

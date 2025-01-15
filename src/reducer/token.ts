@@ -1,6 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { ConfigResponse } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
+import { TokenItemType } from '@oraichain/oraidex-common';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 export interface TokenState {
   amounts: AmountDetails;
@@ -9,6 +10,9 @@ export interface TokenState {
   bondLpPools: BondLpPoolDetails;
   feeConfigs: ConfigResponse;
   totalLpv3: number;
+  allOraichainTokens: TokenItemType[];
+  allOtherChainTokens: TokenItemType[];
+  addedTokens: TokenItemType[];
 }
 
 const initialState: TokenState = {
@@ -26,7 +30,10 @@ const initialState: TokenState = {
     swap_router_contract: 'string',
     token_fee_receiver: '',
     token_fees: []
-  }
+  },
+  allOraichainTokens: [],
+  allOtherChainTokens: [],
+  addedTokens: []
 };
 
 export const tokenSlice = createSlice({
@@ -72,6 +79,41 @@ export const tokenSlice = createSlice({
         ...state.feeConfigs,
         ...action.payload
       };
+    },
+    updateAllOraichainTokens: (state, action: PayloadAction<any>) => {
+      state.allOraichainTokens = action.payload;
+    },
+    addToOraichainTokens: (state, action: PayloadAction<any>) => {
+      state.allOraichainTokens = [
+        ...state.allOraichainTokens,
+        ...action.payload.filter(
+          (token: TokenItemType) => !state.allOraichainTokens.find((t) => t.denom === token.denom)
+        )
+      ];
+    },
+    updateAllOtherChainTokens: (state, action: PayloadAction<any>) => {
+      state.allOtherChainTokens = action.payload;
+    },
+    addToOtherChainTokens: (state, action: PayloadAction<any>) => {
+      try {
+        state.allOtherChainTokens = [
+          ...state.allOtherChainTokens,
+          ...action.payload.filter(
+            (token: TokenItemType) =>
+              !state.allOtherChainTokens.find(
+                (t) => t?.denom === token?.denom || t?.contractAddress === token?.contractAddress
+              )
+          )
+        ];
+      } catch (error) {
+        console.log('error', error);
+      }
+    },
+    updateAddedTokens: (state, action: PayloadAction<any>) => {
+      state.addedTokens = [
+        ...state.addedTokens,
+        ...action.payload.filter((token: TokenItemType) => !state.addedTokens.find((t) => t?.denom === token?.denom))
+      ];
     }
   }
 });
@@ -84,7 +126,12 @@ export const {
   updateLpPools,
   updateBondLpPools,
   updateFeeConfig,
-  updateTotalLpv3
+  updateTotalLpv3,
+  updateAllOraichainTokens,
+  addToOraichainTokens,
+  updateAllOtherChainTokens,
+  addToOtherChainTokens,
+  updateAddedTokens
 } = tokenSlice.actions;
 
 export default tokenSlice.reducer;

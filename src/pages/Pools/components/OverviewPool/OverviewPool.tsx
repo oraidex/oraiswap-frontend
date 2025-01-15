@@ -1,39 +1,60 @@
-import { BTC_CONTRACT, CW20_DECIMALS, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
+import { BigDecimal, BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
+import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
+import BootsIcon from 'assets/icons/boost-icon.svg?react';
+import IconCopyAddress from 'assets/icons/ic_copy_address.svg?react';
+import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import classNames from 'classnames';
-import TokenBalance from 'components/TokenBalance';
+import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
+import { formatDisplayUsdt, formatNumberKMB } from 'helper/format';
+import useConfigReducer from 'hooks/useConfigReducer';
+import { useCopyClipboard } from 'hooks/useCopyClipboard';
 import useTheme from 'hooks/useTheme';
+import { reduceString } from 'libs/utils';
+import { numberExponentToLarge } from 'pages/Pool-V3/hooks/useCreatePositionForm';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
 import { useEffect, useState } from 'react';
 import { PoolDetail } from 'types/pool';
-import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
-import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import styles from './OverviewPool.module.scss';
-import { formatDisplayUsdt, formatNumberKMB, numberWithCommas } from 'helper/format';
-import useConfigReducer from 'hooks/useConfigReducer';
 
 export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail }) => {
   const theme = useTheme();
 
-  const { pairAmountInfoData, lpTokenInfoData } = useGetPairInfo(poolDetailData);
+  console.log(poolDetailData);
+
+  const { pairAmountInfoData } = useGetPairInfo(poolDetailData);
   const { token1, token2 } = poolDetailData;
 
   const [oraiBtcAllocation, setOraiBtcAllocation] = useState({
     oraiBalanceDisplay: '0',
     btcBalanceDisplay: '0'
   });
-  const [isShowMore] = useState(false);
   const isLight = theme === 'light';
   const IconBoots = isLight ? BootsIcon : BootsIconDark;
 
-  let [BaseTokenIcon, QuoteTokenIcon] = [DefaultIcon, DefaultIcon];
-  if (token1) BaseTokenIcon = theme === 'light' ? token1.IconLight || token1.Icon : token1.Icon;
-  if (token2) QuoteTokenIcon = theme === 'light' ? token2.IconLight || token2.Icon : token2.Icon;
+  const { isCopied, handleCopy, copiedValue } = useCopyClipboard();
 
-  const aprBoost = Number(poolDetailData.info?.aprBoost || 0).toFixed(2);
-  const isApproximatelyZero = Number(aprBoost) === 0;
-  const totalApr = poolDetailData.info?.apr ? poolDetailData.info.apr.toFixed(2) : 0;
-  const originalApr = Number(totalApr) - Number(aprBoost);
+  let [BaseTokenIcon, QuoteTokenIcon] = [DEFAULT_TOKEN_ICON_URL, DEFAULT_TOKEN_ICON_URL];
+  if (token1) BaseTokenIcon = theme === 'light' ? token1.iconLight || token1.icon : token1.icon;
+  if (token2) QuoteTokenIcon = theme === 'light' ? token2.iconLight || token2.icon : token2.icon;
+
+  // TODO: calculate incentives apr later
+  const incentiveApr = 0;
+
+  // calculate apr base on volume 24h -> swap fee
+
+  let apr = 0;
+  if (poolDetailData.info) {
+    const totalLiquidityUsd = new BigDecimal(numberExponentToLarge(poolDetailData.info?.totalLiquidity)); // usdt denom
+    const volume24hUsd = new BigDecimal(poolDetailData.info?.volume24Hour); // usdt denom
+
+    const swapFee = volume24hUsd.mul(0.002); // fee for LP is 0.2%
+    apr = totalLiquidityUsd.toNumber() !== 0 ? swapFee.div(totalLiquidityUsd).toNumber() : 0;
+  }
+
+  if (apr < 0) apr = 0;
+  const aprBoost = 0;
+  const totalApr = apr ? (apr * 100).toFixed(2) : 0;
+  const originalApr = (Number(totalApr) - Number(aprBoost)).toFixed(2);
   const [cachedReward] = useConfigReducer('rewardPools');
   let poolReward = {
     reward: []
@@ -49,9 +70,15 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
     'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc'
   ];
 
+  const [token1Denom, token2Denom] = [
+    token1?.contractAddress || token1?.denom,
+    token2?.contractAddress || token2?.denom
+  ];
+
   useEffect(() => {
     if (!poolDetailData) return;
     const { token2 } = poolDetailData;
+    if (!token2) return;
     async function getOraiBtcAllocation() {
       const res = await fetchRetry(
         'https://lcd.orai.io/cosmos/bank/v1beta1/balances/orai1fv5kwdv4z0gvp75ht378x8cg2j7prlywa0g35qmctez9q8u4xryspn6lrd'
@@ -98,27 +125,60 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
           {listBTCAddresses.includes(token2.denom) || listBTCAddresses.includes(token2.contractAddress) ? (
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {BaseTokenIcon && <BaseTokenIcon />}
+                <img src={BaseTokenIcon} alt="" />
                 <span className={styles.value}>{oraiBtcAllocation.oraiBalanceDisplay}</span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {QuoteTokenIcon && <QuoteTokenIcon />}
+                <img src={QuoteTokenIcon} alt="" />
                 <span className={styles.value}>{oraiBtcAllocation.btcBalanceDisplay}</span>
               </div>
             </div>
           ) : (
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {BaseTokenIcon && <BaseTokenIcon />}
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token1Amount || '0'), false)}
+                  {formatNumberKMB(
+                    toDisplay(pairAmountInfoData?.token1Amount || '0', token1?.decimals),
+                    false,
+                    token1?.decimals
+                  )}
                 </span>
+                <img src={BaseTokenIcon} alt="" />
+
+                <span className={styles.denom}>
+                  {token1Denom?.length < 13 ? token1Denom : reduceString(token1Denom, 7, 6)}
+                </span>
+                <div className={styles.copyBtn}>
+                  {isCopied && copiedValue === token1Denom ? (
+                    <SuccessIcon />
+                  ) : (
+                    <div onClick={(e) => handleCopy(token1Denom)}>
+                      <IconCopyAddress />
+                    </div>
+                  )}
+                </div>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                {QuoteTokenIcon && <QuoteTokenIcon />}
                 <span className={styles.value}>
-                  {formatNumberKMB(toDisplay(pairAmountInfoData?.token2Amount || '0'), false)}
+                  {formatNumberKMB(
+                    toDisplay(pairAmountInfoData?.token2Amount || '0', token2?.decimals),
+                    false,
+                    token2?.decimals
+                  )}
                 </span>
+                <img src={QuoteTokenIcon} alt="" />
+                <span className={styles.denom}>
+                  {token2Denom?.length < 13 ? token2Denom : reduceString(token2Denom, 7, 6)}
+                </span>
+                <div className={styles.copyBtn}>
+                  {isCopied && copiedValue === token2Denom ? (
+                    <SuccessIcon />
+                  ) : (
+                    <div onClick={(e) => handleCopy(token2Denom)}>
+                      <IconCopyAddress />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -129,17 +189,14 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
         <div className={styles.desc}>
           <div className={styles.item}>
             <span>Swap Fee</span>
-            <p>
-              {isApproximatelyZero ? '≈ ' : ''}
-              {aprBoost}%
-            </p>
+            <p>{originalApr}%</p>
           </div>
           <div className={styles.item}>
             <span className={styles.label}>
               {poolReward?.reward?.join('+')} Boost&nbsp;
               <IconBoots />
             </span>
-            <p>{`${originalApr.toFixed(2)}%`}</p>
+            <p>{`${incentiveApr}%`}</p>
           </div>
           <div className={styles.item}>
             <span>Total APR</span>

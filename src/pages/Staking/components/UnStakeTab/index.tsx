@@ -9,11 +9,11 @@ import { Button } from 'components/Button';
 import ModalConfirm from 'components/ConfirmModal';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
 import { handleErrorTransaction } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useLoadOraichainTokens } from 'hooks/useLoadTokens';
+import { network } from 'initCommon';
 import { getUsd } from 'libs/utils';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import { ORAIX_TOKEN_INFO, STAKE_TAB, STAKING_PERIOD, TIMER } from 'pages/Staking/constants';
@@ -252,7 +252,7 @@ const UnStakeTab = () => {
         }
         Icon={theme === 'light' ? ConfirmIconLight : ConfirmIcon}
         title="Unstaking confirmation"
-        // showIcon={false}
+      // showIcon={false}
       />
     </div>
   );

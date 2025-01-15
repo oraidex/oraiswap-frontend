@@ -1,6 +1,6 @@
 import { validateNumber } from '@oraichain/oraidex-common';
 
-export const formatNumberKMB = (num: number, isUsd: boolean = true) => {
+export const formatNumberKMB = (num: number, isUsd: boolean = true, maximumFractionDigits = 2) => {
   const prefixShow = isUsd ? '$' : '';
 
   if (num >= 1e9) {
@@ -14,11 +14,12 @@ export const formatNumberKMB = (num: number, isUsd: boolean = true) => {
   if (num >= 1e3) {
     return prefixShow + (num / 1e3).toFixed(2) + 'K';
   }
-  return isUsd ? formatDisplayUsdt(num, 2) : numberWithCommas(num, undefined, { maximumFractionDigits: 2 });
+  return isUsd ? formatDisplayUsdt(num, 2) : numberWithCommas(num, undefined, { maximumFractionDigits });
 };
 
 // TODO: need to seperate format funcs to format module later.
 export const formatDisplayUsdt = (amount: number | string, dp = 2, dpMin = 4): string => {
+  if (Number.isNaN(amount)) return '$--'; 
   const validatedAmount = validateNumber(amount);
   if (validatedAmount < 1) return `$${toFixedIfNecessary(amount.toString(), dpMin).toString()}`;
 

@@ -1,7 +1,6 @@
 import DownIcon from 'assets/icons/down-arrow-v2.svg?react';
 import CloseIcon from 'assets/icons/close.svg?react';
 import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
-import SelectIcon from 'assets/icons/select_token.svg?react';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import { isEqual } from 'lodash';
 import { ReactNode, memo, useRef, useState } from 'react';

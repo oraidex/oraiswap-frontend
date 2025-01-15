@@ -1,9 +1,4 @@
-import {
-  CustomChainInfo,
-  TokenItemType,
-  flattenTokens,
-  checkValidateAddressWithNetwork
-} from '@oraichain/oraidex-common';
+import { CustomChainInfo, TokenItemType, checkValidateAddressWithNetwork } from '@oraichain/oraidex-common';
 import BackIcon from 'assets/icons/back.svg?react';
 import CloseIcon from 'assets/icons/close.svg?react';
 import SelectTokenIcon from 'assets/icons/select_token.svg?react';
@@ -28,7 +23,7 @@ import SelectInput from '../SelectInput';
 import styles from './index.module.scss';
 import { getTokenIcon } from 'pages/UniversalSwap/helpers';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
+import { cosmosChains, flattenTokens, oraichainTokensWithIcon } from 'initCommon';
 
 const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
   const theme = useTheme();
@@ -76,7 +71,7 @@ const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
 
       return (
         <div className={styles.label}>
-          <div>{Icon ? <Icon /> : <DefaultIcon />}</div>
+          <div>{Icon ? <img src={Icon} width={30} height={30} /> : <DefaultIcon />}</div>
           <span>{token?.name}</span>
         </div>
       );
@@ -96,7 +91,7 @@ const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
     ? {
         isValid: true
       }
-    : checkValidateAddressWithNetwork(addressBook?.address, currentNetwork?.chainId || tokenTo?.chainId);
+    : checkValidateAddressWithNetwork(addressBook?.address, currentNetwork?.chainId || tokenTo?.chainId, cosmosChains);
 
   return (
     <div className={styles.addressBookForm}>
@@ -170,7 +165,7 @@ const AddressBookForm = ({ tokenTo }: { tokenTo: TokenItemType }) => {
             prefix={
               CurrentTokenIcon ? (
                 <div className={styles.tokenIcon}>
-                  <CurrentTokenIcon />
+                  <img src={CurrentTokenIcon} width={30} height={30} />
                 </div>
               ) : (
                 <div className={styles.selectTokenIcon}>

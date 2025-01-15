@@ -1,7 +1,6 @@
 import {
   ComputeBudgetProgram,
   Connection,
-  Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
   Transaction,
@@ -9,19 +8,15 @@ import {
   TransactionInstruction
 } from '@solana/web3.js';
 import {
-  createAssociatedTokenAccount,
   createAssociatedTokenAccountInstruction,
   createTransferCheckedInstruction,
   getAssociatedTokenAddressSync
 } from '@solana/spl-token';
-import * as anchor from '@coral-xyz/anchor';
 import { WalletContextState } from '@solana/wallet-adapter-react';
-import { BN, Program } from '@coral-xyz/anchor';
 import BigNumber from 'bignumber.js';
 import {
   toAmount,
   TokenItemType,
-  SOLANA_RPC as DEFAULT_SOLANA_RPC,
   SOLANA_WEBSOCKET as DEFAULT_SOLANA_WEBSOCKET,
   MEMO_PROGRAM_ID
 } from '@oraichain/oraidex-common';
@@ -32,18 +27,15 @@ export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
 export const SOL_RELAYER_ADDRESS = 'HGPezSRSzZNXiBhzEXPw1gwCqsdbW7Psy5TjeyB78x8j';
 export const ORAICHAIN_RELAYER_ADDRESS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
-
+export const connection = 'https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ';
 export class Web3SolanaProgramInteraction {
   connection: Connection;
 
   constructor() {
-    this.connection = new Connection(
-      'https://alien-stylish-road.solana-mainnet.quiknode.pro/4a5144638133c97e486d36e03fa4a82ea99c9add/',
-      {
-        commitment: commitmentLevel,
-        wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
-      }
-    );
+    this.connection = new Connection(connection, {
+      commitment: commitmentLevel,
+      wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
+    });
   }
 
   bridgeSolToOrai = async (
@@ -70,6 +62,14 @@ export class Web3SolanaProgramInteraction {
       const parsedAmount = toAmount(tokenAmountRaw, token.decimals);
 
       let transaction = new Transaction();
+      const updateCpIx = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 1_000_000
+      });
+      const updateCuIx = ComputeBudgetProgram.setComputeUnitLimit({
+        units: 500_000
+      });
+      transaction.add(updateCpIx, updateCuIx);
+
       if (lamports == 0) {
         transaction.add(
           createAssociatedTokenAccountInstruction(wallet.publicKey, relayerTokenAccount, relayerPubkey, mintPubkey)

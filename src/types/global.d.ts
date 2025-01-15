@@ -1,16 +1,17 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { Keplr as keplr } from '@keplr-wallet/types';
-import { CosmWasmClient, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
-import { Network } from 'bip32';
+import { Class } from '@oraichain/common-contracts-sdk/build/CwIcs721Bridge.types';
+import { TokenInspector } from '@oraichain/orai-token-inspector';
+import { TronWeb as _TronWeb } from '@oraichain/oraidex-common/build/tronweb';
 import { OraiswapPairTypes } from '@oraichain/oraidex-contracts-sdk';
+import { TonConnectUI } from '@tonconnect/ui-react';
+import { Network } from 'bip32';
+import Bitcoin, { IBitcoin } from 'libs/bitcoin';
+import { DuckDb } from 'libs/duckdb';
+import { Networks as _Networks } from 'libs/ethereum-multicall/enums';
 import { AbstractProvider } from 'web3-core';
 import Keplr from '../libs/keplr';
 import Metamask from '../libs/metamask';
-import { TronWeb as _TronWeb } from '@oraichain/oraidex-common/build/tronweb';
-import { Networks as _Networks } from 'libs/ethereum-multicall/enums';
-import { DuckDb } from 'libs/duckdb';
-import { Class } from '@oraichain/common-contracts-sdk/build/CwIcs721Bridge.types';
-import Bitcoin, { IBitcoin } from 'libs/bitcoin';
-import { TonConnectUI } from '@tonconnect/ui-react';
 
 declare global {
   type AmountDetails = { [denom: string]: string };
@@ -29,7 +30,6 @@ declare global {
   type PairAmountInfo = {
     token1Amount: string;
     token2Amount: string;
-    tokenUsd: number;
   };
   type LpPoolDetails = {
     [key: string]: {
@@ -142,6 +142,7 @@ declare global {
     eth_owallet: MetaMaskEthereumProvider;
     tronWeb_owallet: _TronWeb;
     tronLink_owallet: TronLink;
+    tokenInspector: TokenInspector;
   }
 
   declare const APP_SETTINGS: Record<string, any>;

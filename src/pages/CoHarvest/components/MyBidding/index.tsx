@@ -1,4 +1,4 @@
-import { oraichainTokens, toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay } from '@oraichain/oraidex-common';
 import BiddingIconLight from 'assets/icons/bidding-icon-light.svg?react';
 import BiddingIcon from 'assets/icons/bidding-icon.svg?react';
 import DrawIconLight from 'assets/icons/draw-icon-light.svg?react';
@@ -8,7 +8,6 @@ import WinIcon from 'assets/icons/win-icon.svg?react';
 import NoDataDark from 'assets/images/nodata-bid-dark.svg?react';
 import NoData from 'assets/images/nodata-bid.svg?react';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { getUsd } from 'libs/utils';
 import { BidStatus } from 'pages/CoHarvest/constants';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import styles from './index.module.scss';

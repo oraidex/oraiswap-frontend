@@ -47,7 +47,6 @@ import {
   determinePositionTokenBlock,
   extractDenom,
   getConcentrationArray,
-  getTickAtSqrtPriceFromBalance,
   handleGetCurrentPlotTicks,
   nearestTickIndex,
   PlotTickData,

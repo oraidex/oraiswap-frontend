@@ -14,7 +14,7 @@ export interface TemporaryConfigState {
 
 export const initialState: TemporaryConfigState = {
   customBanner: true,
-  event: EVENT_ENUM.christmas
+  event: EVENT_ENUM.normal
 };
 
 export const temporaryConfigSlice = createSlice({

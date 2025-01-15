@@ -3,8 +3,10 @@ import CloseIcon from 'assets/icons/close.svg?react';
 import EditIcon from 'assets/icons/edit_icon.svg?react';
 import SelectTokenIcon from 'assets/icons/select_token.svg?react';
 import EmptyImg from 'assets/images/img_empty.svg?react';
+import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 import { Button } from 'components/Button';
 import useOnClickOutside from 'hooks/useOnClickOutside';
+import styles from './index.module.scss';
 import useTheme from 'hooks/useTheme';
 import { getTokenIcon } from 'pages/UniversalSwap/helpers';
 import { useRef } from 'react';
@@ -17,8 +19,6 @@ import {
 } from 'reducer/addressBook';
 import { AddressManagementStep } from 'reducer/type';
 import AddressBookForm from '../AddressForm';
-import styles from './index.module.scss';
-import TooltipIcon from 'assets/icons/icon_tooltip.svg?react';
 
 const AddressBook = ({ tokenTo, onSelected }: { tokenTo: TokenItemType; onSelected: (addr: string) => void }) => {
   const dispatch = useDispatch();
@@ -103,7 +103,7 @@ const AddressBook = ({ tokenTo, onSelected }: { tokenTo: TokenItemType; onSelect
                       >
                         {IconToken ? (
                           <div className={styles.tokenIcon}>
-                            <IconToken />
+                            <img src={IconToken} width={30} height={30} />
                           </div>
                         ) : (
                           <div className={styles.selectTokenIcon}>
@@ -155,7 +155,7 @@ const AddressBook = ({ tokenTo, onSelected }: { tokenTo: TokenItemType; onSelect
                       <div className={styles.content}>
                         {IconToken ? (
                           <div className={styles.tokenIcon}>
-                            <IconToken />
+                            <img src={IconToken} width={30} height={30} />
                           </div>
                         ) : (
                           <div className={styles.selectTokenIcon}>

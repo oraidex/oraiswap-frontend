@@ -1,12 +1,12 @@
 import { TokenItemType } from '@oraichain/oraidex-common';
 import { OraiswapRouterReadOnlyInterface } from '@oraichain/oraidex-contracts-sdk';
-import { UniversalSwapHelper, RouterConfigSmartRoute } from '@oraichain/oraidex-universal-swap';
+import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { TokenInfo } from 'types/token';
 import { useDebounce } from 'hooks/useDebounce';
-import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { handleErrorRateLimit } from 'helper';
+import { flattenTokens, oraichainTokens } from 'initCommon';
 
 export const getRouterConfig = (options?: {
   path?: string;
@@ -51,17 +51,24 @@ export const useSimulate = (
     dontAllowSwapAfter?: string[];
     maxSplits?: number;
     ignoreFee?: boolean;
+    keepPreviousData?: boolean;
   }
 ) => {
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([initAmount || null, 0]);
   const debouncedFromAmount = useDebounce(fromAmountToken, 800);
   let enabled = !!fromTokenInfoData && !!toTokenInfoData && !!debouncedFromAmount && fromAmountToken > 0;
   if (simulateOption?.isAvgSimulate) enabled = false;
-  const { data: simulateData, isPreviousData: isPreviousSimulate } = useQuery(
+  const {
+    data: simulateData,
+    isPreviousData: isPreviousSimulate,
+    isRefetching
+  } = useQuery(
     [queryKey, fromTokenInfoData, toTokenInfoData, debouncedFromAmount],
     async () => {
       try {
         const res = await UniversalSwapHelper.handleSimulateSwap({
+          flattenTokens: flattenTokens,
+          oraichainTokens: oraichainTokens,
           originalFromInfo: originalFromTokenInfo,
           originalToInfo: originalToTokenInfo,
           originalAmount: debouncedFromAmount,
@@ -86,9 +93,9 @@ export const useSimulate = (
       }
     },
     {
-      keepPreviousData: true,
-      refetchInterval: 15000,
-      staleTime: 1000,
+      keepPreviousData: !simulateOption?.keepPreviousData,
+      refetchInterval: 5000,
+      staleTime: 2000,
       enabled,
       onError: (error) => {
         console.log('isAvgSimulate:', simulateOption?.isAvgSimulate, 'error when simulate: ', error);
@@ -108,6 +115,7 @@ export const useSimulate = (
     toAmountToken,
     setSwapAmount,
     debouncedFromAmount,
-    isPreviousSimulate
+    isPreviousSimulate,
+    isRefetching
   };
 };

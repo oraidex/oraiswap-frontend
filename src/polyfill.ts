@@ -2,13 +2,13 @@
 
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import _BigInt from 'big-integer';
-import { chainInfos } from 'config/chainInfos';
 import { getWalletByNetworkFromStorage } from 'helper';
 import Keplr from 'libs/keplr';
 import Metamask from 'libs/metamask';
 import TronWeb from 'tronweb';
 import Bitcoin from 'libs/bitcoin';
 import { Networks } from '@oraichain/ethereum-multicall';
+import { chainInfos } from 'initCommon';
 
 // polyfill
 Tendermint37Client.detectVersion = () => {};
@@ -16,7 +16,7 @@ Tendermint37Client.prototype.status = function () {
   const chainInfo = chainInfos.find((chain) => chain.networkType === 'cosmos' && chain.rpc === this.client.url);
   return {
     nodeInfo: {
-      network: chainInfo.chainId,
+      network: chainInfo?.chainId,
       version: ''
     }
   };
