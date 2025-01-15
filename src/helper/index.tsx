@@ -395,7 +395,7 @@ export const isConnectSpecificNetwork = (status: string | null) => {
 export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwork, network: CustomChainInfo) => {
   let address = '';
   if (network.chainId === EVM_CHAIN_ID_COMMON.TRON_CHAIN_ID) {
-    if (isConnectTronInMobile(walletByNetworks)) {
+    if (window.tronLinkDapp?.isOwallet) {
       const accountTron: interfaceRequestTron = await window.tronLinkDapp.request({
         method: 'tron_requestAccounts'
       });
