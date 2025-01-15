@@ -80,7 +80,7 @@ export const StakeLPModal: FC<ModalProps> = ({ isOpen, close, open, myLpBalance,
       });
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         onBonedSuccess();
       }

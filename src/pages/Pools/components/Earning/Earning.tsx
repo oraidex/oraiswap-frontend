@@ -135,7 +135,7 @@ export const Earning = ({ onLiquidityChange }: { onLiquidityChange: () => void }
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         onBondingAction();
       }

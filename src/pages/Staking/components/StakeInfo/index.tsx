@@ -79,7 +79,7 @@ const StakeInfo = () => {
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         loadOraichainToken(address, [USDC_TOKEN_INFO.contractAddress]);
         refetchMyStakeRewardInfo();
@@ -150,7 +150,7 @@ const StakeInfo = () => {
       if (result) {
         console.log('in correct result');
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
 
         loadOraichainToken(address, [USDC_TOKEN_INFO.contractAddress, ORAIX_TOKEN_INFO.contractAddress]);

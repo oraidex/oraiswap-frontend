@@ -26,11 +26,11 @@ export const useGetOraiPrice = () => {
       (pool) =>
         pool.firstAssetInfo === JSON.stringify(ORAI_INFO) &&
         pool.secondAssetInfo ===
-        JSON.stringify({
-          token: {
-            contract_addr: USDT_CONTRACT
-          }
-        })
+          JSON.stringify({
+            token: {
+              contract_addr: USDT_CONTRACT
+            }
+          })
     );
     if (!oraiUsdtPool) return;
 
@@ -99,11 +99,11 @@ export const Header: FC<{ dataSource: PoolInfoResponse[] }> = ({ dataSource }) =
         .filter((rewardInfo) => rewardInfo.pending_reward !== '0' || rewardInfo.pending_withdraw?.length > 0)
         .map(
           (rewardInfo) =>
-          ({
-            contractAddress: network.staking,
-            msg: { withdraw: { staking_token: rewardInfo.staking_token } },
-            funds: null
-          } as ExecuteInstruction)
+            ({
+              contractAddress: network.staking,
+              msg: { withdraw: { staking_token: rewardInfo.staking_token } },
+              funds: null
+            } as ExecuteInstruction)
         );
 
       const result = await CosmJs.executeMultiple({
@@ -114,7 +114,7 @@ export const Header: FC<{ dataSource: PoolInfoResponse[] }> = ({ dataSource }) =
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         refetchRewardInfo();
       }
