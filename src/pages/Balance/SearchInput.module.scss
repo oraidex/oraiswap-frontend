@@ -1,0 +1,47 @@
+@import 'src/styles/mixins';
+
+.search {
+  width: 420px;
+  height: 48px;
+  border-radius: 24px;
+  padding: 12px 16px;
+  font-weight: 500;
+  font-size: 16px;
+
+  @include theme() {
+    background-color: theme-get('neutral-surface-bg-section');
+    color: theme-get('neutral-text-body');
+    border-color: theme-get('border-color');
+  }
+
+  @media (max-width: 575px) {
+    font-size: 15px;
+    width: 100%;
+  }
+
+  &::placeholder {
+    @include theme() {
+      color: theme-get('text-color-placeholder');
+    }
+  }
+}
+
+.universalSearch {
+  width: 100%;
+  border-radius: 18px;
+  padding: 12px 16px;
+  font-weight: 500;
+  font-size: 16px;
+  border: 1px solid;
+
+  @include theme() {
+    background-color: theme-get('neutral-6');
+    color: theme-get('text-color');
+    border-color: theme-get('neutral-5');
+  }
+
+  @media (max-width: 575px) {
+    font-size: 15px;
+    width: 100%;
+  }
+}

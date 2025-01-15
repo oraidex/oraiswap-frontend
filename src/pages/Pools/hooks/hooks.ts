@@ -1,24 +1,25 @@
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { MulticallQueryClient, MulticallReadOnlyInterface } from '@oraichain/common-contracts-sdk';
 import { AggregateResult } from '@oraichain/common-contracts-sdk/build/Multicall.types';
-import { toDisplay } from '@oraichain/oraidex-common';
+import { toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { OraiswapStakingQueryClient, OraiswapStakingTypes } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { cw20TokenMap, oraichainTokens, tokenMap } from 'config/bridgeTokens';
-import { network } from 'config/networks';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { getUsd } from 'libs/utils';
+import { cw20TokenMap, network, tokenMap } from 'initCommon';
 import isEqual from 'lodash/isEqual';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateLpPools } from 'reducer/token';
-import { fetchTokenInfo, fetchRewardPerSecInfo } from 'rest/api';
 import axios from 'rest/request';
-import { RootState } from 'store/configure';
-import { PoolInfoResponse } from 'types/pool';
-import { PoolTableData } from '..';
+
+import { getTokenInspectorInstance } from 'initTokenInspector';
+import { getUsd } from 'libs/utils';
 import { parseAssetOnlyDenom } from 'pages/Pools/helpers';
 import { RewardPoolType } from 'reducer/config';
+import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
+import { updateLpPools } from 'reducer/token';
+import { fetchRewardPerSecInfo, fetchTokenInfo } from 'rest/api';
+import { RootState } from 'store/configure';
+import { PoolInfoResponse } from 'types/pool';
 
 export const calculateLpPoolsV3 = (lpAddresses: string[], res: AggregateResult) => {
   const lpTokenData = Object.fromEntries(
@@ -46,9 +47,30 @@ export const fetchLpPoolsFromContract = async (
       }
     })
   }));
-  const res = await multicall.aggregate({
-    queries
+
+  // divide queries into chunks of 30
+  const chunkSize = 30;
+  const chunkedQueries = Array.from({ length: Math.ceil(queries.length / chunkSize) }, (_, i) =>
+    queries.slice(i * chunkSize, i * chunkSize + chunkSize)
+  );
+
+  const res2 = await Promise.all(
+    chunkedQueries.map(async (chunk) => {
+      const res = await multicall.aggregate({
+        queries: chunk
+      });
+      return res;
+    })
+  );
+
+  const res = res2.reduce((acc, cur) => {
+    acc.return_data.push(...cur.return_data);
+    return acc;
   });
+
+  // const res = await multicall.aggregate({
+  //   queries
+  // });
   return calculateLpPoolsV3(lpAddresses, res);
 };
 
@@ -94,36 +116,6 @@ export const getPools = async (): Promise<PoolInfoResponse[]> => {
     console.error('getPools', e);
     return [];
   }
-};
-
-export const useGetPriceChange = (params: { base_denom: string; quote_denom: string; tf: number }) => {
-  const getPriceChange = async (queries: { base_denom: string; quote_denom: string; tf: number }) => {
-    try {
-      const res = await axios.get('/price', { params: queries });
-      return res.data;
-    } catch (e) {
-      console.error('useGetPriceChange', e);
-      return {
-        price_change: 0,
-        price: 0,
-        isError: true
-      };
-    }
-  };
-
-  const { data: priceChange, isLoading } = useQuery(['price-change', params], () => getPriceChange(params), {
-    refetchOnWindowFocus: true,
-    staleTime: 5 * 60 * 1000,
-    placeholderData: {
-      price: 0,
-      price_change: 0
-    }
-  });
-
-  return {
-    isLoading,
-    priceChange
-  };
 };
 
 export const useGetPools = () => {
@@ -198,6 +190,7 @@ export const useGetMyStake = ({ stakerAddress, pairDenoms, tf }: GetStakedByUser
 };
 
 export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   const getPoolDetail = async (queries: { pairDenoms: string }): Promise<PoolInfoResponse> => {
     try {
       const res = await axios.get('/v1/pool-detail/', { params: queries });
@@ -214,14 +207,42 @@ export const useGetPoolDetail = ({ pairDenoms }: { pairDenoms: string }) => {
     enabled: !!pairDenoms
   });
 
-  const pairRawData = pairDenoms.split('_');
-  const tokenTypes = pairRawData.map((raw) =>
-    oraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
-  );
+  const [[token1, token2], setTokens] = useState<[TokenItemType, TokenItemType]>([{}, {}]);
+
+  useEffect(() => {
+    if (!pairDenoms) return;
+
+    (async function fetchTokens() {
+      try {
+        const pairRawData = pairDenoms.split('_');
+        const tokenTypes = pairRawData.map((raw) =>
+          allOraichainTokens.find((token) => token.denom === raw || token.contractAddress === raw)
+        );
+
+        let token1 = tokenTypes[0];
+        let token2 = tokenTypes[1];
+
+        if (!tokenTypes[0]) {
+          const tokenInspector = await getTokenInspectorInstance();
+          const inspectedToken1 = await tokenInspector.inspectToken(pairRawData[0]);
+          token1 = onChainTokenToTokenItem(inspectedToken1);
+        }
+        if (!tokenTypes[1]) {
+          const tokenInspector = await getTokenInspectorInstance();
+          const inspectedToken2 = await tokenInspector.inspectToken(pairRawData[1]);
+          token2 = onChainTokenToTokenItem(inspectedToken2);
+        }
+        setTokens([token1, token2]);
+      } catch (e) {
+        console.error('error fetchTokens: ', e);
+      }
+    })();
+  }, [pairDenoms]);
+
   return {
     info: poolDetail,
-    token1: tokenTypes[0],
-    token2: tokenTypes[1],
+    token1,
+    token2,
     isLoading
   };
 };
@@ -331,7 +352,8 @@ export const getClaimableInfoByPool = ({ pool, totalRewardInfoData }) => {
             rpc: '',
             decimals: 0,
             coinGeckoId: 'scatom',
-            cosmosBased: undefined
+            cosmosBased: undefined,
+            icon: undefined
           });
 
           token = {

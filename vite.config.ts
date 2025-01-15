@@ -36,7 +36,8 @@ export default defineConfig({
   build: {
     commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
-    rollupOptions: {}
+    rollupOptions: {},
+    target: 'esnext'
   },
   optimizeDeps: {
     exclude: ['node_modules/.cache']

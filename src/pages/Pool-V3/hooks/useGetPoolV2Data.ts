@@ -1,14 +1,12 @@
-import React, { useEffect } from 'react';
 import { CW20_DECIMALS, TokenItemType, toDisplay } from '@oraichain/oraidex-common';
-import { isMobile } from '@walletconnect/browser-utils';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import useConfigReducer from 'hooks/useConfigReducer';
-import useTheme from 'hooks/useTheme';
-import Content from 'layouts/Content';
 import isEqual from 'lodash/isEqual';
-import { useState } from 'react';
+import { KeyFilterPool } from 'pages/Pools/components/Filter';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
-import { getSymbolPools, parseAssetOnlyDenom, reverseSymbolArr } from './../../Pools/helpers';
+import { getSymbolPools, parseAssetOnlyDenom } from './../../Pools/helpers';
 import {
   useFetchCacheRewardAssetForAllPools,
   useFetchLpPoolsV3,
@@ -17,10 +15,7 @@ import {
   useGetPoolsWithClaimableAmount,
   useGetRewardInfo
 } from './../../Pools/hooks/hooks';
-import styles from './index.module.scss';
-import { KeyFilterPool } from 'pages/Pools/components/Filter';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store/configure';
+import { oraichainTokensWithIcon } from 'initCommon';
 
 export type PoolTableData = PoolInfoResponse & {
   reward: string[];

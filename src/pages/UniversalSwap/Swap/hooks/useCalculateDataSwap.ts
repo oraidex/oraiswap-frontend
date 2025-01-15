@@ -1,10 +1,9 @@
 import { BigDecimal, calculateMinReceive, CW20_DECIMALS, toAmount } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
-import { network } from 'config/networks';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
-import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
+import { network } from 'initCommon';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import {
   getAverageRatio,
@@ -13,10 +12,10 @@ import {
   isAllowAlphaIbcWasm,
   isAllowIBCWasm
 } from 'pages/UniversalSwap/helpers';
+import { useEffect, useState } from 'react';
 import { fetchTokenInfos } from 'rest/api';
 import { useSimulate } from './useSimulate';
 import { useSwapFee } from './useSwapFee';
-import { useEffect, useState } from 'react';
 
 export const SIMULATE_INIT_AMOUNT = 1;
 
@@ -42,7 +41,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     useIbcWasm,
     protocols,
     maxSplits: useAlphaIbcWasm ? 1 : 10,
-    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined
+    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined,
+    keepPreviousData: true
   };
 
   const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } = useRelayerFeeToken(
@@ -60,17 +60,24 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     data: [fromTokenInfoData, toTokenInfoData]
   } = useQuery(['token-infos', fromToken, toToken], () => fetchTokenInfos([fromToken!, toToken!]), { initialData: [] });
 
-  const { simulateData, setSwapAmount, fromAmountToken, toAmountToken, debouncedFromAmount, isPreviousSimulate } =
-    useSimulate(
-      'simulate-data',
-      fromTokenInfoData,
-      toTokenInfoData,
-      originalFromToken,
-      originalToToken,
-      routerClient,
-      null,
-      simulateOption
-    );
+  const {
+    simulateData,
+    setSwapAmount,
+    fromAmountToken,
+    toAmountToken,
+    debouncedFromAmount,
+    isPreviousSimulate,
+    isRefetching
+  } = useSimulate(
+    'simulate-data',
+    fromTokenInfoData,
+    toTokenInfoData,
+    originalFromToken,
+    originalToToken,
+    routerClient,
+    null,
+    simulateOption
+  );
 
   const { simulateData: averageSimulateData, isPreviousSimulate: isAveragePreviousSimulate } = useSimulate(
     'average-simulate-data',
@@ -194,7 +201,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
       fromAmountToken,
       toAmountToken,
       debouncedFromAmount,
-      isPreviousSimulate
+      isPreviousSimulate,
+      isRefetching
     }
   };
 };

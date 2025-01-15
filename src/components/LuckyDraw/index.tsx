@@ -32,13 +32,13 @@ import {
 import { handleErrorTransaction } from 'helper';
 import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
 import CongratulationLottie from 'assets/lottie/congratulation.json';
-import { network } from 'config/networks';
 import classNames from 'classnames';
 import Loader from 'components/Loader';
 import Lottie from 'lottie-react';
 import InputRange from 'pages/CoHarvest/components/InputRange';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import { Spin } from './luckyDrawClient/LuckyWheelContract.types';
+import { network } from 'initCommon';
 
 const LuckyDraw: FC<{}> = () => {
   const [address] = useConfigReducer('address');
@@ -71,7 +71,7 @@ const LuckyDraw: FC<{}> = () => {
 
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const loadOraichainToken = useLoadOraichainTokens();
-  const balance = amounts['oraix'];
+  const balance = amounts['cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:ORAIX'];
 
   const { spinConfig } = useLuckyDrawConfig();
   const { fee = LUCKY_DRAW_FEE, feeDenom = ORAIX_CONTRACT, feeToken } = spinConfig || {};

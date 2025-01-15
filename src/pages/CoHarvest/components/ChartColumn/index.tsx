@@ -1,4 +1,3 @@
-import { formatDisplayUsdt } from 'pages/Pools/helpers';
 import styles from './index.module.scss';
 
 export type ChartColumnType = {

@@ -5,7 +5,7 @@ import loadingGif from 'assets/gif/loading.gif';
 import { RemainingOraibTokenItem } from './useGetOraiBridgeBalances';
 import { TooltipIcon } from './TooltipBridgeToken';
 import { toDisplay } from '@oraichain/oraidex-common';
-import { flattenTokensWithIcon } from 'config/chainInfos';
+import { flattenTokensWithIcon } from 'initCommon';
 
 interface Props {
   handleMove: () => Promise<void>;

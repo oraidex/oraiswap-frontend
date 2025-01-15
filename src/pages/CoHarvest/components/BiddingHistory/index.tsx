@@ -1,8 +1,8 @@
-import { BigDecimal, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
+import { BigDecimal } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import LoadingBox from 'components/LoadingBox';
-import { network } from 'config/networks';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import { network, oraichainTokens, tokenMap } from 'initCommon';
 import { INIT_AMOUNT_SIMULATE, TAB_HISTORY } from 'pages/CoHarvest/constants';
 import {
   useGetAllBids,

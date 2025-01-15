@@ -48,8 +48,8 @@ const PoolItemDataMobile = ({
         <div className={styles.name} onClick={() => navigate(url)}>
           <div className={styles.info}>
             <div className={classNames(styles.icons, styles[theme])}>
-              <FromTokenIcon />
-              <ToTokenIcon />
+              {FromTokenIcon}
+              {ToTokenIcon}
             </div>
             <span className={styles.title}>
               {tokenXinfo?.name} / {tokenYinfo?.name}

@@ -1,25 +1,25 @@
 import { HttpClient, Tendermint37Client, WebsocketClient } from '@cosmjs/tendermint-rpc';
-
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import * as Sentry from '@sentry/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContext, ToastProvider } from 'components/Toasts/context';
-import { network } from 'config/networks';
-import { getWalletByNetworkCosmosFromStorage } from 'helper';
-import { getCosmWasmClient } from 'libs/cosmjs';
 import mixpanel from 'mixpanel-browser';
-import 'polyfill';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Bounce, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from 'store/configure';
+import 'react-toastify/dist/ReactToastify.css';
 import './index.scss';
-import App from './layouts/App';
 import ScrollToTop from './layouts/ScrollToTop';
+import { getWalletByNetworkCosmosFromStorage } from 'helper';
+import { getCosmWasmClient } from 'libs/cosmjs';
+import 'polyfill';
+import App from './layouts/App';
+import { network } from 'initCommon';
 import { TonProvider } from 'context/ton-provider';
+import { SolanaWalletProvider } from 'context/solana-content';
 
 const queryClient = new QueryClient();
 
@@ -55,10 +55,12 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
 }
 
 // init queryClient
-const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
-const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
-// @ts-ignore
-window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
+if (network?.rpc) {
+  const useHttp = network.rpc.startsWith('http://') || network.rpc.startsWith('https://');
+  const rpcClient = useHttp ? new HttpClient(network.rpc) : new WebsocketClient(network.rpc);
+  // @ts-ignore
+  window.client = new CosmWasmClient(new Tendermint37Client(rpcClient));
+}
 
 const initApp = async () => {
   const root = createRoot(document.getElementById('oraiswap'));
@@ -70,7 +72,9 @@ const initApp = async () => {
             <ScrollToTop />
             <QueryClientProvider client={queryClient}>
               <TonProvider>
-                <App />
+                <SolanaWalletProvider>
+                  <App />
+                </SolanaWalletProvider>
               </TonProvider>
             </QueryClientProvider>
           </Router>
@@ -81,7 +85,6 @@ const initApp = async () => {
       </PersistGate>
     </Provider>
   );
-
   // init cosmwasm client when user connected cosmos wallet
   const walletType = getWalletByNetworkCosmosFromStorage();
   if (walletType) {
@@ -91,3 +94,26 @@ const initApp = async () => {
 };
 
 initApp();
+
+// Dynamically load the Google Tag Manager script after the app has rendered
+const loadGTM = () => {
+  const script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8T22XRLHXY';
+  script.defer = true;
+  document.head.appendChild(script);
+
+  script.onload = () => {
+    // @ts-ignore
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      // @ts-ignore
+      window.dataLayer.push(arguments);
+    }
+    // @ts-ignore
+    gtag('js', new Date());
+    // @ts-ignore
+    gtag('config', 'G-8T22XRLHXY');
+  };
+};
+
+loadGTM();

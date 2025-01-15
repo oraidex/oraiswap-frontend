@@ -6,9 +6,9 @@ import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { network } from 'config/networks';
 import { handleCheckAddress, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { useGetPoolDetail } from 'pages/Pools/hooks';
 import { useGetPairInfo } from 'pages/Pools/hooks/useGetPairInfo';
@@ -70,7 +70,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         setLpAmountBurn(0n);
         onLiquidityChange(-lpAmountBurnUsdt);
@@ -83,8 +83,8 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
     }
   };
 
-  const Token1Icon = theme === 'light' ? token1?.IconLight || token1?.Icon : token1?.Icon;
-  const Token2Icon = theme === 'light' ? token2?.IconLight || token2?.Icon : token2?.Icon;
+  const Token1Icon = token1?.icon;
+  const Token2Icon = token2?.icon;
 
   const totalSupply = BigInt(lpTokenInfoData?.total_supply || 0);
   const lp1BurnAmount =
@@ -130,7 +130,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
             </div>
             <div className={cx('row-amount')}>
               <div className={cx('token')}>
-                {Token1Icon && <Token1Icon className={cx('logo')} />}
+                {Token1Icon && <img src={Token1Icon} className={cx('logo')} />}
                 <div className={cx('title', theme)}>
                   <div>{token1?.name}</div>
                   <div className={cx('des')}>Oraichain</div>
@@ -148,7 +148,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
             </div>
             <div className={cx('row-amount')}>
               <div className={cx('token')}>
-                {Token2Icon && <Token2Icon className={cx('logo')} />}
+                {Token2Icon && <img src={Token2Icon} className={cx('logo')} />}
                 <div className={cx('title', theme)}>
                   {/* TODO: remove after pool close */}
                   <div>{token2?.name === 'BTC (Legacy)' ? 'BTC' : token2?.name}</div>

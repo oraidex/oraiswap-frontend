@@ -1,24 +1,24 @@
 import { JettonMinter } from '@oraichain/ton-bridge-contracts';
 import { Address } from '@ton/ton';
-import { TON_ZERO_ADDRESS } from 'config/chainInfos';
 import { TonInteractionContract, TonNetwork } from 'context/ton-provider';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useEffect } from 'react';
 import { getTonClient, retryOrbs } from './../../../helper/index';
-import { tonNetworkMainnet } from '@oraichain/oraidex-common';
+import { tonTokens } from 'initCommon';
+import { TON_CONTRACT } from '@oraichain/oraidex-common';
 // dev: use to load wallet jetton address of bridge adapter
 export const useLoadWalletsTon = ({ tonNetwork = TonNetwork.Mainnet }: { tonNetwork?: TonNetwork }) => {
   const [, handleSetWalletsTonCache] = useConfigReducer('walletsTon');
 
   const loadWalletsTon = async () => {
-    let tokenOnTons = tonNetworkMainnet.currencies || [];
+    let tokenOnTons = tonTokens || [];
 
     let walletsTon = {};
     for (const tokenOnTon of tokenOnTons) {
-      if (tokenOnTon.contractAddress == TON_ZERO_ADDRESS) {
+      if (tokenOnTon.contractAddress == TON_CONTRACT) {
         walletsTon = {
           ...walletsTon,
-          [tokenOnTon.coinMinimalDenom]: TON_ZERO_ADDRESS
+          [tokenOnTon.denom]: TON_CONTRACT
         };
         continue;
       }
@@ -33,7 +33,7 @@ export const useLoadWalletsTon = ({ tonNetwork = TonNetwork.Mainnet }: { tonNetw
         );
         walletsTon = {
           ...walletsTon,
-          [tokenOnTon.coinMinimalDenom]: jettonWalletAddress.toString()
+          [tokenOnTon.denom]: jettonWalletAddress.toString()
         };
       });
     }

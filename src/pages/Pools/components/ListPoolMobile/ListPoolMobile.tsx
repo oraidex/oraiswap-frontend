@@ -1,6 +1,6 @@
-import { TokenItemType } from '@oraichain/oraidex-common';
-import NoDataSvg from 'assets/images/NoDataPool.svg?react';
-import NoDataLightSvg from 'assets/images/NoDataPoolLight.svg?react';
+import { OraiIcon, TokenItemType } from '@oraichain/oraidex-common';
+// import NoDataSvg from 'assets/images/NoDataPool.svg?react';
+// import NoDataLightSvg from 'assets/images/NoDataPoolLight.svg?react';
 import useTheme from 'hooks/useTheme';
 import { PoolTableData } from 'pages/Pools';
 import { useState } from 'react';
@@ -22,7 +22,8 @@ export const ListPoolsMobile: React.FC<ListPoolProps> = ({ poolTableData, genera
       ))
     ) : (
       <div className={styles.no_data}>
-        <img src={theme === 'light' ? NoDataLightSvg : NoDataSvg} alt="nodata" />
+        //TODO: Fix this, use no data image
+        <img src={theme === 'light' ? OraiIcon : OraiIcon} alt="nodata" />
         <span>No data</span>
       </div>
     );

@@ -5,9 +5,9 @@ import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { network } from 'config/networks';
 import { handleCheckAddress, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetPoolDetail, useGetRewardInfoDetail } from 'pages/Pools/hooks';
@@ -81,7 +81,7 @@ export const UnstakeLPModal: FC<ModalProps> = ({ isOpen, close, open, onLiquidit
       });
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         onUnbonedSuccess();
       }

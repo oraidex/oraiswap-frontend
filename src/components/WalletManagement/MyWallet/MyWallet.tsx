@@ -95,7 +95,8 @@ export const MyWallet: React.FC<{
       <div className={styles.addressByNetworkItem}>
         {networkWithIcons.map((network, index) => {
           const chainAddress = getChainAddress(network);
-          let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
+          // let NetworkIcon = theme === 'dark' ? network.Icon : network.IconLight;
+          let NetworkIcon = network.chainSymbolImageUrl;
           if (!NetworkIcon) NetworkIcon = DefaultIcon;
 
           return !chainAddress ? null : (
@@ -103,7 +104,8 @@ export const MyWallet: React.FC<{
               <div className={styles.left}>
                 <div className={styles.icon}>
                   <div className={styles.iconChain}>
-                    <NetworkIcon width={30} height={30} />
+                    {/* <NetworkIcon width={30} height={30} /> */}
+                    <img src={NetworkIcon} width={30} height={30} alt="network-icon" />
                   </div>
 
                   <div className={styles.iconWalletByChain}>
@@ -241,19 +243,6 @@ export const MyWallet: React.FC<{
               }}
             />
           </div>
-          {/* <div className={styles.toggleMode}>
-            <div className={styles.toggleModeIcon}>
-              <span className={cx('text')}>Hide empty assets</span>
-            </div>
-            <ToggleSwitch
-              small={true}
-              id="toggle-asset"
-              checked={true}
-              onChange={() => {
-                // setTheme(theme === 'dark' ? 'light' : 'dark');
-              }}
-            />
-          </div> */}
         </div>
         <div className={styles.listAddressByNetwork}>
           {renderCosmosAddresses()}

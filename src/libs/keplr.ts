@@ -1,19 +1,12 @@
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { ChainInfo, FeeCurrency, Keplr as keplr, Key } from '@keplr-wallet/types';
-import {
-  CosmosChainId,
-  CosmosWallet,
-  NetworkChainId,
-  TokenItemType,
-  WalletType,
-  checkValidateAddressWithNetwork
-} from '@oraichain/oraidex-common';
+import { checkValidateAddressWithNetwork, CosmosWallet, TokenItemType, WalletType } from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
-import { chainInfos, OraiBTCBridgeNetwork } from 'config/chainInfos';
-import { network } from 'config/networks';
 import { getAddress, getAddressByEIP191 } from 'helper';
 import { EIP_EIP_STORAGE_KEY_ACC, MetamaskOfflineSigner } from './eip191';
+import { chainInfos, cosmosChains, network } from 'initCommon';
+import { CosmosChainId, NetworkChainId } from '@oraichain/common';
 
 export default class Keplr extends CosmosWallet {
   async createCosmosSigner(chainId: CosmosChainId): Promise<OfflineSigner> {
@@ -64,7 +57,7 @@ export default class Keplr extends CosmosWallet {
     if (isEnableKeplr) {
       if (!window.keplr) return;
       // TODO: hotfix add oraiBTC bridge network
-      const chainInfo = [...chainInfos, OraiBTCBridgeNetwork].find((chainInfo) => chainInfo.chainId === chainId);
+      const chainInfo = [...chainInfos].find((chainInfo) => chainInfo.chainId === chainId);
 
       // do nothing without chainInfo
       if (!chainInfo) return;
@@ -121,7 +114,11 @@ export default class Keplr extends CosmosWallet {
         if (!['oraibtc-mainnet-1', 'bitcoin'].includes(chainId)) {
           const keplrKey = await keplr.getKey(chainId);
           if (!keplrKey?.bech32Address) return undefined;
-          const { isValid } = checkValidateAddressWithNetwork(keplrKey?.bech32Address, chainId as NetworkChainId);
+          const { isValid } = checkValidateAddressWithNetwork(
+            keplrKey?.bech32Address,
+            chainId as NetworkChainId,
+            cosmosChains
+          );
           if (!isValid) return undefined;
         }
 
@@ -134,7 +131,7 @@ export default class Keplr extends CosmosWallet {
 
   async getKeplrAddr(chainId?: NetworkChainId): Promise<string | undefined> {
     // not support network.chainId (Oraichain)
-    chainId = chainId ?? network.chainId;
+    chainId = chainId ?? (network.chainId as NetworkChainId);
     try {
       if (this.typeWallet === ('eip191' as any)) {
         // TODO: cache if type wallet is eip191 ( metamask cosmos )

@@ -55,6 +55,10 @@
         align-items: center;
         gap: 8px;
 
+        @include theme {
+          color: theme-get('neutral-text-text-token-name');
+        }
+
         .tag {
           display: flex;
           align-items: center;
@@ -96,11 +100,11 @@
             }
           }
 
-          &.light {
-            img {
-              filter: invert(1);
-            }
-          }
+          // &.light {
+          //   img {
+          //     filter: invert(1);
+          //   }
+          // }
         }
       }
     }
@@ -116,6 +120,10 @@
       @include mobile {
         margin-top: 8px;
         font-size: 11px;
+      }
+
+      @include theme {
+        color: theme-get('neutral-text-text-token-name');
       }
 
       font-size: 14px;

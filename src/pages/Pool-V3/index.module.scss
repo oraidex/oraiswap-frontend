@@ -74,13 +74,13 @@
 
     .right {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
       align-items: flex-start;
-
-      @include medium_mobile {
-        flex-direction: column-reverse;
-      }
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
     }
 
     .search {
@@ -90,6 +90,12 @@
       border-radius: 99px;
       font-weight: 400;
       font-size: 14px;
+      display: flex;
+      gap: 8px;
+
+      span {
+        padding-left: 1rem;
+      }
 
       @include theme() {
         background-color: theme-get('neutral-surface-bg-section');
@@ -99,7 +105,7 @@
 
       @media (max-width: 575px) {
         font-size: 15px;
-        width: 100%;
+        flex-grow: 1;
       }
 
       &::placeholder {
@@ -111,6 +117,7 @@
 
     .dropDown {
       position: relative;
+      margin-left: auto;
 
       .btn {
         display: flex;
@@ -139,17 +146,18 @@
           border-color: theme-get('border-color');
         }
 
-        @media (max-width: 575px) {
+        @media (max-width: 300px) {
           width: 100%;
         }
       }
 
       .dropdownContent {
+        z-index: 1;
         cursor: pointer;
         position: absolute;
         top: 100%;
         left: 0;
-        width: 156px;
+        width: 200px;
         padding: 10px;
         border-radius: 12px;
         margin-top: 6px;
@@ -162,8 +170,16 @@
             background-color: theme-get('neutral-surface-bg-section');
           }
 
-          &:hover {
-            filter: brightness(1.5);
+          .icon {
+            &.light {
+              color: black;
+
+              svg {
+                path {
+                  stroke: #000;
+                }
+              }
+            }
           }
         }
 
@@ -173,6 +189,23 @@
           background-color: theme-get('neutral-surface-bg-section');
           color: theme-get('colors-neutral-text-body-on-row');
           border: 1px solid #494949;
+        }
+      }
+
+      .dropdownCreate {
+        .filterItem {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .typePool {
+            font-weight: 500;
+          }
+
+          .desPool {
+            font-size: 12px;
+            color: #979995;
+          }
         }
       }
     }

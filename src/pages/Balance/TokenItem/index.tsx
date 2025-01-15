@@ -1,11 +1,8 @@
+import { TokenItemType } from '@oraichain/oraidex-common';
 import classNames from 'classnames';
-import styles from './index.module.scss';
 import TokenBalance from 'components/TokenBalance';
 import TransferConvertToken from '../TransferConvertToken';
-import { TokenItemType } from '@oraichain/oraidex-common';
-
-import { tokensIcon } from 'config/chainInfos';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
+import styles from './index.module.scss';
 
 export interface TokenItemProps {
   token: TokenItemType;
@@ -25,6 +22,7 @@ export interface TokenItemProps {
   isFastMode?: boolean;
   setIsFastMode?: Function;
   setToNetworkChainId: Function;
+  toToken?: TokenItemType;
 }
 
 const TokenItem: React.FC<TokenItemProps> = ({
@@ -41,16 +39,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
   isBtcToken,
   isFastMode,
   setIsFastMode,
-  setToNetworkChainId
+  setToNetworkChainId,
+  toToken
 }) => {
-  let tokenIcon = tokensIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
-  if (!tokenIcon) {
-    tokenIcon = {
-      coinGeckoId: token.coinGeckoId,
-      Icon: DefaultIcon,
-      IconLight: DefaultIcon
-    };
-  }
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
   return (
     <div
@@ -63,9 +54,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
       <div className={styles.balanceAmountInfo}>
         <div className={styles.token}>
           {theme === 'light' ? (
-            <tokenIcon.IconLight className={styles.tokenIcon} />
+            <img style={{ borderRadius: '100%' }} width={44} height={44} src={token?.iconLight} alt="icon-light" />
           ) : (
-            <tokenIcon.Icon className={styles.tokenIcon} />
+            <img style={{ borderRadius: '100%' }} width={44} height={44} src={token?.icon} alt="icon-light" />
           )}
           <div className={styles.tokenInfo}>
             <div className={classNames(styles.tokenName, styles[theme])}>{token.name}</div>
@@ -97,6 +88,7 @@ const TokenItem: React.FC<TokenItemProps> = ({
             isFastMode={isFastMode}
             setIsFastMode={setIsFastMode}
             setToNetwork={setToNetworkChainId}
+            toToken={toToken}
           />
         )}
       </div>

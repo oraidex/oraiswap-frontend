@@ -1,14 +1,5 @@
-import {
-  BigDecimal,
-  getTokensFromNetwork,
-  // flattenTokens
-  NetworkChainId,
-  toDisplay,
-  TokenItemType,
-  BTC_CONTRACT,
-  tonNetworkMainnet,
-  solChainId
-} from '@oraichain/oraidex-common';
+import { NetworkChainId } from '@oraichain/common';
+import { BigDecimal, BTC_CONTRACT, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
@@ -18,16 +9,19 @@ import Input from 'components/Input';
 import Loader from 'components/Loader';
 import PowerByOBridge from 'components/PowerByOBridge';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
+import ToggleSwitch from 'components/ToggleSwitch';
 import TokenBalance from 'components/TokenBalance';
-import { cosmosTokens, flattenTokens, tokenMap } from 'config/bridgeTokens';
-import { btcChains, evmChains } from 'config/chainInfos';
+import { TonChainId } from 'context/ton-provider';
 import copy from 'copy-to-clipboard';
-import { filterChainBridge, findChainByChainId, getAddressTransfer, networks } from 'helper';
+import { filterChainBridge, getAddressTransfer, networks } from 'helper';
+import { CWBitcoinFactoryDenom } from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTokenFee, { useRelayerFeeToken } from 'hooks/useTokenFee';
 import useWalletReducer from 'hooks/useWalletReducer';
+import { btcChains, cosmosTokens, evmChains, flattenTokens, tokenMap, tonTokens } from 'initCommon';
 import { reduceString } from 'libs/utils';
+import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
 import { AMOUNT_BALANCE_ENTRIES } from 'pages/UniversalSwap/helpers';
 import { FC, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
@@ -38,14 +32,10 @@ import {
   useGetWithdrawlFeesBitcoin,
   useGetWithdrawlFeesBitcoinV2
 } from '../helpers';
-import styles from './index.module.scss';
-import { useGetContractConfig } from 'pages/BitcoinDashboardV2/hooks';
-import ToggleSwitch from 'components/ToggleSwitch';
-import { CWBitcoinFactoryDenom } from 'helper/constants';
 import useGetFee from '../hooks/useGetFee';
+import useGetFeeSol from '../hooks/useGetFeeSol';
 import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
-import { TonChainId } from 'context/ton-provider';
-import { network } from 'config/networks';
+import styles from './index.module.scss';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -56,6 +46,7 @@ interface TransferConvertProps {
   isFastMode?: boolean;
   setIsFastMode?: Function;
   setToNetwork: Function;
+  toToken?: TokenItemType;
 }
 
 const TransferConvertToken: FC<TransferConvertProps> = ({
@@ -66,7 +57,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   subAmounts,
   isFastMode,
   setIsFastMode,
-  setToNetwork
+  setToNetwork,
+  toToken
 }) => {
   const bridgeNetworks = networks.filter((item) => filterChainBridge(token, item));
   const [[convertAmount, convertUsd], setConvertAmount] = useState([undefined, 0]);
@@ -122,20 +114,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
       if (!isValid) return;
       setTransferLoading(true);
 
-      // if on the same kwt network => we convert between native & erc20 tokens
-      if (token.chainId === 'kawaii_6886-1') {
-        // [KWT, MILKY] from Kawaiiverse => [KWT, MILKY] Oraichain
-        if (toNetworkChainId === 'Oraichain') {
-          return await onClickTransfer(convertAmount, toNetworkChainId);
-        }
-        await convertKwt(convertAmount, token);
-        return;
-      }
-      // [KWT, MILKY] from ORAICHAIN -> KWT_CHAIN || from EVM token -> ORAICHAIN.
-      if (
-        evmChains.find((chain) => chain.chainId === token.chainId) ||
-        (token.chainId === 'Oraichain' && toNetworkChainId === 'kawaii_6886-1')
-      ) {
+      // from EVM token -> ORAICHAIN.
+      if (evmChains.find((chain) => chain.chainId === token.chainId)) {
         await onClickTransfer(convertAmount, toNetworkChainId);
         return;
       }
@@ -149,7 +129,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   // get token fee & relayer fee
   const toNetwork = bridgeNetworks.find((n) => n.chainId === toNetworkChainId);
-  const to = flattenTokens.find((t) => t.coinGeckoId === token.coinGeckoId && t.chainId === toNetworkChainId);
+  const to =
+    toToken ?? flattenTokens.find((t) => t.coinGeckoId === token.coinGeckoId && t.chainId === toNetworkChainId);
 
   const getRemoteTokenDenom = (token: TokenItemType) => {
     if (!token) return null;
@@ -169,13 +150,19 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toNetwork: toNetworkChainId
   });
 
+  const { solFee, isOraichainToSol, isSolToOraichain } = useGetFeeSol({
+    originalFromToken: token,
+    toChainId: toNetworkChainId,
+    amountToken: convertAmount,
+    toToken
+  });
+
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
     token,
     fromNetwork: token.chainId,
     toNetwork: toNetworkChainId
   });
 
-  // bridge fee & relayer fee
   let bridgeFee = fromTokenFee + toTokenFee;
 
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
@@ -229,7 +216,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     useEffect(() => {
       (async () => {
         if (toNetworkChainId === TonChainId) {
-          const tokenOnTon = [...getTokensFromNetwork(tonNetworkMainnet)].find(
+          const tokenOnTon = tonTokens.find(
             (tk) => tk.chainId === toNetworkChainId && tk.coinGeckoId === token.coinGeckoId
           );
 
@@ -241,7 +228,14 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
     return (
       <div className={styles.bridgeFee}>
-        {bridgeFeeTon ? (
+        {isSolToOraichain || isOraichainToSol ? (
+          <>
+            Bridge fee:{' '}
+            <span>
+              {solFee.totalFee} {token.name}
+            </span>
+          </>
+        ) : bridgeFeeTon ? (
           <>
             Bridge fee:{' '}
             <span>
@@ -261,7 +255,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {tonTokenFee} {token.name}{' '}
             </span>
           </div>
-        ) : null}{' '}
+        ) : null}
         {relayerFeeTokenFee > 0 ? (
           <div className={styles.relayerFee}>
             - Relayer fee:{' '}
@@ -270,11 +264,13 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
               {relayerFeeTokenFee} {token.name}{' '}
             </span>
           </div>
-        ) : null}{' '}
-        - Received amount:
+        ) : null}
+        - Received amount:{' '}
         <span>
-          {' '}
-          {(receivedAmount > 0 ? receivedAmount : 0).toFixed(6)} {token.name}
+          {(isSolToOraichain || isOraichainToSol ? solFee.sendAmount : receivedAmount > 0 ? receivedAmount : 0).toFixed(
+            6
+          )}{' '}
+          {token.name}
         </span>
         {!!toDisplayBTCFee && (
           <>
@@ -302,8 +298,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   };
 
   const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
-
-  console.log({ networks });
 
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
@@ -363,13 +357,9 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <div className={styles.search_logo}>
                         {theme === 'light' ? (
-                          toNetwork.IconLight ? (
-                            <toNetwork.IconLight width={44} height={44} />
-                          ) : (
-                            <toNetwork.Icon width={44} height={44} />
-                          )
+                          <img width={44} height={44} src={toNetwork.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                         ) : (
-                          <toNetwork.Icon width={44} height={44} />
+                          <img width={44} height={44} src={toNetwork.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                         )}
                       </div>
                       <span className={classNames(styles.search_text, styles[theme])}>{toNetwork.chainName}</span>
@@ -401,7 +391,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                             {net && (
                               <div className={classNames(styles.items_chain)}>
                                 <div>
-                                  <net.Icon width={44} height={44} />{' '}
+                                  <img width={44} height={44} src={net.chainSymbolImageUrl} alt="chainSymbolImageUrl" />
                                 </div>
                                 <div className={classNames(styles.items_title, styles[theme])}>{net.chainName}</div>
                               </div>
@@ -494,7 +484,11 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             btcChains.find((chain) => chain.chainId !== token.chainId)
           ) {
             const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
+            // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
+            const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
             const isDisabled =
+              // isSolBridge ||
+              isBridgeBitcoin ||
               transferLoading ||
               !addressTransfer ||
               receivedAmount < 0 ||

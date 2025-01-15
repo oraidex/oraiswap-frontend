@@ -4,10 +4,10 @@ import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { TToastType, displayToast } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
-import { network } from 'config/networks';
 import { handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
+import { network } from 'initCommon';
 import CosmJs from 'libs/cosmjs';
 import { useGetMyStake, useGetPools, useGetRewardInfo, useGetTotalClaimable } from 'pages/Pools/hooks';
 import { FC, useEffect, useState } from 'react';
@@ -114,7 +114,7 @@ export const Header: FC<{ dataSource: PoolInfoResponse[] }> = ({ dataSource }) =
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         refetchRewardInfo();
       }

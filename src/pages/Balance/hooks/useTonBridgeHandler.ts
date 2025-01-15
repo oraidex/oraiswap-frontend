@@ -4,8 +4,6 @@ import { coin, Coin, coins, GasPrice } from '@cosmjs/stargate';
 import {
   BigDecimal,
   calculateTimeoutTimestamp,
-  CosmosChainId,
-  cosmosChains,
   CW20_DECIMALS,
   getCosmosGasPrice,
   getEncodedExecuteContractMsgs,
@@ -14,7 +12,8 @@ import {
   OSMOSIS_ROUTER_CONTRACT,
   toAmount,
   toDisplay,
-  TokenItemType
+  TokenItemType,
+  TON_CONTRACT
 } from '@oraichain/oraidex-common';
 import { buildUniversalSwapMemo, SwapAndAction, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { BridgeAdapter, JettonMinter, JettonWallet } from '@oraichain/ton-bridge-contracts';
@@ -25,22 +24,11 @@ import { TonClient } from '@ton/ton';
 import { Base64 } from '@tonconnect/protocol';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
-import {
-  AlloyedPool,
-  chainInfos,
-  oraichainTokensWithIcon,
-  OsmosisAlloyedPools,
-  OsmosisTokenDenom,
-  OsmosisTokenList,
-  TON_ZERO_ADDRESS,
-  tonNetworkTokens
-} from 'config/chainInfos';
-import { network } from 'config/networks';
-import { TON_SCAN, TonChainId, TonInteractionContract, TonNetwork } from 'context/ton-provider';
+import { AlloyedPool, OsmosisAlloyedPools, OsmosisTokenDenom, OsmosisTokenList } from 'config/chainInfos';
+import { CW_TON_BRIDGE, TON_SCAN, TonChainId, TonInteractionContract, TonNetwork } from 'context/ton-provider';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { getTransactionUrl, handleErrorTransaction } from 'helper';
 import { numberWithCommas } from 'helper/format';
-import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import { getCosmWasmClient } from 'libs/cosmjs';
@@ -49,6 +37,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
 import useGetFee from './useGetFee';
 import useGetStateData from './useGetStateData';
+import { chainInfos, cosmosChains, network, oraichainTokensWithIcon, tonTokens } from 'initCommon';
+import { CosmosChainId } from '@oraichain/common';
 
 const FWD_AMOUNT = toNano(0.15);
 const TON_MESSAGE_VALID_UNTIL = 100000;
@@ -82,7 +72,6 @@ const useTonBridgeHandler = ({
   const loadTokenAmounts = useLoadTokens();
 
   const [tonConnectUI] = useTonConnectUI();
-  const { data: prices } = useCoinGeckoPrices();
   const [tokenInfo, setTokenInfo] = useState({
     jettonWalletAddress: null
   });
@@ -95,7 +84,7 @@ const useTonBridgeHandler = ({
   });
 
   useEffect(() => {
-    if (token?.chainId === TonChainId && token?.contractAddress === TON_ZERO_ADDRESS) {
+    if (token?.chainId === TonChainId && token?.contractAddress === TON_CONTRACT) {
       setDeductNativeAmount(BRIDGE_TON_TO_ORAI_MINIMUM_GAS);
       return;
     }
@@ -113,7 +102,7 @@ const useTonBridgeHandler = ({
         const client = new TonClient({
           endpoint
         });
-        if (token?.contractAddress === TON_ZERO_ADDRESS) {
+        if (token?.contractAddress === TON_CONTRACT) {
           setDeductNativeAmount(BRIDGE_TON_TO_ORAI_MINIMUM_GAS);
           setTokenInfo({
             jettonWalletAddress: ''
@@ -144,7 +133,7 @@ const useTonBridgeHandler = ({
       });
       const bridgeAdapter = TonInteractionContract[TonNetwork.Mainnet].bridgeAdapter;
 
-      if (token.contractAddress === TON_ZERO_ADDRESS) {
+      if (token.contractAddress === TON_CONTRACT) {
         const balance = await client.getBalance(Address.parse(bridgeAdapter));
 
         return {
@@ -167,7 +156,7 @@ const useTonBridgeHandler = ({
     try {
       if (token) {
         if (!token.contractAddress) {
-          const data = await window.client.getBalance(network.CW_TON_BRIDGE, token.denom);
+          const data = await window.client.getBalance(CW_TON_BRIDGE, token.denom);
 
           return {
             balance: data.amount
@@ -175,7 +164,7 @@ const useTonBridgeHandler = ({
         }
 
         const tx = await window.client.queryContractSmart(token.contractAddress, {
-          balance: { address: network.CW_TON_BRIDGE }
+          balance: { address: CW_TON_BRIDGE }
         });
 
         return {
@@ -202,7 +191,7 @@ const useTonBridgeHandler = ({
               )
             }
           );
-          const data = await client.getBalance(network.CW_TON_BRIDGE, token.denom);
+          const data = await client.getBalance(CW_TON_BRIDGE, token.denom);
 
           return {
             balance: data.amount
@@ -312,7 +301,7 @@ const useTonBridgeHandler = ({
       }
       const bridgeAdapterAddress = Address.parse(TonInteractionContract[TonNetwork.Mainnet].bridgeAdapter);
       const fmtAmount = new BigDecimal(10).pow(token.decimals || token['coinDecimals']).mul(amount);
-      const isNativeTon: boolean = token.contractAddress === TON_ZERO_ADDRESS;
+      const isNativeTon: boolean = token.contractAddress === TON_CONTRACT;
       const toAddress: string = isNativeTon
         ? bridgeAdapterAddress.toString()
         : tokenInfo.jettonWalletAddress?.toString();
@@ -477,7 +466,7 @@ const useTonBridgeHandler = ({
           validatePrice(token, Number(amount));
         }
         const timeout = Math.floor(new Date().getTime() / 1000) + 3600;
-        const fromChainId = fromNetwork as CosmosChainId;
+        const fromChainId = fromNetwork;
         const toChainId = isFromOsmosisToTon ? ('Oraichain' as CosmosChainId) : (toNetwork as CosmosChainId);
 
         let [fromAddress, toAddress] = await Promise.all([
@@ -496,11 +485,11 @@ const useTonBridgeHandler = ({
             undefined,
             undefined,
             {
-              contractAddress: network.CW_TON_BRIDGE,
+              contractAddress: CW_TON_BRIDGE,
               msg: toBinary({
                 bridge_to_ton: {
                   to: tonAddress,
-                  denom: tonNetworkTokens.find((tk) => tk.coinGeckoId === token.coinGeckoId).contractAddress,
+                  denom: tonTokens.find((tk) => tk.coinGeckoId === token.coinGeckoId).contractAddress,
                   timeout,
                   recovery_addr: oraiAddress
                 }
@@ -646,7 +635,7 @@ const useTonBridgeHandler = ({
       }
       validatePrice(token, Number(amount));
 
-      const tokenInTon = tonNetworkTokens.find((tk) => tk.coinGeckoId === token.coinGeckoId);
+      const tokenInTon = tonTokens.find((tk) => tk.coinGeckoId === token.coinGeckoId);
       const bridgeJettonWallet = walletsTon[tokenInTon.denom];
       if (!bridgeJettonWallet) throw 'Bridge wallet not found!';
 
@@ -659,7 +648,7 @@ const useTonBridgeHandler = ({
         throw `The bridge contract does not have enough balance to process this bridge transaction. Wanted ${amount} ${token.name}, have ${displayBalance} ${token.name}`;
       }
 
-      const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, network.CW_TON_BRIDGE);
+      const tonBridgeClient = new TonbridgeBridgeClient(window.client, oraiAddress, CW_TON_BRIDGE);
 
       let tx;
 
@@ -688,7 +677,7 @@ const useTonBridgeHandler = ({
           token.contractAddress,
           {
             send: {
-              contract: network.CW_TON_BRIDGE,
+              contract: CW_TON_BRIDGE,
               amount: toAmount(amount, token.decimals || token['coinDecimals']).toString(),
               msg: toBinary({
                 denom: msg.denom,

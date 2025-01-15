@@ -5,6 +5,7 @@
   height: 100vh;
   position: absolute;
   &.christmas {
+    cursor: pointer;
     .top {
       position: sticky;
       top: 68px;

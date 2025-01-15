@@ -3,8 +3,8 @@ import styles from './index.module.scss';
 import Header from './components/Header';
 import StakeInfo from './components/StakeInfo';
 import StakingForm from './components/StakingForm';
-import FAQ from './components/FAQ';
 import Summary from './components/Summary';
+import FAQ from './components/FAQ';
 
 const StakingPage = () => {
   const mobileMode = isMobile();

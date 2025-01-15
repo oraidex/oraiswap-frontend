@@ -1,36 +1,33 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { BTC_CONTRACT, fetchRetry, OraiIcon, toDisplay } from '@oraichain/oraidex-common';
 import { useQueryClient } from '@tanstack/react-query';
+import { isMobile } from '@walletconnect/browser-utils';
+import AddIcon from 'assets/icons/Add.svg?react';
 import BackIcon from 'assets/icons/ic_back.svg?react';
-import DefaultIcon from 'assets/icons/tokens.svg?react';
-import { network } from 'config/networks';
+import classNames from 'classnames';
+import { Button } from 'components/Button';
+import Tabs from 'components/TabCustom';
+import { formatNumberKMB, numberWithCommas } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useLoadTokens from 'hooks/useLoadTokens';
 import useTheme from 'hooks/useTheme';
+import { network } from 'initCommon';
 import Content from 'layouts/Content';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateLpPools } from 'reducer/token';
+import { RootState } from 'store/configure';
 import { PoolInfoResponse } from 'types/pool';
 import styles from './PoolDetail.module.scss';
-import ChartDetailSection from './components/ChartDetailSection';
+import { AddLiquidityModal } from './components/AddLiquidityModal';
 import { Earning } from './components/Earning';
 import { MyPoolInfo } from './components/MyPoolInfo/MyPoolInfo';
 import { OverviewPool } from './components/OverviewPool';
 import TransactionHistory from './components/TransactionHistory';
-import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools, useGetPriceChange } from './hooks';
+import { fetchLpPoolsFromContract, useGetPoolDetail, useGetPools } from './hooks';
 import { useGetLpBalance } from './hooks/useGetLpBalance';
 import { useGetPairInfo } from './hooks/useGetPairInfo';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
-import classNames from 'classnames';
-import Tabs from 'components/TabCustom';
-import { isMobile } from '@walletconnect/browser-utils';
-import { Button } from 'components/Button';
-import AddIcon from 'assets/icons/Add.svg?react';
-import { parseAssetOnlyDenom } from './helpers';
-import { AddLiquidityModal } from './components/AddLiquidityModal';
-import { formatNumberKMB, numberWithCommas } from 'helper/format';
-import { BTC_CONTRACT, fetchRetry, toDisplay } from '@oraichain/oraidex-common';
 
 const PoolDetail: React.FC = () => {
   const theme = useTheme();
@@ -38,19 +35,32 @@ const PoolDetail: React.FC = () => {
   let { poolUrl } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [address] = useConfigReducer('address');
-  const poolDetailData = useGetPoolDetail({ pairDenoms: poolUrl });
-  const loadTokenAmounts = useLoadTokens();
-  const setCachedLpPools = (payload: LpPoolDetails) => dispatch(updateLpPools(payload));
+
+  const poolDetailData = useGetPoolDetail({ pairDenoms: poolUrl }); // ok
+
+  const loadTokenAmounts = useLoadTokens(); // ok
+
+  const setCachedLpPools = (payload: LpPoolDetails) => dispatch(updateLpPools(payload)); // ok
+
   const pools = useGetPools();
+
+  const { refetchPairAmountInfo, refetchLpTokenInfoData, pairAmountInfoData } = useGetPairInfo(poolDetailData);
+
+  const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
+
   const lpAddresses = pools.map((pool) => pool.liquidityAddr);
-  const { refetchPairAmountInfo, refetchLpTokenInfoData } = useGetPairInfo(poolDetailData);
   const queryClient = useQueryClient();
   const [pairDenomsDeposit, setPairDenomsDeposit] = useState('');
   const [ratioOraiBtc, setRatioOraiBtc] = useState(0);
-
-  const { lpBalanceInfoData, refetchLpBalanceInfoData } = useGetLpBalance(poolDetailData);
   const lpTokenBalance = BigInt(lpBalanceInfoData?.balance || '0');
+
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+
+  useEffect(() => {
+    refetchAllLpPools();
+  }, [lpAddresses]);
 
   const refetchAllLpPools = async () => {
     if (lpAddresses.length === 0) return;
@@ -96,27 +106,25 @@ const PoolDetail: React.FC = () => {
     tf: 1440
   };
 
-  const { priceChange } = useGetPriceChange(params);
-
   const baseToken = (token1?.contractAddress || token1?.denom) === params.base_denom ? token1 : token2;
   const quoteToken = (token2?.contractAddress || token2?.denom) === params.base_denom ? token1 : token2;
 
-  let BaseTokenIcon = DefaultIcon;
-  let QuoteTokenIcon = DefaultIcon;
-  const BaseTokenInOraichain = oraichainTokensWithIcon.find(
+  let BaseTokenIcon = OraiIcon;
+  let QuoteTokenIcon = OraiIcon;
+  const BaseTokenInOraichain = allOraichainTokens.find(
     (oraiTokens) =>
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.contractAddress) ||
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(baseToken.denom)
   );
-  const QuoteTokenInOraichain = oraichainTokensWithIcon.find(
+  const QuoteTokenInOraichain = allOraichainTokens.find(
     (oraiTokens) =>
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.contractAddress) ||
       [oraiTokens.denom, oraiTokens.contractAddress].filter(Boolean).includes(quoteToken.denom)
   );
   if (BaseTokenInOraichain)
-    BaseTokenIcon = theme === 'light' ? BaseTokenInOraichain.IconLight : BaseTokenInOraichain.Icon;
+    BaseTokenIcon = theme === 'light' ? BaseTokenInOraichain.iconLight : BaseTokenInOraichain.icon;
   if (QuoteTokenInOraichain)
-    QuoteTokenIcon = theme === 'light' ? QuoteTokenInOraichain.IconLight : QuoteTokenInOraichain.Icon;
+    QuoteTokenIcon = theme === 'light' ? QuoteTokenInOraichain.iconLight : QuoteTokenInOraichain.icon;
 
   const isInactive = baseToken?.name === 'BTC (Legacy)' || quoteToken?.name === 'BTC (Legacy)';
 
@@ -127,6 +135,7 @@ const PoolDetail: React.FC = () => {
   useEffect(() => {
     if (!poolDetailData) return;
     const { token2 } = poolDetailData;
+    if (!token2) return;
     async function getOraiBtcAllocation() {
       const res = await fetchRetry(
         'https://lcd.orai.io/cosmos/bank/v1beta1/balances/orai1fv5kwdv4z0gvp75ht378x8cg2j7prlywa0g35qmctez9q8u4xryspn6lrd'
@@ -162,8 +171,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  {BaseTokenIcon && <BaseTokenIcon />}
-                  {QuoteTokenIcon && <QuoteTokenIcon />}
+                  <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="icon" width={30} height={30} />
+                  <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} alt="icon" width={30} height={30} />
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} /{' '}
@@ -179,17 +188,25 @@ const PoolDetail: React.FC = () => {
                 ? `1 ${baseToken?.name} = ${numberWithCommas(1 / (ratioOraiBtc || 1), undefined, {
                     maximumFractionDigits: 6
                   })}`
-                : `1 ${baseToken?.name} = ${numberWithCommas(priceChange?.price || 0, undefined, {
-                    maximumFractionDigits: 6
-                  })}`}
+                : `1 ${baseToken?.name} = ${numberWithCommas(
+                    toDisplay(pairAmountInfoData?.token2Amount, token2?.decimals, 0) /
+                      toDisplay(pairAmountInfoData?.token1Amount, token1?.decimals, 0) || 0,
+                    undefined,
+                    {
+                      maximumFractionDigits: 6
+                    }
+                  )}`}
               {/* TODO: remove after pool close */} {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name}
               {isMobileMode ? <br /> : <div className={styles.divider}>|</div>}1{' '}
               {quoteToken?.name === 'BTC (Legacy)' ? 'BTC' : quoteToken?.name} ={' '}
               {ratioOraiBtc
                 ? `${numberWithCommas(ratioOraiBtc || 0, undefined, { maximumFractionDigits: 6 })} ${baseToken?.name}`
-                : `${numberWithCommas(1 / (priceChange?.price || 1) || 0, undefined, { maximumFractionDigits: 6 })} ${
-                    baseToken?.name
-                  }`}
+                : `${numberWithCommas(
+                    toDisplay(pairAmountInfoData?.token1Amount, token1?.decimals, 0) /
+                      toDisplay(pairAmountInfoData?.token2Amount, token2?.decimals, 0) || 0,
+                    undefined,
+                    { maximumFractionDigits: 6 }
+                  )} ${baseToken?.name}`}
             </div>
           </div>
           <div className={styles.addPosition}>
@@ -216,17 +233,10 @@ const PoolDetail: React.FC = () => {
         <div className={styles.overview}>
           <OverviewPool
             poolDetailData={{
-              ...poolDetailData,
-              token1: BaseTokenInOraichain,
-              token2: QuoteTokenInOraichain
+              ...poolDetailData
             }}
           />
         </div>
-        {/* <div className={styles.summary}>
-          <div className={styles.chart}>
-            <ChartDetailSection pair={pair} symbol={poolDetailData?.info?.symbols} />
-          </div>
-        </div> */}
 
         <Tabs
           tabKey="tab"
@@ -248,7 +258,7 @@ const PoolDetail: React.FC = () => {
             {
               id: 'txs',
               value: 'Transactions',
-              content: <TransactionHistory baseToken={BaseTokenInOraichain} quoteToken={QuoteTokenInOraichain} />
+              content: <TransactionHistory baseToken={baseToken} quoteToken={quoteToken} />
             }
           ]}
         />

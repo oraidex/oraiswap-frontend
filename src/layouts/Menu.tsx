@@ -17,18 +17,13 @@ import TelegramIcon from 'assets/icons/ic_telegram.svg?react';
 import TwitterIcon from 'assets/icons/ic_twitter.svg?react';
 import UniversalSwapIcon from 'assets/icons/ic_universalswap.svg?react';
 import FeedBackIcon from 'assets/icons/iconoir_chat-lines.svg?react';
-import IconOrderbookHLW from 'assets/icons/halloween/ic_orderbook_hlw.svg';
 import MenuIcon from 'assets/icons/menu.svg?react';
-import LogoFullImgDark from 'assets/images/OraiDEX_full_dark.svg';
-import LogoFullImgLight from 'assets/images/OraiDEX_full_light.svg';
-
+import CreateTokenIcon from 'assets/icons/iconoir_coins-add.svg?react';
 import LogoFullImgDarkBeta from 'assets/images/OraiDEX_logo_dark.svg';
 import LogoFullImgLightBeta from 'assets/images/OraiDEX_logo_light.svg';
-
 import PoolV3Lottie from 'assets/lottie/poolv3-beta.json';
 import classNames from 'classnames';
 import TooltipContainer from 'components/WalletManagement/TooltipContainer';
-import { WalletManagement } from 'components/WalletManagement/WalletManagement';
 import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import { ThemeContext } from 'context/theme-context';
 import useOnClickOutside from 'hooks/useOnClickOutside';
@@ -36,9 +31,11 @@ import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import Lottie from 'lottie-react';
 import React, { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import BuyOraiModal from './BuyOraiModal';
 import styles from './Menu.module.scss';
+import BuyOraiModal from './BuyOraiModal';
 import { EVENT_ENUM } from 'reducer/temporaryConfig';
+import { WalletManagement } from 'components/WalletManagement/WalletManagement';
+import NewTokenModal from 'pages/Pools/NewTokenModal/NewTokenModal';
 
 const Menu: React.FC = () => {
   const location = useLocation();
@@ -47,6 +44,7 @@ const Menu: React.FC = () => {
   const { theme } = useContext(ThemeContext);
   const [open, setOpen] = useState(false);
   const [openBuy, setOpenBuy] = useState(false);
+  const [openCreateToken, setOpenCreateToken] = useState(false);
   const [isLoadedIframe, setIsLoadedIframe] = useState(false); // check iframe data loaded
   const [isOpenSubMenuMobile, setIsOpenSubMenuMobile] = useState(false);
   const [event] = useTemporaryConfigReducer('event');
@@ -154,7 +152,7 @@ const Menu: React.FC = () => {
         {renderLink(
           'https://orderbook.oraidex.io',
           'Order Book',
-          () => {},
+          () => { },
           true,
           <OrderBookIc
             className={classNames({
@@ -165,7 +163,7 @@ const Menu: React.FC = () => {
         {renderLink(
           'https://futures.oraidex.io',
           'Futures Trading',
-          () => {},
+          () => { },
           true,
           <FuturesIc
             className={classNames({
@@ -181,16 +179,35 @@ const Menu: React.FC = () => {
     <div className={classNames(styles.menu_list)}>
       {renderLink('/universalswap', 'Swap', setLink, false, <UniversalSwapIcon />)}
       {renderLink('/bridge', 'Bridge', setLink, false, <BridgeIcon />)}
-      {/* {renderLink('/pools', 'Pools', setLink, false, <PoolIcon />)} */}
       {renderLink('/pools', 'Pools', setLink, false, <PoolIcon />)}
       {renderLink('/staking', 'Staking', setLink, false, <StakingIcon />)}
       {renderLink('/co-harvest', 'Co-Harvest', setLink, false, <CohavestIcon />)}
-      {renderLink('/bitcoin-dashboard', 'BTC Dashboard', setLink, false, <BtcDashboardIcon />)}
       {renderLink('/bitcoin-dashboard-v2', 'BTC V2', setLink, false, <BtcDashboardIcon />)}
+
+      <div
+        onClick={() => {
+          setOpenCreateToken(true);
+          setOpen(!open);
+        }}
+        className={classNames(
+          styles.menu_item,
+          {
+            [styles.active]:
+              openCreateToken
+          },
+          styles[theme],
+          styles.spin
+        )}>
+        <CreateTokenIcon />
+        <span className={classNames(styles.menu_item_text, { [styles.active]: openCreateToken }, styles[theme])}>
+          Create Token
+        </span>
+      </div>
+
       {!isBeta && renderLink('https://beta.oraidex.io', 'OraiDEX Beta', setLink, true, <OraidexBetaIcon />)}
       <div className={styles.divider}></div>
-      {renderLink('https://orderbook.oraidex.io', 'Order Book', () => {}, true, <OrderbookIcon />)}
-      {renderLink('https://futures.oraidex.io', 'Futures Trading', () => {}, true, <FuturesIcon />)}
+      {renderLink('https://orderbook.oraidex.io', 'Order Book', () => { }, true, <OrderbookIcon />)}
+      {renderLink('https://futures.oraidex.io', 'Futures Trading', () => { }, true, <FuturesIcon />)}
       <div className={styles.divider}></div>
       <div
         onClick={() => {
@@ -207,9 +224,9 @@ const Menu: React.FC = () => {
       <div
         className={classNames(styles.mobile_sub_menu, isOpenSubMenuMobile ? styles.openSubMenu : null, styles[theme])}
       >
-        {renderLink('https://t.me/oraidex', 'Join our Community', () => {}, true, <TelegramIcon />, false)}
-        {renderLink('https://twitter.com/oraidex', 'Twitter', () => {}, true, <TwitterIcon />, false)}
-        {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => {}, true, <SupportIcon />, false)}
+        {renderLink('https://t.me/oraidex', 'Join our Community', () => { }, true, <TelegramIcon />, false)}
+        {renderLink('https://twitter.com/oraidex', 'Twitter', () => { }, true, <TwitterIcon />, false)}
+        {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => { }, true, <SupportIcon />, false)}
       </div>
       {renderLink(
         '#',
@@ -221,7 +238,7 @@ const Menu: React.FC = () => {
         <KadoIcon />
       )}
       {/* {renderLink('https://defi.featurebase.app/', 'Feedback', setLink, false, <FeedBackIcon />)} */}
-      {renderLink('https://defi.featurebase.app/', 'Feedback', () => {}, true, <FeedBackIcon />, false)}
+      {renderLink('https://defi.featurebase.app/', 'Feedback', () => { }, true, <FeedBackIcon />, false)}
     </div>
   );
 
@@ -275,10 +292,10 @@ const Menu: React.FC = () => {
                 setVisible={() => setOtherActive(!otherActive)}
                 content={
                   <div className={classNames(styles.menu_others_list, styles[theme])}>
-                    {renderLink('https://t.me/oraidex', 'Join our Community', () => {}, true, <TelegramIcon />, false)}
-                    {renderLink('https://twitter.com/oraidex', 'Twitter', () => {}, true, <TwitterIcon />, false)}
-                    {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => {}, true, <SupportIcon />, false)}
-                    {renderLink('https://defi.featurebase.app/', 'Feedback', () => {}, true, <FeedBackIcon />, false)}
+                    {renderLink('https://t.me/oraidex', 'Join our Community', () => { }, true, <TelegramIcon />, false)}
+                    {renderLink('https://twitter.com/oraidex', 'Twitter', () => { }, true, <TwitterIcon />, false)}
+                    {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => { }, true, <SupportIcon />, false)}
+                    {renderLink('https://defi.featurebase.app/', 'Feedback', () => { }, true, <FeedBackIcon />, false)}
                   </div>
                 }
               />
@@ -301,6 +318,14 @@ const Menu: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {openCreateToken && (
+        <NewTokenModal
+          open={() => setOpenCreateToken(true)}
+          close={() => setOpenCreateToken(false)}
+          isOpen={openCreateToken}
+        />
       )}
 
       {openBuy && (

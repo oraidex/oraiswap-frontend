@@ -1,53 +1,43 @@
-import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
-import classNames from 'classnames';
-import RewardIcon from 'assets/icons/rewardIc.svg?react';
-import LiquidityIcon from 'assets/icons/liquidity.svg?react';
+import { BigDecimal, CW20_DECIMALS, parseAssetInfo, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { Tick } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
 import BootsIconDark from 'assets/icons/boost-icon-dark.svg?react';
 import BootsIcon from 'assets/icons/boost-icon.svg?react';
 import IconInfo from 'assets/icons/infomationIcon.svg?react';
-import {
-  BigDecimal,
-  CW20_DECIMALS,
-  oraichainTokens,
-  parseAssetInfo,
-  toDisplay,
-  TokenItemType
-} from '@oraichain/oraidex-common';
-import { Tick } from '@oraichain/oraidex-contracts-sdk/build/OraiswapV3.types';
+import LiquidityIcon from 'assets/icons/liquidity.svg?react';
+import RewardIcon from 'assets/icons/rewardIc.svg?react';
+import classNames from 'classnames';
+import { formatDisplayUsdt, numberWithCommas } from 'helper/format';
 
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { TooltipIcon } from 'components/Tooltip';
+import { getTransactionUrl, handleErrorTransaction, minimize } from 'helper';
+import { useCoinGeckoPrices } from 'hooks/useCoingecko';
+import useConfigReducer from 'hooks/useConfigReducer';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import useTheme from 'hooks/useTheme';
+import { network, oraichainTokens, oraichainTokensWithIcon } from 'initCommon';
 import SingletonOraiswapV3, { fetchPositionAprInfo, poolKeyToString, PositionAprInfo } from 'libs/contractSingleton';
+import { getCosmWasmClient } from 'libs/cosmjs';
+import { extractAddress } from 'pages/Pool-V3/helpers/format';
 import {
   calculateFee,
-  formatNumbers,
   getConvertedPool,
   getConvertedPosition,
   getTick,
   initialXtoY,
   tickerToAddress
 } from 'pages/Pool-V3/helpers/helper';
-import useConfigReducer from 'hooks/useConfigReducer';
-import { network } from 'config/networks';
-import { getTransactionUrl, handleErrorTransaction, minimize } from 'helper';
-import { TToastType, displayToast } from 'components/Toasts/Toast';
-import { getCosmWasmClient } from 'libs/cosmjs';
-import { useCoinGeckoPrices } from 'hooks/useCoingecko';
-import { oraichainTokensWithIcon } from 'config/chainInfos';
 import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
 import { useGetIncentiveSimulate } from 'pages/Pool-V3/hooks/useGetIncentiveSimulate';
 import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
 import { useGetPositions } from 'pages/Pool-V3/hooks/useGetPosition';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import CreateNewPosition from '../CreateNewPosition';
 import { printBigint } from '../PriceRangePlot/utils';
 import ZapOut from '../ZapOut';
 import styles from './index.module.scss';
-import { extractAddress } from 'pages/Pool-V3/helpers/format';
+import { NetworkChainId } from '@oraichain/common';
 
 let intervalId = null;
 
@@ -283,8 +273,8 @@ const PositionItem = ({ position }) => {
         <div className={styles.trigger} onClick={() => setCollapse(!openCollapse)}>
           <div className={styles.name}>
             <div className={classNames(styles.icons, styles[theme])}>
-              <position.tokenXIcon />
-              <position.tokenYIcon />
+              {position.tokenXIcon}
+              {position.tokenYIcon}
             </div>
             <span>
               {position.tokenXName} / {position.tokenYName}
@@ -389,14 +379,14 @@ const PositionItem = ({ position }) => {
                 </span>
                 <div className={classNames(styles.itemAsset, styles[theme])}>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenXIcon />
+                    {position.tokenXIcon}
                     {numberWithCommas(position.tokenXLiq, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
                     {position?.tokenX.name}
                   </span>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenYIcon />
+                    {position.tokenYIcon}
                     {numberWithCommas(position.tokenYLiq, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
@@ -427,7 +417,7 @@ const PositionItem = ({ position }) => {
                   </span>
                   <div className={classNames(styles.itemAsset, styles[theme])}>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenXIcon />
+                      {position.tokenXIcon}
                       {!principalAmountX
                         ? '--'
                         : numberWithCommas(toDisplay(principalAmountX || 0, tokenXDecimal), undefined, {
@@ -436,7 +426,7 @@ const PositionItem = ({ position }) => {
                       {position?.tokenX.name}
                     </span>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenYIcon />
+                      {position.tokenYIcon}
                       {!principalAmountY
                         ? '--'
                         : numberWithCommas(toDisplay(principalAmountY || 0, tokenYDecimal), undefined, {
@@ -480,14 +470,14 @@ const PositionItem = ({ position }) => {
                 </span>
                 <div className={classNames(styles.itemAsset, styles[theme])}>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenXIcon />
+                    {position.tokenXIcon}
                     {numberWithCommas(earnXDisplay, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
                     {position?.tokenX.name}
                   </span>
                   <span className={classNames(styles.token, styles[theme])}>
-                    <position.tokenYIcon />
+                    {position.tokenYIcon}
                     {numberWithCommas(earnYDisplay, undefined, {
                       maximumFractionDigits: 6
                     })}{' '}
@@ -506,7 +496,11 @@ const PositionItem = ({ position }) => {
                       <div className={classNames(styles.itemAsset, styles[theme])}>
                         <span className={classNames(styles.token, styles[theme])}></span>
                         <span className={classNames(styles.token, styles[theme])}>
-                          {theme === 'light' ? <token.IconLight /> : <token.Icon />}
+                          {theme === 'light' ? (
+                            <img src={token.iconLight} alt="tokenIncentive" width={20} height={20} />
+                          ) : (
+                            <img src={token.icon} alt="tokenIncentive" width={20} height={20} />
+                          )}
                           {!amount || !Number(amount)
                             ? '--'
                             : toDisplay(amount.toString(), token.decimals || CW20_DECIMALS)}{' '}
@@ -525,11 +519,11 @@ const PositionItem = ({ position }) => {
                   </span>
                   <div className={classNames(styles.itemAsset, styles[theme])}>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenXIcon />
+                      {position.tokenXIcon}
                       {tokenXClaim} {position?.tokenX.name}
                     </span>
                     <span className={classNames(styles.token, styles[theme])}>
-                      <position.tokenYIcon />
+                      {position.tokenYIcon}
                       {tokenYClaim} {position?.tokenY.name}
                     </span>
                   </div>
@@ -537,7 +531,7 @@ const PositionItem = ({ position }) => {
                 {incentives && <div style={{ height: 8 }} />}
                 {incentives &&
                   Object.keys(incentives).map((incent, i) => {
-                    const tokenIncentive = oraichainTokensWithIcon.find((orai) =>
+                    const tokenIncentive = oraichainTokens.find((orai) =>
                       [orai.denom, orai.contractAddress].includes(incent)
                     );
 
@@ -547,7 +541,11 @@ const PositionItem = ({ position }) => {
                         <div className={classNames(styles.itemAsset, styles[theme])}>
                           <span className={classNames(styles.token, styles[theme])}></span>
                           <span className={classNames(styles.token, styles[theme])}>
-                            {theme === 'light' ? <tokenIncentive.IconLight /> : <tokenIncentive.Icon />}
+                            {theme === 'light' ? (
+                              <img src={tokenIncentive.iconLight} alt="tokenIncentive" width={20} height={20} />
+                            ) : (
+                              <img src={tokenIncentive.icon} alt="tokenIncentive" width={20} height={20} />
+                            )}
                             {toDisplay(incentives[incent].toString())} {tokenIncentive?.name}
                           </span>
                         </div>
@@ -573,7 +571,7 @@ const PositionItem = ({ position }) => {
                       if (transactionHash) {
                         setIsClaimSuccess(true);
                         displayToast(TToastType.TX_SUCCESSFUL, {
-                          customLink: getTransactionUrl(network.chainId, transactionHash)
+                          customLink: getTransactionUrl(network.chainId as NetworkChainId, transactionHash)
                         });
                         refetchPositions();
                       }

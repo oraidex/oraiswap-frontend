@@ -1,12 +1,12 @@
 import styles from './InputSwap.module.scss';
 import cn from 'classnames/bind';
 import NumberFormat from 'react-number-format';
-import { CoinIcon, TokenItemType } from '@oraichain/oraidex-common';
+import { TokenItemType } from '@oraichain/oraidex-common';
 
 const cx = cn.bind(styles);
 
 interface InputSwapProps {
-  Icon: CoinIcon;
+  Icon: any;
   setIsSelectFrom: (value: boolean) => void;
   token: TokenItemType;
   amount: number;

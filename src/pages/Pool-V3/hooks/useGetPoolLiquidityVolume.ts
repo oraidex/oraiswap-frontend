@@ -16,7 +16,8 @@ export const useGetPoolLiquidityVolume = (prices: CoinGeckoPrices<string>) => {
     () => getPoolsLiqudityAndVolumeAmount(),
     {
       refetchOnWindowFocus: false,
-      placeholderData: []
+      placeholderData: [],
+      cacheTime: 5 * 60 * 1000
     }
   );
 
@@ -24,7 +25,7 @@ export const useGetPoolLiquidityVolume = (prices: CoinGeckoPrices<string>) => {
     ['pool-v3-liquidty-volume-hourly', prices],
     getPoolsVolumeByTokenLatest24h,
     {
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
       placeholderData: [],
       cacheTime: 5 * 60 * 1000
     }
@@ -32,13 +33,13 @@ export const useGetPoolLiquidityVolume = (prices: CoinGeckoPrices<string>) => {
 
   useEffect(() => {
     if (data.length === 0 || Object.keys(prices).length === 0 || dataHours.length === 0) return;
+    const newPoolLiquidities: Record<string, number> = {};
+    const newPoolVolumes: Record<string, number> = {};
+
     data.forEach((item) => {
-      setPoolLiquidities((prevState) => ({
-        ...prevState,
-        [item.id]:
-          (item.totalValueLockedTokenX / 10 ** item.tokenX.decimals) * (prices[item.tokenX.coingeckoId] ?? 0) +
-          (item.totalValueLockedTokenY / 10 ** item.tokenY.decimals) * (prices[item.tokenY.coingeckoId] ?? 0)
-      }));
+      newPoolLiquidities[item.id] =
+        (item.totalValueLockedTokenX / 10 ** item.tokenX.decimals) * (prices[item.tokenX.coingeckoId] ?? 0) +
+        (item.totalValueLockedTokenY / 10 ** item.tokenY.decimals) * (prices[item.tokenY.coingeckoId] ?? 0);
 
       let poolVolumeInUsd = 0;
       const poolHourData = dataHours.find((dataHour) => dataHour.id === item.id);
@@ -54,11 +55,11 @@ export const useGetPoolLiquidityVolume = (prices: CoinGeckoPrices<string>) => {
           (Number(volume24hByToken.volumeTokenY) / 10 ** item.tokenY.decimals) * (prices[item.tokenY.coingeckoId] ?? 0);
       }
 
-      setPoolVolume((prevState) => ({
-        ...prevState,
-        [item.id]: poolVolumeInUsd
-      }));
+      newPoolVolumes[item.id] = poolVolumeInUsd;
     });
+
+    setPoolLiquidities(newPoolLiquidities);
+    setPoolVolume(newPoolVolumes);
   }, [data, prices, dataHours]);
 
   return {

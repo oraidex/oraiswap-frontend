@@ -5,7 +5,7 @@ import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import { numberWithCommas } from 'pages/Pools/helpers';
 import { ORAIX_TOKEN_INFO, USDC_TOKEN_INFO } from 'pages/Staking/constants';
 import { calcAPY } from 'pages/Staking/helpers';
-import { useGetAllStakerRewardInfo, useGetRewardPerSecInfo, useGetStakeInfo } from 'pages/Staking/hooks';
+import { useGetRewardPerSecInfo, useGetStakeInfo } from 'pages/Staking/hooks';
 import styles from './index.module.scss';
 
 const Summary = () => {

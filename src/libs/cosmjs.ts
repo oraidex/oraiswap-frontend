@@ -4,9 +4,9 @@ import { OfflineSigner } from '@cosmjs/proto-signing';
 import { Coin, GasPrice } from '@cosmjs/stargate';
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import { Stargate } from '@injectivelabs/sdk-ts';
-import { network } from 'config/networks';
-import { MetamaskOfflineSigner } from './eip191';
 import { getWalletByNetworkCosmosFromStorage } from 'helper';
+import { MetamaskOfflineSigner } from './eip191';
+import { network } from 'initCommon';
 export type clientType = 'cosmwasm' | 'injective';
 
 const collectWallet = async (chainId: string) => {
@@ -24,16 +24,17 @@ const getCosmWasmClient = async (
     const { chainId, rpc, signer } = config;
     const wallet = signer ?? (await collectWallet(chainId));
     const defaultAddress = (await wallet.getAccounts())[0];
+    // console.log(network)
     const tmClient = await Tendermint37Client.connect(rpc ?? (network.rpc as string));
     const client = await cosmwasm.SigningCosmWasmClient.createWithSigner(
       tmClient,
       wallet,
       options
-        ? { ...options, broadcastPollIntervalMs: 600 }
+        ? { ...options, gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom), broadcastPollIntervalMs: 600 }
         : {
-            gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom),
-            broadcastPollIntervalMs: 600
-          }
+          gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom),
+          broadcastPollIntervalMs: 600
+        }
     );
     return { wallet, client, defaultAddress };
   } catch (error) {
