@@ -68,7 +68,7 @@ const UnStakeTab = () => {
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         refetchStakeInfo();
         refetchMyStakeRewardInfo();
@@ -97,7 +97,7 @@ const UnStakeTab = () => {
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
 
         refetchStakeInfo();
@@ -125,7 +125,7 @@ const UnStakeTab = () => {
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
 
         refetchStakeInfo();
@@ -252,7 +252,7 @@ const UnStakeTab = () => {
         }
         Icon={theme === 'light' ? ConfirmIconLight : ConfirmIcon}
         title="Unstaking confirmation"
-      // showIcon={false}
+        // showIcon={false}
       />
     </div>
   );

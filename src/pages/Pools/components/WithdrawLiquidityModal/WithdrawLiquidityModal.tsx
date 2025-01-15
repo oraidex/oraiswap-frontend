@@ -70,7 +70,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
         setLpAmountBurn(0n);
         onLiquidityChange(-lpAmountBurnUsdt);

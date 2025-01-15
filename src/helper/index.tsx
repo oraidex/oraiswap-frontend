@@ -124,7 +124,7 @@ export const getTransactionUrl = (chainId: NetworkChainId, transactionHash: stri
         case 'kawaii_6886-1':
           return `${KWT_SCAN}/tx/${transactionHash}`;
         case 'Oraichain':
-          return `${network.explorer}/txs/${transactionHash}`;
+          return `${network.explorer}/tx/${transactionHash}`;
       }
       return null;
   }

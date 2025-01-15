@@ -140,7 +140,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
 
     if (result) {
       displayToast(TToastType.TX_SUCCESSFUL, {
-        customLink: `${network.explorer}/txs/${result.transactionHash}`
+        customLink: `${network.explorer}/tx/${result.transactionHash}`
       });
     }
   };
@@ -225,7 +225,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
 
         const amountUsdt = Number(toAmount(getUsd(baseAmount, token1, prices) * 2));
@@ -294,7 +294,7 @@ export const AddLiquidityModal: FC<ModalProps> = ({ isOpen, close, onLiquidityCh
 
       if (result) {
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `${network.explorer}/txs/${result.transactionHash}`
+          customLink: `${network.explorer}/tx/${result.transactionHash}`
         });
 
         const amountUsdt = Number(toAmount(getUsd(baseAmount, token1, prices) * 2));

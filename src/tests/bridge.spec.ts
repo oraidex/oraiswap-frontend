@@ -6,7 +6,8 @@ import {
   ETHEREUM_SCAN,
   getEncodedExecuteContractMsgs,
   IBC_WASM_CONTRACT,
-  ibcInfos, ibcInfosOld,
+  ibcInfos,
+  ibcInfosOld,
   INJECTIVE_ORAICHAIN_DENOM,
   KWT_BSC_CONTRACT,
   KWT_DENOM,
@@ -180,7 +181,7 @@ describe('bridge', () => {
     ['0x38', '0x', `${BSC_SCAN}/tx/0x`],
     ['0x01', '0x', `${ETHEREUM_SCAN}/tx/0x`],
     ['0x2b6653dc', '0x1234', `${TRON_SCAN}/#/transaction/1234`],
-    ['Oraichain', '0x', `${network.explorer}/txs/0x`]
+    ['Oraichain', '0x', `${network.explorer}/tx/0x`]
   ])(
     'bridge-test-get-transaciton-url given chainId %s should give expected URL %s',
     (chainId: NetworkChainId, transactionHash: any, expectedUrl: string) => {

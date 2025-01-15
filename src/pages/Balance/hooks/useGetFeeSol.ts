@@ -1,7 +1,7 @@
 import { BigDecimal, solChainId, toAmount, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import axios from 'axios';
 import { useDebounce } from 'hooks/useDebounce';
-import { flattenTokens } from 'initCommon';
+import { flattenTokens, solTokens } from 'initCommon';
 import { useEffect, useState } from 'react';
 
 export enum Direction {
@@ -11,7 +11,12 @@ export enum Direction {
 
 export enum SUPPORT_TOKEN {
   ORAI = 'orai',
-  MAX = 'max'
+  MAX = 'max',
+  RACKS = 'racks',
+  GNRT = 'gnrt',
+  LEE = 'lee',
+  MOOBS = 'moobs',
+  CRISIS = 'crisis'
 }
 
 const useGetFeeSol = ({
@@ -38,6 +43,10 @@ const useGetFeeSol = ({
 
   const [solFee, setSolFee] = useState(defaultSolFee);
 
+  const getSupportToken = (denom) => {
+    return denom?.toLowerCase();
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -50,8 +59,9 @@ const useGetFeeSol = ({
 
         const amount: string = toAmount(debouncedAmountToken, originalFromToken.decimals).toString();
         const direction: Direction = toChainId === solChainId ? Direction.ORAI_TO_SOLANA : Direction.SOLANA_TO_ORAI;
-        const supportedToken: SUPPORT_TOKEN =
-          originalFromToken.coinGeckoId === 'oraichain-token' ? SUPPORT_TOKEN.ORAI : SUPPORT_TOKEN.MAX;
+        // const supportedToken: SUPPORT_TOKEN =
+        // originalFromToken.coinGeckoId === 'oraichain-token' ? SUPPORT_TOKEN.ORAI : SUPPORT_TOKEN.MAX;
+        const supportedToken: SUPPORT_TOKEN = getSupportToken(originalFromToken.name);
 
         const baseURL = `https://solana-relayer.orai.io`;
         const url: string = `${baseURL}/fee?direction=${direction}&amount=${amount}&supportedToken=${supportedToken}`;
