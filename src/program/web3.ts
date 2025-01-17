@@ -96,7 +96,7 @@ export class Web3SolanaProgramInteraction {
           })
         );
       } else {
-        const lamportsToSend = 0.01 * LAMPORTS_PER_SOL;
+        const lamportsToSend = tokenAmountRaw * LAMPORTS_PER_SOL;
         const transferTransaction = transaction.add(
           SystemProgram.transfer({
             fromPubkey: wallet.publicKey,
