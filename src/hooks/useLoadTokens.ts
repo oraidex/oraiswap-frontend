@@ -431,22 +431,6 @@ async function loadBtcAmounts(dispatch: Dispatch, btcAddress: string, chains: Cu
 
 async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: CustomChainInfo[]) {
   try {
-    const chainss = chains.map((c) => {
-      return {
-        ...c,
-        currencies: [
-          ...c.currencies,
-          {
-            coinDecimals: 9,
-            coinDenom: 'SOL',
-            coinGeckoId: 'solana',
-            coinImageUrl: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756',
-            coinMinimalDenom: 'sol'
-          }
-        ]
-      };
-    });
-
     const amountDetails = Object.fromEntries(
       flatten(await Promise.all(chains.map((chain) => loadSolEntries(solAddress, chain))))
     );
