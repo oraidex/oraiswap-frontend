@@ -5,7 +5,8 @@ import {
   PublicKey,
   Transaction,
   TransactionExpiredTimeoutError,
-  TransactionInstruction
+  TransactionInstruction,
+  SystemProgram
 } from '@solana/web3.js';
 import {
   createAssociatedTokenAccountInstruction,
@@ -45,53 +46,74 @@ export class Web3SolanaProgramInteraction {
     oraiReceiverAddress: string
   ) => {
     try {
-      const mintPubkey = new PublicKey(token.contractAddress);
-      const relayerPubkey = new PublicKey(SOL_RELAYER_ADDRESS);
-
-      const walletTokenAccount = getAssociatedTokenAddressSync(mintPubkey, wallet.publicKey);
-      const relayerTokenAccount = getAssociatedTokenAddressSync(mintPubkey, relayerPubkey);
-      console.log(relayerTokenAccount.toBase58(), mintPubkey.toBase58(), relayerPubkey.toBase58());
-      const accountInfo = await this.connection.getAccountInfo(relayerTokenAccount);
-      console.log('----accountInfo----', accountInfo);
-      const lamports = accountInfo?.lamports || 0;
-      // check the connection
-      if (!wallet.publicKey || !this.connection) {
-        throw new Error('Warning: Wallet not connected');
-      }
-
-      const parsedAmount = toAmount(tokenAmountRaw, token.decimals);
-
       let transaction = new Transaction();
-      const updateCpIx = ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 1_000_000
-      });
-      const updateCuIx = ComputeBudgetProgram.setComputeUnitLimit({
-        units: 500_000
-      });
-      transaction.add(updateCpIx, updateCuIx);
+      if (token.contractAddress) {
+        const mintPubkey = new PublicKey(token.contractAddress);
+        const relayerPubkey = new PublicKey(SOL_RELAYER_ADDRESS);
 
-      if (lamports == 0) {
+        const walletTokenAccount = getAssociatedTokenAddressSync(mintPubkey, wallet.publicKey);
+        const relayerTokenAccount = getAssociatedTokenAddressSync(mintPubkey, relayerPubkey);
+        const accountInfo = await this.connection.getAccountInfo(relayerTokenAccount);
+        console.log('----accountInfo----', accountInfo);
+        const lamports = accountInfo?.lamports || 0;
+        // check the connection
+        if (!wallet.publicKey || !this.connection) {
+          throw new Error('Warning: Wallet not connected');
+        }
+
+        const parsedAmount = toAmount(tokenAmountRaw, token.decimals);
+
+        const updateCpIx = ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: 1_000_000
+        });
+        const updateCuIx = ComputeBudgetProgram.setComputeUnitLimit({
+          units: 500_000
+        });
+        transaction.add(updateCpIx, updateCuIx);
+
+        if (lamports == 0) {
+          transaction.add(
+            createAssociatedTokenAccountInstruction(wallet.publicKey, relayerTokenAccount, relayerPubkey, mintPubkey)
+          );
+        }
+
         transaction.add(
-          createAssociatedTokenAccountInstruction(wallet.publicKey, relayerTokenAccount, relayerPubkey, mintPubkey)
+          createTransferCheckedInstruction(
+            walletTokenAccount,
+            mintPubkey,
+            relayerTokenAccount,
+            wallet.publicKey,
+            parsedAmount,
+            token.decimals
+          )
+        );
+
+        transaction.add(
+          new TransactionInstruction({
+            keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
+            data: Buffer.from(oraiReceiverAddress, 'utf-8'),
+            programId: new PublicKey(MEMO_PROGRAM_ID)
+          })
+        );
+      } else {
+        const lamportsToSend = 0.01 * LAMPORTS_PER_SOL;
+        const transferTransaction = transaction.add(
+          SystemProgram.transfer({
+            fromPubkey: wallet.publicKey,
+            toPubkey: new PublicKey(SOL_RELAYER_ADDRESS),
+            lamports: lamportsToSend
+          })
+        );
+
+        transferTransaction.add(
+          new TransactionInstruction({
+            keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
+            data: Buffer.from(oraiReceiverAddress, 'utf-8'),
+            programId: new PublicKey(MEMO_PROGRAM_ID)
+          })
         );
       }
-      transaction.add(
-        createTransferCheckedInstruction(
-          walletTokenAccount,
-          mintPubkey,
-          relayerTokenAccount,
-          wallet.publicKey,
-          parsedAmount,
-          token.decimals
-        )
-      );
-      transaction.add(
-        new TransactionInstruction({
-          keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
-          data: Buffer.from(oraiReceiverAddress, 'utf-8'),
-          programId: new PublicKey(MEMO_PROGRAM_ID)
-        })
-      );
+
       transaction.feePayer = wallet.publicKey;
       const blockhash = await this.connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash.blockhash;

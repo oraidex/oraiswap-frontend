@@ -385,6 +385,7 @@ async function loadSolEntries(
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
     });
 
+    const nativeAmountToken = await loadNativeSolAmounts(chain.rpc, walletPublicKey);
     const storage = store.getState();
     const allSolTokens = (storage.token.allOtherChainTokens || []).filter((t) => t.chainId === chain.chainId);
     let entries: [string, string][] = allSolTokens.map((item) => {
@@ -395,6 +396,7 @@ async function loadSolEntries(
         );
         if (findAmount) amount = findAmount.account.data.parsed.info.tokenAmount.amount;
       }
+      if (!item?.contractAddress) return [item.denom, nativeAmountToken];
       return [item.denom, amount];
     });
     return entries;
@@ -429,6 +431,22 @@ async function loadBtcAmounts(dispatch: Dispatch, btcAddress: string, chains: Cu
 
 async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: CustomChainInfo[]) {
   try {
+    const chainss = chains.map((c) => {
+      return {
+        ...c,
+        currencies: [
+          ...c.currencies,
+          {
+            coinDecimals: 9,
+            coinDenom: 'SOL',
+            coinGeckoId: 'solana',
+            coinImageUrl: 'https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756',
+            coinMinimalDenom: 'sol'
+          }
+        ]
+      };
+    });
+
     const amountDetails = Object.fromEntries(
       flatten(await Promise.all(chains.map((chain) => loadSolEntries(solAddress, chain))))
     );
@@ -436,6 +454,17 @@ async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: Cu
     dispatch(updateAmounts(amountDetails));
   } catch (error) {
     console.log('error: loadBtcAmounts', error);
+  }
+}
+
+async function loadNativeSolAmounts(rpc, walletPublicKey) {
+  try {
+    const connection = new Connection(rpc);
+    const balance = await connection.getBalance(walletPublicKey);
+    return balance.toString();
+  } catch (error) {
+    console.log('error: loadNativeSolAmounts', error);
+    return '0';
   }
 }
 

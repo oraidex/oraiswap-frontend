@@ -595,7 +595,15 @@ const Balance: React.FC<BalanceProps> = () => {
 
     const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
     const listNotCheckBalanceOraichainToSol = [ORAI];
-    if (!listNotCheckBalanceOraichainToSol.includes(fromToken.denom)) {
+
+    if (!fromToken.contractAddress && transferAmount < 0.01) {
+      return displayToast(TToastType.TX_FAILED, {
+        message: 'minimum bridge of solana native token is 0.01!'
+      });
+    }
+
+    const toTokenIsSolanaNative = !toToken?.contractAddress;
+    if (!toTokenIsSolanaNative && !listNotCheckBalanceOraichainToSol.includes(fromToken.denom)) {
       const web3Solana = new Web3SolanaProgramInteraction();
       const bridgeBalance =
         fromToken.contractAddress === NATIVE_MINT.toBase58()
