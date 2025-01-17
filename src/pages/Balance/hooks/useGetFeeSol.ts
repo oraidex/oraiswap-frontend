@@ -12,7 +12,7 @@ export enum Direction {
 export enum SUPPORT_TOKEN {
   ORAI = 'orai',
   MAX = 'max',
-  RACKS = 'racks',
+  RACKS = 'rack',
   GNRT = 'gnrt',
   LEE = 'lee',
   MOOBS = 'moobs',
@@ -44,6 +44,7 @@ const useGetFeeSol = ({
   const [solFee, setSolFee] = useState(defaultSolFee);
 
   const getSupportToken = (denom) => {
+    if (denom === 'RACKS') return SUPPORT_TOKEN.RACKS;
     return denom?.toLowerCase();
   };
 

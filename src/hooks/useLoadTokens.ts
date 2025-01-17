@@ -385,6 +385,7 @@ async function loadSolEntries(
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
     });
 
+    const nativeAmountToken = await loadNativeSolAmounts(chain.rpc, walletPublicKey);
     const storage = store.getState();
     const allSolTokens = (storage.token.allOtherChainTokens || []).filter((t) => t.chainId === chain.chainId);
     let entries: [string, string][] = allSolTokens.map((item) => {
@@ -395,6 +396,7 @@ async function loadSolEntries(
         );
         if (findAmount) amount = findAmount.account.data.parsed.info.tokenAmount.amount;
       }
+      if (!item?.contractAddress) return [item.denom, nativeAmountToken];
       return [item.denom, amount];
     });
     return entries;
@@ -436,6 +438,17 @@ async function loadSolAmounts(dispatch: Dispatch, solAddress: string, chains: Cu
     dispatch(updateAmounts(amountDetails));
   } catch (error) {
     console.log('error: loadBtcAmounts', error);
+  }
+}
+
+async function loadNativeSolAmounts(rpc, walletPublicKey) {
+  try {
+    const connection = new Connection(rpc);
+    const balance = await connection.getBalance(walletPublicKey);
+    return balance.toString();
+  } catch (error) {
+    console.log('error: loadNativeSolAmounts', error);
+    return '0';
   }
 }
 
