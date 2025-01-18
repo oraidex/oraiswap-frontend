@@ -98,6 +98,13 @@ export class Web3SolanaProgramInteraction {
         );
       } else {
         const lamportsToSend = tokenAmountRaw * LAMPORTS_PER_SOL;
+        const updateCpIx = ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: 10_000_000
+        });
+        const updateCuIx = ComputeBudgetProgram.setComputeUnitLimit({
+          units: 500_000
+        });
+        transaction.add(updateCpIx, updateCuIx);
         const transferTransaction = transaction.add(
           SystemProgram.transfer({
             fromPubkey: wallet.publicKey,
