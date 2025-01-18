@@ -167,6 +167,9 @@
   .closeIcon {
     position: absolute;
     right: 10px;
+    @include mobile {
+      top: 87px;
+    }
     display: flex;
     align-items: center;
     cursor: pointer;
