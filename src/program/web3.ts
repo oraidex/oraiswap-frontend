@@ -65,7 +65,7 @@ export class Web3SolanaProgramInteraction {
         const parsedAmount = toAmount(tokenAmountRaw, token.decimals);
 
         const updateCpIx = ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: 1_000_000
+          microLamports: 10_000_000
         });
         const updateCuIx = ComputeBudgetProgram.setComputeUnitLimit({
           units: 500_000
