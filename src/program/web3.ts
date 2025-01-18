@@ -28,7 +28,7 @@ export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
 export const SOL_RELAYER_ADDRESS = 'HGPezSRSzZNXiBhzEXPw1gwCqsdbW7Psy5TjeyB78x8j';
 export const ORAICHAIN_RELAYER_ADDRESS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
-export const connection = 'https://rpc.ironforge.network/mainnet?apiKey=01J3QVEMHPE2ZSG1BAGGJ9G60W';
+export const connection = 'https://cold-hanni-fast-mainnet.helius-rpc.com';
 
 export class Web3SolanaProgramInteraction {
   connection: Connection;
