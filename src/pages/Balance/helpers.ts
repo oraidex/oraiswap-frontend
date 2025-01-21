@@ -809,3 +809,15 @@ export const BTCtoSat = (sat = 0, isDisplayAmount?: boolean) => {
   if (isDisplayAmount) return new BitcoinUnit(sat, 'BTC').to('satoshi').getValueAsString();
   return new BitcoinUnit(sat, 'BTC').to('satoshi').getValue();
 };
+
+interface FormatNumberProps {
+  value: number | string;
+  decimalPlaces?: number;
+}
+
+export const FormatNumberFixed: React.FC<FormatNumberProps> = ({ value, decimalPlaces = 6 }) => {
+  const numberValue = Number(value);
+
+  const formattedValue = numberValue === 0 ? '0' : numberValue.toFixed(decimalPlaces);
+  return formattedValue;
+};

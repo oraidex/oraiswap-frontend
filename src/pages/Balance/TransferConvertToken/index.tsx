@@ -27,6 +27,7 @@ import { FC, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import {
   calcMaxAmount,
+  FormatNumberFixed,
   useDepositFeesBitcoin,
   useDepositFeesBitcoinV2,
   useGetWithdrawlFeesBitcoin,
@@ -251,18 +252,17 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         ) : null}
         {relayerFeeTokenFee > 0 ? (
           <div className={styles.relayerFee}>
-            - Relayer fee:{' '}
+            - Relayer fee:
             <span>
-              {' '}
-              {relayerFeeTokenFee} {token.name}{' '}
+              {relayerFeeTokenFee} {token.name}
             </span>
           </div>
         ) : null}
         - Received amount:{' '}
         <span>
-          {(isSolToOraichain || isOraichainToSol ? solFee.sendAmount : receivedAmount > 0 ? receivedAmount : 0).toFixed(
-            6
-          )}{' '}
+          {FormatNumberFixed({
+            value: isSolToOraichain || isOraichainToSol ? solFee.sendAmount : Math.max(Number(receivedAmount) || 0, 0)
+          })}{' '}
           {token.name}
         </span>
         {!!toDisplayBTCFee && (
