@@ -7,7 +7,6 @@ export const leapWalletType = 'leapSnap';
 export const btcNetwork: any = 'bitcoin';
 // TODO: hardcode switch bitcoinTestnet and bitcoin
 export const bitcoinChainId: any = ChainIdEnum.Bitcoin;
-export const bitcoinLcd = 'https://btc.lcd.orai.io';
 export const bitcoinLcdV2 = 'https://relayer-btc.oraidex.io';
 export const CWAppBitcoinContractAddress = 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv';
 export const CWBitcoinFactoryDenom = 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc';

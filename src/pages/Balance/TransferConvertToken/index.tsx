@@ -167,25 +167,18 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
-  const isV2 = token.name === 'BTC';
   let { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
-  const depositFeeBtcResult = useDepositFeesBitcoin(isFromBitcoinToOraichain);
-  const withdrawalFeeBtcResult = useGetWithdrawlFeesBitcoin({
-    enabled: isFromOraichainToBitcoin,
-    bitcoinAddress: addressTransfer
-  });
   const depositFeeBtcV2Result = useDepositFeesBitcoinV2(true);
   const withdrawalFeeBtcV2Result = useGetWithdrawlFeesBitcoinV2({
     enabled: isFromOraichainToBitcoin,
     bitcoinAddress: addressTransfer
   });
-  const depositFeeBtc = isV2 ? depositFeeBtcV2Result : depositFeeBtcResult;
-  const withdrawalFeeBtc = isV2
-    ? isFastMode
-      ? { withdrawal_fees: depositFeeBtcV2Result?.deposit_fees }
-      : withdrawalFeeBtcV2Result
-    : withdrawalFeeBtcResult;
-  if (isV2) {
+  const depositFeeBtc = depositFeeBtcV2Result;
+  const withdrawalFeeBtc = isFastMode
+    ? { withdrawal_fees: depositFeeBtcV2Result?.deposit_fees }
+    : withdrawalFeeBtcV2Result;
+
+  if (token.name === 'BTC') {
     if (contractConfig?.token_fee.denominator != 0) {
       bridgeFee = (contractConfig?.token_fee.nominator * 100) / contractConfig?.token_fee.denominator;
     } else {
@@ -244,7 +237,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           </>
         ) : (
           <>
-            Bridge fee: <span>{bridgeFee}% </span>
+            Bridge fee: <span>{bridgeFee || '0'}% </span>
           </>
         )}
         {tonTokenFee > 0 ? (

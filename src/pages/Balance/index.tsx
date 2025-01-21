@@ -322,7 +322,6 @@ const Balance: React.FC<BalanceProps> = () => {
   );
 
   const handleTransferBTCToOraichain = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
-    const isV2 = fromToken.name === 'BTC';
     const utxos = await getUtxos(btcAddr, fromToken.rpc);
     const feeRate = await getFeeRate({
       url: from.rpc
@@ -337,7 +336,7 @@ const Balance: React.FC<BalanceProps> = () => {
       message: '',
       transactionFee: feeRate
     });
-    const { bitcoinAddress: address } = isV2 ? cwBitcoinContext.depositAddress : nomic.depositAddress;
+    const { bitcoinAddress: address } = cwBitcoinContext?.depositAddress || { bitcoinAddress: '' };
     if (!address) throw Error('Not found address OraiBtc');
     const amount = new BitcoinUnit(transferAmount, 'BTC').to('satoshi').getValue();
     const dataRequest = {
@@ -376,7 +375,7 @@ const Balance: React.FC<BalanceProps> = () => {
       if (rs?.rawTxHex) {
         setTxHash(rs.rawTxHex);
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `/bitcoin-dashboard${isV2 ? '-v2' : ''}?tab=pending_deposits`
+          customLink: `/bitcoin-dashboard-v2?tab=pending_deposits`
         });
         setTimeout(async () => {
           await loadTokenAmounts({ metamaskAddress, tronAddress, oraiAddress, btcAddress: btcAddr, tonAddress });
@@ -942,8 +941,7 @@ const Balance: React.FC<BalanceProps> = () => {
                     window?.owallet?.isOwallet;
 
                   const isBtcToken = t.chainId === bitcoinChainId && t?.coinGeckoId === 'bitcoin';
-                  const isV2 = false;
-                  const TokenItemELement: React.FC<TokenItemProps> = isBtcToken && isV2 ? TokenItemBtc : TokenItem;
+                  const TokenItemELement: React.FC<TokenItemProps> = TokenItem;
                   return (
                     <div key={t.denom}>
                       {!isOwallet && !isMobile() && isBtcToken && (
