@@ -18,8 +18,8 @@
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@leapwallet/cosmos-snap-provider": "0.1.25",
     "@lucky-canvas/react": "^0.1.13",
-    "@oraichain/bitcoin-bridge-contracts-sdk": "^1.1.9",
-    "@oraichain/bitcoin-bridge-lib-js": "^1.1.9",
+    "@oraichain/bitcoin-bridge-contracts-sdk": "^1.1.36",
+    "@oraichain/bitcoin-bridge-lib-js": "^1.1.36",
     "@oraichain/common-contracts-sdk": "^1.0.31",
     "@oraichain/ethereum-multicall": "^1.0.2",
     "@oraichain/kawaiiverse-txs": "^0.0.3",
@@ -171,7 +171,7 @@
     "@sentry/react": "7.99.0",
     "@cosmjs/amino": "0.32.4",
     "@oraichain/oraidex-common": "2.0.10",
-    "@oraichain/common": "1.2.8"
+    "@oraichain/common": "1.2.9"
   },
   "overrides": {
     "cosmjs-types@>0.7.0 <0.8.0": "0.7.1",

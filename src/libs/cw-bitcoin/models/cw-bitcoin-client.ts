@@ -1,5 +1,5 @@
 import { DepositSuccess } from '@oraichain/orai-bitcoin';
-import { bitcoinLcd, bitcoinLcdV2, btcNetwork } from 'helper/constants';
+import { bitcoinLcdV2, btcNetwork } from 'helper/constants';
 import { CwBitcoinClientInterface } from './cw-bitcoin-client-interface';
 import { Dest } from '@oraichain/bitcoin-bridge-contracts-sdk/build/CwBitcoin.types';
 // import { generateDepositAddress } from '..';
@@ -13,8 +13,6 @@ export class CwBitcoinClient implements CwBitcoinClientInterface {
   public depositAddress: DepositSuccess | null = null;
 
   public async generateAddress(dest: Dest) {
-    // FIXME: TURN OFF BTC NOW
-    return null;
     try {
       // @ts-ignore-check
       const config = {
@@ -23,7 +21,15 @@ export class CwBitcoinClient implements CwBitcoinClientInterface {
         dest
       } as any;
 
-      const btcAddressToDeposit = (await generateDepositAddress(config)) as DepositSuccess;
+      let btcAddressToDeposit;
+      while (true) {
+        try {
+          btcAddressToDeposit = (await generateDepositAddress(config)) as DepositSuccess;
+          break;
+        } catch (err) {
+          continue;
+        }
+      }
 
       this.depositAddress = btcAddressToDeposit;
     } catch (err) {

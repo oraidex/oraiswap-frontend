@@ -77,7 +77,7 @@ export const btcNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId ==
 export const solanaNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === solChainId);
 export const tonNetworksWithIcon = chainInfosWithIcon.filter((c) => c.chainId === TonChainId);
 
-export const filterChainBridge = (token: Tokens, item: CustomChainInfo) => {
+export const filterChainBridge = (token: Tokens | TokenItemType, item: CustomChainInfo) => {
   const tokenCanBridgeTo = token.bridgeTo ?? ['Oraichain'];
   return tokenCanBridgeTo.includes(item.chainId);
 };

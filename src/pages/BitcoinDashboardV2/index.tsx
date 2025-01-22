@@ -7,7 +7,6 @@ import { PendingDeposits } from './components/PendingDeposits';
 import { Tabs, KeysFilter } from './components/Tabs/Tabs';
 import { useSearchParams } from 'react-router-dom';
 import { PendingWithdraws } from './components/PendingWithdraws';
-import { NomicContext } from 'context/nomic-context';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
 import useConfigReducer from 'hooks/useConfigReducer';
 
@@ -15,19 +14,9 @@ const BitcoinDashboard: React.FC<{}> = () => {
   const [oraiAddress] = useConfigReducer('address');
   const [searchParams, _] = useSearchParams();
   const tab = searchParams.get('tab');
-  const nomic = useContext(NomicContext);
   const cwBitcoinContext = useContext(CwBitcoinContext);
   //@ts-ignore
   const isOwallet = window.owallet?.isOwallet;
-
-  const getAddress = async () => {
-    try {
-      await nomic.generateAddress();
-    } catch (error) {
-      console.log('🚀 ~ getAddress ~ error:', error);
-    }
-  };
-
   const tabComponents = {
     [KeysFilter.pending_deposits]: PendingDeposits,
     [KeysFilter.checkpoint]: Checkpoint,
@@ -47,11 +36,6 @@ const BitcoinDashboard: React.FC<{}> = () => {
       });
     }
   }, [isOwallet, oraiAddress]);
-  useEffect(() => {
-    if (isOwallet) {
-      getAddress();
-    }
-  }, [oraiAddress, isOwallet]);
 
   return (
     <Content nonBackground otherBackground>

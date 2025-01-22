@@ -28,23 +28,15 @@ import { useQuery } from '@tanstack/react-query';
 import { BitcoinUnit } from 'bitcoin-units';
 import { opcodes, script } from 'bitcoinjs-lib';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { bitcoinLcd, bitcoinLcdV2 } from 'helper/constants';
+import { bitcoinLcdV2 } from 'helper/constants';
 import { chainInfos, flattenTokens, kawaiiTokens, network, tokenMap } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import KawaiiverseJs from 'libs/kawaiiversejs';
-import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
 import { generateError } from 'libs/utils';
 import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMoveOraib2OraiMessages } from 'rest/api';
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 import { store } from 'store/configure';
-import { config } from 'libs/nomic/config';
-import QRCode from 'qrcode';
-import { useEffect, useState } from 'react';
-import { OraiBtcSubnetChain } from 'libs/nomic/models/ibc-chain';
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { getAccount, getMint } from '@solana/spl-token';
-import { Connection, PublicKey } from '@solana/web3.js';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
@@ -490,6 +482,7 @@ export const calcMaxAmount = ({
 
   let finalAmount = maxAmount;
   if (token.chainId === 'ton') return finalAmount;
+  if (token.chainId === 'bitcoin') return finalAmount;
 
   const feeCurrencyOfToken = token.feeCurrencies?.find((e) => e.coinMinimalDenom === token.denom);
   if (feeCurrencyOfToken) {
@@ -629,7 +622,7 @@ export const useGetWithdrawlFeesBitcoin = ({
     if (!bitcoinAddr) return 0;
     try {
       const { data } = await axios({
-        baseURL: bitcoinLcd,
+        baseURL: bitcoinLcdV2,
         method: 'get',
         url: `/bitcoin/withdrawal_fees/${bitcoinAddr}`
       });
@@ -654,11 +647,13 @@ export const useDepositFeesBitcoin = (enabled: boolean) => {
   const getDepositFeeBTC = async () => {
     try {
       const { data } = await axios({
-        baseURL: bitcoinLcd,
+        baseURL: bitcoinLcdV2,
         method: 'get',
-        url: `/bitcoin/deposit_fees`
+        url: `/api/checkpoint/deposit_fee`
       });
-      return data;
+      return {
+        deposit_fees: data?.data || 0
+      };
     } catch (error) {
       console.log({ errorGetDepositFeeBTC: error });
       return {
@@ -717,9 +712,6 @@ export const useGetWithdrawlFeesBitcoinV2 = ({
 };
 
 export const useDepositFeesBitcoinV2 = (enabled: boolean) => {
-  // FIXME: TURN OFF BTC NOW
-  return null
-
   const getDepositFeeBTC = async () => {
     try {
       const { data } = await axios({
@@ -753,8 +745,9 @@ export const useGetInfoBtc = () => {
   const { data: infoBTC } = useQuery(
     ['estimate-btc-deposit'],
     async () => {
-      const nomic = new NomicClient();
-      return await nomic.getConfig();
+      return await fetch(`https://btc.relayer.orai.io/bitcoin/config`, {
+        method: 'GET'
+      }).then((data) => data.json());
     },
     {
       placeholderData: {
@@ -808,4 +801,16 @@ export const BTCtoSat = (sat = 0, isDisplayAmount?: boolean) => {
   if (!sat) return 0;
   if (isDisplayAmount) return new BitcoinUnit(sat, 'BTC').to('satoshi').getValueAsString();
   return new BitcoinUnit(sat, 'BTC').to('satoshi').getValue();
+};
+
+interface FormatNumberProps {
+  value: number | string;
+  decimalPlaces?: number;
+}
+
+export const FormatNumberFixed: React.FC<FormatNumberProps> = ({ value, decimalPlaces = 6 }) => {
+  const numberValue = Number(value);
+
+  const formattedValue = numberValue === 0 ? '0' : numberValue.toFixed(decimalPlaces);
+  return formattedValue;
 };

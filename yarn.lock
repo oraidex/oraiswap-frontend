@@ -3782,22 +3782,17 @@
     "@babel/template" "^7.22.15"
     "@babel/types" "^7.23.3"
 
-"@oraichain/bitcoin-bridge-contracts-sdk@^1.1.9":
-  version "1.1.9"
-  resolved "https://registry.yarnpkg.com/@oraichain/bitcoin-bridge-contracts-sdk/-/bitcoin-bridge-contracts-sdk-1.1.9.tgz#169900a14529a64110703511c97b65ef2adf3139"
-  integrity sha512-5FSiGPNT0v3F97l+qoiQFk9TmoAQSC9EK/L25Wq9EFYvokZrMJzimWroRZV94M9LyoL7zd1fu6rZgkSlVZWbwA==
+"@oraichain/bitcoin-bridge-contracts-sdk@^1.1.36":
+  version "1.1.36"
+  resolved "https://registry.yarnpkg.com/@oraichain/bitcoin-bridge-contracts-sdk/-/bitcoin-bridge-contracts-sdk-1.1.36.tgz#d16958a4844d5ca8ff7e3c3196ae4c0f9655a999"
+  integrity sha512-kFZsQCCD/ZWPaxRFWDCbS1VXOQDdGBS7vp16+5i8yUeLVGnRzW89m6M3DHVJakzUbr5VYTmdyi9WpA9yw/U+wQ==
 
-"@oraichain/bitcoin-bridge-contracts-sdk@latest":
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/@oraichain/bitcoin-bridge-contracts-sdk/-/bitcoin-bridge-contracts-sdk-1.1.7.tgz#b1a8ba94498fb267f95059e4bcb45e48430808bb"
-  integrity sha512-CKp5mnL9XRm7awPtt5UiYJ6gHTrFpknWsx65SpRw4CpqqKHzLtzJzXLvVwC0f2aPAYUENLJvz2MRkkS4ePR+xQ==
-
-"@oraichain/bitcoin-bridge-lib-js@^1.1.9":
-  version "1.1.9"
-  resolved "https://registry.yarnpkg.com/@oraichain/bitcoin-bridge-lib-js/-/bitcoin-bridge-lib-js-1.1.9.tgz#4a3f60d1a8a3996ca850753b7dca0b4b5df281e5"
-  integrity sha512-Opcy6xlnhTdBDWO8KajypwakfNOYi4DNgtGickipdoDEwMsgkcxXBxj2qCxMHWPJ2WudCeFa+Wl9Kru0eTnAbg==
+"@oraichain/bitcoin-bridge-lib-js@^1.1.36":
+  version "1.1.36"
+  resolved "https://registry.yarnpkg.com/@oraichain/bitcoin-bridge-lib-js/-/bitcoin-bridge-lib-js-1.1.36.tgz#80bb6f39cb62be1e84268eccccd79fd7d20bf8cb"
+  integrity sha512-eJpYNas8QHcEKiJxNM4uXzWHlZ1+EVvxtN237f9OhfBwQQtxWfgEsVBFlGnCO29DNdiiaXEXcFtXNhdnGRBJXw==
   dependencies:
-    "@oraichain/bitcoin-bridge-contracts-sdk" latest
+    "@oraichain/bitcoin-bridge-contracts-sdk" "^1.1.36"
     bitcoinjs-lib "^6.0.1"
 
 "@oraichain/common-contracts-build@1.0.35":
@@ -3812,10 +3807,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/common-contracts-sdk/-/common-contracts-sdk-1.0.31.tgz#595f93b168438d69d64896909b37855c9afc92fb"
   integrity sha512-s8H20RXy5gCnu3DnM7L5ClQyj2mdQpbSBpZrXCpIAX9qY0LKsDdZG3sYaDQ8+VN333jz9Pp/qGWdFSYD+6PBsg==
 
-"@oraichain/common@1.2.7", "@oraichain/common@1.2.8", "@oraichain/common@^1.2.0", "@oraichain/common@^1.2.8":
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.8.tgz#af1e5766d78a4c8b080b7b0544eaceecf852996e"
-  integrity sha512-g01foLXdpdAPR6bFzos96P3juGf5EGCiKMx5/Ld6RcY2m6ibyVZK5tIpXdn+G67da5w9vhdqHOspL38La1l+yA==
+"@oraichain/common@1.2.7", "@oraichain/common@1.2.8", "@oraichain/common@1.2.9", "@oraichain/common@^1.2.0", "@oraichain/common@^1.2.8":
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.2.9.tgz#c7c5db109a88e3d048ed3f6e93953e3451152b85"
+  integrity sha512-g/KCRxAOEgftZram+LtHEbsKzrf3GaujRGlfQnA4TczQVpPnE0n5SS9AgpklCGTc9FYo4e/2T5cOz/7drZeZjA==
   dependencies:
     "@keplr-wallet/types" "0.12.141"
     axios "0.21.4"
