@@ -20,7 +20,6 @@ import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { getStorageKey, handleErrorTransaction } from 'helper';
 import { useDepositFeesBitcoinV2, useGetWithdrawlFeesBitcoin } from 'pages/Balance/helpers';
 import { useRelayerFeeToken } from 'hooks/useTokenFee';
-import { PendingWithdraws } from 'pages/BitcoinDashboard/components/PendingWithdraws';
 import { useGetPendingDeposits } from 'pages/BitcoinDashboardV2/hooks';
 import { btcTokens, oraichainTokens } from 'initCommon';
 
@@ -101,7 +100,7 @@ const ConvertBitcoinV2: React.FC<{}> = ({}) => {
         'https://rpc.orai.io',
         // @ts-ignore-check
         result,
-        '/bitcoin-dashboard?tab=pending_withdraws'
+        '/bitcoin-dashboard-v2?tab=pending_withdraws'
       );
     } catch (err) {
       console.log('handleConvertBTC', err);
@@ -250,11 +249,11 @@ const ConvertBitcoinV2: React.FC<{}> = ({}) => {
           </div>
         </div>
       </div>
-      <PendingWithdraws
+      {/* <PendingWithdraws
         btcAddresses={cachePendingWithdrawAddrs}
         withdrawFee={BigInt(Math.floor(parseInt(depositFeeV2Btc?.deposit_fees ?? '0') / 1_000_000))}
         showTx={false}
-      />
+      /> */}
     </div>
   );
 };
