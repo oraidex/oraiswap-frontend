@@ -322,7 +322,6 @@ const Balance: React.FC<BalanceProps> = () => {
   );
 
   const handleTransferBTCToOraichain = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
-    const isV2 = fromToken.name === 'BTC';
     const utxos = await getUtxos(btcAddr, fromToken.rpc);
     const feeRate = await getFeeRate({
       url: from.rpc
@@ -337,7 +336,7 @@ const Balance: React.FC<BalanceProps> = () => {
       message: '',
       transactionFee: feeRate
     });
-    const { bitcoinAddress: address } = isV2 ? cwBitcoinContext.depositAddress : nomic.depositAddress;
+    const { bitcoinAddress: address } = cwBitcoinContext?.depositAddress || { bitcoinAddress: '' };
     if (!address) throw Error('Not found address OraiBtc');
     const amount = new BitcoinUnit(transferAmount, 'BTC').to('satoshi').getValue();
     const dataRequest = {
@@ -376,7 +375,7 @@ const Balance: React.FC<BalanceProps> = () => {
       if (rs?.rawTxHex) {
         setTxHash(rs.rawTxHex);
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `/bitcoin-dashboard${isV2 ? '-v2' : ''}?tab=pending_deposits`
+          customLink: `/bitcoin-dashboard-v2?tab=pending_deposits`
         });
         setTimeout(async () => {
           await loadTokenAmounts({ metamaskAddress, tronAddress, oraiAddress, btcAddress: btcAddr, tonAddress });
@@ -395,84 +394,33 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const handleTransferOraichainToBTC = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
-    if (fromToken.name === 'BTC') {
-      try {
-        if (!withdrawV2Fee?.withdrawal_fees) {
-          throw Error('Withdrawal fees are not found!');
-        }
-        if (!depositV2Fee?.deposit_fees) {
-          throw Error('Deposit fees are not found!');
-        }
-        const fee = isFastMode ? depositV2Fee?.deposit_fees : withdrawV2Fee?.withdrawal_fees;
-        console.log(fee);
-        const amountInput = BigInt(
-          Decimal.fromUserInput(toAmount(transferAmount, 14).toString(), 14).atomics.toString()
-        );
-        const amount = Decimal.fromAtomics(amountInput.toString(), 14).toString();
-        let sender = await window.Keplr.getKeplrAddr(fromToken?.chainId);
-        let cwBitcoinClient = new AppBitcoinClient(window.client, sender, CWAppBitcoinContractAddress);
-        const result = await cwBitcoinClient.withdrawToBitcoin(
-          {
-            btcAddress: btcAddr,
-            fee
-          },
-          'auto',
-          '',
-          [coin(amount, CWBitcoinFactoryDenom)]
-        );
-
-        processTxResult(
-          fromToken.rpc,
-          // @ts-ignore-check
-          result,
-          '/bitcoin-dashboard-v2?tab=pending_withdraws'
-        );
-      } catch (ex) {
-        console.log(ex);
-        handleErrorTransaction(ex, {
-          tokenName: from.name,
-          chainName: from.chainId
-        });
-      }
-      return;
-    }
-    const { bitcoinAddress: address } = nomic.depositAddress;
-
-    if (!address) throw Error('Not found Orai BTC Address');
-    // @ts-ignore-check
-    const destinationAddress = await window.Keplr.getKeplrAddr(OraiBtcSubnetChain.chainId);
-
-    const DEFAULT_TIMEOUT = 60 * 60;
-    const amountInput = BigInt(Decimal.fromUserInput(toAmount(transferAmount, 6).toString(), 8).atomics.toString());
-    const amount = Decimal.fromAtomics(amountInput.toString(), 8).toString();
-    if (!destinationAddress) throw Error('Not found your oraibtc-subnet address!');
     try {
-      const result = await window.client.execute(
-        oraiAddress,
-        OBTCContractAddress,
+      if (!withdrawV2Fee?.withdrawal_fees) throw Error('Withdrawal fees are not found!');
+      if (!depositV2Fee?.deposit_fees) throw Error('Deposit fees are not found!');
+
+      const fee = isFastMode ? depositV2Fee?.deposit_fees : withdrawV2Fee?.withdrawal_fees;
+      const amountInput = BigInt(Decimal.fromUserInput(toAmount(transferAmount, 14).toString(), 14).atomics.toString());
+      const amount = Decimal.fromAtomics(amountInput.toString(), 14).toString();
+      let sender = await window.Keplr.getKeplrAddr(fromToken?.chainId);
+      let cwBitcoinClient = new AppBitcoinClient(window.client, sender, CWAppBitcoinContractAddress);
+      const result = await cwBitcoinClient.withdrawToBitcoin(
         {
-          send: {
-            contract: OraichainChain.source.port.split('.')[1],
-            amount,
-            msg: toBinary({
-              local_channel_id: OraichainChain.source.channelId,
-              remote_address: destinationAddress,
-              remote_denom: OraichainChain.source.nBtcIbcDenom,
-              timeout: Number(calculateTimeoutTimestamp(DEFAULT_TIMEOUT)),
-              memo: `withdraw:${btcAddr}`
-            })
-          }
+          btcAddress: btcAddr,
+          fee
         },
-        'auto'
+        'auto',
+        '',
+        [coin(amount, CWBitcoinFactoryDenom)]
       );
 
       processTxResult(
         fromToken.rpc,
         // @ts-ignore-check
         result,
-        '/bitcoin-dashboard?tab=pending_withdraws'
+        '/bitcoin-dashboard-v2?tab=pending_withdraws'
       );
     } catch (ex) {
+      console.log(ex);
       handleErrorTransaction(ex, {
         tokenName: from.name,
         chainName: from.chainId
@@ -942,8 +890,7 @@ const Balance: React.FC<BalanceProps> = () => {
                     window?.owallet?.isOwallet;
 
                   const isBtcToken = t.chainId === bitcoinChainId && t?.coinGeckoId === 'bitcoin';
-                  const isV2 = false;
-                  const TokenItemELement: React.FC<TokenItemProps> = isBtcToken && isV2 ? TokenItemBtc : TokenItem;
+                  const TokenItemELement: React.FC<TokenItemProps> = TokenItem;
                   return (
                     <div key={t.denom}>
                       {!isOwallet && !isMobile() && isBtcToken && (

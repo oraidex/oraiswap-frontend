@@ -111,7 +111,7 @@ export default class Keplr extends CosmosWallet {
 
       const keplr = await this.getKeplr();
       if (keplr) {
-        if (!['oraibtc-mainnet-1', 'bitcoin'].includes(chainId)) {
+        if (!['bitcoin'].includes(chainId)) {
           const keplrKey = await keplr.getKey(chainId);
           if (!keplrKey?.bech32Address) return undefined;
           const { isValid } = checkValidateAddressWithNetwork(
@@ -120,6 +120,13 @@ export default class Keplr extends CosmosWallet {
             cosmosChains
           );
           if (!isValid) return undefined;
+        }
+
+        // FIXME: new version extension owallet btc
+        // @ts-ignore
+        const owalletBitcoin = keplr?.bitcoin;
+        if (chainId === 'bitcoin' && owalletBitcoin) {
+          return owalletBitcoin.getKey(chainId);
         }
 
         return keplr.getKey(chainId);
