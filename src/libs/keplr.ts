@@ -122,9 +122,11 @@ export default class Keplr extends CosmosWallet {
           if (!isValid) return undefined;
         }
 
-        if (chainId === 'bitcoin') {
-          // @ts-ignore
-          return keplr.bitcoin.getKey(chainId);
+        // FIXME: new version extension owallet btc
+        // @ts-ignore
+        const owalletBitcoin = keplr?.bitcoin;
+        if (chainId === 'bitcoin' && owalletBitcoin) {
+          return owalletBitcoin.getKey(chainId);
         }
 
         return keplr.getKey(chainId);
