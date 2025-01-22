@@ -32,19 +32,11 @@ import { bitcoinLcdV2 } from 'helper/constants';
 import { chainInfos, flattenTokens, kawaiiTokens, network, tokenMap } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import KawaiiverseJs from 'libs/kawaiiversejs';
-import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
 import { generateError } from 'libs/utils';
 import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMoveOraib2OraiMessages } from 'rest/api';
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 import { store } from 'store/configure';
-import { config } from 'libs/nomic/config';
-import QRCode from 'qrcode';
-import { useEffect, useState } from 'react';
-import { OraiBtcSubnetChain } from 'libs/nomic/models/ibc-chain';
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { getAccount, getMint } from '@solana/spl-token';
-import { Connection, PublicKey } from '@solana/web3.js';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
@@ -753,8 +745,9 @@ export const useGetInfoBtc = () => {
   const { data: infoBTC } = useQuery(
     ['estimate-btc-deposit'],
     async () => {
-      const nomic = new NomicClient();
-      return await nomic.getConfig();
+      return await fetch(`https://btc.relayer.orai.io/bitcoin/config`, {
+        method: 'GET'
+      }).then((data) => data.json());
     },
     {
       placeholderData: {

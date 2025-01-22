@@ -31,7 +31,6 @@ import { SelectTokenModal } from 'components/Modals/SelectTokenModal';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
 import { CwBitcoinContext } from 'context/cw-bitcoin-context';
-import { NomicContext } from 'context/nomic-context';
 import { TonChainId } from 'context/ton-provider';
 import {
   assert,
@@ -65,8 +64,6 @@ import {
 } from 'initCommon';
 import Content from 'layouts/Content';
 import Metamask from 'libs/metamask';
-import { config } from 'libs/nomic/config';
-import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/nomic/models/ibc-chain';
 import { getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import isEqual from 'lodash/isEqual';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
@@ -120,7 +117,6 @@ const Balance: React.FC<BalanceProps> = () => {
   const searchTokenAddress = searchParams.get('token');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const feeConfig = useSelector((state: RootState) => state.token.feeConfigs);
-  const nomic = useContext(NomicContext);
   const cwBitcoinContext = useContext(CwBitcoinContext);
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const dispatch = useDispatch();
@@ -133,7 +129,6 @@ const Balance: React.FC<BalanceProps> = () => {
   const [[from, to], setTokenBridge] = useState<TokenItemType[]>([]);
   const [toNetworkChainId, setToNetworkChainId] = useState<NetworkChainId>();
   const [[otherChainTokens, oraichainTokens], setTokens] = useState<TokenItemType[][]>([[], []]);
-  const [addressRecovery, setAddressRecovery] = useState('');
   const [isFastMode, setIsFastMode] = useState(true);
   const [loadingInspector, setLoadingInspector] = useState(false);
   const [toToken, setToToken] = useState<TokenItemType>();
@@ -173,26 +168,12 @@ const Balance: React.FC<BalanceProps> = () => {
     }
   }, [toTokens, toNetworkChainId, filterNetworkUI]);
 
-  const getAddress = async () => {
-    try {
-      await nomic.generateAddress();
-      const addressRecovered = await nomic.getRecoveryAddress();
-      setAddressRecovery(addressRecovered);
-    } catch (error) {
-      console.log('🚀 ~ getAddress ~ error:', error);
-    }
-  };
-
   useEffect(() => {
     // TODO: should dynamic generate address when change destination chain.
     if (oraiAddress) {
       cwBitcoinContext.generateAddress({
         address: oraiAddress
       });
-    }
-
-    if (isOwallet) {
-      getAddress();
     }
   }, [oraiAddress, isOwallet]);
 
@@ -263,46 +244,6 @@ const Balance: React.FC<BalanceProps> = () => {
       });
     }
     setTxHash(result.transactionHash);
-  };
-
-  const handleRecoveryAddress = async () => {
-    try {
-      const btcAddr = await window.Bitcoin.getAddress();
-      if (!btcAddr) throw Error('Not found your bitcoin address!');
-      // @ts-ignore-check
-      const oraiBtcAddress = await window.Keplr.getKeplrAddr(OraiBtcSubnetChain.chainId);
-
-      if (btcAddr && addressRecovery !== btcAddr && oraiBtcAddress) {
-        const accountInfo = await nomic.getAccountInfo(oraiBtcAddress);
-        const signDoc = {
-          account_number: accountInfo?.account?.account_number,
-          chain_id: OraiBtcSubnetChain.chainId,
-          fee: { amount: [{ amount: '0', denom: 'uoraibtc' }], gas: '10000' },
-          memo: '',
-          msgs: [
-            {
-              type: 'nomic/MsgSetRecoveryAddress',
-              value: {
-                recovery_address: btcAddr
-              }
-            }
-          ],
-          sequence: accountInfo?.account?.sequence
-        };
-        const signature = await window.owallet.signAmino(config.chainId, oraiBtcAddress, signDoc);
-        const tx = makeStdTx(signDoc, signature.signature);
-        const tmClient = await Tendermint37Client.connect(config.rpcUrl);
-
-        const result = await tmClient.broadcastTxSync({ tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))) });
-        await getAddress();
-        //@ts-ignore
-        displayToast(result.code === 0 ? TToastType.TX_SUCCESSFUL : TToastType.TX_FAILED, {
-          message: result?.log
-        });
-      }
-    } catch (error) {
-      handleErrorTransaction(error);
-    }
   };
 
   const onClickToken = useCallback(
@@ -460,9 +401,6 @@ const Balance: React.FC<BalanceProps> = () => {
     const btcAddr = await window.Bitcoin.getAddress();
     if (!btcAddr) throw Error('Not found your bitcoin address!');
     if (isBTCToOraichain) {
-      if (fromToken.name !== 'BTC') {
-        await handleRecoveryAddress();
-      }
       return handleTransferBTCToOraichain(fromToken, transferAmount, btcAddr);
     }
     return handleTransferOraichainToBTC(fromToken, transferAmount, btcAddr);
