@@ -68,7 +68,9 @@ const useGetFeeSol = ({
         let baseURL = `https://solana-relayer.orai.io`;
 
         if (isMemeBridge) {
-          supportedToken = originalFromToken?.contractAddress || originalFromToken.denom;
+          const splitDenomInOraichain = originalFromToken.denom.split('/');
+          supportedToken =
+            originalFromToken?.contractAddress || splitDenomInOraichain[splitDenomInOraichain.length - 1];
           baseURL = 'https://sol-meme-bridge.agents.land';
         }
 
