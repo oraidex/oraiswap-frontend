@@ -37,6 +37,7 @@ import useGetFee from '../hooks/useGetFee';
 import useGetFeeSol from '../hooks/useGetFeeSol';
 import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
 import styles from './index.module.scss';
+import { getStatusMemeBridge } from 'program/web3';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -151,11 +152,13 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toNetwork: toNetworkChainId
   });
 
+  const isMemeBridge = getStatusMemeBridge(token);
   const { solFee, isOraichainToSol, isSolToOraichain } = useGetFeeSol({
     originalFromToken: token,
     toChainId: toNetworkChainId,
     amountToken: convertAmount,
-    toToken
+    toToken,
+    isMemeBridge
   });
 
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
