@@ -70,7 +70,14 @@ import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/no
 import { getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import isEqual from 'lodash/isEqual';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
-import { ORAICHAIN_RELAYER_ADDRESS, SOL_RELAYER_ADDRESS, Web3SolanaProgramInteraction } from 'program/web3';
+import {
+  ORAICHAIN_RELAYER_ADDRESS_AGENTS,
+  ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME,
+  SOL_RELAYER_ADDRESS_AGENTS,
+  SOL_RELAYER_ADDRESS_DEFAI_MEME,
+  Web3SolanaProgramInteraction,
+  getStatusMemeBridge
+} from 'program/web3';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -496,12 +503,20 @@ const Balance: React.FC<BalanceProps> = () => {
       throw new Error('Please connect to Oraichain wallet');
     }
 
+    const isMemeBridge = getStatusMemeBridge(fromToken);
+    let oraichainRelayer = ORAICHAIN_RELAYER_ADDRESS_AGENTS;
+    let solRelayer = SOL_RELAYER_ADDRESS_AGENTS;
+    if (isMemeBridge) {
+      oraichainRelayer = ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME;
+      solRelayer = SOL_RELAYER_ADDRESS_DEFAI_MEME;
+    }
+
     const web3Solana = new Web3SolanaProgramInteraction();
     console.log('from token address: ', fromToken.contractAddress);
     const isListCheckBalanceSolToOraichain = [ORAI_SOL_CONTRACT_ADDRESS];
     if (isListCheckBalanceSolToOraichain.includes(fromToken.contractAddress)) {
       // TODO: need check if support new token in solana
-      const currentBridgeBalance = await window.client.getBalance(ORAICHAIN_RELAYER_ADDRESS, toToken.denom);
+      const currentBridgeBalance = await window.client.getBalance(oraichainRelayer, toToken.denom);
       console.log(
         'Current bridge balance  oraichain: ',
         toDisplay(currentBridgeBalance.amount, toToken.decimals),
@@ -519,7 +534,7 @@ const Balance: React.FC<BalanceProps> = () => {
       }
     }
 
-    const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
+    const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress, solRelayer);
     const transaction = response?.transaction;
     if (transaction) {
       displayToast(TToastType.TX_SUCCESSFUL, {
@@ -541,7 +556,14 @@ const Balance: React.FC<BalanceProps> = () => {
       throw new Error('Please connect to Solana wallet');
     }
 
-    const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
+    const isMemeBridge = getStatusMemeBridge(fromToken);
+    let receiverAddress = ORAICHAIN_RELAYER_ADDRESS_AGENTS;
+    let solRelayer = SOL_RELAYER_ADDRESS_AGENTS;
+    if (isMemeBridge) {
+      receiverAddress = ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME;
+      solRelayer = SOL_RELAYER_ADDRESS_DEFAI_MEME;
+    }
+
     const listNotCheckBalanceOraichainToSol = [ORAI];
 
     if (!fromToken.contractAddress && transferAmount < 0.01) {
@@ -555,8 +577,8 @@ const Balance: React.FC<BalanceProps> = () => {
       const web3Solana = new Web3SolanaProgramInteraction();
       const bridgeBalance =
         fromToken.contractAddress === NATIVE_MINT.toBase58()
-          ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
-          : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, toToken.contractAddress);
+          ? await web3Solana.getSolanaBalance(new PublicKey(solRelayer))
+          : await web3Solana.getTokenBalance(solRelayer, toToken.contractAddress);
       console.log('token balance to solana: ', bridgeBalance, toToken.contractAddress);
       if (bridgeBalance < transferAmount) {
         const message = `Transfer ${fromToken.name} to Solana failed. The bridge balance only has ${bridgeBalance}${fromToken.name}, wanted ${transferAmount}${fromToken.name}`;

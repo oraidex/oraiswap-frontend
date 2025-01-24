@@ -23,12 +23,14 @@ const useGetFeeSol = ({
   originalFromToken,
   toChainId,
   amountToken,
-  toToken
+  toToken,
+  isMemeBridge
 }: {
   amountToken: string;
   originalFromToken: TokenItemType;
   toChainId: string;
   toToken: TokenItemType;
+  isMemeBridge: boolean;
 }) => {
   const isSolToOraichain = originalFromToken.chainId === solChainId;
   const isOraichainToSol = toChainId === solChainId;
@@ -62,9 +64,14 @@ const useGetFeeSol = ({
         const direction: Direction = toChainId === solChainId ? Direction.ORAI_TO_SOLANA : Direction.SOLANA_TO_ORAI;
         // const supportedToken: SUPPORT_TOKEN =
         // originalFromToken.coinGeckoId === 'oraichain-token' ? SUPPORT_TOKEN.ORAI : SUPPORT_TOKEN.MAX;
-        const supportedToken: SUPPORT_TOKEN = getSupportToken(originalFromToken.name);
+        let supportedToken: SUPPORT_TOKEN | string = getSupportToken(originalFromToken.name);
+        let baseURL = `https://solana-relayer.orai.io`;
 
-        const baseURL = `https://solana-relayer.orai.io`;
+        if (isMemeBridge) {
+          supportedToken = originalFromToken?.contractAddress || originalFromToken.denom;
+          baseURL = 'https://sol-meme-bridge.agents.land';
+        }
+
         const url: string = `${baseURL}/fee?direction=${direction}&amount=${amount}&supportedToken=${supportedToken}`;
         const { data } = await axios.get(url);
         const originalToToken =

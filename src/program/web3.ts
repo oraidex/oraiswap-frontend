@@ -26,9 +26,16 @@ export const commitmentLevel = 'confirmed';
 export const TOKEN_RESERVES = 1_000_000_000_000_000;
 export const LAMPORT_RESERVES = 1_000_000_000;
 export const INIT_BONDING_CURVE = 95;
-export const SOL_RELAYER_ADDRESS = 'HGPezSRSzZNXiBhzEXPw1gwCqsdbW7Psy5TjeyB78x8j';
-export const ORAICHAIN_RELAYER_ADDRESS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
+export const SOL_RELAYER_ADDRESS_AGENTS = 'HGPezSRSzZNXiBhzEXPw1gwCqsdbW7Psy5TjeyB78x8j';
+export const SOL_RELAYER_ADDRESS_DEFAI_MEME = '56YWJtsv4EVFindS2TTsqBwGvCggAUopm7tRtLEgoGop';
+
+export const ORAICHAIN_RELAYER_ADDRESS_AGENTS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
+export const ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME = 'orai1rrlmvsaukfeg874fjsuxntsl22hw2j6u65hyng';
 export const connection = 'https://cold-hanni-fast-mainnet.helius-rpc.com';
+
+export const getStatusMemeBridge = (fromToken) => {
+  return ['defai', 'meme'].includes(fromToken.tag) && !['CRISIS', 'MOOBS'].includes(fromToken.name);
+};
 
 export class Web3SolanaProgramInteraction {
   connection: Connection;
@@ -44,13 +51,14 @@ export class Web3SolanaProgramInteraction {
     wallet: WalletContextState,
     token: TokenItemType,
     tokenAmountRaw: number,
-    oraiReceiverAddress: string
+    oraiReceiverAddress: string,
+    solRelayer: string
   ) => {
     try {
       let transaction = new Transaction();
       if (token.contractAddress) {
         const mintPubkey = new PublicKey(token.contractAddress);
-        const relayerPubkey = new PublicKey(SOL_RELAYER_ADDRESS);
+        const relayerPubkey = new PublicKey(solRelayer);
 
         const walletTokenAccount = getAssociatedTokenAddressSync(mintPubkey, wallet.publicKey);
         const relayerTokenAccount = getAssociatedTokenAddressSync(mintPubkey, relayerPubkey);
@@ -108,7 +116,7 @@ export class Web3SolanaProgramInteraction {
         const transferTransaction = transaction.add(
           SystemProgram.transfer({
             fromPubkey: wallet.publicKey,
-            toPubkey: new PublicKey(SOL_RELAYER_ADDRESS),
+            toPubkey: new PublicKey(solRelayer),
             lamports: lamportsToSend
           })
         );
