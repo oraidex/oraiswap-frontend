@@ -31,7 +31,7 @@ export const SOL_RELAYER_ADDRESS_DEFAI_MEME = '56YWJtsv4EVFindS2TTsqBwGvCggAUopm
 
 export const ORAICHAIN_RELAYER_ADDRESS_AGENTS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
 export const ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME = 'orai1rrlmvsaukfeg874fjsuxntsl22hw2j6u65hyng';
-export const connection = 'https://cold-hanni-fast-mainnet.helius-rpc.com';
+export const connection = 'https://solana-public.agents.land';
 
 export const getStatusMemeBridge = (fromToken) => {
   return ['defai', 'meme'].includes(fromToken.tag) && !['CRISIS', 'MOOBS'].includes(fromToken.name);
