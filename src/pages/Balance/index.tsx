@@ -70,7 +70,14 @@ import { OBTCContractAddress, OraiBtcSubnetChain, OraichainChain } from 'libs/no
 import { getTotalUsd, getUsd, initEthereum, toSumDisplay, toTotalDisplay } from 'libs/utils';
 import isEqual from 'lodash/isEqual';
 import { refreshBalances } from 'pages/UniversalSwap/helpers';
-import { ORAICHAIN_RELAYER_ADDRESS, SOL_RELAYER_ADDRESS, Web3SolanaProgramInteraction } from 'program/web3';
+import {
+  ORAICHAIN_RELAYER_ADDRESS_AGENTS,
+  ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME,
+  SOL_RELAYER_ADDRESS_AGENTS,
+  SOL_RELAYER_ADDRESS_DEFAI_MEME,
+  Web3SolanaProgramInteraction,
+  getStatusMemeBridge
+} from 'program/web3';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -205,12 +212,16 @@ const Balance: React.FC<BalanceProps> = () => {
 
   useGetFeeConfig();
   useEffect(() => {
-    if (!searchTokenAddress) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
-
     (async () => {
       try {
+        if (!searchTokenAddress) return setTokens([otherChainTokenCommon, oraichainTokensCommon]);
+
         const foundTokens = [otherChainTokenCommon, oraichainTokensCommon].map((childTokens) =>
-          childTokens.filter((t) => t.name.includes(searchTokenAddress.toUpperCase()))
+          childTokens.filter((t) =>
+            [t.name.toUpperCase(), t.contractAddress?.toUpperCase(), t.denom?.toUpperCase()].includes(
+              searchTokenAddress.toUpperCase()
+            )
+          )
         );
 
         if (foundTokens.every((t) => t.length === 0)) {
@@ -318,7 +329,6 @@ const Balance: React.FC<BalanceProps> = () => {
   );
 
   const handleTransferBTCToOraichain = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
-    const isV2 = fromToken.name === 'BTC';
     const utxos = await getUtxos(btcAddr, fromToken.rpc);
     const feeRate = await getFeeRate({
       url: from.rpc
@@ -333,7 +343,7 @@ const Balance: React.FC<BalanceProps> = () => {
       message: '',
       transactionFee: feeRate
     });
-    const { bitcoinAddress: address } = isV2 ? cwBitcoinContext.depositAddress : nomic.depositAddress;
+    const { bitcoinAddress: address } = cwBitcoinContext?.depositAddress || { bitcoinAddress: '' };
     if (!address) throw Error('Not found address OraiBtc');
     const amount = new BitcoinUnit(transferAmount, 'BTC').to('satoshi').getValue();
     const dataRequest = {
@@ -372,7 +382,7 @@ const Balance: React.FC<BalanceProps> = () => {
       if (rs?.rawTxHex) {
         setTxHash(rs.rawTxHex);
         displayToast(TToastType.TX_SUCCESSFUL, {
-          customLink: `/bitcoin-dashboard${isV2 ? '-v2' : ''}?tab=pending_deposits`
+          customLink: `/bitcoin-dashboard-v2?tab=pending_deposits`
         });
         setTimeout(async () => {
           await loadTokenAmounts({ metamaskAddress, tronAddress, oraiAddress, btcAddress: btcAddr, tonAddress });
@@ -391,84 +401,33 @@ const Balance: React.FC<BalanceProps> = () => {
   };
 
   const handleTransferOraichainToBTC = async (fromToken: TokenItemType, transferAmount: number, btcAddr: string) => {
-    if (fromToken.name === 'BTC') {
-      try {
-        if (!withdrawV2Fee?.withdrawal_fees) {
-          throw Error('Withdrawal fees are not found!');
-        }
-        if (!depositV2Fee?.deposit_fees) {
-          throw Error('Deposit fees are not found!');
-        }
-        const fee = isFastMode ? depositV2Fee?.deposit_fees : withdrawV2Fee?.withdrawal_fees;
-        console.log(fee);
-        const amountInput = BigInt(
-          Decimal.fromUserInput(toAmount(transferAmount, 14).toString(), 14).atomics.toString()
-        );
-        const amount = Decimal.fromAtomics(amountInput.toString(), 14).toString();
-        let sender = await window.Keplr.getKeplrAddr(fromToken?.chainId);
-        let cwBitcoinClient = new AppBitcoinClient(window.client, sender, CWAppBitcoinContractAddress);
-        const result = await cwBitcoinClient.withdrawToBitcoin(
-          {
-            btcAddress: btcAddr,
-            fee
-          },
-          'auto',
-          '',
-          [coin(amount, CWBitcoinFactoryDenom)]
-        );
-
-        processTxResult(
-          fromToken.rpc,
-          // @ts-ignore-check
-          result,
-          '/bitcoin-dashboard-v2?tab=pending_withdraws'
-        );
-      } catch (ex) {
-        console.log(ex);
-        handleErrorTransaction(ex, {
-          tokenName: from.name,
-          chainName: from.chainId
-        });
-      }
-      return;
-    }
-    const { bitcoinAddress: address } = nomic.depositAddress;
-
-    if (!address) throw Error('Not found Orai BTC Address');
-    // @ts-ignore-check
-    const destinationAddress = await window.Keplr.getKeplrAddr(OraiBtcSubnetChain.chainId);
-
-    const DEFAULT_TIMEOUT = 60 * 60;
-    const amountInput = BigInt(Decimal.fromUserInput(toAmount(transferAmount, 6).toString(), 8).atomics.toString());
-    const amount = Decimal.fromAtomics(amountInput.toString(), 8).toString();
-    if (!destinationAddress) throw Error('Not found your oraibtc-subnet address!');
     try {
-      const result = await window.client.execute(
-        oraiAddress,
-        OBTCContractAddress,
+      if (!withdrawV2Fee?.withdrawal_fees) throw Error('Withdrawal fees are not found!');
+      if (!depositV2Fee?.deposit_fees) throw Error('Deposit fees are not found!');
+
+      const fee = isFastMode ? depositV2Fee?.deposit_fees : withdrawV2Fee?.withdrawal_fees;
+      const amountInput = BigInt(Decimal.fromUserInput(toAmount(transferAmount, 14).toString(), 14).atomics.toString());
+      const amount = Decimal.fromAtomics(amountInput.toString(), 14).toString();
+      let sender = await window.Keplr.getKeplrAddr(fromToken?.chainId);
+      let cwBitcoinClient = new AppBitcoinClient(window.client, sender, CWAppBitcoinContractAddress);
+      const result = await cwBitcoinClient.withdrawToBitcoin(
         {
-          send: {
-            contract: OraichainChain.source.port.split('.')[1],
-            amount,
-            msg: toBinary({
-              local_channel_id: OraichainChain.source.channelId,
-              remote_address: destinationAddress,
-              remote_denom: OraichainChain.source.nBtcIbcDenom,
-              timeout: Number(calculateTimeoutTimestamp(DEFAULT_TIMEOUT)),
-              memo: `withdraw:${btcAddr}`
-            })
-          }
+          btcAddress: btcAddr,
+          fee
         },
-        'auto'
+        'auto',
+        '',
+        [coin(amount, CWBitcoinFactoryDenom)]
       );
 
       processTxResult(
         fromToken.rpc,
         // @ts-ignore-check
         result,
-        '/bitcoin-dashboard?tab=pending_withdraws'
+        '/bitcoin-dashboard-v2?tab=pending_withdraws'
       );
     } catch (ex) {
+      console.log(ex);
       handleErrorTransaction(ex, {
         tokenName: from.name,
         chainName: from.chainId
@@ -544,12 +503,20 @@ const Balance: React.FC<BalanceProps> = () => {
       throw new Error('Please connect to Oraichain wallet');
     }
 
+    const isMemeBridge = getStatusMemeBridge(fromToken);
+    let oraichainRelayer = ORAICHAIN_RELAYER_ADDRESS_AGENTS;
+    let solRelayer = SOL_RELAYER_ADDRESS_AGENTS;
+    if (isMemeBridge) {
+      oraichainRelayer = ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME;
+      solRelayer = SOL_RELAYER_ADDRESS_DEFAI_MEME;
+    }
+
     const web3Solana = new Web3SolanaProgramInteraction();
     console.log('from token address: ', fromToken.contractAddress);
     const isListCheckBalanceSolToOraichain = [ORAI_SOL_CONTRACT_ADDRESS];
     if (isListCheckBalanceSolToOraichain.includes(fromToken.contractAddress)) {
       // TODO: need check if support new token in solana
-      const currentBridgeBalance = await window.client.getBalance(ORAICHAIN_RELAYER_ADDRESS, toToken.denom);
+      const currentBridgeBalance = await window.client.getBalance(oraichainRelayer, toToken.denom);
       console.log(
         'Current bridge balance  oraichain: ',
         toDisplay(currentBridgeBalance.amount, toToken.decimals),
@@ -567,7 +534,7 @@ const Balance: React.FC<BalanceProps> = () => {
       }
     }
 
-    const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress);
+    const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress, solRelayer);
     const transaction = response?.transaction;
     if (transaction) {
       displayToast(TToastType.TX_SUCCESSFUL, {
@@ -589,14 +556,29 @@ const Balance: React.FC<BalanceProps> = () => {
       throw new Error('Please connect to Solana wallet');
     }
 
-    const receiverAddress = ORAICHAIN_RELAYER_ADDRESS;
+    const isMemeBridge = getStatusMemeBridge(fromToken);
+    let receiverAddress = ORAICHAIN_RELAYER_ADDRESS_AGENTS;
+    let solRelayer = SOL_RELAYER_ADDRESS_AGENTS;
+    if (isMemeBridge) {
+      receiverAddress = ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME;
+      solRelayer = SOL_RELAYER_ADDRESS_DEFAI_MEME;
+    }
+
     const listNotCheckBalanceOraichainToSol = [ORAI];
-    if (!listNotCheckBalanceOraichainToSol.includes(fromToken.denom)) {
+
+    if (!fromToken.contractAddress && transferAmount < 0.01) {
+      return displayToast(TToastType.TX_FAILED, {
+        message: 'minimum bridge of solana native token is 0.01!'
+      });
+    }
+
+    const toTokenIsSolanaNative = !toToken?.contractAddress;
+    if (!toTokenIsSolanaNative && !listNotCheckBalanceOraichainToSol.includes(fromToken.denom)) {
       const web3Solana = new Web3SolanaProgramInteraction();
       const bridgeBalance =
         fromToken.contractAddress === NATIVE_MINT.toBase58()
-          ? await web3Solana.getSolanaBalance(new PublicKey(SOL_RELAYER_ADDRESS))
-          : await web3Solana.getTokenBalance(SOL_RELAYER_ADDRESS, toToken.contractAddress);
+          ? await web3Solana.getSolanaBalance(new PublicKey(solRelayer))
+          : await web3Solana.getTokenBalance(solRelayer, toToken.contractAddress);
       console.log('token balance to solana: ', bridgeBalance, toToken.contractAddress);
       if (bridgeBalance < transferAmount) {
         const message = `Transfer ${fromToken.name} to Solana failed. The bridge balance only has ${bridgeBalance}${fromToken.name}, wanted ${transferAmount}${fromToken.name}`;
@@ -647,9 +629,10 @@ const Balance: React.FC<BalanceProps> = () => {
       let newToToken = to;
 
       if (toNetworkChainId && (!toToken || toToken?.chainId !== toNetworkChainId)) {
-        newToToken = [...otherChainTokens, ...oraichainTokens].find(
-          (flat) => flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId
-        );
+        newToToken = [...otherChainTokenCommon, ...oraichainTokensCommon].find((flat) => {
+          return flat.chainId === toNetworkChainId && flat.coinGeckoId === from.coinGeckoId;
+        });
+
         assert(newToToken, 'Cannot find newToToken token that matches from token to bridge!');
       }
 
@@ -929,8 +912,7 @@ const Balance: React.FC<BalanceProps> = () => {
                     window?.owallet?.isOwallet;
 
                   const isBtcToken = t.chainId === bitcoinChainId && t?.coinGeckoId === 'bitcoin';
-                  const isV2 = false;
-                  const TokenItemELement: React.FC<TokenItemProps> = isBtcToken && isV2 ? TokenItemBtc : TokenItem;
+                  const TokenItemELement: React.FC<TokenItemProps> = TokenItem;
                   return (
                     <div key={t.denom}>
                       {!isOwallet && !isMobile() && isBtcToken && (

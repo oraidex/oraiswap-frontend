@@ -27,6 +27,7 @@ import { FC, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import {
   calcMaxAmount,
+  FormatNumberFixed,
   useDepositFeesBitcoin,
   useDepositFeesBitcoinV2,
   useGetWithdrawlFeesBitcoin,
@@ -36,6 +37,7 @@ import useGetFee from '../hooks/useGetFee';
 import useGetFeeSol from '../hooks/useGetFeeSol';
 import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
 import styles from './index.module.scss';
+import { getStatusMemeBridge } from 'program/web3';
 
 interface TransferConvertProps {
   token: TokenItemType;
@@ -150,11 +152,13 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toNetwork: toNetworkChainId
   });
 
+  const isMemeBridge = getStatusMemeBridge(token);
   const { solFee, isOraichainToSol, isSolToOraichain } = useGetFeeSol({
     originalFromToken: token,
     toChainId: toNetworkChainId,
     amountToken: convertAmount,
-    toToken
+    toToken,
+    isMemeBridge
   });
 
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
@@ -167,25 +171,18 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
 
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
-  const isV2 = token.name === 'BTC';
   let { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
-  const depositFeeBtcResult = useDepositFeesBitcoin(isFromBitcoinToOraichain);
-  const withdrawalFeeBtcResult = useGetWithdrawlFeesBitcoin({
-    enabled: isFromOraichainToBitcoin,
-    bitcoinAddress: addressTransfer
-  });
   const depositFeeBtcV2Result = useDepositFeesBitcoinV2(true);
   const withdrawalFeeBtcV2Result = useGetWithdrawlFeesBitcoinV2({
     enabled: isFromOraichainToBitcoin,
     bitcoinAddress: addressTransfer
   });
-  const depositFeeBtc = isV2 ? depositFeeBtcV2Result : depositFeeBtcResult;
-  const withdrawalFeeBtc = isV2
-    ? isFastMode
-      ? { withdrawal_fees: depositFeeBtcV2Result?.deposit_fees }
-      : withdrawalFeeBtcV2Result
-    : withdrawalFeeBtcResult;
-  if (isV2) {
+  const depositFeeBtc = depositFeeBtcV2Result;
+  const withdrawalFeeBtc = isFastMode
+    ? { withdrawal_fees: depositFeeBtcV2Result?.deposit_fees }
+    : withdrawalFeeBtcV2Result;
+
+  if (token.name === 'BTC') {
     if (contractConfig?.token_fee.denominator != 0) {
       bridgeFee = (contractConfig?.token_fee.nominator * 100) / contractConfig?.token_fee.denominator;
     } else {
@@ -244,7 +241,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           </>
         ) : (
           <>
-            Bridge fee: <span>{bridgeFee}% </span>
+            Bridge fee: <span>{bridgeFee || '0'}% </span>
           </>
         )}
         {tonTokenFee > 0 ? (
@@ -258,18 +255,17 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         ) : null}
         {relayerFeeTokenFee > 0 ? (
           <div className={styles.relayerFee}>
-            - Relayer fee:{' '}
+            - Relayer fee:
             <span>
-              {' '}
-              {relayerFeeTokenFee} {token.name}{' '}
+              {relayerFeeTokenFee} {token.name}
             </span>
           </div>
         ) : null}
         - Received amount:{' '}
         <span>
-          {(isSolToOraichain || isOraichainToSol ? solFee.sendAmount : receivedAmount > 0 ? receivedAmount : 0).toFixed(
-            6
-          )}{' '}
+          {FormatNumberFixed({
+            value: isSolToOraichain || isOraichainToSol ? solFee.sendAmount : Math.max(Number(receivedAmount) || 0, 0)
+          })}{' '}
           {token.name}
         </span>
         {!!toDisplayBTCFee && (
@@ -485,10 +481,10 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
           ) {
             const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
             // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
-            const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
+            // const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
             const isDisabled =
               // isSolBridge ||
-              isBridgeBitcoin ||
+              // isBridgeBitcoin ||
               transferLoading ||
               !addressTransfer ||
               receivedAmount < 0 ||

@@ -19,8 +19,6 @@ import styles from './OverviewPool.module.scss';
 export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail }) => {
   const theme = useTheme();
 
-  console.log(poolDetailData);
-
   const { pairAmountInfoData } = useGetPairInfo(poolDetailData);
   const { token1, token2 } = poolDetailData;
 
