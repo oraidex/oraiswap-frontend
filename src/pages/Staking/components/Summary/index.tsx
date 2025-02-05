@@ -61,7 +61,7 @@ const Summary = () => {
         <div className={styles.item}>
           <PercentIcon />
           <span className={styles.header}>Earn revenue sharing</span>
-          <span>30% of the revenue will be distributed to ORAIX stakers as USDC</span>
+          <span>45% of the revenue will be distributed to ORAIX stakers as USDC</span>
         </div>
       </div>
     </div>
