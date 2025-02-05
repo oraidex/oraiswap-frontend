@@ -495,6 +495,6 @@ export const getTokenIconWithCommon = (baseDenom: string) => {
   );
 };
 
-export const getTokenIsStableCoin = (originalFromToken) => {
-  return ['tether', 'usd-coin'].includes(originalFromToken.coinGeckoId);
+export const getTokenIsStableCoin = (originalToken) => {
+  return originalToken && ['tether', 'usd-coin'].includes(originalToken.coinGeckoId);
 };
