@@ -101,7 +101,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     SIMULATE_INIT_AMOUNT,
     {
       ...simulateOption,
-      ignoreFee: true
+      ignoreFee: true,
+      isAvgSimulate: true
     }
   );
 

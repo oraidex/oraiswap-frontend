@@ -56,8 +56,9 @@ export const useSimulate = (
 ) => {
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([initAmount || null, 0]);
   const debouncedFromAmount = useDebounce(fromAmountToken, 800);
-  let enabled = !!fromTokenInfoData && !!toTokenInfoData && !!debouncedFromAmount && fromAmountToken > 0;
-  if (simulateOption?.isAvgSimulate) enabled = false;
+  const enabled = !!fromTokenInfoData && !!toTokenInfoData && !!debouncedFromAmount && fromAmountToken > 0;
+  let refetchInterval: number | boolean = 10000;
+  if (simulateOption?.isAvgSimulate) refetchInterval = false;
   const {
     data: simulateData,
     isPreviousData: isPreviousSimulate,
@@ -94,8 +95,8 @@ export const useSimulate = (
     },
     {
       keepPreviousData: !simulateOption?.keepPreviousData,
-      refetchInterval: 8000,
-      staleTime: 2000,
+      refetchInterval,
+      staleTime: 3000,
       enabled,
       onError: (error) => {
         console.log('isAvgSimulate:', simulateOption?.isAvgSimulate, 'error when simulate: ', error);
