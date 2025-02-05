@@ -9,6 +9,7 @@ import { FILTER_TIME_CHART, TAB_CHART_SWAP } from 'reducer/type';
 import { ChartTokenType } from '../hooks/useChartUsdPrice';
 import styles from './HeaderTab.module.scss';
 import { flattenTokens } from 'initCommon';
+import { getTokenIsStableCoin } from '../helpers';
 
 const cx = cn.bind(styles);
 
@@ -141,8 +142,10 @@ export const HeaderTop = ({
     );
   };
 
+  const toTokenDenomIsStable = getTokenIsStableCoin(currentToToken);
+  const currentToken = toTokenDenomIsStable ? currentFromToken : currentToToken;
   if (currentToToken) {
-    ToTokenIcon = generateIconTokenByTheme(currentToToken);
+    ToTokenIcon = generateIconTokenByTheme(currentToken);
   }
   if (currentFromToken) {
     const tokenIcon = flattenTokens.find(
@@ -162,7 +165,7 @@ export const HeaderTop = ({
               ? currentToChain && (
                   <div className={cx('tokenInfo')}>
                     {ToTokenIcon}
-                    <span>{currentToToken?.name || currentToToken?.denom}</span>
+                    <span>{currentToken?.name || currentToken?.denom}</span>
                     <span className={cx('tokenName')}>{currentToChain}</span>
                   </div>
                 )

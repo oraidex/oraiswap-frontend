@@ -5,9 +5,9 @@ import { formatDateChart, formatNumberKMB } from 'pages/CoHarvest/helpers';
 import { numberWithCommas, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { selectCurrentToToken } from 'reducer/tradingSlice';
+import { selectCurrentFromToken, selectCurrentToToken } from 'reducer/tradingSlice';
 import { FILTER_TIME_CHART } from 'reducer/type';
-import { formatTimeDataChart } from '../helpers';
+import { formatTimeDataChart, getTokenIsStableCoin } from '../helpers';
 import { ChartTokenType, useChartUsdPrice } from '../hooks/useChartUsdPrice';
 import styles from './ChartUsdPrice.module.scss';
 
@@ -32,6 +32,8 @@ const ChartUsdPrice = ({
   const resizeObserver = useRef(null);
   const [theme] = useConfigReducer('theme');
   const currentToToken = useSelector(selectCurrentToToken);
+  const currentFromToken = useSelector(selectCurrentFromToken);
+  const toTokenDenomIsStable = getTokenIsStableCoin(currentToToken);
 
   const {
     currentData: data,
@@ -40,7 +42,7 @@ const ChartUsdPrice = ({
     onMouseLeave
   } = useChartUsdPrice(
     filterDay,
-    currentToToken?.coinGeckoId,
+    toTokenDenomIsStable ? currentFromToken?.coinGeckoId : currentToToken?.coinGeckoId,
     chartTokenType,
     onUpdateCurrentItem,
     onUpdatePricePercent
