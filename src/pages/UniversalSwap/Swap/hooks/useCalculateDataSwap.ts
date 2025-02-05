@@ -19,6 +19,12 @@ import { useSwapFee } from './useSwapFee';
 
 export const SIMULATE_INIT_AMOUNT = 1;
 
+const splitsOSOR = {
+  ORAICHAIN: 5,
+  OTHERCHAIN: 1,
+  DEFAULTCHAIN: 10
+};
+
 const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, toToken, userSlippage }) => {
   const { data: prices } = useCoinGeckoPrices();
   const { fee, isDependOnNetwork } = useSwapFee({
@@ -33,14 +39,20 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
 
   const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
   const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
-
+  const isOraichain = originalFromToken.chainId === 'Oraichain' && originalToToken.chainId === 'Oraichain';
   const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
   const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, { useIbcWasm, useAlphaIbcWasm });
+  const maxSplits = isOraichain
+    ? splitsOSOR.ORAICHAIN
+    : useAlphaIbcWasm
+    ? splitsOSOR.OTHERCHAIN
+    : splitsOSOR.DEFAULTCHAIN;
+
   const simulateOption = {
     useAlphaIbcWasm,
     useIbcWasm,
     protocols,
-    maxSplits: useAlphaIbcWasm ? 1 : 10,
+    maxSplits,
     dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined,
     keepPreviousData: true
   };
