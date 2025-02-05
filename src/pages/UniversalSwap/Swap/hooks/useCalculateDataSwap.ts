@@ -53,8 +53,7 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     useIbcWasm,
     protocols,
     maxSplits,
-    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined,
-    keepPreviousData: true
+    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined
   };
 
   const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } = useRelayerFeeToken(
@@ -88,7 +87,9 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     originalToToken,
     routerClient,
     null,
-    simulateOption
+    {
+      ...simulateOption
+    }
   );
 
   const { simulateData: averageSimulateData, isPreviousSimulate: isAveragePreviousSimulate } = useSimulate(
@@ -101,7 +102,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     SIMULATE_INIT_AMOUNT,
     {
       ...simulateOption,
-      ignoreFee: true
+      ignoreFee: true,
+      isAvgSimulate: true
     }
   );
 
