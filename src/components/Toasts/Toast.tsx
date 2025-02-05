@@ -14,6 +14,7 @@ import { initialState } from 'reducer/temporaryConfig';
 const defaultOptions: ToastOptions = {
   position: 'top-right',
   theme: 'dark',
+  toastId: undefined,
   autoClose: 7000,
   hideProgressBar: true,
   closeOnClick: false,
@@ -42,6 +43,7 @@ interface IToastExtra {
   message: string;
   customLink: string;
   textLink: string;
+  toastId?: string;
   linkCw20Token?: string;
   cw20Address?: string;
   linkLpAddress?: string;
@@ -83,7 +85,7 @@ export type DisplayToastFn = ((
   ) => void) &
   ((
     type: TToastType.TX_INFO,
-    extraData?: Partial<Pick<IToastExtra, 'message' | 'customLink' | 'textLink'>>,
+    extraData?: Partial<Pick<IToastExtra, 'message' | 'toastId' | 'customLink' | 'textLink'>>,
     options?: Partial<ToastOptions>
   ) => void) &
   ((
@@ -111,6 +113,7 @@ export const displayToast: DisplayToastFn = (
   const inputOptions = {
     ...defaultOptions,
     ...refinedOptions,
+    toastId: extraData?.toastId,
     closeOnClick: true
   } as ToastOptions;
   switch (type) {

@@ -94,7 +94,7 @@ export const useSimulate = (
     },
     {
       keepPreviousData: !simulateOption?.keepPreviousData,
-      refetchInterval: 5000,
+      refetchInterval: 8000,
       staleTime: 2000,
       enabled,
       onError: (error) => {
