@@ -733,6 +733,7 @@ export const handleErrorRateLimit = (errorMsg: string) => {
   const fmtMsg = errorMsg.toLowerCase();
   if (fmtMsg.includes(`${RATE_LIMIT_CODE}`) || fmtMsg.includes('network error')) {
     displayToast(TToastType.TX_INFO, {
+      toastId: `RATE_LIMIT_CODE`,
       message: 'RPC call limit reached. Please wait or switch networks to continue!'
     });
   }

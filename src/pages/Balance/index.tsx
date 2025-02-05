@@ -87,7 +87,6 @@ import styles from './Balance.module.scss';
 import DepositBtcModalV2 from './DepositBtcModalV2';
 import {
   calculatorTotalFeeBtc,
-  convertKwt,
   findDefaultToToken,
   getFeeRate,
   getUtxos,
@@ -944,16 +943,6 @@ const Balance: React.FC<BalanceProps> = () => {
                         }}
                         onClickTransfer={async (fromAmount: number, filterNetwork?: NetworkChainId) => {
                           await onClickTransfer(fromAmount, from, to, filterNetwork);
-                        }}
-                        convertKwt={async (transferAmount: number, fromToken: TokenItemType) => {
-                          try {
-                            const result = await convertKwt(transferAmount, fromToken);
-                            processTxResult(from.rpc, result, getTransactionUrl(from.chainId, result.transactionHash));
-                          } catch (ex) {
-                            displayToast(TToastType.TX_FAILED, {
-                              message: ex.message
-                            });
-                          }
                         }}
                         isFastMode={isFastMode}
                         setIsFastMode={setIsFastMode}

@@ -5,7 +5,6 @@ import {
   BigDecimal,
   GAS_ESTIMATION_BRIDGE_DEFAULT,
   IBCInfo,
-  KWT,
   ORAI,
   TokenItemType,
   buildMultipleExecuteMessages,
@@ -31,20 +30,12 @@ import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { bitcoinLcdV2 } from 'helper/constants';
 import { chainInfos, flattenTokens, kawaiiTokens, network, tokenMap } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
-import KawaiiverseJs from 'libs/kawaiiversejs';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
 import { generateError } from 'libs/utils';
 import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMoveOraib2OraiMessages } from 'rest/api';
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 import { store } from 'store/configure';
-import { config } from 'libs/nomic/config';
-import QRCode from 'qrcode';
-import { useEffect, useState } from 'react';
-import { OraiBtcSubnetChain } from 'libs/nomic/models/ibc-chain';
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { getAccount, getMint } from '@solana/spl-token';
-import { Connection, PublicKey } from '@solana/web3.js';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
@@ -70,100 +61,6 @@ export const transferIBC = async (data: {
   const result = await transferIBCMultiple(fromAddress, fromToken.chainId as CosmosChainId, fromToken.rpc, feeDenom, [
     transferMsg
   ]);
-  return result;
-};
-
-export const transferIBCKwt = async (
-  fromToken: TokenItemType,
-  toToken: TokenItemType,
-  transferAmount: number,
-  amounts: AmountDetails
-): Promise<DeliverTxResponse> => {
-  if (transferAmount === 0) throw generateError('Transfer amount is empty');
-  const keplr = await window.Keplr.getKeplr();
-  if (!keplr) return;
-  await window.Keplr.suggestChain(toToken.chainId);
-  // enable from to send transaction
-  await window.Keplr.suggestChain(fromToken.chainId);
-  const fromAddress = await window.Keplr.getKeplrAddr(fromToken.chainId);
-  const toAddress = await window.Keplr.getKeplrAddr(toToken.chainId);
-  if (!fromAddress || !toAddress) throw generateError('Please login keplr!');
-
-  const amount = coin(toAmount(transferAmount, fromToken.decimals).toString(), fromToken.denom);
-
-  const ibcInfo: IBCInfo = ibcInfos[fromToken.chainId][toToken.chainId];
-  let customMessages: any[];
-
-  // check if from token has erc20 map then we need to convert back to bep20 / erc20 first. TODO: need to filter if convert to ERC20 or BEP20
-  if (fromToken.evmDenoms) {
-    const msgConvertReverses = generateConvertCw20Erc20Message(amounts, fromToken, fromAddress, amount);
-    const executeContractMsgs = getEncodedExecuteContractMsgs(
-      fromAddress,
-      buildMultipleExecuteMessages(undefined, ...msgConvertReverses)
-    );
-    customMessages = executeContractMsgs.map((msg) => ({
-      message: msg.value,
-      path: msg.typeUrl.substring(1)
-    }));
-  }
-
-  const result = await KawaiiverseJs.transferIBC({
-    sender: fromAddress,
-    gasAmount: { denom: '200000', amount: '0' },
-    ibcInfo: {
-      sourcePort: ibcInfo.source,
-      sourceChannel: ibcInfo.channel,
-      amount: amount.amount,
-      denom: amount.denom,
-      sender: fromAddress,
-      receiver: toAddress,
-      timeoutTimestamp: ibcInfo.timeout
-    },
-    customMessages
-  });
-  return result;
-};
-
-export const convertTransferIBCErc20Kwt = async (
-  fromToken: TokenItemType,
-  toToken: TokenItemType,
-  transferAmount: number
-): Promise<DeliverTxResponse> => {
-  if (transferAmount === 0) throw generateError('Transfer amount is empty!');
-  const keplr = await window.Keplr.getKeplr();
-  if (!keplr) return;
-  await window.Keplr.suggestChain(toToken.chainId);
-  // enable from to send transaction
-  await window.Keplr.suggestChain(fromToken.chainId);
-  const fromAddress = await window.Keplr.getKeplrAddr(fromToken.chainId);
-  const toAddress = await window.Keplr.getKeplrAddr(toToken.chainId);
-  if (!fromAddress || !toAddress) throw generateError('Please login keplr!');
-  const nativeToken = kawaiiTokens.find(
-    (token) =>
-      token.bridgeTo &&
-      token.cosmosBased &&
-      token.coinGeckoId === fromToken.coinGeckoId &&
-      token.denom !== fromToken.denom
-  ); // collect kawaiiverse cosmos based token for conversion
-
-  const amount = coin(toAmount(transferAmount, fromToken.decimals).toString(), nativeToken.denom);
-  const ibcInfo: IBCInfo = ibcInfos[fromToken.chainId][toToken.chainId];
-
-  const result = await KawaiiverseJs.convertIbcTransferERC20({
-    sender: fromAddress,
-    gasAmount: { denom: '200000', amount: '0' },
-    ibcInfo: {
-      sourcePort: ibcInfo.source,
-      sourceChannel: ibcInfo.channel,
-      amount: amount.amount,
-      denom: amount.denom,
-      sender: fromAddress,
-      receiver: toAddress,
-      timeoutTimestamp: ibcInfo.timeout
-    },
-    amount: amount.amount,
-    contractAddr: fromToken?.contractAddress
-  });
   return result;
 };
 
@@ -386,38 +283,6 @@ export const findDefaultToToken = (from: TokenItemType) => {
   });
 
   return defaultToken;
-};
-
-export const convertKwt = async (transferAmount: number, fromToken: TokenItemType): Promise<DeliverTxResponse> => {
-  if (transferAmount === 0) throw new Error('Transfer amount is empty');
-  const keplr = await window.Keplr.getKeplr();
-  if (!keplr) return;
-  await window.Keplr.suggestChain(fromToken.chainId);
-  const fromAddress = await window.Keplr.getKeplrAddr(fromToken.chainId);
-
-  if (!fromAddress) {
-    return;
-  }
-
-  const amount = coin(toAmount(transferAmount, fromToken.decimals).toString(), fromToken.denom);
-
-  let result: DeliverTxResponse;
-
-  if (!fromToken.contractAddress) {
-    result = await KawaiiverseJs.convertCoin({
-      sender: fromAddress,
-      gasAmount: { amount: '0', denom: KWT },
-      coin: amount
-    });
-  } else {
-    result = await KawaiiverseJs.convertERC20({
-      sender: fromAddress,
-      gasAmount: { amount: '0', denom: KWT },
-      amount: amount.amount,
-      contractAddr: fromToken?.contractAddress
-    });
-  }
-  return result;
 };
 
 export const broadcastConvertTokenTx = async (

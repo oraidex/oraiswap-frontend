@@ -42,7 +42,6 @@ import { getStatusMemeBridge } from 'program/web3';
 interface TransferConvertProps {
   token: TokenItemType;
   amountDetail?: { amount: string; usd: number };
-  convertKwt?: any;
   onClickTransfer: any;
   subAmounts?: object;
   isFastMode?: boolean;
@@ -54,7 +53,6 @@ interface TransferConvertProps {
 const TransferConvertToken: FC<TransferConvertProps> = ({
   token,
   amountDetail,
-  convertKwt,
   onClickTransfer,
   subAmounts,
   isFastMode,

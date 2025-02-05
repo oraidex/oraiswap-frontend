@@ -20,6 +20,7 @@ import Lottie from 'lottie-react';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import ModalDownloadOwallet from 'components/Modals/ModalDownloadOwallet/ModalDownloadOwallet';
 import NewTokenModal from 'pages/Pools/NewTokenModal/NewTokenModal';
+import { isMobile } from '@walletconnect/browser-utils';
 
 const Sidebar: React.FC<{}> = React.memo(() => {
   const location = useLocation();
@@ -40,7 +41,7 @@ const Sidebar: React.FC<{}> = React.memo(() => {
     if (externalLink)
       return (
         <a
-          target="_blank"
+          target={isMobile() ? '_self' : '_blank'}
           href={to}
           className={classNames(styles.menu_item, styles[theme])}
           onClick={() => {
@@ -124,7 +125,8 @@ const Sidebar: React.FC<{}> = React.memo(() => {
                   [styles.active]: openCreateToken
                 },
                 styles[theme]
-              )}>
+              )}
+            >
               <div className={classNames(styles.eventItem, styles[event])}>
                 {configTheme.sideBar.leftLinkImg && (
                   <img className={styles.left} src={configTheme.sideBar.leftLinkImg} alt="" />
