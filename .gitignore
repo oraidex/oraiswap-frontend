@@ -39,3 +39,5 @@ public/injected-provider.bundle.js
 # for Yarn 3
 .yarn
 *.scss.d.ts
+# Sentry Config File
+.env.sentry-build-plugin

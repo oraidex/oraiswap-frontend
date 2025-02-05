@@ -27,6 +27,8 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
   Sentry.init({
     environment: import.meta.env.VITE_APP_SENTRY_ENVIRONMENT,
     dsn: 'https://763cf7889ff3440d86c7c1fbc72c8780@o1323226.ingest.sentry.io/6580749',
+    integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
+    replaysOnErrorSampleRate: 1.0,
     denyUrls: [
       /extensions\//i,
       /extension/i,
