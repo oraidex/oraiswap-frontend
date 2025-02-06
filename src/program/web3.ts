@@ -34,6 +34,8 @@ export const ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME = 'orai1rrlmvsaukfeg874fjsuxnt
 export const connection = 'https://solana-public.agents.land';
 
 export const getStatusMemeBridge = (fromToken) => {
+  // FIXME: hardcode merge oraichain sdk => need remove after success merge
+  if (fromToken.name === 'GUARD') return true;
   return ['defai', 'meme'].includes(fromToken.tag) && !['CRISIS', 'MOOBS'].includes(fromToken.name);
 };
 
