@@ -32,6 +32,7 @@ import CreateNewPosition from '../CreateNewPosition';
 import styles from './index.module.scss';
 import PoolItemDataMobile from './PoolItemDataMobile';
 import PoolItemTData from './PoolItemTData';
+import { isScientificFormat } from 'pages/Pools/helpers';
 
 export enum PoolColumnHeader {
   POOL_NAME = 'Pool name',
@@ -156,17 +157,16 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
       const showVolume = type === POOL_TYPE.V3 ? volumeV3 : toDisplay(volumeV2 || 0);
 
       let showApr = aprInfo?.[poolKey] || aprInfo?.[liquidityAddr] || {};
-
       if (type === POOL_TYPE.V2) {
         showApr = {
           ...showApr,
           apr: {
-            min: (showApr['apr']?.['min'] || 0),
-            max: (showApr['apr']?.['max'] || 0)
+            min: isScientificFormat(showApr['apr']?.['min']),
+            max: isScientificFormat(showApr['apr']?.['max'])
           },
           swapFee: {
-            min: (showApr['swapFee']?.['min'] || 0),
-            max: (showApr['swapFee']?.['max'] || 0)
+            min: isScientificFormat(showApr['swapFee']?.['min']),
+            max: isScientificFormat(showApr['swapFee']?.['max'])
           }
         };
       }
@@ -194,7 +194,7 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
           return new BigDecimal(CoefficientBySort[sortOrder]).mul(a.showVolume - b.showVolume).toNumber();
         case PoolColumnHeader.APR:
           return new BigDecimal(CoefficientBySort[sortOrder])
-            .mul((a?.showApr.apr.max || 0) - (b?.showApr.apr.max || 0))
+            .mul((a?.showApr.apr?.max || 0) - (b?.showApr.apr?.max || 0))
             .toNumber();
 
         default:
