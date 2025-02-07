@@ -337,3 +337,11 @@ export const listFactoryV1Pools: FACTORY_V1_POOL[] = [
     ]
   }
 ];
+
+export const isScientificFormat = (value) => {
+  //  "6e-7" is in scientific format? true
+  // "-1.5e3" is in scientific format? true
+  // "0.001" is in scientific format? false
+  const regex = /^\d+e[+-]?\d+$/;
+  return !value || regex.test(value) ? 0 : value;
+};
