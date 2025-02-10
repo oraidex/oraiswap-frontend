@@ -118,7 +118,7 @@ export async function fetchPairPriceWithStablecoin(
   toTokenInfo: TokenItemType
 ): Promise<string> {
   if (!fromTokenInfo.denom || !toTokenInfo.denom) return '0';
-  const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
   const storage = store.getState();
   const allOraichainTokens = storage.token.allOraichainTokens || [];
   const allOtherChainTokens = storage.token.allOtherChainTokens || [];
@@ -424,7 +424,7 @@ function generateContractMessages(
   const { type, sender, ...params } = query;
   let funds: Coin[] | null;
   // for withdraw & provide liquidity methods, we need to interact with the oraiswap pair contract
-  let contractAddr = network.router;
+  let contractAddr = network.mixer_router;
   let input: any;
   switch (type) {
     case Type.SWAP:
@@ -527,7 +527,7 @@ function generateMiningMsgs(data: MiningLP): ExecuteInstruction {
   const { type, sender, ...params } = data;
   let funds: Coin[] | null;
   // for withdraw & provide liquidity methods, we need to interact with the oraiswap pair contract
-  let contractAddr = network.router;
+  let contractAddr = network.mixer_router;
   let input: JsonObject;
   switch (type) {
     case Type.BOND_LIQUIDITY: {

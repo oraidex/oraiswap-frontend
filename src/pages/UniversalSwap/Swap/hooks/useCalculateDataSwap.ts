@@ -40,7 +40,7 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
   const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
   const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
   const isOraichain = originalFromToken.chainId === 'Oraichain' && originalToToken.chainId === 'Oraichain';
-  const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
   const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, { useIbcWasm, useAlphaIbcWasm });
   const maxSplits = isOraichain
     ? splitsOSOR.ORAICHAIN
