@@ -82,7 +82,7 @@ export const useRelayerFeeToken = (originalFromToken: TokenItemType, originalToT
   const { data: relayerFeeAmount } = useQuery(
     ['simulate-relayer-data', originalFromToken, originalToToken, relayerFeeInOrai],
     () => {
-      const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+      const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
       const oraiToken = oraichainTokens.find((token) => token.coinGeckoId === 'oraichain-token');
 
       if (!oraiToken || !originalToToken) {
@@ -149,7 +149,7 @@ export const useRelayerFeeToken = (originalFromToken: TokenItemType, originalToT
   };
 };
 export const useUsdtToBtc = (amount) => {
-  const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
   const originalFromToken = oraichainTokens.find((token) => token.coinGeckoId === 'tether');
   const originalToToken = oraichainTokens.find((token) => token.coinGeckoId === 'bitcoin');
   const { data } = useQuery(

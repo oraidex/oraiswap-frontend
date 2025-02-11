@@ -26,7 +26,7 @@ const BiddingHistory = ({ round, filterRound, setFilterRound, handleUpdateRoundU
 
   const originalFromToken = tokenMap['oraix'];
   const originalToToken = tokenMap['usdc'];
-  const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
 
   const [activeTab, setActiveTab] = useState(TAB_HISTORY.MY_BID);
 
