@@ -43,7 +43,6 @@ export const getUsd = (
 };
 
 export const getTotalUsd = (amounts: AmountDetails, prices: CoinGeckoPrices<string>, pricesViaPool = {}): number => {
-  if (Object.keys(pricesViaPool).length) console.log({ pricesViaPool });
   let usd = 0;
   for (const denom in amounts) {
     const tokenInfo = tokenMap[denom];
