@@ -17,7 +17,9 @@ const Connected: React.FC<{ setIsShowMyWallet: (isShow: boolean) => void }> = ({
   const [theme] = useConfigReducer('theme');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
-  const totalUsd = getTotalUsd(amounts, prices);
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
+
+  const totalUsd = getTotalUsd(amounts, prices, tokenPoolPrices);
   const [walletsByNetwork] = useWalletReducer('walletsByNetwork');
 
   const renderConnectedWalletLogo = () => {

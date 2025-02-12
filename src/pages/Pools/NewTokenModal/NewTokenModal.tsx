@@ -29,7 +29,6 @@ import {
 
 import { inspectToken, optimisticUpdateToken } from 'reducer/onchainTokens';
 import { GasPrice } from '@cosmjs/stargate';
-import { OraichainNetworkConfig } from '@oraichain/orai-token-inspector';
 
 const cx = cn.bind(styles);
 // const TOKEN_FACTORY_CONTRACT = 'orai1ytjgzxvtsq3ukhzmt39cp85j27zzqf5y706y9qrffrnpn3vd3uds957ydu';
@@ -206,7 +205,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               chainId: network.chainId,
               cosmosBased: true,
               contractAddress: '',
-              coinType: OraichainNetworkConfig.coinType,
+              coinType: network.coinType,
               description: description,
               feeCurrencies: network.feeCurrencies,
               gasPriceStep: network.feeCurrencies[0].gasPriceStep,

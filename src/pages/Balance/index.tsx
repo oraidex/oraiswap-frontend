@@ -10,6 +10,7 @@ import {
   getTokenOnOraichain,
   ORAI,
   ORAI_SOL_CONTRACT_ADDRESS,
+  parseTokenInfoRawDenom,
   solChainId,
   toAmount,
   toDisplay,
@@ -147,6 +148,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const [filterNetworkUI, setFilterNetworkUI] = useConfigReducer('filterNetwork');
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   const {
     metamaskAddress,
@@ -771,7 +773,7 @@ const Balance: React.FC<BalanceProps> = () => {
     return getFilterTokens(filterNetworkUI);
   }, [filterNetworkUI, otherChainTokens, oraichainTokens]);
 
-  const totalUsd = getTotalUsd(amounts, prices);
+  const totalUsd = getTotalUsd(amounts, prices, tokenPoolPrices);
 
   // Move oraib2oraichain
   const [moveOraib2OraiLoading, setMoveOraib2OraiLoading] = useState(false);
@@ -895,7 +897,9 @@ const Balance: React.FC<BalanceProps> = () => {
                 listTokens.map((t: TokenItemType) => {
                   // check balance cw20
                   let amount = BigInt(amounts[t.denom] ?? 0);
-                  let usd = getUsd(amount, t, prices);
+
+                  const tokenPrice = prices[t.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(t)] ?? 0;
+                  let usd = getUsd(amount, t, prices, tokenPrice);
                   let subAmounts: AmountDetails;
                   if (t.contractAddress && t.evmDenoms) {
                     subAmounts = getSubAmountDetails(amounts, t);
