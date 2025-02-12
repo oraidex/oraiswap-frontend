@@ -34,7 +34,12 @@ export const onchainTokensSlice = createSlice({
   }
 });
 
-export const onChainTokenToTokenItem = (token: InspectedToken): TokenItemType => {
+export const onChainTokenToTokenItem = (
+  token: InspectedToken
+): TokenItemType & {
+  tag: string;
+  bridgeInfoUrl: string;
+} => {
   return {
     name: token.name,
     chainId: token.chainId,
