@@ -18,7 +18,8 @@ export const ConnectedMobile: React.FC<{ setIsShowMyWallet: (isShow: boolean) =>
   const [theme] = useConfigReducer('theme');
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
-  const totalUsd = getTotalUsd(amounts, prices);
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
+  const totalUsd = getTotalUsd(amounts, prices, tokenPoolPrices);
 
   return (
     <div className={cx('connected_container', theme)} onClick={() => setIsShowMyWallet(true)}>

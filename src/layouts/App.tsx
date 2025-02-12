@@ -32,6 +32,7 @@ import './index.scss';
 import Menu from './Menu';
 import { NoticeBanner } from './NoticeBanner';
 import Sidebar from './Sidebar';
+import { useGetTokenPoolPrices } from 'hooks/useGetTokenPoolPrices';
 
 const App = () => {
   const [address, setOraiAddress] = useConfigReducer('address');
@@ -56,6 +57,7 @@ const App = () => {
   const solanaWallet = useWallet();
 
   useTronEventListener();
+  useGetTokenPoolPrices();
 
   // init TON
   useEffect(() => {

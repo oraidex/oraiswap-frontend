@@ -18,6 +18,7 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
   const [theme] = useConfigReducer('theme');
   const mobileMode = isMobile();
   const { data: prices } = useCoinGeckoPrices();
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
 
@@ -53,8 +54,11 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                   if (returnToken)
                     QuoteTokenIcon = theme === 'light' ? returnToken.iconLight || returnToken.icon : returnToken.icon;
 
-                  const returnUSD = getUsd(item.returnAmount, returnToken, prices);
-                  const feeUSD = getUsd(item.commissionAmount, returnToken, prices);
+                  const returnTokenPrice =
+                    prices?.[returnToken.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(returnToken)] ?? 0;
+                  const returnUSD = getUsd(item.returnAmount, returnToken, prices, returnTokenPrice);
+
+                  const feeUSD = getUsd(item.commissionAmount, returnToken, prices, returnTokenPrice);
                   return (
                     <div className={styles.item} key={index}>
                       <div className={styles.info}>
@@ -72,19 +76,6 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                               </a>
                             </div>
                           </div>
-                          {/* <div className={styles.addressWrapper}>
-                            <div className={styles.titleItem}>Address</div>
-                            <div className={styles.address}>
-                              <span className={styles.txt}>
-                                {!item.sender ? '-' : reduceString(item.sender || '', 5, 5)}
-                              </span>
-                              {!item.sender ? null : (
-                                <a href={getAccountUrl(item.sender || '')} target="_blank" rel="noopener noreferrer">
-                                  <LinkIcon />
-                                </a>
-                              )}
-                            </div>
-                          </div> */}
                           <div className={styles.time}>
                             <div>
                               <span>{formatDateV2(item.timestamp * 1000)}</span>
@@ -92,12 +83,6 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                             </div>
                           </div>
                         </div>
-                        {/* <div className={styles.time}>
-                          <div>
-                            <span>{formatDateV2(item.timestamp * 1000)}</span>
-                            <span>{formatTime(item.timestamp * 1000)}</span>
-                          </div>
-                        </div> */}
                       </div>
 
                       <div className={styles.divider}></div>
@@ -178,8 +163,10 @@ const TransactionHistory = ({ baseToken, quoteToken }: { baseToken: TokenItemTyp
                         QuoteTokenIcon =
                           theme === 'light' ? returnToken.iconLight || returnToken.icon : returnToken.icon;
 
-                      const returnUSD = getUsd(item.returnAmount, returnToken, prices);
-                      const feeUSD = getUsd(item.commissionAmount, returnToken, prices);
+                      const returnTokenPrice =
+                        prices?.[returnToken.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(returnToken)] ?? 0;
+                      const returnUSD = getUsd(item.returnAmount, returnToken, prices, returnTokenPrice);
+                      const feeUSD = getUsd(item.commissionAmount, returnToken, prices, returnTokenPrice);
 
                       return (
                         <tr className={styles.item} key={index}>

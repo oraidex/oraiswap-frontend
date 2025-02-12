@@ -1,4 +1,11 @@
-import { CW20_DECIMALS, getSubAmountDetails, toAmount, toDisplay, tokensIcon } from '@oraichain/oraidex-common';
+import {
+  CW20_DECIMALS,
+  getSubAmountDetails,
+  parseTokenInfoRawDenom,
+  toAmount,
+  toDisplay,
+  tokensIcon
+} from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import StakeIcon from 'assets/icons/stake.svg';
 import WalletIcon from 'assets/icons/wallet-v3.svg';
@@ -31,6 +38,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   const [theme] = useConfigReducer('theme');
   const totalLpv3 = useSelector((state: RootState) => state.token.totalLpv3);
 
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useState(true);
   const sizePadding = isMobile() ? '12px' : '24px';
 
@@ -90,7 +98,8 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
           const subAmounts = isHaveSubAmounts ? getSubAmountDetails(amounts, token) : {};
           const totalAmount = amount + toAmount(toSumDisplay(subAmounts), token.decimals);
 
-          const tokenPrice = prices[token.coinGeckoId] || 0;
+          const tokenDenom = parseTokenInfoRawDenom(token);
+          const tokenPrice = prices[token.coinGeckoId] || tokenPoolPrices[tokenDenom] || 0;
           const value = toDisplay(totalAmount.toString(), token.decimals) * tokenPrice;
 
           if (checkShouldHide(value)) return result;

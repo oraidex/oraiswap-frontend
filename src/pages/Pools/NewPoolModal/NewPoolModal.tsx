@@ -1,4 +1,4 @@
-import { FACTORY_V2_CONTRACT, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { FACTORY_V2_CONTRACT, parseTokenInfoRawDenom, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import { Asset, AssetInfo } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import IcBack from 'assets/icons/ic_back.svg?react';
@@ -52,6 +52,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const theme = useTheme();
   const [walletAddress] = useConfigReducer('address');
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   const tokenObj1 = (allOraichainTokens || []).find((token) => token?.denom === token1);
   const tokenObj2 = (allOraichainTokens || []).find((token) => token?.denom === token2);
@@ -230,6 +231,15 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
     }
   };
 
+  const token1Price = tokenObj1
+    ? prices[tokenObj1?.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(tokenObj1)] ?? 0
+    : 0;
+  const token2Price = tokenObj2
+    ? prices[tokenObj2?.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(tokenObj2)] ?? 0
+    : 0;
+
+  console.log({ amountToken1 });
+
   const step1Component = (
     <>
       <div className={cx('supply', theme)}>
@@ -307,7 +317,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               MAX
             </div>
             <TokenBalance
-              balance={getBalanceValue(token1InfoData?.symbol ?? '', amountToken1)}
+              balance={amountToken1 * token1Price}
               style={{ flexGrow: 1, textAlign: 'right' }}
               decimalScale={2}
             />
@@ -390,7 +400,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
               MAX
             </div>
             <TokenBalance
-              balance={getBalanceValue(token2InfoData?.symbol ?? '', amountToken2)}
+              balance={amountToken2 * token2Price}
               style={{ flexGrow: 1, textAlign: 'right' }}
               decimalScale={2}
             />
@@ -432,7 +442,8 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 <span className={cx('stats_info_name', theme)}>{token1InfoData?.symbol}</span>
                 <div>
                   <TokenBalance
-                    balance={getBalanceValue(token1InfoData?.symbol ?? '', +amountToken1)}
+                    balance={amountToken1 * token1Price}
+                    // balance={getBalanceValue(token1InfoData?.symbol ?? '', +amountToken1)}
                     className={cx('stats_info_value_usd', theme)}
                     decimalScale={2}
                   />
@@ -452,7 +463,8 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                 <span className={cx('stats_info_name', theme)}>{token2InfoData?.symbol}</span>
                 <div>
                   <TokenBalance
-                    balance={getBalanceValue(token2InfoData?.symbol ?? '', +amountToken2)}
+                    balance={amountToken2 * token2Price}
+                    // balance={getBalanceValue(token2InfoData?.symbol ?? '', +amountToken2)}
                     className={cx('stats_info_value_usd', theme)}
                     decimalScale={2}
                   />

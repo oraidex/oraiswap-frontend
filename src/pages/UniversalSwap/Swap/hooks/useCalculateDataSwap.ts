@@ -1,4 +1,10 @@
-import { BigDecimal, calculateMinReceive, CW20_DECIMALS, toAmount } from '@oraichain/oraidex-common';
+import {
+  BigDecimal,
+  calculateMinReceive,
+  CW20_DECIMALS,
+  parseTokenInfoRawDenom,
+  toAmount
+} from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -16,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { fetchTokenInfos } from 'rest/api';
 import { useSimulate } from './useSimulate';
 import { useSwapFee } from './useSwapFee';
+import useConfigReducer from 'hooks/useConfigReducer';
 
 export const SIMULATE_INIT_AMOUNT = 1;
 
@@ -31,6 +38,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     fromToken: originalFromToken,
     toToken: originalToToken
   });
+
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   const remoteTokenDenomFrom = getRemoteDenom(originalFromToken);
   const remoteTokenDenomTo = getRemoteDenom(originalToToken);
@@ -137,8 +146,13 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
 
   const { averageRatio } = getAverageRatio(simulateData, averageSimulateData, fromAmountToken, originalFromToken);
 
-  const usdPriceShowFrom = (prices?.[originalFromToken?.coinGeckoId] * fromAmountToken).toFixed(6);
-  const usdPriceShowTo = (prices?.[originalToToken?.coinGeckoId] * simulateData?.displayAmount).toFixed(6);
+  const tokenFromPrice =
+    prices?.[originalFromToken?.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(originalFromToken)] ?? 0;
+  const usdPriceShowFrom = (tokenFromPrice * fromAmountToken).toFixed(6);
+
+  const tokenToPrice =
+    prices?.[originalToToken?.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(originalToToken)] ?? 0;
+  const usdPriceShowTo = (tokenToPrice * simulateData?.displayAmount).toFixed(6);
 
   const isAverageRatio = averageRatio?.amount;
   const isSimulateDataDisplay = simulateData?.displayAmount;

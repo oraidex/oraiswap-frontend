@@ -1,4 +1,11 @@
-import { BigDecimal, toAmount, toDisplay, TokenItemType, CW20_DECIMALS } from '@oraichain/oraidex-common';
+import {
+  BigDecimal,
+  toAmount,
+  toDisplay,
+  TokenItemType,
+  CW20_DECIMALS,
+  parseTokenInfoRawDenom
+} from '@oraichain/oraidex-common';
 import {
   FeeTier,
   PoolKey,
@@ -147,8 +154,14 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({ tokenFrom, tokenTo, feeTier, 
 
   const [amountTo, setAmountTo] = useState<number | string>();
   const [amountFrom, setAmountFrom] = useState<number | string>();
-  const fromUsd = (prices?.[tokenFrom?.coinGeckoId] * Number(amountFrom || 0)).toFixed(6);
-  const toUsd = (prices?.[tokenTo?.coinGeckoId] * Number(amountTo || 0)).toFixed(6);
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
+
+  const fromUsd = (
+    prices?.[tokenFrom?.coinGeckoId] ?? tokenPoolPrices?.[parseTokenInfoRawDenom(tokenFrom)] * Number(amountFrom || 0)
+  ).toFixed(6);
+  const toUsd = (
+    prices?.[tokenTo?.coinGeckoId] ?? tokenPoolPrices?.[parseTokenInfoRawDenom(tokenTo)] * Number(amountTo || 0)
+  ).toFixed(6);
 
   const isLightTheme = theme === 'light';
   const TokenFromIcon =

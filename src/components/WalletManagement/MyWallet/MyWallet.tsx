@@ -54,6 +54,7 @@ export const MyWallet: React.FC<{
   const [tonAddress] = useConfigReducer('tonAddress');
 
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
   const [cosmosAddresses, setCosmosAddress] = useConfigReducer('cosmosAddress');
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
 
@@ -62,7 +63,7 @@ export const MyWallet: React.FC<{
 
   const amounts = useSelector((state: RootState) => state.token.amounts);
   const { data: prices } = useCoinGeckoPrices();
-  const totalUsd = getTotalUsd(amounts, prices);
+  const totalUsd = getTotalUsd(amounts, prices, tokenPoolPrices);
   const { isCopied, copiedValue, handleCopy } = useCopyClipboard();
 
   useEffect(() => {

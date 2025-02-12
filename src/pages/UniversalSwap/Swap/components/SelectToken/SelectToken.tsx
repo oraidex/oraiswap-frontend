@@ -1,4 +1,10 @@
-import { CustomChainInfo, MAX_ORAICHAIN_DENOM, TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
+import {
+  CustomChainInfo,
+  MAX_ORAICHAIN_DENOM,
+  parseTokenInfoRawDenom,
+  TokenItemType,
+  truncDecimals
+} from '@oraichain/oraidex-common';
 import IconVerified from 'assets/icons/ic_verified.svg?react';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
@@ -67,6 +73,7 @@ export default function SelectToken({
   const [address] = useConfigReducer('address');
   const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);
   const dispatch = useDispatch();
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   useEffect(() => {
     if (selectChain && selectChain !== textChain) setTextChain(selectChain);
@@ -161,8 +168,9 @@ export default function SelectToken({
                 sumAmount = toSumDisplay(sumAmountDetails);
               }
               const balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
-              const usd =
-                sumAmount > 0 && token && prices[token.coinGeckoId] ? sumAmount * prices[token.coinGeckoId] : '0';
+
+              const tokenPrice = prices[token.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(token)] ?? 0;
+              const usd = sumAmount > 0 && token ? sumAmount * tokenPrice : '0';
 
               return {
                 ...token,
