@@ -50,7 +50,9 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        sourcemap: true
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]'
       }
     },
     target: 'esnext'
