@@ -612,6 +612,7 @@ const Balance: React.FC<BalanceProps> = () => {
         instructions.push({
           typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
           value: MsgExecuteContract.fromPartial({
+            sender: oraiAddress,
             contract: poolKey.token_x,
             msg: toUtf8(
               JSON.stringify({
@@ -640,6 +641,7 @@ const Balance: React.FC<BalanceProps> = () => {
         instructions.push({
           typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
           value: MsgExecuteContract.fromPartial({
+            sender: oraiAddress,
             contract: poolKey.token_y,
             msg: toUtf8(
               JSON.stringify({
