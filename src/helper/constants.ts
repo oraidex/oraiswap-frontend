@@ -1,4 +1,3 @@
-import { defaultOraiToken } from '@oraichain/orai-token-inspector';
 import { ChainIdEnum } from '@oraichain/oraidex-common';
 
 export const leapSnapId = 'npm:@leapwallet/metamask-cosmos-snap';
@@ -24,3 +23,7 @@ export const RELAYER_DECIMAL = 6;
 export const DAY_IN_MILIS = 86400000;
 export const DEFAULT_TOKEN_ICON_URL =
   'https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png';
+
+export const SOLANA_POOLS_MIDDLEWARE = {
+  ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']: ''
+};

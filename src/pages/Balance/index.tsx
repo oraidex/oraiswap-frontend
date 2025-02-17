@@ -8,6 +8,7 @@ import { NetworkChainId } from '@oraichain/common';
 import {
   calculateTimeoutTimestamp,
   getTokenOnOraichain,
+  MIXED_ROUTER,
   ORAI,
   ORAI_SOL_CONTRACT_ADDRESS,
   parseTokenInfoRawDenom,
@@ -49,7 +50,8 @@ import {
   CWAppBitcoinContractAddress,
   CWBitcoinFactoryDenom,
   DEFAULT_RELAYER_FEE,
-  RELAYER_DECIMAL
+  RELAYER_DECIMAL,
+  SOLANA_POOLS_MIDDLEWARE
 } from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -62,7 +64,8 @@ import {
   flattenTokens,
   oraichainTokens as oraichainTokensCommon,
   oraidexCommon,
-  otherChainTokens as otherChainTokenCommon
+  otherChainTokens as otherChainTokenCommon,
+  usdcSolToken
 } from 'initCommon';
 import Content from 'layouts/Content';
 import Metamask from 'libs/metamask';
@@ -112,6 +115,9 @@ import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { getTokenInspectorInstance } from 'initTokenInspector';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 import { addToOraichainTokens, addToOtherChainTokens } from 'reducer/token';
+import { parsePoolKey } from '@oraichain/oraiswap-v3';
+import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
+import { toUtf8 } from '@cosmjs/encoding';
 
 interface BalanceProps {}
 export const isMaintainBridge = false;
@@ -145,11 +151,15 @@ const Balance: React.FC<BalanceProps> = () => {
   const [loadingInspector, setLoadingInspector] = useState(false);
   const [toToken, setToToken] = useState<TokenItemType>();
   const [toTokens, setToTokens] = useState<any>();
-
   const [filterNetworkUI, setFilterNetworkUI] = useConfigReducer('filterNetwork');
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
   const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
+  console.log({
+    oraichainTokens,
+    otherChainTokens,
+    toTokens
+  });
   const {
     metamaskAddress,
     address: oraiAddress,
@@ -212,6 +222,7 @@ const Balance: React.FC<BalanceProps> = () => {
   const { data: prices } = useCoinGeckoPrices();
 
   useGetFeeConfig();
+
   useEffect(() => {
     (async () => {
       try {
@@ -321,6 +332,10 @@ const Balance: React.FC<BalanceProps> = () => {
       }
 
       let toToken = toTokens?.[toNetworkChainId];
+      console.log({
+        toTokens,
+        toNetworkChainId
+      });
       if (!toToken) {
         toToken = findDefaultToToken(token);
       }
@@ -556,7 +571,6 @@ const Balance: React.FC<BalanceProps> = () => {
     if (!solAddress) {
       throw new Error('Please connect to Solana wallet');
     }
-
     const isMemeBridge = getStatusMemeBridge(fromToken);
     let receiverAddress = ORAICHAIN_RELAYER_ADDRESS_AGENTS;
     let solRelayer = SOL_RELAYER_ADDRESS_AGENTS;
@@ -589,20 +603,85 @@ const Balance: React.FC<BalanceProps> = () => {
         throw new Error(message);
       }
     }
-
-    const result = await window.client.sendTokens(
-      oraiAddress,
-      receiverAddress,
-      [
-        {
-          amount: toAmount(transferAmount, fromToken.decimals).toString(),
-          denom: fromToken.denom
+    const tokenMintPubkey = toToken.contractAddress!;
+    const poolMiddleware = SOLANA_POOLS_MIDDLEWARE?.[tokenMintPubkey];
+    const instructions = [];
+    if (poolMiddleware) {
+      const poolKey = parsePoolKey(poolMiddleware);
+      if (poolKey.token_y.includes(tokenMintPubkey)) {
+        instructions.push({
+          typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+          value: MsgExecuteContract.fromPartial({
+            contract: poolKey.token_x,
+            msg: toUtf8(
+              JSON.stringify({
+                send: {
+                  contract: MIXED_ROUTER,
+                  amount: toAmount(transferAmount, fromToken.decimals).toString(),
+                  msg: toBinary({
+                    execute_swap_operations: {
+                      operations: [
+                        {
+                          swap_v3: {
+                            pool_key: poolKey,
+                            x_to_y: true
+                          }
+                        }
+                      ],
+                      to: receiverAddress
+                    }
+                  })
+                }
+              })
+            )
+          })
+        });
+      } else if (poolKey.token_x.includes(tokenMintPubkey)) {
+        instructions.push({
+          typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+          value: MsgExecuteContract.fromPartial({
+            contract: poolKey.token_y,
+            msg: toUtf8(
+              JSON.stringify({
+                send: {
+                  contract: MIXED_ROUTER,
+                  amount: toAmount(transferAmount, fromToken.decimals).toString(),
+                  msg: toBinary({
+                    execute_swap_operations: {
+                      operations: [
+                        {
+                          swap_v3: {
+                            pool_key: poolKey,
+                            x_to_y: false
+                          }
+                        }
+                      ],
+                      to: receiverAddress
+                    }
+                  })
+                }
+              })
+            )
+          })
+        });
+      }
+    } else {
+      instructions.push({
+        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+        value: {
+          fromAddress: oraiAddress,
+          toAddress: receiverAddress,
+          amount: [
+            {
+              amount: toAmount(transferAmount, fromToken.decimals).toString(),
+              denom: fromToken.denom
+            }
+          ]
         }
-      ],
-      'auto',
-      solAddress
-    );
+      });
+    }
 
+    const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
     if (result) {
       displayToast(TToastType.TX_SUCCESSFUL, {
         customLink: getTransactionUrl(fromToken.chainId, result.transactionHash)
