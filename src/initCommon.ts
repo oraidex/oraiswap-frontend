@@ -61,6 +61,7 @@ export const initializeOraidexCommon = async (
   const otherChainTokens = oraidexCommonOg.otherChainTokens;
   // Start Dev
   otherChainTokens.push(usdcSolToken as any);
+  flattenTokens.push(usdcSolToken as any);
   let usdcToken = oraichainTokens.find((token) => token.name === 'USDC');
   usdcToken.bridgeTo.push('solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp');
   oraichainTokens = oraichainTokens.map((token) => {
