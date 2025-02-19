@@ -7,10 +7,12 @@ import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
 import { NetworkChainId } from '@oraichain/common';
 import {
   calculateTimeoutTimestamp,
+  CONVERTER_CONTRACT,
   getTokenOnOraichain,
   MIXED_ROUTER,
   ORAI,
   ORAI_SOL_CONTRACT_ADDRESS,
+  parseAssetInfo,
   parseTokenInfoRawDenom,
   solChainId,
   toAmount,
@@ -51,7 +53,7 @@ import {
   CWBitcoinFactoryDenom,
   DEFAULT_RELAYER_FEE,
   RELAYER_DECIMAL,
-  SOLANA_POOLS_MIDDLEWARE
+  CONVERTER_MIDDLEWARE
 } from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -604,69 +606,44 @@ const Balance: React.FC<BalanceProps> = () => {
       }
     }
     const tokenMintPubkey = toToken.contractAddress!;
-    const poolMiddleware = SOLANA_POOLS_MIDDLEWARE?.[tokenMintPubkey];
+    const converterMiddleware = CONVERTER_MIDDLEWARE?.[tokenMintPubkey];
     const instructions = [];
-    if (poolMiddleware) {
-      const poolKey = parsePoolKey(poolMiddleware);
-      if (poolKey.token_y.includes(tokenMintPubkey)) {
-        instructions.push({
-          typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-          value: MsgExecuteContract.fromPartial({
-            sender: oraiAddress,
-            contract: poolKey.token_x,
-            msg: toUtf8(
-              JSON.stringify({
-                send: {
-                  contract: MIXED_ROUTER,
-                  amount: toAmount(transferAmount, fromToken.decimals).toString(),
-                  msg: toBinary({
-                    execute_swap_operations: {
-                      operations: [
-                        {
-                          swap_v3: {
-                            pool_key: poolKey,
-                            x_to_y: true
-                          }
-                        }
-                      ],
-                      to: receiverAddress
-                    }
-                  })
-                }
-              })
-            )
-          })
-        });
-      } else if (poolKey.token_x.includes(tokenMintPubkey)) {
-        instructions.push({
-          typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-          value: MsgExecuteContract.fromPartial({
-            sender: oraiAddress,
-            contract: poolKey.token_y,
-            msg: toUtf8(
-              JSON.stringify({
-                send: {
-                  contract: MIXED_ROUTER,
-                  amount: toAmount(transferAmount, fromToken.decimals).toString(),
-                  msg: toBinary({
-                    execute_swap_operations: {
-                      operations: [
-                        {
-                          swap_v3: {
-                            pool_key: poolKey,
-                            x_to_y: false
-                          }
-                        }
-                      ],
-                      to: receiverAddress
-                    }
-                  })
-                }
-              })
-            )
-          })
-        });
-      }
+    if (converterMiddleware) {
+      const parsedFrom = parseAssetInfo(converterMiddleware.from.info);
+      const parsedTo = parseAssetInfo(converterMiddleware.to.info);
+      instructions.push({
+        typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+        value: MsgExecuteContract.fromPartial({
+          sender: oraiAddress,
+          contract: parsedTo,
+          msg: toUtf8(
+            JSON.stringify({
+              send: {
+                contract: CONVERTER_CONTRACT,
+                amount: toAmount(transferAmount, converterMiddleware.to.decimals).toString(),
+                msg: toBinary({
+                  convert_reverse: {
+                    from: converterMiddleware.from.info
+                  }
+                })
+              }
+            })
+          )
+        })
+      });
+      instructions.push({
+        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+        value: {
+          fromAddress: oraiAddress,
+          toAddress: receiverAddress,
+          amount: [
+            {
+              amount: toAmount(transferAmount, converterMiddleware.from.decimals).toString(),
+              denom: parsedFrom
+            }
+          ]
+        }
+      });
     } else {
       instructions.push({
         typeUrl: '/cosmos.bank.v1beta1.MsgSend',
@@ -683,10 +660,16 @@ const Balance: React.FC<BalanceProps> = () => {
       });
     }
 
-    const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
-    if (result) {
-      displayToast(TToastType.TX_SUCCESSFUL, {
-        customLink: getTransactionUrl(fromToken.chainId, result.transactionHash)
+    try {
+      const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
+      if (result) {
+        displayToast(TToastType.TX_SUCCESSFUL, {
+          customLink: getTransactionUrl(fromToken.chainId, result.transactionHash)
+        });
+      }
+    } catch (err) {
+      displayToast(TToastType.TX_FAILED, {
+        message: err.message
       });
     }
   };

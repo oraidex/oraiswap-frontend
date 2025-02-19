@@ -1,4 +1,5 @@
 import { ChainIdEnum } from '@oraichain/oraidex-common';
+import { TokenInfo } from '@oraichain/oraidex-contracts-sdk/build/OraiswapConverter.types';
 
 export const leapSnapId = 'npm:@leapwallet/metamask-cosmos-snap';
 export const leapWalletType = 'leapSnap';
@@ -24,7 +25,31 @@ export const DAY_IN_MILIS = 86400000;
 export const DEFAULT_TOKEN_ICON_URL =
   'https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png';
 
-export const SOLANA_POOLS_MIDDLEWARE = {
-  ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']:
-    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v-orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd-100000000-1'
+export type ConverterPairParams = {
+  from: TokenInfo;
+  to: TokenInfo;
+  isMintBurn: boolean;
+};
+
+export const CONVERTER_MIDDLEWARE: Partial<Record<string, ConverterPairParams>> = {
+  ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']: {
+    from: {
+      decimals: 6,
+      info: {
+        native_token: {
+          denom:
+            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+        }
+      }
+    },
+    to: {
+      decimals: 6,
+      info: {
+        token: {
+          contract_addr: 'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd'
+        }
+      }
+    },
+    isMintBurn: false
+  }
 };
