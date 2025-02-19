@@ -159,6 +159,11 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toToken,
     isMemeBridge
   });
+  console.log({
+    solFee,
+    isOraichainToSol,
+    isSolToOraichain
+  });
 
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
     token,
@@ -171,6 +176,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
   let { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
+  relayerFeeTokenFee = to ? relayerFeeTokenFee : 0;
   const depositFeeBtcV2Result = useDepositFeesBitcoinV2(true);
   const withdrawalFeeBtcV2Result = useGetWithdrawlFeesBitcoinV2({
     enabled: isFromOraichainToBitcoin,
