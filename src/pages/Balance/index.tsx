@@ -66,8 +66,7 @@ import {
   flattenTokens,
   oraichainTokens as oraichainTokensCommon,
   oraidexCommon,
-  otherChainTokens as otherChainTokenCommon,
-  usdcSolToken
+  otherChainTokens as otherChainTokenCommon
 } from 'initCommon';
 import Content from 'layouts/Content';
 import Metamask from 'libs/metamask';
