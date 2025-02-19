@@ -157,11 +157,6 @@ const Balance: React.FC<BalanceProps> = () => {
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
   const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
-  console.log({
-    oraichainTokens,
-    otherChainTokens,
-    toTokens
-  });
   const {
     metamaskAddress,
     address: oraiAddress,
@@ -334,10 +329,6 @@ const Balance: React.FC<BalanceProps> = () => {
       }
 
       let toToken = toTokens?.[toNetworkChainId];
-      console.log({
-        toTokens,
-        toNetworkChainId
-      });
       if (!toToken) {
         toToken = findDefaultToToken(token);
       }
@@ -608,6 +599,13 @@ const Balance: React.FC<BalanceProps> = () => {
     const tokenMintPubkey = toToken.contractAddress!;
     const converterMiddleware = CONVERTER_MIDDLEWARE?.[tokenMintPubkey];
     const instructions = [];
+    let amount = [
+      {
+        amount: toAmount(transferAmount, fromToken.decimals).toString(),
+        denom: fromToken.denom
+      }
+    ];
+
     if (converterMiddleware) {
       const parsedFrom = parseAssetInfo(converterMiddleware.from.info);
       const parsedTo = parseAssetInfo(converterMiddleware.to.info);
@@ -631,34 +629,23 @@ const Balance: React.FC<BalanceProps> = () => {
           )
         })
       });
-      instructions.push({
-        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-        value: {
-          fromAddress: oraiAddress,
-          toAddress: receiverAddress,
-          amount: [
-            {
-              amount: toAmount(transferAmount, converterMiddleware.from.decimals).toString(),
-              denom: parsedFrom
-            }
-          ]
+
+      amount = [
+        {
+          amount: toAmount(transferAmount, converterMiddleware.from.decimals).toString(),
+          denom: parsedFrom
         }
-      });
-    } else {
-      instructions.push({
-        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-        value: {
-          fromAddress: oraiAddress,
-          toAddress: receiverAddress,
-          amount: [
-            {
-              amount: toAmount(transferAmount, fromToken.decimals).toString(),
-              denom: fromToken.denom
-            }
-          ]
-        }
-      });
+      ];
     }
+
+    instructions.push({
+      typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+      value: {
+        fromAddress: oraiAddress,
+        toAddress: receiverAddress,
+        amount
+      }
+    });
 
     try {
       const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
