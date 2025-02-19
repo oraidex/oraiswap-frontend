@@ -1,5 +1,12 @@
 import { NetworkChainId } from '@oraichain/common';
-import { BigDecimal, BTC_CONTRACT, parseTokenInfoRawDenom, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import {
+  BigDecimal,
+  BTC_CONTRACT,
+  parseTokenInfoRawDenom,
+  solChainId,
+  toDisplay,
+  TokenItemType
+} from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
@@ -159,12 +166,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toToken,
     isMemeBridge
   });
-  console.log({
-    solFee,
-    isOraichainToSol,
-    isSolToOraichain
-  });
-
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
     token,
     fromNetwork: token.chainId,
@@ -176,7 +177,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
   let { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
-  relayerFeeTokenFee = to ? relayerFeeTokenFee : 0;
   const depositFeeBtcV2Result = useDepositFeesBitcoinV2(true);
   const withdrawalFeeBtcV2Result = useGetWithdrawlFeesBitcoinV2({
     enabled: isFromOraichainToBitcoin,
@@ -291,14 +291,16 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     );
   };
 
+  const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
+  const isBridgeFromSolana = token.chainId === solChainId && !walletByNetworks.solana;
+
   const renderTransferConvertButton = () => {
     let buttonName = toNetworkChainId === token.chainId ? 'Convert to ' : 'Transfer to ';
     if (toNetwork) buttonName += toNetwork.chainName;
     if (receivedAmount < 0) buttonName = 'Not enought amount to pay fee';
+    if (isBridgeFromSolana) buttonName = 'Connect wallet';
     return buttonName;
   };
-
-  const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
 
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
@@ -491,6 +493,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             const isDisabled =
               // isSolBridge ||
               // isBridgeBitcoin ||
+              isBridgeFromSolana ||
               transferLoading ||
               !addressTransfer ||
               receivedAmount < 0 ||
