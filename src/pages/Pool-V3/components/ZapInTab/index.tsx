@@ -12,6 +12,7 @@ import ZappingText from 'components/Zapping';
 import { ZapInLiquidityResponse } from '@oraichain/oraiswap-v3';
 import cn from 'classnames/bind';
 import LeafIcon from 'assets/icons/leaf.svg?react';
+import { getIconWallet } from 'helper';
 
 interface ZapInTabProps {
   tokenZap: TokenItemType;
@@ -64,7 +65,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
   extendedPrice,
   setZapAmount,
   setFocusId,
-  setTokenZap,
+  setTokenZap
 }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
@@ -108,7 +109,7 @@ const ZapInTab: FC<ZapInTabProps> = ({
         </div>
         <div className={styles.balance}>
           <p className={styles.bal}>
-            <span>Balance:</span>{' '}
+            <span>{getIconWallet()}</span>{' '}
             <span className={styles.value}>
               {numberWithCommas(toDisplay(amounts[tokenZap?.denom] || '0', tokenZap.decimals))} {tokenZap?.name}
             </span>

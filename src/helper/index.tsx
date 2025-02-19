@@ -36,6 +36,7 @@ import { store } from 'store/configure';
 import { bitcoinChainId, leapSnapId } from './constants';
 import { numberWithCommas } from './format';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
+import WalletIcon from 'assets/icons/ic_kado.svg?react';
 
 export interface Tokens {
   denom?: string;
@@ -670,6 +671,10 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
 
     return <DefaultIcon />;
   }
+};
+
+export const getIconWallet = () => {
+  return <WalletIcon style={{ opacity: 0.5, width: 18, height: 18 }} />;
 };
 
 export const getIconToken = ({ isLightTheme, denom, width = 30, height = 30 }) => {
