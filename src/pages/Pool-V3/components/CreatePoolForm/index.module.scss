@@ -515,6 +515,8 @@
     align-items: center;
 
     .bal {
+      display: flex;
+      gap: 2px;
       margin-right: 8px;
 
       p {

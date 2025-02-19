@@ -28,7 +28,7 @@ import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
-import { getIcon, getTransactionUrl } from 'helper';
+import { getIcon, getIconWallet, getTransactionUrl } from 'helper';
 import { numberWithCommas } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -862,8 +862,8 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({ tokenFrom, tokenTo, feeTier, 
       <div className={classNames(styles.itemInput, { [styles.disabled]: isFromBlocked })}>
         <div className={styles.balance}>
           <p className={styles.bal}>
-            <span>Balance:</span> {numberWithCommas(toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals))}{' '}
-            {tokenFrom?.name}
+            <span>{getIconWallet()}</span>{' '}
+            {numberWithCommas(toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals))} {tokenFrom?.name}
           </p>
           <div className={styles.btnGroup}>
             <button
@@ -932,8 +932,8 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({ tokenFrom, tokenTo, feeTier, 
       <div className={classNames(styles.itemInput, { [styles.disabled]: isToBlocked })}>
         <div className={styles.balance}>
           <p className={styles.bal}>
-            <span>Balance:</span> {numberWithCommas(toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals))}{' '}
-            {tokenTo?.name}
+            <span>{getIconWallet()}</span>{' '}
+            {numberWithCommas(toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals))} {tokenTo?.name}
           </p>
           <div className={styles.btnGroup}>
             <button

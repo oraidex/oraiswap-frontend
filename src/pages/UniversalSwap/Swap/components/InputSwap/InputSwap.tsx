@@ -11,6 +11,8 @@ import { AMOUNT_BALANCE_ENTRIES_UNIVERSAL_SWAP, DEFAULT_TOKEN_ICON_URL } from 'h
 import { chainInfos } from 'initCommon';
 import { ConfirmUnverifiedToken } from '../../index';
 import OraiDarkIcon from 'assets/icons/oraichain.svg?react';
+import WalletIcon from 'assets/icons/ic_kado.svg?react';
+import { getIconWallet } from 'helper';
 
 const cx = cn.bind(styles);
 
@@ -83,7 +85,7 @@ export default function InputSwap({
         </div>
         <div className={cx('show-balance')}>
           <div className={cx('bal')}>
-            <span className={cx('prefix')}>Balance:&nbsp;</span>
+            <span className={cx('prefix')}>{getIconWallet()}</span>
             <TokenBalance
               balance={{
                 amount: balance,

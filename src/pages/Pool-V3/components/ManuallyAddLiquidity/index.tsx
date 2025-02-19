@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import { numberWithCommas } from 'helper/format';
 import NumberFormat from 'react-number-format';
 import LeafIcon from 'assets/icons/leaf.svg?react';
+import { getIconWallet } from 'helper';
 
 interface ManuallyAddLiquidityProps {
   apr: number;
@@ -78,7 +79,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
         </div>
         <div className={styles.balance}>
           <p className={styles.bal}>
-            <span>Balance:</span>{' '}
+            <span>{getIconWallet()}</span>{' '}
             <span className={styles.value}>
               {numberWithCommas(toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals))} {tokenFrom?.name}
             </span>
@@ -133,7 +134,7 @@ const ManuallyAddLiquidity: FC<ManuallyAddLiquidityProps> = ({
         </div>
         <div className={styles.balance}>
           <p className={styles.bal}>
-            <span>Balance:</span>{' '}
+            <span>{getIconWallet()}</span>{' '}
             <span className={styles.value}>
               {numberWithCommas(toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals))} {tokenTo?.name}
             </span>

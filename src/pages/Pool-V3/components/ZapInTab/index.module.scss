@@ -162,7 +162,8 @@
 
     .bal {
       margin-right: 8px;
-
+      display: flex;
+      gap: 3px;
       p {
         @include theme {
           color: theme-get('colors-neutral-text-text-token-name');
@@ -498,7 +499,6 @@
 .simulating {
   font-style: italic;
   font-size: small;
-  
 
   @include theme {
     color: theme-get('basic-primary-surface-default');

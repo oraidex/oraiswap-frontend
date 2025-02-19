@@ -115,6 +115,8 @@
 
     .bal {
       margin-right: 8px;
+      display: flex;
+      gap: 3px;
 
       p {
         @include theme {

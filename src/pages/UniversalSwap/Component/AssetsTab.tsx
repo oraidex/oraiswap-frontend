@@ -14,7 +14,7 @@ import { Table, TableHeaderProps } from 'components/Table';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { flattenTokens, flattenTokensWithIcon, tokenMap, tokensWithIcon } from 'initCommon';
+import { flattenTokens, tokenMap } from 'initCommon';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { formatDisplayUsdt, toFixedIfNecessary } from 'pages/Pools/helpers';
@@ -88,6 +88,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   };
 
   const data = flattenTokens
+    .filter((flat) => flat.chainId !== 'kawaii_6886-1' && flat.chainId !== '0x1ae6')
     .reduce((result, token) => {
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
       if (token.bridgeTo || token.contractAddress || (token.denom && token.chainId !== 'oraibridge-subnet-2')) {

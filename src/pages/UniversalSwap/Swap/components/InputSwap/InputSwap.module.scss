@@ -263,8 +263,9 @@
     }
 
     gap: 8px;
-
     .bal {
+      display: flex;
+      gap: 3px;
       text-align: right;
 
       .prefix {
@@ -274,7 +275,7 @@
       }
     }
 
-    &>span {
+    & > span {
       text-align: right;
     }
 

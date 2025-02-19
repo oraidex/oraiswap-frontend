@@ -43,6 +43,9 @@
     }
 
     .balance {
+      display: flex;
+      align-items: center;
+      gap: 3px;
       text-align: right;
 
       @include small-mobile {

@@ -28,7 +28,7 @@ import { BitcoinUnit } from 'bitcoin-units';
 import { opcodes, script } from 'bitcoinjs-lib';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { bitcoinLcdV2 } from 'helper/constants';
-import { chainInfos, flattenTokens, kawaiiTokens, network, tokenMap } from 'initCommon';
+import { chainInfos, network, tokenMap } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
 import { generateError } from 'libs/utils';
@@ -227,8 +227,7 @@ export const transferIbcCustom = async (
     throw generateError('Please login metamask!');
   }
   // for KWT & MILKY tokens, we use the old ibc info channel
-  if (fromToken.evmDenoms || kawaiiTokens.find((i) => i.name === fromToken.name))
-    ibcInfo = ibcInfosOld[fromToken.chainId][toToken.chainId];
+  if (fromToken.evmDenoms) ibcInfo = ibcInfosOld[fromToken.chainId][toToken.chainId];
   let result: DeliverTxResponse;
   if (fromToken.evmDenoms) {
     result = await transferTokenErc20Cw20Map({
