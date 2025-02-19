@@ -17,6 +17,7 @@ import PoolList from './components/PoolList';
 import PositionList from './components/PositionList';
 import { useGetPoolList } from './hooks/useGetPoolList';
 import styles from './index.module.scss';
+import NewTokenModal from 'pages/Pools/NewTokenModal/NewTokenModal';
 
 const cx = classNames.bind(styles);
 // import BannerNoticePool from './components/BannerNoticePool';
@@ -62,6 +63,7 @@ const PoolV3 = () => {
 
   const [isOpenNewPoolModalV2, setIsOpenNewPoolModalV2] = useState(false);
   const [isOpenNewPoolModalV3, setIsOpenNewPoolModalV3] = useState(false);
+  const [openCreateToken, setOpenCreateToken] = useState(false);
 
   useEffect(() => {
     if (!listTab.includes(type)) {
@@ -169,7 +171,16 @@ const PoolV3 = () => {
                   >
                     Create New Pool
                   </Button>
+                  <Button
+                    type="primary-sm"
+                    onClick={() => {
+                      setOpenCreateToken(true);
+                    }}
+                  >
+                    Create Token
+                  </Button>
                 </div>
+
                 {openOptionCreatePool && (
                   <div ref={refOpenOptionCreatePool} className={`${styles.dropdownContent} ${styles.dropdownCreate}`}>
                     <div
@@ -210,6 +221,14 @@ const PoolV3 = () => {
                   open={() => setIsOpenNewPoolModalV2(true)}
                   close={() => setIsOpenNewPoolModalV2(false)}
                   isOpen={isOpenNewPoolModalV2}
+                />
+              )}
+
+              {openCreateToken && (
+                <NewTokenModal
+                  open={() => setOpenCreateToken(true)}
+                  close={() => setOpenCreateToken(false)}
+                  isOpen={openCreateToken}
                 />
               )}
             </div>

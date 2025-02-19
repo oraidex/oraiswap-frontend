@@ -80,7 +80,7 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-top: 5px;
+      // margin-top: 5px;
     }
 
     .search {
@@ -119,6 +119,10 @@
       position: relative;
       margin-left: auto;
 
+      .btnAdd {
+        display: flex;
+        gap: 6px;
+      }
       .btn {
         display: flex;
         width: 156px;
