@@ -31,7 +31,7 @@ export type ConverterPairParams = {
   isMintBurn: boolean;
 };
 
-export const USDC_IBC_DENOM =
+export const USDC_SOL_DENOM =
   'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 
 export const CONVERTER_MIDDLEWARE: Partial<Record<string, ConverterPairParams>> = {
@@ -40,7 +40,7 @@ export const CONVERTER_MIDDLEWARE: Partial<Record<string, ConverterPairParams>> 
       decimals: 6,
       info: {
         native_token: {
-          denom: USDC_IBC_DENOM
+          denom: USDC_SOL_DENOM
         }
       }
     },

@@ -55,7 +55,7 @@ import {
   DEFAULT_RELAYER_FEE,
   RELAYER_DECIMAL,
   CONVERTER_MIDDLEWARE,
-  USDC_IBC_DENOM
+  USDC_SOL_DENOM
 } from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -621,7 +621,7 @@ const Balance: React.FC<BalanceProps> = () => {
       const { balance } = await UniversalSwapHelper.getBalanceIBCOraichain(
         {
           ...fromToken,
-          denom: USDC_IBC_DENOM,
+          denom: USDC_SOL_DENOM,
           contractAddress: undefined
         },
         window.client,
