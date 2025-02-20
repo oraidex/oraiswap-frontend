@@ -6,6 +6,7 @@ import { RemainingOraibTokenItem } from './useGetOraiBridgeBalances';
 import { TooltipIcon } from './TooltipBridgeToken';
 import { toDisplay } from '@oraichain/oraidex-common';
 import { flattenTokensWithIcon } from 'initCommon';
+import DefaultToken from 'assets/icons/tokens.svg?react';
 
 interface Props {
   handleMove: () => Promise<void>;
@@ -29,19 +30,30 @@ export default function StuckOraib({ handleMove, loading, remainingOraib }: Prop
       )}
       <TooltipIcon
         placement="bottom-end"
-        content={remainingOraib.map((token) => {
+        content={remainingOraib?.map((token) => {
           const tokensIcon = flattenTokensWithIcon.find((tok) => tok.coinGeckoId === token.coinGeckoId);
           return (
             <div key={token.denom} className={styles.stuckToken}>
               <div className={styles.icon}>
-                <tokensIcon.Icon width={20} height={20} />
-                <span className={styles.name}>{token.name}</span>
+                <div>
+                  {tokensIcon && tokensIcon?.Icon ? (
+                    typeof tokensIcon?.Icon === 'string' ? (
+                      <img src={tokensIcon.Icon} width={20} height={20} />
+                    ) : (
+                      <tokensIcon.Icon width={20} height={20} />
+                    )
+                  ) : (
+                    <DefaultToken width={20} height={20} />
+                  )}
+                </div>
+
+                <span className={styles.name}>{token?.name}</span>
               </div>
               <TokenBalance
                 balance={{
-                  amount: toDisplay(token.amount, token.decimals).toString()
+                  amount: toDisplay(token?.amount, token?.decimals).toString()
                 }}
-                decimalScale={Math.min(6, token.decimals)}
+                decimalScale={Math.min(6, token?.decimals)}
               />
             </div>
           );

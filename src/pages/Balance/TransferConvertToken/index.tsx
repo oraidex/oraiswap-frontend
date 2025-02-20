@@ -159,11 +159,6 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
     toToken,
     isMemeBridge
   });
-  console.log({
-    solFee,
-    isOraichainToSol,
-    isSolToOraichain
-  });
 
   const { deductNativeAmount, checkBalanceBridgeByNetwork } = useTonBridgeHandler({
     token,

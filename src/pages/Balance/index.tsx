@@ -8,6 +8,7 @@ import { NetworkChainId } from '@oraichain/common';
 import {
   calculateTimeoutTimestamp,
   CONVERTER_CONTRACT,
+  generateError,
   getTokenOnOraichain,
   MIXED_ROUTER,
   ORAI,
@@ -53,7 +54,8 @@ import {
   CWBitcoinFactoryDenom,
   DEFAULT_RELAYER_FEE,
   RELAYER_DECIMAL,
-  CONVERTER_MIDDLEWARE
+  CONVERTER_MIDDLEWARE,
+  USDC_IBC_DENOM
 } from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -542,6 +544,16 @@ const Balance: React.FC<BalanceProps> = () => {
       }
     }
 
+    if (fromToken.coinGeckoId === 'usd-coin') {
+      const { balance } = await UniversalSwapHelper.getBalanceIBCOraichain(toToken, window.client, CONVERTER_CONTRACT);
+
+      if (balance < transferAmount) {
+        throw generateError(
+          `The converter contract does not have enough balance to process this bridge transaction. Wanted ${transferAmount}, have ${balance}`
+        );
+      }
+    }
+
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress, solRelayer);
     const transaction = response?.transaction;
     if (transaction) {
@@ -606,6 +618,22 @@ const Balance: React.FC<BalanceProps> = () => {
     ];
 
     if (converterMiddleware) {
+      const { balance } = await UniversalSwapHelper.getBalanceIBCOraichain(
+        {
+          ...fromToken,
+          denom: USDC_IBC_DENOM,
+          contractAddress: undefined
+        },
+        window.client,
+        CONVERTER_CONTRACT
+      );
+
+      if (balance < transferAmount) {
+        throw generateError(
+          `The converter contract does not have enough balance to process this bridge transaction. Wanted ${transferAmount}, have ${balance}`
+        );
+      }
+
       const parsedFrom = parseAssetInfo(converterMiddleware.from.info);
       const parsedTo = parseAssetInfo(converterMiddleware.to.info);
       instructions.push({

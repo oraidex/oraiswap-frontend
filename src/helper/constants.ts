@@ -1,4 +1,4 @@
-import { ChainIdEnum } from '@oraichain/oraidex-common';
+import { ChainIdEnum, USDC_CONTRACT } from '@oraichain/oraidex-common';
 import { TokenInfo } from '@oraichain/oraidex-contracts-sdk/build/OraiswapConverter.types';
 
 export const leapSnapId = 'npm:@leapwallet/metamask-cosmos-snap';
@@ -31,14 +31,16 @@ export type ConverterPairParams = {
   isMintBurn: boolean;
 };
 
+export const USDC_IBC_DENOM =
+  'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+
 export const CONVERTER_MIDDLEWARE: Partial<Record<string, ConverterPairParams>> = {
   ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']: {
     from: {
       decimals: 6,
       info: {
         native_token: {
-          denom:
-            'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+          denom: USDC_IBC_DENOM
         }
       }
     },
@@ -46,7 +48,7 @@ export const CONVERTER_MIDDLEWARE: Partial<Record<string, ConverterPairParams>> 
       decimals: 6,
       info: {
         token: {
-          contract_addr: 'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd'
+          contract_addr: USDC_CONTRACT
         }
       }
     },
