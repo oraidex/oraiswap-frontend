@@ -10,8 +10,8 @@ export const usePoolIcons = (tokenX: string, tokenY: string, isLight: boolean) =
   });
 
   useEffect(() => {
-    (async () => {
-      const data = await getIconPoolData(tokenX, tokenY, isLight);
+    (() => {
+      const data = getIconPoolData(tokenX, tokenY, isLight);
       setIcons(data);
     })();
   }, [tokenX, tokenY, isLight]);

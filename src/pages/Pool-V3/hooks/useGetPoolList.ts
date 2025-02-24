@@ -18,11 +18,8 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
   const [prices, setPrices] = useState<CoinGeckoPrices<string>>(coingeckoPrices);
   const [dataPool, setDataPool] = useState([...Array(0)]);
-  const {
-    data: poolList,
-    refetch: refetchPoolList,
-    isLoading: isLoadingGetPoolList
-  } = useQuery<(PoolWithPoolKey | PoolInfoResponse)[]>(
+
+  const { data: poolList, isLoading: isLoadingGetPoolList } = useQuery<(PoolWithPoolKey | PoolInfoResponse)[]>(
     ['pool-v3-pools', Object.keys(coingeckoPrices).length],
     getPoolList,
     {
@@ -68,7 +65,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
 
   useEffect(() => {
     if (!poolList || poolList.length === 0) return;
-
     (async function formatListPools() {
       const tokenAddresses = new Set<string>();
       poolList.forEach((pool) => {
@@ -102,8 +98,7 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
       }
 
       const listPools = (poolList || []).map((p) => formatPoolData(p));
-
-      const fmtPools = (await Promise.all(listPools)).filter((e) => e.isValid);
+      const fmtPools = listPools.filter((e) => e.isValid);
       setDataPool(fmtPools);
     })();
   }, [poolList]);
@@ -111,8 +106,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
   return {
     poolList: dataPool || [],
     poolPrice: prices,
-    isLoadingGetPoolList,
-    refetchPoolList,
     loading: isLoadingGetPoolList
   };
 };
@@ -120,7 +113,6 @@ export const useGetPoolList = (coingeckoPrices: CoinGeckoPrices<string>) => {
 const getPoolList = async (): Promise<PoolWithPoolKey[]> => {
   try {
     const [poolV3, poolV2] = await Promise.allSettled([SingletonOraiswapV3.getPools(), getPools()]);
-
     const res = [...(poolV3['value'] || []), ...(poolV2['value'] || [])];
 
     return res;

@@ -736,12 +736,7 @@ export function simulateSwapAprPosition(feeApr: number, poolLiquidity: number, p
   return (positionLiquidity * feeApr) / (poolLiquidity + positionLiquidity);
 }
 
-export function simulateIncentiveAprPosition(
-  pool: Pool,
-  poolKey: PoolKey,
-  prices: CoinGeckoPrices<string>,
-  totalLiquidity: number
-) {
+export function simulateIncentiveAprPosition(pool: Pool, poolKey: PoolKey, prices: CoinGeckoPrices<string>) {
   const incentives = pool.incentives;
 
   // calculate APR for the best, position liquidity is 10% of total liquidity
@@ -856,10 +851,8 @@ export async function fetchPoolAprInfo(
 
       const totalLiquidityUsd = new BigDecimal(numberExponentToLarge(item.totalLiquidity)); // usdt denom
       const volume24hUsd = new BigDecimal(item.volume24Hour); // usdt denom
-      
       const swapFee = volume24hUsd.mul(0.002); // fee for LP is 0.2%
       let apr = totalLiquidityUsd.toNumber() !== 0 ? swapFee.div(totalLiquidityUsd).toNumber() : 0;
-      
       if (apr < 0) apr = 0;
 
       poolAprs[liquidityAddr] = {
@@ -895,7 +888,7 @@ export async function fetchPoolAprInfo(
       pool.incentives = poolInfo.pool.incentives;
     }
 
-    const res = simulateIncentiveAprPosition(pool, pool_key, prices, poolLiquidities[poolKeyToString(pool_key)]);
+    const res = simulateIncentiveAprPosition(pool, pool_key, prices);
 
     poolAprs[poolKeyToString(pool_key)] = {
       apr: {

@@ -92,7 +92,7 @@ const PoolV3Detail = () => {
         }
         const pool = poolList.find((p) => poolKeyToString(p.pool_key) === poolKeyString);
         const isLight = theme === 'light';
-        const fmtPool = await formatPoolData(pool, isLight);
+        const fmtPool = formatPoolData(pool, isLight);
         setPoolDetail(fmtPool as any);
       }
     })();

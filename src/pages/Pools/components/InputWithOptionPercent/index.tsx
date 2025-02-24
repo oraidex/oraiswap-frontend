@@ -1,4 +1,4 @@
-import { CW20_DECIMALS, toAmount, toDisplay, TokenInfo } from '@oraichain/oraidex-common';
+import { CW20_DECIMALS, parseTokenInfoRawDenom, toAmount, toDisplay, TokenInfo } from '@oraichain/oraidex-common';
 import classNames from 'classnames/bind';
 import TokenBalance from 'components/TokenBalance';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -47,6 +47,7 @@ const InputWithOptionPercent: FC<{
   const [chosenOption, setChosenOption] = useState(-1);
   const [theme] = useConfigReducer('theme');
   const [inputValue, setInputValue] = useState<number | string>('');
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   const onChangePercent = (percent: number) => {
     const HUNDRED_PERCENT_IN_CW20_DECIMALS = 100000000;
@@ -131,7 +132,11 @@ const InputWithOptionPercent: FC<{
                         amount: BigInt(Math.trunc(amountInUsdt)),
                         decimals: CW20_DECIMALS
                       }
-                    : getUsd(value, token, prices)
+                    : (() => {
+                        const tokenPrice =
+                          prices[token.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(token)] ?? 0;
+                        return getUsd(value, token, prices, tokenPrice);
+                      })()
                 }
                 decimalScale={2}
                 prefix="~$"

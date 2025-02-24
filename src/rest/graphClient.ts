@@ -5,7 +5,7 @@ import { TimeDuration, TokenPairHistoricalPrice } from 'reducer/poolDetailV3';
 import axios from './request';
 import { network } from 'initCommon';
 
-export const INDEXER_V3_URL = network.indexer_v3 ?? 'https://staging-ammv3-indexer.oraidex.io/';
+export const INDEXER_V3_URL = network.indexer_v3 ?? 'https://ammv3-indexer.oraidex.io/';
 export const graphqlClient = new GraphQLClient(INDEXER_V3_URL);
 
 export const HOURS_PER_DAY = 24;
@@ -261,50 +261,20 @@ export const getPoolsLiquidityAndVolume = async (): Promise<PoolLiquidityAndVolu
 
 export type PoolLiquidityAndVolumeAmount = {
   id: string;
-  tokenX: {
-    coingeckoId: string;
-    decimals: number;
-  };
-  tokenY: {
-    coingeckoId: string;
-    decimals: number;
-  };
   totalValueLockedInUSD: number;
   totalValueLockedTokenX: number;
   totalValueLockedTokenY: number;
-  poolDayData: {
-    nodes: {
-      volumeTokenX: number;
-      volumeTokenY: number;
-    }[];
-  };
 };
 
 export const getPoolsLiqudityAndVolumeAmount = async (): Promise<PoolLiquidityAndVolumeAmount[]> => {
-  const yesterdayIndex = Math.floor(Date.now() / MILIS_PER_DAY) - 1;
   try {
     const document = gql`
       query {
         pools {
           nodes {
             id
-            tokenX {
-                    coingeckoId
-                    decimals
-                }
-                tokenY {
-                    coingeckoId
-                    decimals
-                }
-            totalValueLockedInUSD
             totalValueLockedTokenX
             totalValueLockedTokenY
-            poolDayData(filter: { dayIndex: { equalTo: ${yesterdayIndex} } }, distinct: [ID]) {
-              nodes {
-                volumeTokenX
-                volumeTokenY
-              }
-            }
           }
         }
       }
@@ -313,45 +283,6 @@ export const getPoolsLiqudityAndVolumeAmount = async (): Promise<PoolLiquidityAn
     return result.pools.nodes || [];
   } catch (error) {
     console.log('error getPoolsLiqudityAndVolumeAmount', error);
-    return [];
-  }
-};
-
-export const getPoolsVolumeByTokenLatest24h = async (): Promise<PoolLiquidityAndVolumeAmount[]> => {
-  const currentHour = Math.floor(Date.now() / MILIS_PER_HOUR);
-  const twentyHourBefore = currentHour - HOURS_PER_DAY;
-  try {
-    const document = gql`
-      query Pools {
-        pools {
-          nodes {
-            id
-            tokenXId
-            tokenYId
-            tokenX {
-              coingeckoId
-              decimals
-            }
-            tokenY {
-              coingeckoId
-              decimals
-            }
-            poolHourData(filter: { hourIndex: { greaterThan: ${twentyHourBefore}, lessThanOrEqualTo: ${currentHour} } }, distinct: [ID]) {
-              aggregates {
-                volume24hByToken: sum {
-                  volumeTokenX
-                  volumeTokenY
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-    const result = await graphqlClient.request<any>(document);
-    return result.pools.nodes || [];
-  } catch (error) {
-    console.log('error getPoolsLiqudityAndVolumeAmountHourly', error);
     return [];
   }
 };
@@ -400,45 +331,6 @@ export type PoolPositionsInfo = {
   positions: {
     nodes: PositionInfo[];
   };
-};
-
-export const getPoolPositionsInfo = async (): Promise<PoolPositionsInfo[]> => {
-  try {
-    const document = gql`
-      {
-        query {
-          pools {
-            nodes {
-              id
-              currentTick
-              sqrtPrice
-              tokenX {
-                coingeckoId
-                decimals
-              }
-              tokenY {
-                coingeckoId
-                decimals
-              }
-              positions(filter: { status: { equalTo: true } }) {
-                nodes {
-                  liquidity
-                  tickLower
-                  tickUpper
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-    const result = await graphqlClient.request<any>(document);
-    // console.log({ result });
-    return result.query.pools.nodes || [];
-  } catch (error) {
-    console.log('error getPoolPositionsInfo', error);
-    return [];
-  }
 };
 
 export type Pool = {

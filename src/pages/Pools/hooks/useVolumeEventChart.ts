@@ -15,7 +15,7 @@ export const useVolumeEventChart = (
 ) => {
   const { data: price } = useCoinGeckoPrices();
   const { poolPrice } = useGetPoolList(price);
-  const { poolVolume } = useGetPoolLiquidityVolume(poolPrice); // volumeV2, liquidityV2
+  const { poolVolume } = useGetPoolLiquidityVolume(poolPrice); // volumeV3, liquidityV3
 
   const [currentDataVolume, setCurrentDataVolume] = useState([]);
 

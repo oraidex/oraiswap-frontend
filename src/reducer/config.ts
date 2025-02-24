@@ -6,6 +6,7 @@ import { CoinGeckoPrices } from 'hooks/useCoingecko';
 import { PoolAprInfo } from 'libs/contractSingleton';
 import { DepositInfo } from 'pages/BitcoinDashboardV2/@types';
 import { KeyFilterPool } from 'pages/Pools/components/Filter';
+import { PoolLiquidityAndVolumeAmount } from 'rest/graphClient';
 import { PERSIST_VER } from 'store/constants';
 
 export type ChainInfoType = {
@@ -73,6 +74,8 @@ export interface ConfigState {
   tokenPoolPrices: {
     [key: string]: number;
   };
+  poolV3Ids: string[];
+  poolV3TvlByTokens: PoolLiquidityAndVolumeAmount[];
 }
 
 const initialState: ConfigState = {
@@ -108,7 +111,9 @@ const initialState: ConfigState = {
   AIRoute: true,
   totalLiquidityDataChart: 0,
   totalVolumeDataChart: 0,
-  tokenPoolPrices: {}
+  tokenPoolPrices: {},
+  poolV3Ids: [],
+  poolV3TvlByTokens: []
 };
 
 export const configSlice = createSlice({

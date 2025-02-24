@@ -22,7 +22,6 @@ import { POOL_TYPE } from 'pages/Pool-V3';
 import { useGetFeeDailyData } from 'pages/Pool-V3/hooks/useGetFeeDailyData';
 import { useGetPoolLiquidityVolume } from 'pages/Pool-V3/hooks/useGetPoolLiquidityVolume';
 import { useGetPoolList } from 'pages/Pool-V3/hooks/useGetPoolList';
-import { useGetPoolPositionInfo } from 'pages/Pool-V3/hooks/useGetPoolPositionInfo';
 import { AddLiquidityModal } from 'pages/Pools/components/AddLiquidityModal';
 import LiquidityChart from 'pages/Pools/components/LiquidityChart';
 import VolumeChart from 'pages/Pools/components/VolumeChart';
@@ -64,7 +63,6 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
   const { feeDailyData } = useGetFeeDailyData();
   const { poolList: dataPool, poolPrice, loading } = useGetPoolList(price);
   const { poolLiquidities, poolVolume } = useGetPoolLiquidityVolume(poolPrice); // volumeV2, liquidityV2
-  const { poolPositionInfo } = useGetPoolPositionInfo(poolPrice);
 
   const [openChart, setOpenChart] = useState(false);
   const [filterDay, setFilterDay] = useState(FILTER_DAY.DAY);
@@ -96,13 +94,13 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
 
   useEffect(() => {
     const getAPRInfo = async () => {
-      const res = await fetchPoolAprInfo(dataPool, poolPrice, poolPositionInfo, feeDailyData);
+      const res = await fetchPoolAprInfo(dataPool, poolPrice, {}, feeDailyData);
       setAprInfo(res);
     };
-    if (dataPool.length && poolPrice && Object.keys(poolPositionInfo).length) {
+    if (dataPool.length && poolPrice) {
       getAPRInfo();
     }
-  }, [dataPool, Object.keys(poolPositionInfo).length, poolPrice]);
+  }, [dataPool, poolPrice]);
 
   const handleClickSort = (sortField: PoolColumnHeader) => {
     let newSort = { [sortField]: SortType.DESC } as Record<PoolColumnHeader, SortType>;
@@ -413,7 +411,7 @@ const PoolList = ({ search, filterType }: { search: string; filterType: POOL_TYP
           </div>
         </div>
       </div>
-      <LoadingBox loading={loading} styles={{ minHeight: '60vh', height: 'fit-content' }}>
+      <LoadingBox loading={dataPool.length === 0} styles={{ minHeight: '60vh', height: 'fit-content' }}>
         <div className={styles.list}>{filteredPool?.length > 0 && renderList()}</div>
 
         <div className={styles.paginate}>
