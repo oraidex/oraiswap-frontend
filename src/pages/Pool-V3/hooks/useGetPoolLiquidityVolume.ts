@@ -9,7 +9,7 @@ import { store } from 'store/configure';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import useConfigReducer from 'hooks/useConfigReducer';
 
-const AMM_V3_QUERY_SERVICE_URL = import.meta.env.AMM_V3_QUERY_SERVICE_URL ?? 'https://ammv3-query.oraidex.io';
+const AMM_V3_QUERY_SERVICE_URL = import.meta.env.VITE_APP_AMM_V3_QUERY_SERVICE_URL ?? 'https://ammv3-query.oraidex.io';
 export const getPoolsVolumeByTokenLatest24hFromIndexer = async (poolIds: string[]) => {
   try {
     const response = await axios.post(
