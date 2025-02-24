@@ -108,7 +108,7 @@ export const WalletByNetwork = ({ walletProvider }: { walletProvider: WalletProv
     await retry(
       async () => {
         try {
-          await solanaWallet.connect();
+          await solanaWallet?.connect();
         } catch (err) {
           console.log('err', err);
         }

@@ -41,6 +41,7 @@ if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
       'Request rejected',
       'Failed to fetch',
       'Load failed',
+      'Query failed',
       'User rejected the request',
       'Network Error',
       'Object captured as promise rejection',
