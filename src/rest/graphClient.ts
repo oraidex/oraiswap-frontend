@@ -123,32 +123,6 @@ export type PoolDayDataV3Raw = {
   };
 };
 
-export const getPoolDayDataV3 = async () => {
-  try {
-    const document = gql`
-      {
-        query {
-          poolDayData {
-            groupedAggregates(groupBy: DAY_INDEX) {
-              keys
-              sum {
-                tvlUSD
-                volumeInUSD
-                feesInUSD
-              }
-            }
-          }
-        }
-      }
-    `;
-    const result = await graphqlClient.request<PoolDayDataV3Raw>(document);
-    return result.query.poolDayData.groupedAggregates || [];
-  } catch (error) {
-    console.log('error getPoolDayDataV3', error);
-    return [];
-  }
-};
-
 export const getTotalLpDataV3 = async (address: string) => {
   try {
     const document = gql`
@@ -212,49 +186,7 @@ export const getFeeDailyData = async (): Promise<FeeDailyData[]> => {
     const result = await graphqlClient.request<any>(document);
     return result.query.poolDayData.nodes || [];
   } catch (error) {
-    console.log('error getPoolDayDataV3', error);
-    return [];
-  }
-};
-
-export type PoolLiquidityAndVolume = {
-  id: string;
-  totalValueLockedInUSD: number;
-  poolDayData: {
-    aggregates: {
-      sum: {
-        feesInUSD: number;
-        volumeInUSD: number;
-      };
-    };
-  };
-};
-
-export const getPoolsLiquidityAndVolume = async (): Promise<PoolLiquidityAndVolume[]> => {
-  const yesterdayIndex = Math.floor(Date.now() / MILIS_PER_DAY) - 1;
-  try {
-    const document = gql`
-      query {
-        pools {
-          nodes {
-            id
-            totalValueLockedInUSD
-            poolDayData(filter: { dayIndex: { equalTo: ${yesterdayIndex} } }) {
-              aggregates {
-                sum {
-                  feesInUSD
-                  volumeInUSD
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-    const result = await graphqlClient.request<any>(document);
-    return result.pools.nodes || [];
-  } catch (error) {
-    console.log('error getPoolsLiquidityAndVolume', error);
+    console.log('error getFeeDailyData', error);
     return [];
   }
 };
