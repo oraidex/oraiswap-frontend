@@ -9,7 +9,8 @@ import { store } from 'store/configure';
 import SingletonOraiswapV3 from 'libs/contractSingleton';
 import useConfigReducer from 'hooks/useConfigReducer';
 
-const AMM_V3_QUERY_SERVICE_URL = import.meta.env.VITE_APP_AMM_V3_QUERY_SERVICE_URL ?? 'https://ammv3-query.oraidex.io';
+const AMM_V3_QUERY_SERVICE_URL =
+  import.meta.env.VITE_APP_AMM_V3_QUERY_SERVICE_URL ?? 'https://staging-ammv3-query.oraidex.io';
 export const getPoolsVolumeByTokenLatest24hFromIndexer = async (poolIds: string[]) => {
   try {
     const response = await axios.post(
@@ -53,17 +54,17 @@ export const useGetPoolLiquidityVolume = (prices: CoinGeckoPrices<string>) => {
   }, [data]);
 
   const { data: dataHoursFromIndexer } = useQuery<any[]>(
-    ['pool-v3-liquidty-volume-hourly-from-indexer', prices, poolV3Ids.length],
+    ['pool-v3-liquidty-volume-hourly-from-indexer', prices, poolV3Ids?.length],
     () => getPoolsVolumeByTokenLatest24hFromIndexer(poolV3Ids),
     {
       refetchOnWindowFocus: false,
       placeholderData: [],
       cacheTime: 5 * 60 * 1000,
-      enabled: poolV3Ids.length > 0
+      enabled: poolV3Ids?.length > 0
     }
   );
   useEffect(() => {
-    if (poolV3Ids.length === 0 || Object.keys(prices).length === 0 || dataHoursFromIndexer.length === 0) return;
+    if (poolV3Ids?.length === 0 || Object.keys(prices).length === 0 || dataHoursFromIndexer.length === 0) return;
     const newPoolLiquidities: Record<string, number> = {};
     const newPoolVolumes: Record<string, number> = {};
 
