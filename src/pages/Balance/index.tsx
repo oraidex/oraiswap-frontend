@@ -791,7 +791,8 @@ const Balance: React.FC<BalanceProps> = () => {
           cosmosWallet: window.Keplr,
           evmWallet: new Metamask(window.tronWebDapp),
           swapOptions: {
-            isIbcWasm: false
+            isIbcWasm: false,
+            isCheckBalanceIbc: true
           }
         },
         oraidexCommon
