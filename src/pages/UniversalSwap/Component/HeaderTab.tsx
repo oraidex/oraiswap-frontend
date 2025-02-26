@@ -96,7 +96,9 @@ export const UsdPrice = ({
   const headerTabSimple = () => {
     return (
       <div>
-        <span>${priceUsd < 10 ** -6 ? minimize(priceUsd.toFixed(12)) : minimize(priceUsd.toString())}</span>
+        <span>
+          ${priceUsd < 10 ** -6 && priceUsd > 0 ? minimize(priceUsd.toFixed(12)) : minimize(priceUsd.toString())}
+        </span>
         <span
           className={cx('percent', isIncrementUsd ? 'increment' : 'decrement', {
             hidePercent: chartTokenType === ChartTokenType.Volume
