@@ -22,6 +22,7 @@ import { NetworkFilter, TYPE_TAB_HISTORY, getTokenIsStableCoin, initNetworkFilte
 import { ChartTokenType, useChartUsdPrice } from './hooks/useChartUsdPrice';
 import styles from './index.module.scss';
 import Lottie from 'lottie-react';
+import { parseTokenInfoRawDenom } from '@oraichain/oraidex-common';
 
 const cx = cn.bind(styles);
 
@@ -45,7 +46,7 @@ const Swap: React.FC = () => {
   // get data for mobile
   useChartUsdPrice(
     FILTER_TIME_CHART.DAY,
-    tokenTo?.coinGeckoId,
+    parseTokenInfoRawDenom(tokenTo),
     ChartTokenType.Price,
     setInitPriceUsd,
     setInitPercentChangeUsd

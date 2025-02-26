@@ -10,6 +10,7 @@ import { FILTER_TIME_CHART } from 'reducer/type';
 import { formatTimeDataChart, getTokenIsStableCoin } from '../helpers';
 import { ChartTokenType, useChartUsdPrice } from '../hooks/useChartUsdPrice';
 import styles from './ChartUsdPrice.module.scss';
+import { parseTokenInfoRawDenom } from '@oraichain/oraidex-common';
 
 export type ChartUsdPropsType = {
   filterDay: FILTER_TIME_CHART;
@@ -42,7 +43,7 @@ const ChartUsdPrice = ({
     onMouseLeave
   } = useChartUsdPrice(
     filterDay,
-    toTokenDenomIsStable ? currentFromToken?.coinGeckoId : currentToToken?.coinGeckoId,
+    toTokenDenomIsStable ? parseTokenInfoRawDenom(currentFromToken) : parseTokenInfoRawDenom(currentToToken),
     chartTokenType,
     onUpdateCurrentItem,
     onUpdatePricePercent
