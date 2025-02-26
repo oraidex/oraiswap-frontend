@@ -35,19 +35,20 @@ const ChartUsdPrice = ({
   const currentToToken = useSelector(selectCurrentToToken);
   const currentFromToken = useSelector(selectCurrentFromToken);
   const toTokenDenomIsStable = getTokenIsStableCoin(currentToToken);
+  const getTokenDenom = toTokenDenomIsStable
+    ? currentFromToken
+      ? parseTokenInfoRawDenom(currentFromToken)
+      : 'cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:USDT'
+    : currentToToken
+    ? parseTokenInfoRawDenom(currentToToken)
+    : 'orai';
 
   const {
     currentData: data,
     currentItem,
     onCrossMove: crossMove,
     onMouseLeave
-  } = useChartUsdPrice(
-    filterDay,
-    toTokenDenomIsStable ? parseTokenInfoRawDenom(currentFromToken) : parseTokenInfoRawDenom(currentToToken),
-    chartTokenType,
-    onUpdateCurrentItem,
-    onUpdatePricePercent
-  );
+  } = useChartUsdPrice(filterDay, getTokenDenom, chartTokenType, onUpdateCurrentItem, onUpdatePricePercent);
 
   function handleResizeObserver(entries: ResizeObserverEntry[]) {
     window.requestAnimationFrame((): void | undefined => {
