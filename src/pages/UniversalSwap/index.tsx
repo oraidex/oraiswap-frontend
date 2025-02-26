@@ -46,7 +46,7 @@ const Swap: React.FC = () => {
   // get data for mobile
   useChartUsdPrice(
     FILTER_TIME_CHART.DAY,
-    parseTokenInfoRawDenom(tokenTo),
+    tokenTo ? parseTokenInfoRawDenom(tokenTo) : 'orai',
     ChartTokenType.Price,
     setInitPriceUsd,
     setInitPercentChangeUsd
