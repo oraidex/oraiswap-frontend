@@ -108,14 +108,6 @@ export default function SelectToken({
       return unique;
     }, []);
 
-  const RACKS_ORAICHAIN_DENOM =
-    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck';
-  const GNRT_ORAICHAIN_DENOM =
-    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraiJP7H3LAt57DkFXNLDbLdBFNRRPvS8jg2j5AZkd9';
-  const LEE_ORAICHAIN_DENOM =
-    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4';
-  const prioritizeToken = [MAX_ORAICHAIN_DENOM, LEE_ORAICHAIN_DENOM, RACKS_ORAICHAIN_DENOM, GNRT_ORAICHAIN_DENOM];
-
   return (
     <div className={`${styles.selectToken} ${isSelectToken ? styles.active : ''}`}>
       <div className={styles.selectTokenHeader}>
@@ -183,12 +175,6 @@ export default function SelectToken({
             })
             .sort((a, b) => {
               const balanceDelta = Number(b.usd) - Number(a.usd);
-              if (prioritizeToken.includes(a.denom) && !prioritizeToken.includes(b.denom)) {
-                return -1; // Push max elements to the top
-              }
-              if (!prioritizeToken.includes(a.denom) && prioritizeToken.includes(b.denom)) {
-                return 1; // Keep non-'a' elements below 'a'
-              }
 
               if (!balanceDelta) {
                 return (tokenRank[b.coinGeckoId] || 0) - (tokenRank[a.coinGeckoId] || 0);
