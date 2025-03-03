@@ -3,7 +3,7 @@ import { isMobile } from '@walletconnect/browser-utils';
 import useConfigReducer from 'hooks/useConfigReducer';
 import useTheme from 'hooks/useTheme';
 import isEqual from 'lodash/isEqual';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PoolInfoResponse } from 'types/pool';
 import NewTokenModal from './NewTokenModal/NewTokenModal';
 import { Filter } from './components/Filter';
@@ -171,9 +171,9 @@ const Pools: React.FC<{}> = () => {
       <div>
         <Filter setFilteredPools={setFilteredPools} pools={pools} setIsOpenNewTokenModal={setIsOpenNewTokenModal} />
         {mobileMode ? (
-          <ListPoolsMobile poolTableData={poolTableData} generateIcon={generateIcon} />
+          <ListPoolsMobile poolTableData={address ? poolTableData : []} generateIcon={generateIcon} />
         ) : (
-          <ListPools poolTableData={poolTableData} generateIcon={generateIcon} />
+          <ListPools poolTableData={address ? poolTableData : []} generateIcon={generateIcon} />
         )}
       </div>
 
