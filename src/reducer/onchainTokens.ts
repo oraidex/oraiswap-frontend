@@ -4,7 +4,7 @@ import { TokenItemType } from '@oraichain/oraidex-common';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { network } from 'initCommon';
 import { getTokenInspectorInstance } from 'initTokenInspector';
-import { addToOraichainTokens, updateAddedTokens, updateAmounts } from './token';
+import { addToOraichainTokens, updateAddedTokens, updateAllOraichainTokens, updateAmounts } from './token';
 
 export interface OnchainTokensState {
   tokens: TokenItemType[];
@@ -82,6 +82,7 @@ export const optimisticUpdateToken = createAsyncThunk(
 
     const tokenItem = onChainTokenToTokenItem(token);
     thunkAPI.dispatch(updateAddedTokens([tokenItem]));
+    thunkAPI.dispatch(addToOraichainTokens([tokenItem]));
 
     return {
       token,

@@ -271,7 +271,7 @@ export const useGetRewardInfo = ({ stakerAddr, poolInfo }: RewardInfoQueryType) 
   const { data: totalRewardInfoData, refetch: refetchRewardInfo } = useQuery(
     ['reward-info', stakerAddr, poolInfo],
     () => fetchRewardInfoV3(stakerAddr, poolInfo?.liquidityAddr),
-    { enabled: !!stakerAddr, refetchOnWindowFocus: true }
+    { enabled: !!stakerAddr, refetchOnWindowFocus: false }
   );
 
   return { totalRewardInfoData, refetchRewardInfo };
@@ -308,7 +308,7 @@ export const getStatisticData = (data: PoolInfoResponse[]) => {
 };
 
 export const getClaimableInfoByPool = ({ pool, totalRewardInfoData }) => {
-  const rewardPerSecInfoData = JSON.parse(pool.rewardPerSec);
+  const rewardPerSecInfoData = JSON.parse(pool.rewardPerSec ?? '{}');
 
   const currentPoolReward = totalRewardInfoData?.reward_infos?.find((reward) =>
     isEqual(reward.staking_token, pool.liquidityAddr)
