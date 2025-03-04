@@ -15,10 +15,14 @@ export default defineConfig({
     viteTsconfigPaths(),
     svgr(),
     nodePolyfills(),
-    sentryVitePlugin({
-      org: 'oraichain',
-      project: 'oraidex'
-    })
+    ...(import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production'
+      ? [
+          sentryVitePlugin({
+            org: 'oraichain',
+            project: 'oraidex'
+          })
+        ]
+      : [])
   ],
   server: {
     open: true,
