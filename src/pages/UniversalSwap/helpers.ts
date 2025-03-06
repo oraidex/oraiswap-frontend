@@ -498,3 +498,21 @@ export const getTokenIconWithCommon = (baseDenom: string) => {
 export const getTokenIsStableCoin = (originalToken) => {
   return originalToken && ['tether', 'usd-coin'].includes(originalToken.coinGeckoId);
 };
+
+export const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth'];
+export const supportedChainFunc = (fromToken) => {
+  if (unSupportSimulateToken.includes(fromToken?.denom)) {
+    return ['Oraichain'];
+  }
+  // const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
+  // if (isOraichainDenom) {
+  //   return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
+  // }
+  if (fromToken.chainId === 'injective-1') {
+    return networks.filter((chainInfo) => chainInfo.chainId === 'Oraichain').map((chain) => chain.chainId);
+  }
+  // if (!originalFromToken.cosmosBased) {
+  //   return networks.filter((chainInfo) => chainInfo.chainId !== 'injective-1').map((chain) => chain.chainId);
+  // }
+  return [];
+};
