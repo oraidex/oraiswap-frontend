@@ -15,7 +15,8 @@ import {
   oraichain2oraib,
   parseTokenInfo,
   toAmount,
-  validateNumber
+  validateNumber,
+  solChainId
 } from '@oraichain/oraidex-common';
 import { feeEstimate, getNetworkGasPrice } from 'helper';
 
@@ -27,8 +28,8 @@ import { useQuery } from '@tanstack/react-query';
 import { BitcoinUnit } from 'bitcoin-units';
 import { opcodes, script } from 'bitcoinjs-lib';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
-import { bitcoinLcdV2 } from 'helper/constants';
-import { chainInfos, network, tokenMap } from 'initCommon';
+import { bitcoinChainId, bitcoinLcdV2 } from 'helper/constants';
+import { chainInfos, flattenTokens, network, tokenMap } from 'initCommon';
 import CosmJs, { collectWallet, connectWithSigner, getCosmWasmClient } from 'libs/cosmjs';
 import { NomicClient } from 'libs/nomic/models/nomic-client/nomic-client';
 import { generateError } from 'libs/utils';
@@ -36,6 +37,7 @@ import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMov
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 import { store } from 'store/configure';
+import { TonChainId } from 'context/ton-provider';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
@@ -684,4 +686,26 @@ export const FormatNumberFixed: React.FC<FormatNumberProps> = ({ value, decimalP
 
   const formattedValue = numberValue === 0 ? '0' : numberValue.toFixed(decimalPlaces);
   return formattedValue;
+};
+
+export const getRemoteTokenDenom = (token: TokenItemType) => {
+  if (!token) return null;
+  return token.contractAddress ? token.prefix + token.contractAddress : token.denom;
+};
+
+export const checkTransfer = (fromToken: TokenItemType, toToken: TokenItemType, endToChainId) => {
+  const isSoltoOraichain = fromToken.chainId === solChainId && endToChainId === 'Oraichain';
+  const isOraichainToSol = fromToken.chainId === 'Oraichain' && endToChainId === solChainId;
+  const isBTCtoOraichain = fromToken.chainId === bitcoinChainId && toToken.chainId === 'Oraichain';
+  const isOraichainToBTC = fromToken.chainId === 'Oraichain' && toToken.chainId === bitcoinChainId;
+  return [isSoltoOraichain, isOraichainToSol, isBTCtoOraichain, isBTCtoOraichain || isOraichainToBTC];
+};
+
+export const checkTransferTon = async (fromToken: TokenItemType, toNetworkChainId: string) => {
+  const isFromTonToCosmos = fromToken.chainId === TonChainId && toNetworkChainId !== TonChainId;
+  const isFromCosmosToTON = fromToken.cosmosBased && toNetworkChainId === TonChainId;
+  const findToNetwork = flattenTokens.find((flat) => flat.chainId === toNetworkChainId);
+  const isFromCosmosToCosmos =
+    fromToken.cosmosBased && findToNetwork.cosmosBased && fromToken.coinGeckoId === 'the-open-network';
+  return { isFromTonToCosmos, isFromCosmosToTON, isFromCosmosToCosmos };
 };
