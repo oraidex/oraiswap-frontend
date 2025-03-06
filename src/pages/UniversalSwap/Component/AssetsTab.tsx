@@ -100,7 +100,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
           const totalAmount = amount + toAmount(toSumDisplay(subAmounts), token.decimals);
 
           const tokenDenom = parseTokenInfoRawDenom(token);
-          const tokenPrice = prices[token.coinGeckoId] || tokenPoolPrices[tokenDenom] || 0;
+          const tokenPrice = prices[token.coinGeckoId] || tokenPoolPrices?.[tokenDenom] || 0;
           const value = toDisplay(totalAmount.toString(), token.decimals) * tokenPrice;
 
           if (checkShouldHide(value)) return result;
