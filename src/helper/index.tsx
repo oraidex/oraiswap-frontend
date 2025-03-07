@@ -371,7 +371,11 @@ export const switchWalletTron = async (walletType: WalletType) => {
   } else {
     const { code, message = 'Tronlink is not ready' } = res;
     if (code !== 200) throw new Error(message);
-    tronAddress = window.tronWeb?.defaultAddress?.base58;
+    if (res?.base58) {
+      tronAddress = res.base58;
+    } else {
+      tronAddress = window.tronWeb?.defaultAddress?.base58;
+    }
   }
 
   if (!tronAddress) throw new Error(res?.message ?? 'Error get Tron address!');
@@ -396,10 +400,10 @@ export const isConnectSpecificNetwork = (status: string | null) => {
 export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwork, network: CustomChainInfo) => {
   let address = '';
   if (network.chainId === EVM_CHAIN_ID_COMMON.TRON_CHAIN_ID) {
-    if (window.tronLinkDapp?.isOwallet) {
-      const accountTron: interfaceRequestTron = await window.tronLinkDapp.request({
-        method: 'tron_requestAccounts'
-      });
+    const accountTron: interfaceRequestTron = await window.tronLinkDapp.request({
+      method: 'tron_requestAccounts'
+    });
+    if (accountTron && accountTron.code === 200 && accountTron.base58) {
       address = accountTron.base58;
     } else {
       address = window?.tronWebDapp?.defaultAddress?.base58;
