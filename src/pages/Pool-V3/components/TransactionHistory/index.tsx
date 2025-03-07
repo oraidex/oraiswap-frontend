@@ -23,10 +23,8 @@ const TransactionHistory = ({
   quoteToken: TokenItemType;
   poolKey: string;
 }) => {
-
   const [theme] = useConfigReducer('theme');
   const mobileMode = isMobile();
-  const { data: prices } = useCoinGeckoPrices();
 
   let [BaseTokenIcon, QuoteTokenIcon] = [OraiIcon, OraiIcon];
 
@@ -56,7 +54,6 @@ const TransactionHistory = ({
                 .map((item, index) => {
                   const offerToken = item.offerDenom === baseDenom ? baseToken : quoteToken;
                   const returnToken = item.askDenom === quoteDenom ? quoteToken : baseToken;
-
 
                   if (offerToken) BaseTokenIcon = theme === 'light' ? offerToken.iconLight : offerToken.icon;
                   if (returnToken) QuoteTokenIcon = theme === 'light' ? returnToken.iconLight : returnToken.icon;
@@ -190,7 +187,13 @@ const TransactionHistory = ({
                           </td>
                           <td className={`${styles.receive}`}>
                             <div className={styles.amount}>
-                              <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} width={20} height={20} alt="" />
+                              <img
+                                style={{ borderRadius: '100%' }}
+                                src={QuoteTokenIcon}
+                                width={20}
+                                height={20}
+                                alt=""
+                              />
                               <span>
                                 {numberWithCommas(toDisplay(item.returnAmount), undefined, {
                                   maximumFractionDigits: 6

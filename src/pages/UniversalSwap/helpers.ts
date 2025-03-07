@@ -494,3 +494,7 @@ export const getTokenIconWithCommon = (baseDenom: string) => {
     [token?.contractAddress, token.denom].filter(Boolean).includes(baseDenom)
   );
 };
+
+export const getTokenIsStableCoin = (originalToken) => {
+  return originalToken && ['tether', 'usd-coin'].includes(originalToken.coinGeckoId);
+};

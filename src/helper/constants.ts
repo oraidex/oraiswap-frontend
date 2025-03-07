@@ -1,5 +1,5 @@
-import { defaultOraiToken } from '@oraichain/orai-token-inspector';
-import { ChainIdEnum } from '@oraichain/oraidex-common';
+import { ChainIdEnum, USDC_CONTRACT } from '@oraichain/oraidex-common';
+import { TokenInfo } from '@oraichain/oraidex-contracts-sdk/build/OraiswapConverter.types';
 
 export const leapSnapId = 'npm:@leapwallet/metamask-cosmos-snap';
 export const leapWalletType = 'leapSnap';
@@ -24,3 +24,34 @@ export const RELAYER_DECIMAL = 6;
 export const DAY_IN_MILIS = 86400000;
 export const DEFAULT_TOKEN_ICON_URL =
   'https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png';
+
+export type ConverterPairParams = {
+  from: TokenInfo;
+  to: TokenInfo;
+  isMintBurn: boolean;
+};
+
+export const USDC_SOL_DENOM =
+  'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+
+export const CONVERTER_MIDDLEWARE: Partial<Record<string, ConverterPairParams>> = {
+  ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v']: {
+    from: {
+      decimals: 6,
+      info: {
+        native_token: {
+          denom: USDC_SOL_DENOM
+        }
+      }
+    },
+    to: {
+      decimals: 6,
+      info: {
+        token: {
+          contract_addr: USDC_CONTRACT
+        }
+      }
+    },
+    isMintBurn: false
+  }
+};

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import NumberFormat from 'react-number-format';
 import styles from './index.module.scss';
-import { toAmount, toDisplay } from '@oraichain/oraidex-common';
+import { TokenItemType, toAmount, toDisplay } from '@oraichain/oraidex-common';
 import OraiXIcon from 'assets/icons/oraix.svg?react';
 import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
 import { Button } from 'components/Button';
@@ -13,6 +13,7 @@ import { ORAIX_DECIMAL } from 'pages/CoHarvest/constants';
 import { formatDisplayUsdt, numberWithCommas } from 'pages/Pools/helpers';
 import { ORAIX_TOKEN_INFO, STAKE_TAB } from 'pages/Staking/constants';
 import classNames from 'classnames';
+import { getIconWallet } from 'helper';
 
 export enum UN_STAKE_ENUM {
   NORMAL,
@@ -42,7 +43,7 @@ const InputBalance = ({
   const [theme] = useConfigReducer('theme');
   const [coeff, setCoeff] = useState(0);
   const { data: prices } = useCoinGeckoPrices();
-  const amountUSD = getUsd(toAmount(amount), ORAIX_TOKEN_INFO, prices);
+  const amountUSD = getUsd(toAmount(amount), ORAIX_TOKEN_INFO as TokenItemType, prices);
 
   const isInsufficient = amount && amount > toDisplay(balance);
   const disabled = loading || !amount || amount <= 0 || isInsufficient;
@@ -55,7 +56,7 @@ const InputBalance = ({
           {/* You {type.toLowerCase()} */}
         </span>
         <span className={styles.balance}>
-          {label}: <span className={styles.token}>{numberWithCommas(toDisplay(balance))} ORAIX</span>
+          {getIconWallet()} <span className={styles.token}>{numberWithCommas(toDisplay(balance))} ORAIX</span>
         </span>
       </div>
       <div className={styles.inputWrapper}>

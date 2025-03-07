@@ -41,7 +41,7 @@ const HarvestInfo = (props: {
                 setVisible={setVisible}
                 content={
                   <div className={`${styles.tooltip} ${styles[theme]}`}>
-                    Reward pool: 20% of all fees generated via OraiBridge, Order Book, and Futures trading are deposited
+                    Reward pool: 5% of all fees generated via OraiBridge, Order Book, and Futures trading are deposited
                     into the pool in USDC
                   </div>
                 }

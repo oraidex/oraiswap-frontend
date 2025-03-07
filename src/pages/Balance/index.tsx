@@ -7,9 +7,14 @@ import { AppBitcoinClient } from '@oraichain/bitcoin-bridge-contracts-sdk';
 import { NetworkChainId } from '@oraichain/common';
 import {
   calculateTimeoutTimestamp,
+  CONVERTER_CONTRACT,
+  generateError,
   getTokenOnOraichain,
+  MIXED_ROUTER,
   ORAI,
   ORAI_SOL_CONTRACT_ADDRESS,
+  parseAssetInfo,
+  parseTokenInfoRawDenom,
   solChainId,
   toAmount,
   toDisplay,
@@ -48,7 +53,9 @@ import {
   CWAppBitcoinContractAddress,
   CWBitcoinFactoryDenom,
   DEFAULT_RELAYER_FEE,
-  RELAYER_DECIMAL
+  RELAYER_DECIMAL,
+  CONVERTER_MIDDLEWARE,
+  USDC_SOL_DENOM
 } from 'helper/constants';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -87,7 +94,6 @@ import styles from './Balance.module.scss';
 import DepositBtcModalV2 from './DepositBtcModalV2';
 import {
   calculatorTotalFeeBtc,
-  convertKwt,
   findDefaultToToken,
   getFeeRate,
   getUtxos,
@@ -112,6 +118,9 @@ import { FallbackEmptyData } from 'components/FallbackEmptyData';
 import { getTokenInspectorInstance } from 'initTokenInspector';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
 import { addToOraichainTokens, addToOtherChainTokens } from 'reducer/token';
+import { parsePoolKey } from '@oraichain/oraiswap-v3';
+import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
+import { toUtf8 } from '@cosmjs/encoding';
 
 interface BalanceProps {}
 export const isMaintainBridge = false;
@@ -145,9 +154,9 @@ const Balance: React.FC<BalanceProps> = () => {
   const [loadingInspector, setLoadingInspector] = useState(false);
   const [toToken, setToToken] = useState<TokenItemType>();
   const [toTokens, setToTokens] = useState<any>();
-
   const [filterNetworkUI, setFilterNetworkUI] = useConfigReducer('filterNetwork');
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useConfigReducer('hideOtherSmallAmount');
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   const {
     metamaskAddress,
@@ -211,6 +220,7 @@ const Balance: React.FC<BalanceProps> = () => {
   const { data: prices } = useCoinGeckoPrices();
 
   useGetFeeConfig();
+
   useEffect(() => {
     (async () => {
       try {
@@ -534,6 +544,16 @@ const Balance: React.FC<BalanceProps> = () => {
       }
     }
 
+    if (fromToken.coinGeckoId === 'usd-coin') {
+      const { balance } = await UniversalSwapHelper.getBalanceIBCOraichain(toToken, window.client, CONVERTER_CONTRACT);
+
+      if (balance < transferAmount) {
+        throw generateError(
+          `The converter contract does not have enough balance to process this bridge transaction. Wanted ${transferAmount}, have ${balance}`
+        );
+      }
+    }
+
     const response = await web3Solana.bridgeSolToOrai(wallet, fromToken, transferAmount, oraiAddress, solRelayer);
     const transaction = response?.transaction;
     if (transaction) {
@@ -555,7 +575,6 @@ const Balance: React.FC<BalanceProps> = () => {
     if (!solAddress) {
       throw new Error('Please connect to Solana wallet');
     }
-
     const isMemeBridge = getStatusMemeBridge(fromToken);
     let receiverAddress = ORAICHAIN_RELAYER_ADDRESS_AGENTS;
     let solRelayer = SOL_RELAYER_ADDRESS_AGENTS;
@@ -588,23 +607,83 @@ const Balance: React.FC<BalanceProps> = () => {
         throw new Error(message);
       }
     }
+    const tokenMintPubkey = toToken.contractAddress!;
+    const converterMiddleware = CONVERTER_MIDDLEWARE?.[tokenMintPubkey];
+    const instructions = [];
+    let amount = [
+      {
+        amount: toAmount(transferAmount, fromToken.decimals).toString(),
+        denom: fromToken.denom
+      }
+    ];
 
-    const result = await window.client.sendTokens(
-      oraiAddress,
-      receiverAddress,
-      [
+    if (converterMiddleware) {
+      const { balance } = await UniversalSwapHelper.getBalanceIBCOraichain(
         {
-          amount: toAmount(transferAmount, fromToken.decimals).toString(),
-          denom: fromToken.denom
-        }
-      ],
-      'auto',
-      solAddress
-    );
+          ...fromToken,
+          denom: USDC_SOL_DENOM,
+          contractAddress: undefined
+        },
+        window.client,
+        CONVERTER_CONTRACT
+      );
 
-    if (result) {
-      displayToast(TToastType.TX_SUCCESSFUL, {
-        customLink: getTransactionUrl(fromToken.chainId, result.transactionHash)
+      if (balance < transferAmount) {
+        throw generateError(
+          `The converter contract does not have enough balance to process this bridge transaction. Wanted ${transferAmount}, have ${balance}`
+        );
+      }
+
+      const parsedFrom = parseAssetInfo(converterMiddleware.from.info);
+      const parsedTo = parseAssetInfo(converterMiddleware.to.info);
+      instructions.push({
+        typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+        value: MsgExecuteContract.fromPartial({
+          sender: oraiAddress,
+          contract: parsedTo,
+          msg: toUtf8(
+            JSON.stringify({
+              send: {
+                contract: CONVERTER_CONTRACT,
+                amount: toAmount(transferAmount, converterMiddleware.to.decimals).toString(),
+                msg: toBinary({
+                  convert_reverse: {
+                    from: converterMiddleware.from.info
+                  }
+                })
+              }
+            })
+          )
+        })
+      });
+
+      amount = [
+        {
+          amount: toAmount(transferAmount, converterMiddleware.from.decimals).toString(),
+          denom: parsedFrom
+        }
+      ];
+    }
+
+    instructions.push({
+      typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+      value: {
+        fromAddress: oraiAddress,
+        toAddress: receiverAddress,
+        amount
+      }
+    });
+
+    try {
+      const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
+      if (result) {
+        displayToast(TToastType.TX_SUCCESSFUL, {
+          customLink: getTransactionUrl(fromToken.chainId, result.transactionHash)
+        });
+      }
+    } catch (err) {
+      displayToast(TToastType.TX_FAILED, {
+        message: err.message
       });
     }
   };
@@ -772,7 +851,7 @@ const Balance: React.FC<BalanceProps> = () => {
     return getFilterTokens(filterNetworkUI);
   }, [filterNetworkUI, otherChainTokens, oraichainTokens]);
 
-  const totalUsd = getTotalUsd(amounts, prices);
+  const totalUsd = getTotalUsd(amounts, prices, tokenPoolPrices);
 
   // Move oraib2oraichain
   const [moveOraib2OraiLoading, setMoveOraib2OraiLoading] = useState(false);
@@ -896,7 +975,9 @@ const Balance: React.FC<BalanceProps> = () => {
                 listTokens.map((t: TokenItemType) => {
                   // check balance cw20
                   let amount = BigInt(amounts[t.denom] ?? 0);
-                  let usd = getUsd(amount, t, prices);
+
+                  const tokenPrice = prices[t.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(t)] ?? 0;
+                  let usd = getUsd(amount, t, prices, tokenPrice);
                   let subAmounts: AmountDetails;
                   if (t.contractAddress && t.evmDenoms) {
                     subAmounts = getSubAmountDetails(amounts, t);
@@ -944,16 +1025,6 @@ const Balance: React.FC<BalanceProps> = () => {
                         }}
                         onClickTransfer={async (fromAmount: number, filterNetwork?: NetworkChainId) => {
                           await onClickTransfer(fromAmount, from, to, filterNetwork);
-                        }}
-                        convertKwt={async (transferAmount: number, fromToken: TokenItemType) => {
-                          try {
-                            const result = await convertKwt(transferAmount, fromToken);
-                            processTxResult(from.rpc, result, getTransactionUrl(from.chainId, result.transactionHash));
-                          } catch (ex) {
-                            displayToast(TToastType.TX_FAILED, {
-                              message: ex.message
-                            });
-                          }
                         }}
                         isFastMode={isFastMode}
                         setIsFastMode={setIsFastMode}

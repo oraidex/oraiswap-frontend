@@ -121,7 +121,11 @@ const useHandleEffectTokenChange = ({ fromTokenDenomSwap, toTokenDenomSwap }) =>
   }, [originalFromToken, fromToken]);
 
   const isConnectedWallet =
-    walletByNetworks.cosmos || walletByNetworks.bitcoin || walletByNetworks.evm || walletByNetworks.tron || window.Ton;
+    walletByNetworks.cosmos ||
+    walletByNetworks.bitcoin ||
+    walletByNetworks.evm ||
+    walletByNetworks.tron ||
+    (walletByNetworks.ton && window.Ton);
 
   let validAddress = {
     isValid: true

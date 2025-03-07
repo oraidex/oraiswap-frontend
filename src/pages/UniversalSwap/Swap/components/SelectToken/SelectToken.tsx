@@ -1,4 +1,10 @@
-import { CustomChainInfo, MAX_ORAICHAIN_DENOM, TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
+import {
+  CustomChainInfo,
+  MAX_ORAICHAIN_DENOM,
+  parseTokenInfoRawDenom,
+  TokenItemType,
+  truncDecimals
+} from '@oraichain/oraidex-common';
 import IconVerified from 'assets/icons/ic_verified.svg?react';
 import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
@@ -67,6 +73,7 @@ export default function SelectToken({
   const [address] = useConfigReducer('address');
   const addedTokens = useSelector((state: RootState) => state.token.addedTokens || []);
   const dispatch = useDispatch();
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   useEffect(() => {
     if (selectChain && selectChain !== textChain) setTextChain(selectChain);
@@ -100,14 +107,6 @@ export default function SelectToken({
       }
       return unique;
     }, []);
-
-  const RACKS_ORAICHAIN_DENOM =
-    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck';
-  const GNRT_ORAICHAIN_DENOM =
-    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraiJP7H3LAt57DkFXNLDbLdBFNRRPvS8jg2j5AZkd9';
-  const LEE_ORAICHAIN_DENOM =
-    'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4';
-  const prioritizeToken = [MAX_ORAICHAIN_DENOM, LEE_ORAICHAIN_DENOM, RACKS_ORAICHAIN_DENOM, GNRT_ORAICHAIN_DENOM];
 
   return (
     <div className={`${styles.selectToken} ${isSelectToken ? styles.active : ''}`}>
@@ -161,8 +160,9 @@ export default function SelectToken({
                 sumAmount = toSumDisplay(sumAmountDetails);
               }
               const balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
-              const usd =
-                sumAmount > 0 && token && prices[token.coinGeckoId] ? sumAmount * prices[token.coinGeckoId] : '0';
+
+              const tokenPrice = prices[token.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(token)] ?? 0;
+              const usd = sumAmount > 0 && token ? sumAmount * tokenPrice : '0';
 
               return {
                 ...token,
@@ -175,12 +175,6 @@ export default function SelectToken({
             })
             .sort((a, b) => {
               const balanceDelta = Number(b.usd) - Number(a.usd);
-              if (prioritizeToken.includes(a.denom) && !prioritizeToken.includes(b.denom)) {
-                return -1; // Push max elements to the top
-              }
-              if (!prioritizeToken.includes(a.denom) && prioritizeToken.includes(b.denom)) {
-                return 1; // Keep non-'a' elements below 'a'
-              }
 
               if (!balanceDelta) {
                 return (tokenRank[b.coinGeckoId] || 0) - (tokenRank[a.coinGeckoId] || 0);

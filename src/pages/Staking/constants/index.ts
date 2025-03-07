@@ -1,3 +1,4 @@
+import { ORAIX_CONTRACT, USDC_CONTRACT } from '@oraichain/oraidex-common';
 import { oraichainTokens } from 'initCommon';
 
 export const TIMER = {
@@ -27,5 +28,11 @@ export enum STAKE_TAB {
   UnStake = 'Unstake'
 }
 
-export const ORAIX_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'oraidex') ?? {};
-export const USDC_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'usd-coin') ?? {};
+export const ORAIX_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'oraidex') ?? {
+  contractAddress: ORAIX_CONTRACT,
+  decimals: 6
+};
+export const USDC_TOKEN_INFO = oraichainTokens.find((e) => e.coinGeckoId === 'usd-coin') ?? {
+  contractAddress: USDC_CONTRACT,
+  decimals: 6
+};

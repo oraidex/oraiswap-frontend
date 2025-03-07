@@ -4,7 +4,6 @@ import BtcDashboardIcon from 'assets/icons/ic_btc_dashboard.svg?react';
 import CohavestIcon from 'assets/icons/ic_cohavest.svg?react';
 import StakingIcon from 'assets/icons/ic_staking.svg?react';
 import UniversalSwapIcon from 'assets/icons/ic_universalswap.svg?react';
-import CreateTokenIcon from 'assets/icons/iconoir_coins-add.svg?react';
 import LogoDownloadOwalletIcon from 'assets/icons/logo_download.svg?react';
 import DownloadOwalletIcon from 'assets/icons/logo_owallet_gateway.svg?react';
 import DownloadOwalletIconDark from 'assets/icons/logo_owallet_gateway_dark.svg?react';
@@ -19,7 +18,7 @@ import { EVENT_CONFIG_THEME } from 'config/eventConfig';
 import Lottie from 'lottie-react';
 import useTemporaryConfigReducer from 'hooks/useTemporaryConfigReducer';
 import ModalDownloadOwallet from 'components/Modals/ModalDownloadOwallet/ModalDownloadOwallet';
-import NewTokenModal from 'pages/Pools/NewTokenModal/NewTokenModal';
+import { isMobile } from '@walletconnect/browser-utils';
 
 const Sidebar: React.FC<{}> = React.memo(() => {
   const location = useLocation();
@@ -27,7 +26,6 @@ const Sidebar: React.FC<{}> = React.memo(() => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [isOpenQrCodeOwallet, setIsOpenQrCodeOwallet] = useState(false);
-  const [openCreateToken, setOpenCreateToken] = useState(false);
 
   const [event] = useTemporaryConfigReducer('event');
   const configTheme = EVENT_CONFIG_THEME[theme][event];
@@ -40,7 +38,7 @@ const Sidebar: React.FC<{}> = React.memo(() => {
     if (externalLink)
       return (
         <a
-          target="_blank"
+          target={isMobile() ? '_self' : '_blank'}
           href={to}
           className={classNames(styles.menu_item, styles[theme])}
           onClick={() => {
@@ -114,32 +112,6 @@ const Sidebar: React.FC<{}> = React.memo(() => {
             {renderLink('/co-harvest', 'Co-Harvest', setLink, <CohavestIcon />)}
             {renderLink('/bitcoin-dashboard-v2', 'BTC V2', setLink, <BtcDashboardIcon />)}
 
-            <div
-              onClick={() => {
-                setOpenCreateToken(true);
-              }}
-              className={classNames(
-                styles.menu_item,
-                {
-                  [styles.active]: openCreateToken
-                },
-                styles[theme]
-              )}>
-              <div className={classNames(styles.eventItem, styles[event])}>
-                {configTheme.sideBar.leftLinkImg && (
-                  <img className={styles.left} src={configTheme.sideBar.leftLinkImg} alt="" />
-                )}
-                {configTheme.sideBar.rightLinkImg && (
-                  <img className={styles.right} src={configTheme.sideBar.rightLinkImg} alt="" />
-                )}
-              </div>
-
-              <CreateTokenIcon />
-              <span className={classNames(styles.menu_item_text, { [styles.active]: openCreateToken }, styles[theme])}>
-                Create Token
-              </span>
-            </div>
-
             {!isBeta && renderLink('https://beta.oraidex.io', 'OraiDEX Beta', setLink, <OraidexBetaIcon />, true)}
           </div>
         </div>
@@ -160,13 +132,6 @@ const Sidebar: React.FC<{}> = React.memo(() => {
           </div>
         </div>
       </div>
-      {openCreateToken && (
-        <NewTokenModal
-          open={() => setOpenCreateToken(true)}
-          close={() => setOpenCreateToken(false)}
-          isOpen={openCreateToken}
-        />
-      )}
       {isOpenQrCodeOwallet && <ModalDownloadOwallet close={() => setIsOpenQrCodeOwallet(false)} />}
     </>
   );

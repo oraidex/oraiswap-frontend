@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
@@ -8,7 +9,17 @@ import path from 'path';
 
 export default defineConfig({
   base: '',
-  plugins: [react(), wasm(), viteTsconfigPaths(), svgr(), nodePolyfills()],
+  plugins: [
+    react(),
+    wasm(),
+    viteTsconfigPaths(),
+    svgr(),
+    nodePolyfills(),
+    sentryVitePlugin({
+      org: 'oraichain',
+      project: 'oraidex'
+    })
+  ],
   server: {
     open: true,
     port: 3000
@@ -36,7 +47,14 @@ export default defineConfig({
   build: {
     commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
-    rollupOptions: {},
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
+    },
     target: 'esnext'
   },
   optimizeDeps: {

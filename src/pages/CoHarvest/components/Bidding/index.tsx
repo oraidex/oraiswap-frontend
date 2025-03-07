@@ -53,7 +53,7 @@ const Bidding = ({ openExplainModal, isEnd, round, isStarted, isCurrentRound, ba
 
   const originalFromToken = tokenMap['oraix'];
   const originalToToken = tokenMap['usdc'];
-  const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
 
   const amountUsd = getUsd(toAmount(amount), ORAIX_TOKEN_INFO, prices);
   const [address] = useConfigReducer('address');

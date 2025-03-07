@@ -1,4 +1,11 @@
-import { BigDecimal, toAmount, toDisplay, TokenItemType, CW20_DECIMALS } from '@oraichain/oraidex-common';
+import {
+  BigDecimal,
+  toAmount,
+  toDisplay,
+  TokenItemType,
+  CW20_DECIMALS,
+  parseTokenInfoRawDenom
+} from '@oraichain/oraidex-common';
 import {
   FeeTier,
   PoolKey,
@@ -21,7 +28,7 @@ import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
-import { getIcon, getTransactionUrl } from 'helper';
+import { getIcon, getIconWallet, getTransactionUrl } from 'helper';
 import { numberWithCommas } from 'helper/format';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -147,8 +154,14 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({ tokenFrom, tokenTo, feeTier, 
 
   const [amountTo, setAmountTo] = useState<number | string>();
   const [amountFrom, setAmountFrom] = useState<number | string>();
-  const fromUsd = (prices?.[tokenFrom?.coinGeckoId] * Number(amountFrom || 0)).toFixed(6);
-  const toUsd = (prices?.[tokenTo?.coinGeckoId] * Number(amountTo || 0)).toFixed(6);
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
+
+  const fromUsd = (
+    prices?.[tokenFrom?.coinGeckoId] ?? tokenPoolPrices?.[parseTokenInfoRawDenom(tokenFrom)] * Number(amountFrom || 0)
+  ).toFixed(6);
+  const toUsd = (
+    prices?.[tokenTo?.coinGeckoId] ?? tokenPoolPrices?.[parseTokenInfoRawDenom(tokenTo)] * Number(amountTo || 0)
+  ).toFixed(6);
 
   const isLightTheme = theme === 'light';
   const TokenFromIcon =
@@ -849,8 +862,8 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({ tokenFrom, tokenTo, feeTier, 
       <div className={classNames(styles.itemInput, { [styles.disabled]: isFromBlocked })}>
         <div className={styles.balance}>
           <p className={styles.bal}>
-            <span>Balance:</span> {numberWithCommas(toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals))}{' '}
-            {tokenFrom?.name}
+            <span>{getIconWallet()}</span>{' '}
+            {numberWithCommas(toDisplay(amounts[tokenFrom?.denom] || '0', tokenFrom.decimals))} {tokenFrom?.name}
           </p>
           <div className={styles.btnGroup}>
             <button
@@ -919,8 +932,8 @@ const CreatePoolForm: FC<CreatePoolFormProps> = ({ tokenFrom, tokenTo, feeTier, 
       <div className={classNames(styles.itemInput, { [styles.disabled]: isToBlocked })}>
         <div className={styles.balance}>
           <p className={styles.bal}>
-            <span>Balance:</span> {numberWithCommas(toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals))}{' '}
-            {tokenTo?.name}
+            <span>{getIconWallet()}</span>{' '}
+            {numberWithCommas(toDisplay(amounts[tokenTo?.denom] || '0', tokenTo.decimals))} {tokenTo?.name}
           </p>
           <div className={styles.btnGroup}>
             <button

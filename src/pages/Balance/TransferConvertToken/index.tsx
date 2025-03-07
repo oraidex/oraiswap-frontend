@@ -1,5 +1,5 @@
 import { NetworkChainId } from '@oraichain/common';
-import { BigDecimal, BTC_CONTRACT, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import { BigDecimal, BTC_CONTRACT, parseTokenInfoRawDenom, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
@@ -42,7 +42,6 @@ import { getStatusMemeBridge } from 'program/web3';
 interface TransferConvertProps {
   token: TokenItemType;
   amountDetail?: { amount: string; usd: number };
-  convertKwt?: any;
   onClickTransfer: any;
   subAmounts?: object;
   isFastMode?: boolean;
@@ -54,7 +53,6 @@ interface TransferConvertProps {
 const TransferConvertToken: FC<TransferConvertProps> = ({
   token,
   amountDetail,
-  convertKwt,
   onClickTransfer,
   subAmounts,
   isFastMode,
@@ -74,6 +72,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const { data: prices } = useCoinGeckoPrices();
   const [walletByNetworks] = useWalletReducer('walletsByNetwork');
   const contractConfig = useGetContractConfig();
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   useEffect(() => {
     if (chainInfo) setConvertAmount([undefined, 0]);
@@ -172,6 +171,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
   const isFromOraichainToBitcoin = token.chainId === 'Oraichain' && toNetworkChainId === ('bitcoin' as any);
   const isFromBitcoinToOraichain = token.chainId === ('bitcoin' as string) && toNetworkChainId === 'Oraichain';
   let { relayerFee: relayerFeeTokenFee } = useRelayerFeeToken(token, to);
+  relayerFeeTokenFee = to ? relayerFeeTokenFee : 0;
   const depositFeeBtcV2Result = useDepositFeesBitcoinV2(true);
   const withdrawalFeeBtcV2Result = useGetWithdrawlFeesBitcoinV2({
     enabled: isFromOraichainToBitcoin,
@@ -419,7 +419,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
                 }}
                 onValueChange={({ floatValue }) => {
                   if (!floatValue) return setConvertAmount([undefined, 0]);
-                  const usdValue = floatValue * (prices[token.coinGeckoId] ?? 0);
+                  const usdValue =
+                    floatValue * (prices[token.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(token)] ?? 0);
                   setConvertAmount([floatValue!, usdValue]);
                 }}
                 className={classNames(styles.amount, styles[theme])}

@@ -3,8 +3,10 @@ import { CoinGeckoId } from '@oraichain/oraidex-common/build/network';
 import { oraichainTokens } from 'initCommon';
 import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { FILTER_TIME_CHART } from 'reducer/type';
 import axios from 'rest/request';
+import { RootState } from 'store/configure';
 
 export enum ChartTokenType {
   Price = 'Price',
@@ -24,13 +26,14 @@ const KeyMapByChartType: Record<ChartTokenType, keyof ChartDataValue> = {
 
 export const useChartUsdPrice = (
   type: FILTER_TIME_CHART,
-  token: CoinGeckoId,
+  token: string,
   chartType: ChartTokenType,
   onUpdateCurrentItem?: React.Dispatch<React.SetStateAction<number>>,
   onUpdatePricePercent?: React.Dispatch<React.SetStateAction<string | number>>
 ) => {
   const [currentData, setCurrentData] = useState<ChartDataValue[]>([]);
   const [changePercent, setChangePercent] = useState<string | number>(0);
+  const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
 
   // TODO: add loading animation later.
   const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +76,7 @@ export const useChartUsdPrice = (
   const onChangeRange = async (type: FILTER_TIME_CHART = FILTER_TIME_CHART.DAY) => {
     try {
       setIsLoading(true);
-      const tokenOnOraichain = oraichainTokens.find((t) => t.coinGeckoId === token && t.decimals === CW20_DECIMALS);
+      const tokenOnOraichain = allOraichainTokens.find((t) => t.contractAddress === token || t.denom === token);
       const tokenDenom = parseTokenInfoRawDenom(tokenOnOraichain);
 
       const data = await getDataPriceMarket(tokenDenom, type);

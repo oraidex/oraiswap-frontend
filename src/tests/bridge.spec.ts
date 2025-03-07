@@ -14,7 +14,6 @@ import {
   KWTBSC_ORAICHAIN_DENOM,
   MILKY_BSC_CONTRACT,
   MILKY_DENOM,
-  NetworkChainId,
   ORAI_BSC_CONTRACT,
   ORAI_INFO,
   oraib2oraichain,
@@ -25,6 +24,7 @@ import {
 } from '@oraichain/oraidex-common';
 import { getSourceReceiver } from '@oraichain/oraidex-universal-swap';
 import { getTransactionUrl } from 'helper';
+import { NetworkChainId } from '@oraichain/common';
 import { cosmosTokens, flattenTokens, network, oraichainTokens } from 'initCommon';
 import Long from 'long';
 import { findDefaultToToken } from 'pages/Balance/helpers';

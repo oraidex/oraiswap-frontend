@@ -2,6 +2,7 @@ import {
   COSMOS_CHAIN_ID_COMMON,
   TokenItemType,
   getSubAmountDetails,
+  parseTokenInfoRawDenom,
   toAmount,
   toDisplay
 } from '@oraichain/oraidex-common';
@@ -41,13 +42,13 @@ export const getUsd = (
   return toDisplay(amount, tokenInfo.decimals) * (prices[tokenInfo.coinGeckoId] ?? 0);
 };
 
-export const getTotalUsd = (amounts: AmountDetails, prices: CoinGeckoPrices<string>): number => {
+export const getTotalUsd = (amounts: AmountDetails, prices: CoinGeckoPrices<string>, pricesViaPool = {}): number => {
   let usd = 0;
   for (const denom in amounts) {
     const tokenInfo = tokenMap[denom];
     if (!tokenInfo) continue;
     const amount = toDisplay(amounts[denom], tokenInfo.decimals);
-    usd += amount * (prices[tokenInfo.coinGeckoId] ?? 0);
+    usd += amount * (prices[tokenInfo.coinGeckoId] ?? pricesViaPool?.[parseTokenInfoRawDenom(tokenInfo)] ?? 0);
   }
   return usd;
 };

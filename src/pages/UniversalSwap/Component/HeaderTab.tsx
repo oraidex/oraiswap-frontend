@@ -9,6 +9,7 @@ import { FILTER_TIME_CHART, TAB_CHART_SWAP } from 'reducer/type';
 import { ChartTokenType } from '../hooks/useChartUsdPrice';
 import styles from './HeaderTab.module.scss';
 import { flattenTokens } from 'initCommon';
+import { getTokenIsStableCoin } from '../helpers';
 
 const cx = cn.bind(styles);
 
@@ -92,11 +93,12 @@ export const UsdPrice = ({
   chartTokenType
 }: Pick<HeaderTabPropsType, 'percentChangeUsd' | 'priceUsd' | 'chartTokenType'>) => {
   const isIncrementUsd = percentChangeUsd && Number(percentChangeUsd) > 0;
-
   const headerTabSimple = () => {
     return (
       <div>
-        <span>${minimize(priceUsd.toString())}</span>
+        <span>
+          ${priceUsd < 10 ** -6 && priceUsd > 0 ? minimize(priceUsd.toFixed(12)) : minimize(priceUsd.toString())}
+        </span>
         <span
           className={cx('percent', isIncrementUsd ? 'increment' : 'decrement', {
             hidePercent: chartTokenType === ChartTokenType.Volume
@@ -141,8 +143,10 @@ export const HeaderTop = ({
     );
   };
 
+  const toTokenDenomIsStable = getTokenIsStableCoin(currentToToken);
+  const currentToken = toTokenDenomIsStable ? currentFromToken : currentToToken;
   if (currentToToken) {
-    ToTokenIcon = generateIconTokenByTheme(currentToToken);
+    ToTokenIcon = generateIconTokenByTheme(currentToken);
   }
   if (currentFromToken) {
     const tokenIcon = flattenTokens.find(
@@ -162,7 +166,7 @@ export const HeaderTop = ({
               ? currentToChain && (
                   <div className={cx('tokenInfo')}>
                     {ToTokenIcon}
-                    <span>{currentToToken?.name || currentToToken?.denom}</span>
+                    <span>{currentToken?.name || currentToken?.denom}</span>
                     <span className={cx('tokenName')}>{currentToChain}</span>
                   </div>
                 )

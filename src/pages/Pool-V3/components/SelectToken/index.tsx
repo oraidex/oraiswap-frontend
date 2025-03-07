@@ -1,4 +1,4 @@
-import { TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
+import { parseTokenInfoRawDenom, TokenItemType, truncDecimals } from '@oraichain/oraidex-common';
 import CloseIcon from 'assets/icons/close-icon.svg?react';
 import ArrowIcon from 'assets/icons/ic_arrow_down.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
@@ -41,6 +41,7 @@ const SelectToken = ({
 
   const dispatch = useDispatch();
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
 
   // useEffect(() => {
   //   if (listItems.length === 0 && textSearch) {
@@ -152,8 +153,8 @@ const SelectToken = ({
                     sumAmount = toSumDisplay(sumAmountDetails);
                   }
                   const balance = sumAmount > 0 ? sumAmount.toFixed(truncDecimals) : '0';
-                  const usd =
-                    sumAmount > 0 && token && prices[token.coinGeckoId] ? sumAmount * prices[token.coinGeckoId] : '0';
+                  const tokenPrice = prices[token.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(token)] ?? 0;
+                  const usd = sumAmount > 0 && token ? sumAmount * tokenPrice : '0';
 
                   return {
                     ...token,

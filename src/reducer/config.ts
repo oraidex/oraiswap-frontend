@@ -70,6 +70,9 @@ export interface ConfigState {
   }[];
   totalLiquidityDataChart: number;
   totalVolumeDataChart: number;
+  tokenPoolPrices: {
+    [key: string]: number;
+  };
 }
 
 const initialState: ConfigState = {
@@ -104,7 +107,8 @@ const initialState: ConfigState = {
   persistVersion: PERSIST_VER,
   AIRoute: true,
   totalLiquidityDataChart: 0,
-  totalVolumeDataChart: 0
+  totalVolumeDataChart: 0,
+  tokenPoolPrices: {}
 };
 
 export const configSlice = createSlice({

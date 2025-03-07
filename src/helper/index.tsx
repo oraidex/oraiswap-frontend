@@ -36,6 +36,7 @@ import { store } from 'store/configure';
 import { bitcoinChainId, leapSnapId } from './constants';
 import { numberWithCommas } from './format';
 import { onChainTokenToTokenItem } from 'reducer/onchainTokens';
+import WalletIcon from 'assets/icons/ic_kado.svg?react';
 
 export interface Tokens {
   denom?: string;
@@ -672,6 +673,10 @@ export const getIcon = ({ isLightTheme, type, chainId, coinGeckoId, width, heigh
   }
 };
 
+export const getIconWallet = () => {
+  return <WalletIcon style={{ opacity: 0.5, width: 18, height: 18 }} />;
+};
+
 export const getIconToken = ({ isLightTheme, denom, width = 30, height = 30 }) => {
   const storage = store.getState();
   const allOraichainTokens = storage.token.allOraichainTokens || [];
@@ -733,6 +738,7 @@ export const handleErrorRateLimit = (errorMsg: string) => {
   const fmtMsg = errorMsg.toLowerCase();
   if (fmtMsg.includes(`${RATE_LIMIT_CODE}`) || fmtMsg.includes('network error')) {
     displayToast(TToastType.TX_INFO, {
+      toastId: `RATE_LIMIT_CODE`,
       message: 'RPC call limit reached. Please wait or switch networks to continue!'
     });
   }

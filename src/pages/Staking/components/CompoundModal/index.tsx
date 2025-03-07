@@ -21,9 +21,18 @@ export type CompoundModalProps = {
   onConfirm: () => void;
   reward: number | string;
   oraixAmount: number | string;
+  estOraixSwap: number | string;
 };
 
-const CompoundModal = ({ loading, open, onClose, onConfirm, reward, oraixAmount }: CompoundModalProps) => {
+const CompoundModal = ({
+  estOraixSwap,
+  loading,
+  open,
+  onClose,
+  onConfirm,
+  reward,
+  oraixAmount
+}: CompoundModalProps) => {
   const ref = useRef(null);
   const mobileMode = isMobile();
   const theme = useTheme();
@@ -91,7 +100,7 @@ const CompoundModal = ({ loading, open, onClose, onConfirm, reward, oraixAmount 
         </div>
         <div className={styles.button}>
           <Button
-            disabled={!oraixAmount}
+            disabled={!oraixAmount || !estOraixSwap}
             type={btnConfirmType}
             onClick={() => {
               onConfirm();

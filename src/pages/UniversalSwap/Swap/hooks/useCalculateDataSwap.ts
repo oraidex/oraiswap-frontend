@@ -1,4 +1,10 @@
-import { BigDecimal, calculateMinReceive, CW20_DECIMALS, toAmount } from '@oraichain/oraidex-common';
+import {
+  BigDecimal,
+  calculateMinReceive,
+  CW20_DECIMALS,
+  parseTokenInfoRawDenom,
+  toAmount
+} from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useQuery } from '@tanstack/react-query';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
@@ -16,8 +22,15 @@ import { useEffect, useState } from 'react';
 import { fetchTokenInfos } from 'rest/api';
 import { useSimulate } from './useSimulate';
 import { useSwapFee } from './useSwapFee';
+import useConfigReducer from 'hooks/useConfigReducer';
 
 export const SIMULATE_INIT_AMOUNT = 1;
+
+const splitsOSOR = {
+  ORAICHAIN: 5,
+  OTHERCHAIN: 1,
+  DEFAULTCHAIN: 10
+};
 
 const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, toToken, userSlippage }) => {
   const { data: prices } = useCoinGeckoPrices();
@@ -26,6 +39,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     toToken: originalToToken
   });
 
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
+
   const remoteTokenDenomFrom = getRemoteDenom(originalFromToken);
   const remoteTokenDenomTo = getRemoteDenom(originalToToken);
   const fromTokenFee = useTokenFee(remoteTokenDenomFrom, fromToken.chainId, toToken.chainId);
@@ -33,16 +48,21 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
 
   const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
   const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
-
-  const routerClient = new OraiswapRouterQueryClient(window.client, network.router);
+  const isOraichain = originalFromToken.chainId === 'Oraichain' && originalToToken.chainId === 'Oraichain';
+  const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
   const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, { useIbcWasm, useAlphaIbcWasm });
+  const maxSplits = isOraichain
+    ? splitsOSOR.ORAICHAIN
+    : useAlphaIbcWasm
+    ? splitsOSOR.OTHERCHAIN
+    : splitsOSOR.DEFAULTCHAIN;
+
   const simulateOption = {
     useAlphaIbcWasm,
     useIbcWasm,
     protocols,
-    maxSplits: useAlphaIbcWasm ? 1 : 10,
-    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined,
-    keepPreviousData: true
+    maxSplits,
+    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined
   };
 
   const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } = useRelayerFeeToken(
@@ -76,7 +96,9 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     originalToToken,
     routerClient,
     null,
-    simulateOption
+    {
+      ...simulateOption
+    }
   );
 
   const { simulateData: averageSimulateData, isPreviousSimulate: isAveragePreviousSimulate } = useSimulate(
@@ -89,7 +111,8 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
     SIMULATE_INIT_AMOUNT,
     {
       ...simulateOption,
-      ignoreFee: true
+      ignoreFee: true,
+      isAvgSimulate: true
     }
   );
 
@@ -123,8 +146,13 @@ const useCalculateDataSwap = ({ originalFromToken, originalToToken, fromToken, t
 
   const { averageRatio } = getAverageRatio(simulateData, averageSimulateData, fromAmountToken, originalFromToken);
 
-  const usdPriceShowFrom = (prices?.[originalFromToken?.coinGeckoId] * fromAmountToken).toFixed(6);
-  const usdPriceShowTo = (prices?.[originalToToken?.coinGeckoId] * simulateData?.displayAmount).toFixed(6);
+  const tokenFromPrice =
+    prices?.[originalFromToken?.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(originalFromToken)] ?? 0;
+  const usdPriceShowFrom = (tokenFromPrice * fromAmountToken).toFixed(6);
+
+  const tokenToPrice =
+    prices?.[originalToToken?.coinGeckoId] ?? tokenPoolPrices[parseTokenInfoRawDenom(originalToToken)] ?? 0;
+  const usdPriceShowTo = (tokenToPrice * simulateData?.displayAmount).toFixed(6);
 
   const isAverageRatio = averageRatio?.amount;
   const isSimulateDataDisplay = simulateData?.displayAmount;

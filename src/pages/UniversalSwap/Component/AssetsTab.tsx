@@ -1,4 +1,11 @@
-import { CW20_DECIMALS, getSubAmountDetails, toAmount, toDisplay, tokensIcon } from '@oraichain/oraidex-common';
+import {
+  CW20_DECIMALS,
+  getSubAmountDetails,
+  parseTokenInfoRawDenom,
+  toAmount,
+  toDisplay,
+  tokensIcon
+} from '@oraichain/oraidex-common';
 import { isMobile } from '@walletconnect/browser-utils';
 import StakeIcon from 'assets/icons/stake.svg';
 import WalletIcon from 'assets/icons/wallet-v3.svg';
@@ -7,7 +14,7 @@ import { Table, TableHeaderProps } from 'components/Table';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
-import { flattenTokens, flattenTokensWithIcon, tokenMap, tokensWithIcon } from 'initCommon';
+import { flattenTokens, tokenMap } from 'initCommon';
 import { getTotalUsd, toSumDisplay } from 'libs/utils';
 import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { formatDisplayUsdt, toFixedIfNecessary } from 'pages/Pools/helpers';
@@ -31,6 +38,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   const [theme] = useConfigReducer('theme');
   const totalLpv3 = useSelector((state: RootState) => state.token.totalLpv3);
 
+  const [tokenPoolPrices] = useConfigReducer('tokenPoolPrices');
   const [hideOtherSmallAmount, setHideOtherSmallAmount] = useState(true);
   const sizePadding = isMobile() ? '12px' : '24px';
 
@@ -80,6 +88,7 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   };
 
   const data = flattenTokens
+    .filter((flat) => flat.chainId !== 'kawaii_6886-1' && flat.chainId !== '0x1ae6')
     .reduce((result, token) => {
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
       if (token.bridgeTo || token.contractAddress || (token.denom && token.chainId !== 'oraibridge-subnet-2')) {
@@ -90,7 +99,8 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
           const subAmounts = isHaveSubAmounts ? getSubAmountDetails(amounts, token) : {};
           const totalAmount = amount + toAmount(toSumDisplay(subAmounts), token.decimals);
 
-          const tokenPrice = prices[token.coinGeckoId] || 0;
+          const tokenDenom = parseTokenInfoRawDenom(token);
+          const tokenPrice = prices[token.coinGeckoId] || tokenPoolPrices?.[tokenDenom] || 0;
           const value = toDisplay(totalAmount.toString(), token.decimals) * tokenPrice;
 
           if (checkShouldHide(value)) return result;

@@ -234,7 +234,7 @@ const LuckyDraw: FC<{}> = () => {
               </div>
             </div>
             <span>
-              Balance:{' '}
+              Balance:
               <span className={styles.balance}>
                 {toDisplay(balance)} {feeToken?.name || 'ORAIX'}
               </span>

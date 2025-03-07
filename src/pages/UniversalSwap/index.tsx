@@ -18,10 +18,11 @@ import ChartUsdPrice from './Component/ChartUsdPrice';
 import { TransactionProcess } from './Modals';
 import SwapComponent from './Swap';
 import { initPairSwap } from './Swap/hooks/useFillToken';
-import { NetworkFilter, TYPE_TAB_HISTORY, initNetworkFilter } from './helpers';
+import { NetworkFilter, TYPE_TAB_HISTORY, getTokenIsStableCoin, initNetworkFilter } from './helpers';
 import { ChartTokenType, useChartUsdPrice } from './hooks/useChartUsdPrice';
 import styles from './index.module.scss';
 import Lottie from 'lottie-react';
+import { parseTokenInfoRawDenom } from '@oraichain/oraidex-common';
 
 const cx = cn.bind(styles);
 
@@ -45,7 +46,7 @@ const Swap: React.FC = () => {
   // get data for mobile
   useChartUsdPrice(
     FILTER_TIME_CHART.DAY,
-    tokenTo?.coinGeckoId,
+    tokenTo ? parseTokenInfoRawDenom(tokenTo) : 'orai',
     ChartTokenType.Price,
     setInitPriceUsd,
     setInitPercentChangeUsd
@@ -106,6 +107,7 @@ const Swap: React.FC = () => {
             <div>
               {!mobileMode && (
                 <Chart
+                  fromTokenDenom={fromTokenDenom}
                   toTokenDenom={toTokenDenom}
                   setPriceUsd={setPriceUsd}
                   priceUsd={priceUsd}
@@ -153,6 +155,7 @@ const Swap: React.FC = () => {
 
         <ModalCustom open={openModal} onClose={() => setOpenModal(false)} title="Chart" showOnBottom>
           <Chart
+            fromTokenDenom={fromTokenDenom}
             toTokenDenom={toTokenDenom}
             setPriceUsd={setPriceUsd}
             priceUsd={priceUsd}
@@ -167,6 +170,7 @@ const Swap: React.FC = () => {
 };
 
 const Chart = ({
+  fromTokenDenom,
   toTokenDenom,
   setPriceUsd,
   priceUsd,
@@ -174,6 +178,7 @@ const Chart = ({
   setPercentChangeUsd,
   showTokenInfo = true
 }: {
+  fromTokenDenom: string;
   toTokenDenom: string;
   setPriceUsd: React.Dispatch<React.SetStateAction<number>>;
   priceUsd: number;
@@ -187,12 +192,16 @@ const Chart = ({
   const [hideChart, setHideChart] = useState<boolean>(false);
   const [isTxsProcess, setIsTxsProcress] = useState<boolean>(false);
   const [chartTokenType, setChartTokenType] = useState(ChartTokenType.Price);
+  const currentToToken = useSelector(selectCurrentToToken);
 
   const filterTimeChartUsd = useSelector(selectCurrentSwapFilterTime);
 
   const handleChangeChartTimeFrame = (resolution: number) => {
     dispatch(setChartTimeFrame(resolution));
   };
+
+  const toTokenDenomIsStable = getTokenIsStableCoin(currentToToken);
+  const tokenDenom = toTokenDenomIsStable ? fromTokenDenom : toTokenDenom;
 
   return (
     <div>
@@ -201,7 +210,7 @@ const Chart = ({
         setChartTokenType={setChartTokenType}
         setHideChart={setHideChart}
         hideChart={hideChart}
-        toTokenDenom={toTokenDenom}
+        toTokenDenom={tokenDenom}
         priceUsd={priceUsd}
         percentChangeUsd={percentChangeUsd}
         showTokenInfo={showTokenInfo}
