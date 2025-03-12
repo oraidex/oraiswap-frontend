@@ -692,7 +692,9 @@ const Balance: React.FC<BalanceProps> = () => {
 
       // -------------------start SOL BRIDGE--------------------
       if (isSolToOraichain || isOraichainToSol) {
-        assert(!solBridgeInfo?.solBridgeWallet, 'Cannot find sol Bridge Wallet!');
+        console.log({ solBridgeInfo });
+
+        assert(solBridgeInfo?.solBridgeWallet, 'Cannot find sol Bridge Wallet!');
         if (isOraichainToSol) {
           return handleTransferOraichainToSol({
             fromToken: from,
