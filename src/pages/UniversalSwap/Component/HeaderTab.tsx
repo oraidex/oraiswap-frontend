@@ -167,7 +167,7 @@ export const HeaderTop = ({
                   <div className={cx('tokenInfo')}>
                     {ToTokenIcon}
                     <span>{currentToken?.name || currentToken?.denom}</span>
-                    <span className={cx('tokenName')}>{currentToChain}</span>
+                    <span className={cx('tokenName')}>{currentToken?.org}</span>
                   </div>
                 )
               : currentFromToken && (
