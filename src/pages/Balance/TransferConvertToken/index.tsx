@@ -503,7 +503,8 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
             btcChains.find((chain) => chain.chainId !== token.chainId)
           ) {
             const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
-            const isSolBridgeHasBridgeWallet = token.chainId === solChainId && solBridgeWallet;
+            const isSolBridgeHasBridgeWallet =
+              [token.chainId, toNetworkChainId].includes(solChainId) && solBridgeWallet;
             const isDisabled =
               !isSolBridgeHasBridgeWallet ||
               transferLoading ||
