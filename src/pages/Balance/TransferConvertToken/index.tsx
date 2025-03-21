@@ -264,7 +264,7 @@ const TransferConvertToken: FC<TransferConvertProps> = ({
         - Received amount:{' '}
         <span>
           {FormatNumberFixed({
-            value: isSolToOraichain || isOraichainToSol ? solFee.sendAmount : Math.max(Number(receivedAmount) || 0, 0)
+            value: Math.max(Number(isSolToOraichain || isOraichainToSol ? solFee.sendAmount : receivedAmount), 0)
           })}{' '}
           {token.name}
         </span>
