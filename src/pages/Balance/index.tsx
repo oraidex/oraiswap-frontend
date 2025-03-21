@@ -122,7 +122,7 @@ import { parsePoolKey } from '@oraichain/oraiswap-v3';
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
 import { toUtf8 } from '@cosmjs/encoding';
 
-interface BalanceProps {}
+interface BalanceProps { }
 export const isMaintainBridge = false;
 
 const Balance: React.FC<BalanceProps> = () => {
@@ -583,7 +583,7 @@ const Balance: React.FC<BalanceProps> = () => {
       solRelayer = SOL_RELAYER_ADDRESS_DEFAI_MEME;
     }
 
-    const listNotCheckBalanceOraichainToSol = [ORAI];
+    const listNotCheckBalanceOraichainToSol = [ORAI, "cw20:orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp:scORAI"];
 
     if (!fromToken.contractAddress && transferAmount < 0.01) {
       return displayToast(TToastType.TX_FAILED, {
@@ -665,14 +665,33 @@ const Balance: React.FC<BalanceProps> = () => {
       ];
     }
 
-    instructions.push({
-      typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-      value: {
-        fromAddress: oraiAddress,
-        toAddress: receiverAddress,
-        amount
-      }
-    });
+    if (fromToken.contractAddress) {
+      instructions.push({
+        typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+        value: MsgExecuteContract.fromPartial({
+          sender: oraiAddress,
+          contract: fromToken.contractAddress,
+          msg: toUtf8(
+            JSON.stringify({
+              transfer: {
+                recipient: receiverAddress,
+                amount: toAmount(transferAmount, fromToken.decimals).toString(),
+              }
+            })
+          )
+        })
+      });
+    } else {
+      instructions.push({
+        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+        value: {
+          fromAddress: oraiAddress,
+          toAddress: receiverAddress,
+          amount
+        }
+      });
+    }
+
 
     try {
       const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
