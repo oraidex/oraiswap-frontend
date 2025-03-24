@@ -135,11 +135,6 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
             ) : (
               <img className={cx('logo')} src={data.icon} alt="icon" width={30} height={30} />
             )}
-            {/* {theme === 'light' ? (
-              <data.iconLight className={styles.tokenIcon} />
-            ) : (
-              <data.icon className={styles.tokenIcon} />
-            )} */}
           </div>
           <div className={styles.right}>
             <div className={styles.assetName}>{data.asset}</div>
