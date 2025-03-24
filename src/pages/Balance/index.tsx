@@ -617,6 +617,7 @@ const Balance: React.FC<BalanceProps> = () => {
       }
     ];
 
+    // case USDC cw20
     if (converterMiddleware) {
       const { balance } = await UniversalSwapHelper.getBalanceIBCOraichain(
         {
@@ -665,7 +666,8 @@ const Balance: React.FC<BalanceProps> = () => {
       ];
     }
 
-    if (fromToken.contractAddress) {
+    // case only scORAI cw20
+    if (fromToken.contractAddress && !converterMiddleware) {
       instructions.push({
         typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
         value: MsgExecuteContract.fromPartial({
