@@ -15,10 +15,10 @@ export default defineConfig({
     viteTsconfigPaths(),
     svgr(),
     nodePolyfills(),
-    sentryVitePlugin({
-      org: 'oraichain',
-      project: 'oraidex'
-    })
+    // sentryVitePlugin({
+    //   org: 'oraichain',
+    //   project: 'oraidex'
+    // })
   ],
   server: {
     open: true,
@@ -47,7 +47,7 @@ export default defineConfig({
   build: {
     commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         chunkFileNames: 'assets/js/[name]-[hash].js',
