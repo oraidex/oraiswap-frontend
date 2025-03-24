@@ -124,7 +124,7 @@ import { parsePoolKey } from '@oraichain/oraiswap-v3';
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
 import { toUtf8 } from '@cosmjs/encoding';
 
-interface BalanceProps {}
+interface BalanceProps { }
 export const isMaintainBridge = false;
 
 const Balance: React.FC<BalanceProps> = () => {
@@ -552,6 +552,7 @@ const Balance: React.FC<BalanceProps> = () => {
       }
     ];
 
+    // case USDC cw20
     if (converterMiddleware) {
       const { balance } = await UniversalSwapHelper.getBalanceIBCOraichain(
         {
@@ -600,14 +601,34 @@ const Balance: React.FC<BalanceProps> = () => {
       ];
     }
 
-    instructions.push({
-      typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-      value: {
-        fromAddress: oraiAddress,
-        toAddress: receiverAddress,
-        amount
-      }
-    });
+    // case only scORAI cw20
+    if (fromToken.contractAddress && !converterMiddleware) {
+      instructions.push({
+        typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+        value: MsgExecuteContract.fromPartial({
+          sender: oraiAddress,
+          contract: fromToken.contractAddress,
+          msg: toUtf8(
+            JSON.stringify({
+              transfer: {
+                recipient: receiverAddress,
+                amount: toAmount(transferAmount, fromToken.decimals).toString(),
+              }
+            })
+          )
+        })
+      });
+    } else {
+      instructions.push({
+        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+        value: {
+          fromAddress: oraiAddress,
+          toAddress: receiverAddress,
+          amount
+        }
+      });
+    }
+
 
     try {
       const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
