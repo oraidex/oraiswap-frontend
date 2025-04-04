@@ -123,7 +123,7 @@ const StakeInfo = () => {
         })
       ]);
 
-      const slippage = 1;
+      const slippage = 2;
       const minimumReceive = calculateMinReceive(averageRatioData.amount, reward, slippage, USDC_TOKEN.decimals);
 
       const msgSwap = generateContractMessages({

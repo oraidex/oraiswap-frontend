@@ -1,5 +1,6 @@
 import { BigDecimal, solChainId, toAmount, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
 import axios from 'axios';
+import { SOL_NATIVE_DENOM, USDC_SOL_DENOM } from 'helper/constants';
 import { useDebounce } from 'hooks/useDebounce';
 import { flattenTokens, solTokens } from 'initCommon';
 import { useEffect, useState } from 'react';
@@ -9,22 +10,11 @@ export enum Direction {
   ORAI_TO_SOLANA = 'orai_to_solana'
 }
 
-export enum SUPPORT_TOKEN {
-  ORAI = 'orai',
-  MAX = 'max',
-  RACKS = 'rack',
-  GNRT = 'gnrt',
-  LEE = 'lee',
-  MOOBS = 'moobs',
-  CRISIS = 'crisis'
-}
-
 const useGetFeeSol = ({
   originalFromToken,
-  toChainId,
   amountToken,
   toToken,
-  isMemeBridge
+  toChainId
 }: {
   amountToken: string;
   originalFromToken: TokenItemType;
@@ -44,11 +34,9 @@ const useGetFeeSol = ({
   };
 
   const [solFee, setSolFee] = useState(defaultSolFee);
-
-  const getSupportToken = (denom) => {
-    if (denom === 'RACKS') return SUPPORT_TOKEN.RACKS;
-    return denom?.toLowerCase();
-  };
+  const [solWallet, setSolWallet] = useState('');
+  const [maxBalance, setMaxBalance] = useState('');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -62,36 +50,44 @@ const useGetFeeSol = ({
 
         const amount: string = toAmount(debouncedAmountToken, originalFromToken.decimals).toString();
         const direction: Direction = toChainId === solChainId ? Direction.ORAI_TO_SOLANA : Direction.SOLANA_TO_ORAI;
-        // const supportedToken: SUPPORT_TOKEN =
-        // originalFromToken.coinGeckoId === 'oraichain-token' ? SUPPORT_TOKEN.ORAI : SUPPORT_TOKEN.MAX;
-        let supportedToken: SUPPORT_TOKEN | string = getSupportToken(originalFromToken.name);
-        let baseURL = `https://solana-relayer.orai.io`;
+        const baseURL = `https://sol-bridge-3-staging.agents.land`;
 
-        if (isMemeBridge) {
-          const splitDenomInOraichain = originalFromToken.denom.split('/');
-          supportedToken =
-            originalFromToken?.contractAddress || splitDenomInOraichain[splitDenomInOraichain.length - 1];
-          baseURL = 'https://sol-meme-bridge.agents.land';
-        }
+        let denom = originalFromToken?.contractAddress ?? originalFromToken.denom;
+        if (originalFromToken.coinGeckoId === 'solana' && toChainId === 'Oraichain') denom = SOL_NATIVE_DENOM;
+        if (originalFromToken.coinGeckoId === 'usd-coin' && toChainId === solChainId) denom = USDC_SOL_DENOM;
 
-        const url: string = `${baseURL}/fee?direction=${direction}&amount=${amount}&supportedToken=${supportedToken}`;
+        const url: string = `${baseURL}/account/bridge?direction=${direction}&amount=${amount}&denom=${encodeURIComponent(
+          denom
+        )}`;
+
         const { data } = await axios.get(url);
-        const originalToToken =
-          toToken ??
-          flattenTokens.find(
+        let originalToToken = toToken;
+
+        if (!originalToToken) {
+          originalToToken = flattenTokens.find(
             (flat) => flat.coinGeckoId === originalFromToken.coinGeckoId && flat.chainId === toChainId
           );
-        const totalFeeSol = new BigDecimal(data?.oraichainFee ?? data?.solanaFee)
-          .add(data.tokenFeeAmount)
-          .div(10 ** originalToToken.decimals)
-          .toNumber();
+        }
 
-        setSolFee({
-          sendAmount: toDisplay(data.sendAmount, originalToToken.decimals),
-          tokenFeeAmount: toDisplay(data.tokenFeeAmount, originalToToken.decimals),
-          relayerFee: toDisplay(data?.oraichainFee ?? data?.solanaFee, originalToToken.decimals),
-          totalFee: totalFeeSol
-        });
+        if (data?.tokenFeeAmount) {
+          const totalFeeSol = new BigDecimal(data?.oraichainFee ?? data?.solanaFee)
+            .add(data.tokenFeeAmount)
+            .div(10 ** originalToToken.decimals)
+            .toNumber();
+
+          setSolFee({
+            sendAmount: toDisplay(data.sendAmount, originalToToken.decimals),
+            tokenFeeAmount: toDisplay(data.tokenFeeAmount, originalToToken.decimals),
+            relayerFee: toDisplay(data?.oraichainFee ?? data?.solanaFee, originalToToken.decimals),
+            totalFee: totalFeeSol
+          });
+          setSolWallet(data.wallet);
+        }
+
+        if (data?.message) {
+          setMaxBalance(data.maxBalance);
+          setMessage(data.message);
+        }
       } catch (error) {
         console.log({ error });
       }
@@ -99,6 +95,9 @@ const useGetFeeSol = ({
   }, [originalFromToken, toChainId, debouncedAmountToken]);
 
   return {
+    message,
+    maxBalance,
+    solBridgeWallet: solWallet,
     solFee,
     isSolToOraichain,
     isOraichainToSol

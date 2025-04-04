@@ -59,7 +59,9 @@ import {
   getTokenBalance,
   isAllowAlphaIbcWasm,
   isAllowIBCWasm,
-  refreshBalances
+  refreshBalances,
+  supportedChainFunc,
+  unSupportSimulateToken
 } from 'pages/UniversalSwap/helpers';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -428,9 +430,27 @@ const SwapComponent: React.FC<{
         displayToast(TToastType.TX_SUCCESSFUL, {
           customLink: getTransactionUrl(originalFromToken.chainId, transactionHash)
         });
+
+        if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
+          const address = [oraiAddress, metamaskAddress, tronAddress].filter(Boolean).join(' ');
+          const logEvent = {
+            address,
+            fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
+            fromAmount: `${fromAmountToken}`,
+            toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
+            toAmount: `${toAmountToken}`,
+            fromNetwork: originalFromToken.chainId,
+            toNetwork: originalToToken.chainId,
+            useAlphaSmartRouter: true,
+            useAlphaIbcWasm: useAlphaIbcWasm,
+            priceOfFromTokenInUsd: usdPriceShowFrom,
+            priceOfToTokenInUsd: usdPriceShowTo
+          };
+          mixpanel.track('Universal Swap Oraidex', logEvent);
+        }
+
         loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress, tonAddress });
         setSwapLoading(false);
-
         // save to duckdb
         const swapType = getSwapType({
           fromChainId: originalFromToken.chainId,
@@ -463,23 +483,6 @@ const SwapComponent: React.FC<{
       });
     } finally {
       setSwapLoading(false);
-      if (import.meta.env.VITE_APP_SENTRY_ENVIRONMENT === 'production') {
-        const address = [oraiAddress, metamaskAddress, tronAddress].filter(Boolean).join(' ');
-        const logEvent = {
-          address,
-          fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
-          fromAmount: `${fromAmountToken}`,
-          toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
-          toAmount: `${toAmountToken}`,
-          fromNetwork: originalFromToken.chainId,
-          toNetwork: originalToToken.chainId,
-          useAlphaSmartRouter: true,
-          useAlphaIbcWasm: useAlphaIbcWasm,
-          priceOfFromTokenInUsd: usdPriceShowFrom,
-          priceOfToTokenInUsd: usdPriceShowTo
-        };
-        mixpanel.track('Universal Swap Oraidex', logEvent);
-      }
     }
   };
 
@@ -499,29 +502,7 @@ const SwapComponent: React.FC<{
     setCoe(coeff);
   };
 
-  const unSupportSimulateToken = ['bnb', 'bep20_wbnb', 'eth'];
-  const supportedChainFunc = () => {
-    if (unSupportSimulateToken.includes(originalFromToken?.denom)) {
-      return ['Oraichain'];
-    }
-
-    // const isOraichainDenom = [originalFromToken.denom, originalToToken.denom].includes(TON_ORAICHAIN_DENOM);
-    // if (isOraichainDenom) {
-    //   return networks.filter((chainInfo) => chainInfo.networkType === 'cosmos').map((chain) => chain.chainId);
-    // }
-
-    if (originalFromToken.chainId === 'injective-1') {
-      return networks.filter((chainInfo) => chainInfo.chainId === 'Oraichain').map((chain) => chain.chainId);
-    }
-
-    // if (!originalFromToken.cosmosBased) {
-    //   return networks.filter((chainInfo) => chainInfo.chainId !== 'injective-1').map((chain) => chain.chainId);
-    // }
-    return [];
-  };
-
-  const supportedChain = supportedChainFunc();
-
+  const supportedChain = supportedChainFunc(originalFromToken);
   const handleChangeToken = (token: TokenItemType, type) => {
     const isFrom = type === 'from';
     let setSelectChain = setSelectChainTo;
