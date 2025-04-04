@@ -165,7 +165,7 @@ const PoolDetail: React.FC = () => {
             <div
               className={styles.back}
               onClick={() => {
-                navigate(`/pools`);
+                navigate(-1);
               }}
             >
               <BackIcon className={styles.backIcon} />

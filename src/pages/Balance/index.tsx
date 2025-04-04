@@ -870,7 +870,7 @@ const Balance: React.FC<BalanceProps> = () => {
 
   const listTokens = useMemo(() => {
     return getFilterTokens(filterNetworkUI);
-  }, [filterNetworkUI, otherChainTokens, oraichainTokens]);
+  }, [filterNetworkUI, otherChainTokens, oraichainTokens, hideOtherSmallAmount]);
 
   const totalUsd = getTotalUsd(amounts, prices, tokenPoolPrices);
 
