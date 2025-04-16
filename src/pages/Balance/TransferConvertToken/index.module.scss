@@ -325,6 +325,9 @@
       &_logo {
         display: flex;
         align-items: center;
+        img {
+          border-radius: 50%;
+        }
       }
 
       &_text {
@@ -384,6 +387,10 @@
   &_chain {
     display: flex;
     align-items: center;
+
+    img {
+      border-radius: 50%;
+    }
   }
 
   &.light {

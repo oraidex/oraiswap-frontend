@@ -52,9 +52,9 @@ const TokenItem: React.FC<TokenItemProps> = ({
       <div className={styles.balanceAmountInfo}>
         <div className={styles.token}>
           {theme === 'light' ? (
-            <img style={{ borderRadius: '100%' }} width={44} height={44} src={token?.iconLight} alt="icon-light" />
+            <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} width={44} height={44} src={token?.iconLight} alt="icon-light" />
           ) : (
-            <img style={{ borderRadius: '100%' }} width={44} height={44} src={token?.icon} alt="icon-light" />
+            <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} width={44} height={44} src={token?.icon} alt="icon-light" />
           )}
           <div className={styles.tokenInfo}>
             <div className={classNames(styles.tokenName, styles[theme])}>{token.name}</div>

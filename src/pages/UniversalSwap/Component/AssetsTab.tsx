@@ -6,6 +6,7 @@ import {
   toDisplay,
   tokensIcon
 } from '@oraichain/oraidex-common';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { isMobile } from '@walletconnect/browser-utils';
 import StakeIcon from 'assets/icons/stake.svg';
 import WalletIcon from 'assets/icons/wallet-v3.svg';
@@ -63,12 +64,12 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
     label?: string;
     balance?: number | string;
   }[] = [
-    {
-      src: WalletIcon,
-      label: 'Total balance',
-      balance: formatDisplayUsdt(totalUsd)
-    }
-  ];
+      {
+        src: WalletIcon,
+        label: 'Total balance',
+        balance: formatDisplayUsdt(totalUsd)
+      }
+    ];
 
   if (!networkFilter || networkFilter === 'Oraichain') {
     listAsset = [
@@ -115,7 +116,8 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
             denom: token.denom,
             value,
             coeff: 0,
-            coeffType: 'increase'
+            coeffType: 'increase',
+            coinGeckoId: token.coinGeckoId
           });
         }
       }
@@ -130,16 +132,15 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
       accessor: (data) => (
         <div className={styles.assets}>
           <div className={styles.left}>
-            {theme === 'light' ? (
-              <img src={data.icon} alt="icon" width={30} height={30} />
+            {data?.icon ? theme === 'light' ? (
+              <img style={{
+                backgroundColor: data?.coinGeckoId === 'usdai' ? 'white' : 'transparent',
+              }} src={data.icon} className={cx('logo')} alt="icon" />
             ) : (
-              <img className={cx('logo')} src={data.icon} alt="icon" width={30} height={30} />
-            )}
-            {/* {theme === 'light' ? (
-              <data.iconLight className={styles.tokenIcon} />
-            ) : (
-              <data.icon className={styles.tokenIcon} />
-            )} */}
+              <img style={{
+                backgroundColor: data?.coinGeckoId === 'usdai' ? 'white' : 'transparent',
+              }} className={cx('logo')} src={data.icon} alt="icon" />
+            ) : <DefaultIcon className={cx('logo')} />}
           </div>
           <div className={styles.right}>
             <div className={styles.assetName}>{data.asset}</div>

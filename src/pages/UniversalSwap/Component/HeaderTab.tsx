@@ -164,24 +164,24 @@ export const HeaderTop = ({
           <div>
             {tab === TAB_CHART_SWAP.TOKEN
               ? currentToChain && (
-                  <div className={cx('tokenInfo')}>
-                    {ToTokenIcon}
-                    <span>{currentToken?.name || currentToken?.denom}</span>
-                    <span className={cx('tokenName')}>{currentToChain}</span>
-                  </div>
-                )
+                <div className={cx('tokenInfo')}>
+                  {ToTokenIcon}
+                  <span>{currentToken?.name || currentToken?.denom}</span>
+                  <span className={cx('tokenName')}>{currentToChain}</span>
+                </div>
+              )
               : currentFromToken && (
-                  <div className={cx('tokenInfo')}>
-                    <div className={cx('icons')}>
-                      <div className={cx('formIcon')}>{FromTokenIcon}</div>
-                      <div className={cx('toIcon')}>{ToTokenIcon}</div>
-                    </div>
-                    <span>
-                      {currentFromToken?.name || currentFromToken?.denom}/
-                      {currentToToken?.name || currentToToken?.denom}
-                    </span>
+                <div className={cx('tokenInfo')}>
+                  <div className={cx('icons')}>
+                    <div className={cx('formIcon')}>{FromTokenIcon}</div>
+                    <div className={cx('toIcon')}>{ToTokenIcon}</div>
                   </div>
-                )}
+                  <span>
+                    {currentFromToken?.name || currentFromToken?.denom}/
+                    {currentToToken?.name || currentToToken?.denom}
+                  </span>
+                </div>
+              )}
           </div>
         )}
         {mobileMode && (

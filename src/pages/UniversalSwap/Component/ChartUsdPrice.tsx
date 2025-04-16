@@ -18,6 +18,7 @@ export type ChartUsdPropsType = {
   onUpdatePricePercent?: React.Dispatch<React.SetStateAction<number>>;
   activeAnimation?: boolean;
   chartTokenType: ChartTokenType;
+  percentChangeUsd?: number
 };
 
 const ChartUsdPrice = ({
@@ -25,7 +26,8 @@ const ChartUsdPrice = ({
   onUpdateCurrentItem,
   onUpdatePricePercent,
   activeAnimation = false,
-  chartTokenType = ChartTokenType.Price
+  chartTokenType = ChartTokenType.Price,
+  percentChangeUsd
 }: ChartUsdPropsType) => {
   const chartRef = useRef(null);
   const containerRef = useRef(null);
@@ -40,8 +42,8 @@ const ChartUsdPrice = ({
       ? parseTokenInfoRawDenom(currentFromToken)
       : 'cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:USDT'
     : currentToToken
-    ? parseTokenInfoRawDenom(currentToToken)
-    : 'orai';
+      ? parseTokenInfoRawDenom(currentToToken)
+      : 'orai';
 
   const {
     currentData: data,
@@ -81,7 +83,6 @@ const ChartUsdPrice = ({
     handleScroll: {
       vertTouchDrag: false
     },
-
     rightPriceScale: {
       borderColor: theme === 'light' ? '#EFEFEF' : '#232521',
       borderVisible: false,
@@ -116,10 +117,10 @@ const ChartUsdPrice = ({
     },
     grid: {
       horzLines: {
-        visible: false
+        visible: false,
       },
       vertLines: {
-        visible: false
+        visible: false,
       }
     },
     crosshair: {
@@ -145,6 +146,7 @@ const ChartUsdPrice = ({
       barSpacing: 28,
 
       borderColor: theme === 'light' ? '#EFEFEF' : '#232521',
+      // borderColor: 'red',
       timeVisible: true,
       secondsVisible: false,
 
@@ -160,8 +162,22 @@ const ChartUsdPrice = ({
         const timestamp = Number(time) * TIMER.MILLISECOND;
         return formatDateChart(timestamp);
       }
-    }
+    },
   };
+
+  const redSettingAreaSeries = {
+    topColor: 'rgba( 239, 83, 80, 0.05)',
+    bottomColor: 'rgba( 239, 83, 80, 0.28)',
+    lineColor: 'rgba( 239, 83, 80, 1)',
+  }
+
+  const defaultSettingAreaSeries = {
+    topColor: theme === 'light' ? '#EEF9E5' : '#32392D',
+    bottomColor: theme === 'light' ? '#fff' : '#181A17',
+    lineColor: theme === 'light' ? '#A6BE93' : '#A6BE93',
+  }
+
+  const settingAreaSeries = percentChangeUsd < 0 ? redSettingAreaSeries : defaultSettingAreaSeries;
 
   useEffect(() => {
     // Initialization
@@ -170,10 +186,7 @@ const ChartUsdPrice = ({
 
       serieRef.current = chart.addAreaSeries({
         priceLineVisible: false,
-        topColor: theme === 'light' ? '#EEF9E5' : '#32392D',
-        bottomColor: theme === 'light' ? '#fff' : '#181A17',
-        lineColor: theme === 'light' ? '#A6BE93' : '#A6BE93',
-        lineWidth: 3
+        ...settingAreaSeries,
       });
 
       chartRef.current = chart;
@@ -204,9 +217,7 @@ const ChartUsdPrice = ({
       });
     } else {
       serieRef.current = chartRef.current.addAreaSeries({
-        topColor: theme === 'light' ? '#EEF9E5' : '#32392D',
-        bottomColor: theme === 'light' ? '#fff' : '#181A17',
-        lineColor: theme === 'light' ? '#A6BE93' : '#A6BE93',
+        ...settingAreaSeries,
         lineWidth: 3
       });
     }
@@ -225,12 +236,16 @@ const ChartUsdPrice = ({
         time: Math.floor(new Date(val?.time).getTime() / 1000)
       };
     });
-
     serieRef?.current?.setData(newData);
     chartRef?.current?.timeScale()?.fitContent();
   }, [theme, data, chartTokenType]);
 
   const showTime = formatTimeDataChart(currentItem?.time || 0, filterDay, data?.[data?.length - 1]?.time);
+
+  console.log({
+    containerRef: containerRef.current,
+    filterDay
+  });
 
   return (
     <div className={`${styles.chartUsdPrice} ${activeAnimation ? styles.activeAnimation : ''}`}>

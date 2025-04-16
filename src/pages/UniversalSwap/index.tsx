@@ -224,6 +224,7 @@ const Chart = ({
             onUpdateCurrentItem={setPriceUsd}
             onUpdatePricePercent={setPercentChangeUsd}
             chartTokenType={chartTokenType}
+            percentChangeUsd={Number(percentChangeUsd)}
           />
         </div>
       </div>

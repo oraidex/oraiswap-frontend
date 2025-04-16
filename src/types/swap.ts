@@ -1,4 +1,4 @@
-import { CoinIcon, TokenItemType } from '@oraichain/oraidex-common';
+import {  TokenItemType } from '@oraichain/oraidex-common';
 
 export type AssetInfoResponse = {
   asset: string;
@@ -9,8 +9,9 @@ export type AssetInfoResponse = {
   value: number;
   coeff?: number;
   coeffType?: string;
-  iconLight?: CoinIcon;
-  icon: CoinIcon;
+  iconLight?: any;
+  icon: any;
+  coinGeckoId?: string;
 };
 
 export type HistoryInfoResponse = {
