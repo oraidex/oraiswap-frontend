@@ -36,6 +36,7 @@ import { Type, generateConvertCw20Erc20Message, generateConvertMsgs, generateMov
 import axios from 'rest/request';
 import { RemainingOraibTokenItem } from './StuckOraib/useGetOraiBridgeBalances';
 import { store } from 'store/configure';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 
 export const transferIBC = async (data: {
   fromToken: TokenItemType;
@@ -674,14 +675,35 @@ export const BTCtoSat = (sat = 0, isDisplayAmount?: boolean) => {
   return new BitcoinUnit(sat, 'BTC').to('satoshi').getValue();
 };
 
-interface FormatNumberProps {
+export const FormatNumberFixed: React.FC<{
   value: number | string;
   decimalPlaces?: number;
-}
-
-export const FormatNumberFixed: React.FC<FormatNumberProps> = ({ value, decimalPlaces = 6 }) => {
+}> = ({ value, decimalPlaces = 6 }) => {
   const numberValue = Number(value);
 
   const formattedValue = numberValue === 0 ? '0' : numberValue.toFixed(decimalPlaces);
   return formattedValue;
+};
+
+
+export const getRemoteTokenDenom = (token: TokenItemType) => {
+  if (!token) return null;
+  return token.contractAddress ? token.prefix + token.contractAddress : token.denom;
+};
+
+export const checkValidAmount = (convertAmount, maxAmount) => {
+  if (!convertAmount || convertAmount <= 0 || convertAmount > maxAmount) {
+    displayToast(TToastType.TX_FAILED, {
+      message: 'Invalid amount!'
+    });
+    return false;
+  }
+  return true;
+};
+
+export const renderTransferConvertButton = (toNetworkChainId, token, toNetwork, receivedAmount) => {
+  let buttonName = toNetworkChainId === token.chainId ? 'Convert to ' : 'Transfer to ';
+  if (toNetwork) buttonName += toNetwork.chainName;
+  if (receivedAmount < 0) buttonName = 'Not enought amount to pay fee';
+  return buttonName;
 };

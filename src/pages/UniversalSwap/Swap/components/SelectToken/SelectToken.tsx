@@ -97,8 +97,8 @@ export default function SelectToken({
         (textChain ? item.chainId === textChain : true) &&
         (textSearch
           ? [item.name.toLowerCase(), item.denom.toLowerCase(), item.contractAddress?.toLowerCase()].some(
-              (tokenDenom) => tokenDenom?.includes(textSearch.toLowerCase())
-            )
+            (tokenDenom) => tokenDenom?.includes(textSearch.toLowerCase())
+          )
           : true)
     )
     .reduce((unique, item) => {
@@ -139,7 +139,7 @@ export default function SelectToken({
             .map((token) => {
               const tokenIconUrl = (isLightTheme ? token.iconLight : token.icon) || DEFAULT_TOKEN_ICON_URL;
               const tokenIcon = (
-                <img style={{ borderRadius: '100%' }} src={tokenIconUrl} alt="icon" width={30} height={30} />
+                <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} src={tokenIconUrl} alt="icon" width={30} height={30} />
               );
 
               const networkIcon = getChainIcon({

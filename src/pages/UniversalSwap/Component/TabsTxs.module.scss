@@ -94,10 +94,13 @@
     min-width: 300px;
     max-height: 500px;
     border: 1px solid;
-    border-radius: 12px;
+    // border-radius: 12px;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
     overflow-y: auto;
     position: absolute;
     right: 0;
+    top:36px;
     z-index: 2;
     font-weight: 600;
     padding: 16px 12px;
@@ -154,6 +157,12 @@
           height: 28px;
         }
 
+        .itemLogo {
+          border-radius: 50%;
+          width: 28px;
+          height: 28px;
+        }
+        
         .grow {
           flex-grow: 1;
 

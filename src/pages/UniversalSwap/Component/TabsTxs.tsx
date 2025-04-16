@@ -26,10 +26,10 @@ const ItemNetwork: React.FC<{
   isCheck: boolean;
   onClick: () => void;
   isAllNetwork?: string;
-}> = ({ onClick, item, theme, isCheck, icons, isAllNetwork }) => {
+}> = ({ onClick, item, isCheck, icons, isAllNetwork }) => {
   return (
     <div className={cx('item', `${isAllNetwork}`)} onClick={onClick}>
-      {icons ?? <img width={28} height={28} src={item.chainSymbolImageUrl} alt="chainSymbolImageUrl" />}
+      {icons ?? <img className={styles.itemLogo} src={item.chainSymbolImageUrl} alt="chainSymbolImageUrl" />}
       <div className={cx('grow')}>
         <div>{item?.chainName}</div>
       </div>
