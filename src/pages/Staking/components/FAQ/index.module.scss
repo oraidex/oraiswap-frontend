@@ -10,11 +10,16 @@
   gap: 24px;
   align-self: stretch;
 
-  margin-top: 40px;
+  margin-top: 20px;
 
   @include theme {
     color: theme-get('neutral-text-text-dropdown');
   }
+
+  @include mobile() {
+    padding: 15px;
+  }
+
   font-size: 20px;
   font-weight: 600;
   line-height: 150%;
