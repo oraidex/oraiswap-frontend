@@ -1,4 +1,4 @@
-import { CW20_STAKING_CONTRACT, ORAI, TokenItemType, calculateMinReceive, toDisplay } from '@oraichain/oraidex-common';
+import { BigDecimal, CW20_STAKING_CONTRACT, ORAI, TokenItemType, calculateMinReceive, toDisplay } from '@oraichain/oraidex-common';
 import OraiXIcon from 'assets/icons/oraix.svg?react';
 import OraiXLightIcon from 'assets/icons/oraix_light.svg?react';
 import UsdcIcon from 'assets/icons/usd_coin.svg?react';
@@ -44,7 +44,10 @@ const StakeInfo = () => {
   const [openCompound, setOpenCompound] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingCompound, setLoadingCompound] = useState<boolean>(false);
-  const [estOraixSwap, setEstOraixSwap] = useState<number>(0);
+  const [estOraixSwap, setEstOraixSwap] = useState({
+    amount: '0',
+    displayAmount: 0
+  });
 
   const routerClient = new OraiswapRouterQueryClient(window.client, network.mixer_router);
 
@@ -63,7 +66,10 @@ const StakeInfo = () => {
         routerConfig: getRouterConfig()
       });
 
-      setEstOraixSwap(simulateData?.displayAmount || 0);
+      setEstOraixSwap({
+        amount: simulateData?.amount || '0',
+        displayAmount: simulateData?.displayAmount || 0
+      });
     })();
   }, [openCompound]);
 
@@ -108,24 +114,9 @@ const StakeInfo = () => {
         }
       };
 
-      const [averageRatioData] = await Promise.all([
-        UniversalSwapHelper.handleSimulateSwap({
-          flattenTokens: flattenTokens,
-          oraichainTokens: oraichainTokens,
-          originalFromInfo: USDC_TOKEN,
-          originalToInfo: ORAIX_TOKEN,
-          originalAmount: 1,
-          routerClient,
-          routerOption: {
-            useIbcWasm: true
-          },
-          routerConfig: getRouterConfig()
-        })
-      ]);
-
-      const slippage = 1;
-      const minimumReceive = calculateMinReceive(averageRatioData.amount, reward, slippage, USDC_TOKEN.decimals);
-
+      const slippage = 2;
+      const amount = new BigDecimal(estOraixSwap.amount).div(reward).mul(Math.pow(10, ORAIX_TOKEN.decimals)).toString();
+      const minimumReceive = calculateMinReceive(amount, reward, slippage, USDC_TOKEN.decimals);
       const msgSwap = generateContractMessages({
         type: Type.SWAP,
         fromInfo: USDC_TOKEN,
@@ -216,8 +207,8 @@ const StakeInfo = () => {
         open={openCompound}
         onConfirm={() => handleCompoundStaking()}
         reward={numberWithCommas(toDisplay(String(reward)), undefined, { maximumFractionDigits: 6 })}
-        oraixAmount={numberWithCommas(estOraixSwap, undefined, { maximumFractionDigits: 6 })}
-        estOraixSwap={estOraixSwap}
+        oraixAmount={numberWithCommas(estOraixSwap?.displayAmount, undefined, { maximumFractionDigits: 6 })}
+        estOraixSwap={estOraixSwap?.displayAmount}
       />
     </div>
   );
