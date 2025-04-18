@@ -15,10 +15,12 @@ export default defineConfig({
     viteTsconfigPaths(),
     svgr(),
     nodePolyfills(),
-    sentryVitePlugin({
-      org: 'oraichain',
-      project: 'oraidex'
-    })
+    ...(process.env.VITE_APP_SENTRY_ENVIRONMENT === 'production' ? [
+      sentryVitePlugin({
+        org: 'oraichain',
+        project: 'oraidex'
+      })
+    ] : []),
   ],
   server: {
     open: true,
@@ -47,7 +49,7 @@ export default defineConfig({
   build: {
     commonjsOptions: { transformMixedEsModules: true },
     outDir: path.resolve(__dirname, 'build'),
-    sourcemap: true,
+    sourcemap: process.env.VITE_APP_SENTRY_ENVIRONMENT === 'production',
     rollupOptions: {
       output: {
         chunkFileNames: 'assets/js/[name]-[hash].js',

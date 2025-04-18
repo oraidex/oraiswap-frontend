@@ -11,6 +11,10 @@
     border-bottom: 1px solid theme-get('neutral-5');
   }
 
+  @include mobile() {
+    margin-top: 20px;
+  }
+
   .left {
     display: flex;
 

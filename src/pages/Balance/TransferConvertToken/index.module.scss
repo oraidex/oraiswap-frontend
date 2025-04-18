@@ -268,7 +268,6 @@
 
         @include mobile {
           padding-top: 20px;
-          justify-content: flex-start;
         }
 
         .title {
@@ -276,7 +275,7 @@
           font-weight: 600;
           color: #ebebeb;
           text-overflow: ellipsis;
-          -webkit-line-clamp: 1;
+          line-clamp: 1;
           display: -webkit-box;
           -webkit-box-orient: vertical;
 
@@ -354,9 +353,9 @@
 
 .tokenFromGroupBalance {
   @include mobile {
-    @include flex(space-between, center, column-reverse);
+    @include flex(space-between, space-between, column-reverse);
   }
-
+  white-space: pre;
   .bridgeFee {
     font-weight: 400;
     font-size: 14px;

@@ -6,6 +6,17 @@
 
 .modal {
   max-width: 568px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include mobile {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    align-items: flex-end;
+  }
 
   .container {
     background-color: #181a17;
@@ -32,6 +43,10 @@
       font-size: 22px;
       line-height: 100%;
       color: #ffffff;
+
+      @include mobile {
+        font-size: 18px;
+      }
 
       &.light {
         color: rgba(39, 43, 48, 1);

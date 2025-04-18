@@ -99,11 +99,21 @@
     gap: 20px;
   }
 
+  &.swap-container-right {
+    flex-direction: row-reverse;
+  }
+
+
+
   .swap-col {
     &.w60 {
       z-index: 1;
       width: 100%;
       max-width: 1000px;
+    }
+
+    &-hide {
+      display: none;
     }
 
     &.w40 {

@@ -5,7 +5,7 @@
 .swap-box-wrapper {
   border-radius: 12px;
   position: sticky;
-  top: 140px;
+  top: 120px;
   overflow: hidden;
   z-index: 1;
 
@@ -20,6 +20,15 @@
     .hidden {
       height: 0;
     }
+  }
+  &-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 20px;
+    margin-top: 10px;
+    z-index: 1000;
   }
 }
 
@@ -77,6 +86,23 @@
       align-items: center;
       justify-content: flex-end;
       gap: 16px;
+
+      &-item {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        svg {
+          width: 18px;
+          height: 18px;
+          vertical-align: middle;
+
+          path {
+            @include theme() {
+              stroke: theme-get('svg-fill-color');
+            }
+          }
+        }
+      }
 
       .icon {
         cursor: pointer;
@@ -356,7 +382,7 @@
       text-align: right;
       max-width: 50%;
       width: inherit;
-
+    
       @include mobile {
         width: 100%;
       }

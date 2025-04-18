@@ -62,7 +62,7 @@
   margin-left: -55%;
   width: 55%;
   height: 100vh;
-  padding: 40px 15px;
+  padding: 20px 15px 40px 15px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -108,6 +108,10 @@
       height: 1px;
       margin-bottom: 12px;
     }
+  }
+
+  .menu_logo {
+    padding: 0px 10px 10px;
   }
 
   .mobile_sub_menu {

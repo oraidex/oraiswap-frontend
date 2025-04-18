@@ -149,7 +149,7 @@ const Menu: React.FC = () => {
         {renderLink(
           'https://orderbook.oraidex.io',
           'Order Book',
-          () => {},
+          () => { },
           true,
           <OrderBookIc
             className={classNames({
@@ -160,7 +160,7 @@ const Menu: React.FC = () => {
         {renderLink(
           'https://futures.oraidex.io',
           'Futures Trading',
-          () => {},
+          () => { },
           true,
           <FuturesIc
             className={classNames({
@@ -174,6 +174,12 @@ const Menu: React.FC = () => {
 
   const menuListMobile = (
     <div className={classNames(styles.menu_list)}>
+      <div className={classNames(styles.menu_logo)}>
+        <Link to={'/'} onClick={() => setLink('/')}>
+          <img src={imgLogo} alt="logo" />
+        </Link>
+      </div>
+      <div className={styles.divider}></div>
       {renderLink('/universalswap', 'Swap', setLink, false, <UniversalSwapIcon />)}
       {renderLink('/bridge', 'Bridge', setLink, false, <BridgeIcon />)}
       {renderLink('/pools', 'Pools', setLink, false, <PoolIcon />)}
@@ -183,8 +189,8 @@ const Menu: React.FC = () => {
 
       {!isBeta && renderLink('https://beta.oraidex.io', 'OraiDEX Beta', setLink, true, <OraidexBetaIcon />)}
       <div className={styles.divider}></div>
-      {renderLink('https://orderbook.oraidex.io', 'Order Book', () => {}, true, <OrderbookIcon />)}
-      {renderLink('https://futures.oraidex.io', 'Futures Trading', () => {}, true, <FuturesIcon />)}
+      {renderLink('https://orderbook.oraidex.io', 'Order Book', () => { }, true, <OrderbookIcon />)}
+      {renderLink('https://futures.oraidex.io', 'Futures Trading', () => { }, true, <FuturesIcon />)}
       <div className={styles.divider}></div>
       <div
         onClick={() => {
@@ -201,9 +207,9 @@ const Menu: React.FC = () => {
       <div
         className={classNames(styles.mobile_sub_menu, isOpenSubMenuMobile ? styles.openSubMenu : null, styles[theme])}
       >
-        {renderLink('https://t.me/oraidex', 'Join our Community', () => {}, true, <TelegramIcon />, false)}
-        {renderLink('https://twitter.com/oraidex', 'Twitter', () => {}, true, <TwitterIcon />, false)}
-        {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => {}, true, <SupportIcon />, false)}
+        {renderLink('https://t.me/oraidex', 'Join our Community', () => { }, true, <TelegramIcon />, false)}
+        {renderLink('https://twitter.com/oraidex', 'Twitter', () => { }, true, <TwitterIcon />, false)}
+        {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => { }, true, <SupportIcon />, false)}
       </div>
       {renderLink(
         '#',
@@ -215,7 +221,7 @@ const Menu: React.FC = () => {
         <KadoIcon />
       )}
       {/* {renderLink('https://defi.featurebase.app/', 'Feedback', setLink, false, <FeedBackIcon />)} */}
-      {renderLink('https://defi.featurebase.app/', 'Feedback', () => {}, true, <FeedBackIcon />, false)}
+      {renderLink('https://defi.featurebase.app/', 'Feedback', () => { }, true, <FeedBackIcon />, false)}
     </div>
   );
 
@@ -269,10 +275,10 @@ const Menu: React.FC = () => {
                 setVisible={() => setOtherActive(!otherActive)}
                 content={
                   <div className={classNames(styles.menu_others_list, styles[theme])}>
-                    {renderLink('https://t.me/oraidex', 'Join our Community', () => {}, true, <TelegramIcon />, false)}
-                    {renderLink('https://twitter.com/oraidex', 'Twitter', () => {}, true, <TwitterIcon />, false)}
-                    {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => {}, true, <SupportIcon />, false)}
-                    {renderLink('https://defi.featurebase.app/', 'Feedback', () => {}, true, <FeedBackIcon />, false)}
+                    {renderLink('https://t.me/oraidex', 'Join our Community', () => { }, true, <TelegramIcon />, false)}
+                    {renderLink('https://twitter.com/oraidex', 'Twitter', () => { }, true, <TwitterIcon />, false)}
+                    {renderLink('https://t.me/SamORAI_bot', 'Contact us', () => { }, true, <SupportIcon />, false)}
+                    {renderLink('https://defi.featurebase.app/', 'Feedback', () => { }, true, <FeedBackIcon />, false)}
                   </div>
                 }
               />

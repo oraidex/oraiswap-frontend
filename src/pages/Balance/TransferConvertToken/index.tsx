@@ -480,10 +480,12 @@ const TransferConvertToken: FC<{
             ) {
               const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
               const isValidateAmount = !convertAmount || convertAmount <= 0 || convertAmount > maxAmount;
+              const isCosmosToCosmos = token.cosmosBased && to.cosmosBased;
+              const isValidateFee = !msgBridgeFee && !isCosmosToCosmos;
               // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
               // const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
               const isDisabled =
-                !msgBridgeFee ||
+                isValidateFee ||
                 isValidateAmount ||
                 transferLoading ||
                 !addressTransfer ||

@@ -101,6 +101,12 @@
               position: relative;
               width: fit-content;
 
+              .iconChain {
+                img {
+                  border-radius: 50%;
+                }
+              }
+
               .iconWalletByChain {
                 position: absolute;
                 bottom: -4px;

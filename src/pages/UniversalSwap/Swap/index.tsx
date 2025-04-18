@@ -14,6 +14,7 @@ import DownArrowIcon from 'assets/icons/down-arrow-v2.svg';
 import FeeIcon from 'assets/icons/fee.svg?react';
 import FeeDarkIcon from 'assets/icons/fee_dark.svg?react';
 import IconOirSettings from 'assets/icons/iconoir_settings.svg?react';
+import IconChart from 'assets/icons/icon-chart.svg?react';
 import SendIcon from 'assets/icons/send.svg?react';
 import SendDarkIcon from 'assets/icons/send_dark.svg?react';
 import SwitchLightImg from 'assets/icons/switch-new-light.svg';
@@ -87,6 +88,7 @@ import useHandleEffectTokenChange from './hooks/useHandleEffectTokenChange';
 import styles from './index.module.scss';
 import ModalConfirmUnverifiedToken from 'components/Modals/ModalConfirmUnverifiedToken/ModalConfirmUnverifiedToken';
 import { set } from 'lodash';
+import { isMobile } from '@walletconnect/browser-utils';
 
 const cx = cn.bind(styles);
 
@@ -95,7 +97,10 @@ const SwapComponent: React.FC<{
   fromTokenDenom: string;
   toTokenDenom: string;
   setSwapTokens: (denoms: [string, string]) => void;
-}> = ({ fromTokenDenom, toTokenDenom, setSwapTokens }) => {
+  setStatusChart: (status: "left" | "right" | "hide" | "show") => void;
+  statusChart: string;
+}> = ({ fromTokenDenom, toTokenDenom, setSwapTokens, setStatusChart, statusChart }) => {
+  const mobileMode = isMobile();
   // store value
   const [metamaskAddress] = useConfigReducer('metamaskAddress');
   const [tronAddress] = useConfigReducer('tronAddress');
@@ -660,17 +665,16 @@ const SwapComponent: React.FC<{
         <div className={cx('ratio', getClassRatio())} onClick={() => isRoutersSwapData && setOpenRoutes(!openRoutes)}>
           <span className={cx('text')}>
             {waringImpactBiggerFive && <WarningIcon />}
-            {`1 ${originalFromToken.name} ≈ ${
-              averageRatio
-                ? numberWithCommas(averageRatio.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
-                    maximumFractionDigits: 6
-                  })
-                : averageSimulateData
+            {`1 ${originalFromToken.name} ≈ ${averageRatio
+              ? numberWithCommas(averageRatio.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
+                maximumFractionDigits: 6
+              })
+              : averageSimulateData
                 ? numberWithCommas(averageSimulateData?.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
-                    maximumFractionDigits: 6
-                  })
+                  maximumFractionDigits: 6
+                })
                 : '0'
-            }
+              }
       ${originalToToken.name}`}
           </span>
           {!!isRoutersSwapData && !isPreviousSimulate && !!routersSwapData?.routes.length && (
@@ -742,11 +746,26 @@ const SwapComponent: React.FC<{
 
   return (
     <div className={cx('swap-box-wrapper')}>
+      {/* {
+        !mobileMode && (
+          <div className={cx('swap-box-wrapper-header')}>
+            <div onClick={() => setStatusChart(statusChart === "left" ? "right" : "left")}>Change Position</div>
+            <div onClick={() => setStatusChart(statusChart === "hide" ? "show" : "hide")}>{
+              statusChart === "hide" ? "Show" : "Hide"
+            }</div>
+          </div>
+        )
+      } */}
       <LoadingBox loading={loadingRefresh} className={cx('custom-loader-root')}>
         <div className={cx('swap-box')}>
           <div className={cx('header')}>
             <div className={cx('title')}>From</div>
             <div className={cx('actions')}>
+              {
+                !mobileMode && <div onClick={() => setStatusChart(statusChart === "hide" ? "show" : "hide")} className={cx('actions-item')}>
+                  <IconChart />
+                </div>
+              }
               <span className={cx('icon')} onClick={() => setOpenSetting(true)}>
                 <IconOirSettings onClick={() => setOpenSetting(true)} />
               </span>
