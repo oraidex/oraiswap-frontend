@@ -144,6 +144,10 @@
         gap: 12px;
         justify-content: space-between;
 
+        @include mobile {
+          flex-wrap: wrap
+        }
+
         .btn {
           text-align: center;
           flex: 1;
