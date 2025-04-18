@@ -10,6 +10,7 @@ import { ChartTokenType } from '../hooks/useChartUsdPrice';
 import styles from './HeaderTab.module.scss';
 import { flattenTokens } from 'initCommon';
 import { getTokenIsStableCoin } from '../helpers';
+import DefaultIcon from 'assets/icons/tokens.svg?react';
 
 const cx = cn.bind(styles);
 
@@ -136,10 +137,12 @@ export const HeaderTop = ({
   let [ToTokenIcon, FromTokenIcon] = [null, null];
 
   const generateIconTokenByTheme = (token) => {
-    return theme === 'light' ? (
+    return token?.icon ? theme === 'light' ? (
       <img style={{ borderRadius: '100%' }} src={token.iconLight} width={30} height={30} alt="token" />
     ) : (
       <img style={{ borderRadius: '100%' }} src={token.icon} alt="token" width={30} height={30} />
+    ) : (
+      <DefaultIcon />
     );
   };
 

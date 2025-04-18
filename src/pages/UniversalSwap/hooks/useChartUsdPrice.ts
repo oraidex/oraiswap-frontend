@@ -4,9 +4,11 @@ import { oraichainTokens } from 'initCommon';
 import { toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { selectCurrentFromToken, selectCurrentToToken } from 'reducer/tradingSlice';
 import { FILTER_TIME_CHART } from 'reducer/type';
 import axios from 'rest/request';
 import { RootState } from 'store/configure';
+import { getTokenIsStableCoin } from '../helpers';
 
 export enum ChartTokenType {
   Price = 'Price',
@@ -34,7 +36,9 @@ export const useChartUsdPrice = (
   const [currentData, setCurrentData] = useState<ChartDataValue[]>([]);
   const [changePercent, setChangePercent] = useState<string | number>(0);
   const allOraichainTokens = useSelector((state: RootState) => state.token.allOraichainTokens || []);
-
+  const currentToToken = useSelector(selectCurrentToToken);
+  const currentFromToken = useSelector(selectCurrentFromToken);
+  const toTokenDenomIsStable = getTokenIsStableCoin(currentToToken);
   // TODO: add loading animation later.
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,7 +80,11 @@ export const useChartUsdPrice = (
   const onChangeRange = async (type: FILTER_TIME_CHART = FILTER_TIME_CHART.DAY) => {
     try {
       setIsLoading(true);
-      const tokenOnOraichain = allOraichainTokens.find((t) => t.contractAddress === token || t.denom === token);
+      // const tokenOnOraichain = allOraichainTokens.find((t) => t.contractAddress === token || t.denom === token);
+      const tokenOnOraichain = toTokenDenomIsStable
+        ? allOraichainTokens.find((t) => t.coinGeckoId === currentFromToken?.coinGeckoId) || allOraichainTokens.find((t) => t.coinGeckoId === 'tether')
+        : allOraichainTokens.find((t) => t.coinGeckoId === currentToToken?.coinGeckoId) || allOraichainTokens.find((t) => t.coinGeckoId === 'oraichain-token')
+
       const tokenDenom = parseTokenInfoRawDenom(tokenOnOraichain);
 
       const data = await getDataPriceMarket(tokenDenom, type);
