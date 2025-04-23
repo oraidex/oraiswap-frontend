@@ -138,9 +138,9 @@ export const HeaderTop = ({
 
   const generateIconTokenByTheme = (token) => {
     return token?.icon ? theme === 'light' ? (
-      <img style={{ borderRadius: '100%' }} src={token.iconLight} width={30} height={30} alt="token" />
+      <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} src={token.iconLight} width={30} height={30} alt="token" />
     ) : (
-      <img style={{ borderRadius: '100%' }} src={token.icon} alt="token" width={30} height={30} />
+      <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} src={token.icon} alt="token" width={30} height={30} />
     ) : (
       <DefaultIcon />
     );

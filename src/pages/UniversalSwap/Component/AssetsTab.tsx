@@ -4,7 +4,7 @@ import {
   parseTokenInfoRawDenom,
   toAmount,
   toDisplay,
-  tokensIcon
+  TokenItemType,
 } from '@oraichain/oraidex-common';
 import DefaultIcon from 'assets/icons/tokens.svg?react';
 import { isMobile } from '@walletconnect/browser-utils';
@@ -16,7 +16,7 @@ import ToggleSwitch from 'components/ToggleSwitch';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { flattenTokens, tokenMap } from 'initCommon';
-import { getTotalUsd, toSumDisplay } from 'libs/utils';
+import { getTotalUsd, getUsd, toSumDisplay } from 'libs/utils';
 import { useGetTotalLpV3 } from 'pages/Pool-V3/hooks/useGetTotalLp';
 import { formatDisplayUsdt, toFixedIfNecessary } from 'pages/Pools/helpers';
 import { useGetMyStake } from 'pages/Pools/hooks';
@@ -26,6 +26,8 @@ import { updateTotalLpv3 } from 'reducer/token';
 import { RootState } from 'store/configure';
 import { AssetInfoResponse } from 'types/swap';
 import styles from './AssetsTab.module.scss';
+import { useGetMyStakeRewardInfo } from 'pages/Staking/hooks';
+import { ORAIX_TOKEN_INFO } from 'pages/Staking/constants';
 
 const cx = cn.bind(styles);
 
@@ -47,6 +49,16 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
   const { totalStaked } = useGetMyStake({
     stakerAddress: address
   });
+
+  const { myStakeRewardInfo } = useGetMyStakeRewardInfo(
+    ORAIX_TOKEN_INFO.contractAddress,
+    address
+  );
+
+  const ORAIX_TOKEN = ORAIX_TOKEN_INFO as TokenItemType;
+  const stakedAmount = myStakeRewardInfo?.stakedAmount || '0';
+  const stakeAmountUsd = getUsd(stakedAmount, ORAIX_TOKEN, prices);
+
   let totalUsd: number = getTotalUsd(amounts, prices);
   if (networkFilter) {
     const subAmounts = Object.fromEntries(
@@ -76,8 +88,8 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
       ...listAsset,
       {
         src: StakeIcon,
-        label: 'Total LP',
-        balance: formatDisplayUsdt(toDisplay(BigInt(Math.trunc(totalStaked)), CW20_DECIMALS) + Number(totalLpv3) || 0)
+        label: 'Total LP & Stake',
+        balance: formatDisplayUsdt(toDisplay(BigInt(Math.trunc(totalStaked)), CW20_DECIMALS) + Number(totalLpv3) + Number(stakeAmountUsd) || 0)
       }
     ];
   }
