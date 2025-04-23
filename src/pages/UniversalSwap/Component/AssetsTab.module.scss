@@ -206,6 +206,10 @@
 .tableWrapper {
   overflow-x: auto;
 
+  @include mobile() {
+    overflow-x: hidden;
+  }
+
   table {
     min-width: 400px;
   }

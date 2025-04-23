@@ -64,7 +64,6 @@
 
       .box {
         width: 100%;
-
         // background-color: #17181c;
         // border: 1px solid rgba(225, 240, 255, 0.2027);
         &.light {
@@ -90,7 +89,6 @@
 
         @include mobile {
           width: 100%;
-
           &:nth-child(1) {
             margin-right: 0px;
           }
@@ -99,8 +97,8 @@
             margin-left: 0px;
           }
 
+          margin-bottom: 100px;
           margin-top: 10px;
-          margin-bottom: 10px;
         }
 
         padding: 24px 24px 0 24px;

@@ -357,6 +357,14 @@
   }
   white-space: pre;
   .bridgeFee {
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+
+    @include mobile {
+      gap: 0px;
+      flex-direction: column;
+    }
     font-weight: 400;
     font-size: 14px;
     margin-top: 12px;

@@ -225,7 +225,7 @@ const TransferConvertToken: FC<{
       if (tonTokenFee > 0) {
         msgTokenFee = (
           <div className={styles.relayerFee}>
-            - Token fee:
+            Token fee:
             <span>
               {tonTokenFee} {token.name}{' '}
             </span>
@@ -236,7 +236,7 @@ const TransferConvertToken: FC<{
       if (relayerFeeTokenFee > 0) {
         msgRelayerFee = (
           <div className={styles.relayerFee}>
-            - Relayer fee:
+            Relayer fee:
             <span>
               {relayerFeeTokenFee} {token.name}
             </span>
@@ -246,7 +246,7 @@ const TransferConvertToken: FC<{
 
       const msgReceiveAmount = (
         <>
-          - Received amount:{' '}
+          Received amount:{' '}
           <span>
             {FormatNumberFixed({
               value: Math.max(Number(isSolToOraichain || isOraichainToSol ? solFee.sendAmount : receivedAmount), 0)
@@ -278,12 +278,12 @@ const TransferConvertToken: FC<{
 
       return (
         <div className={styles.bridgeFee}>
-          Bridge fee: <span>{msgBridgeFee + " " + suffixe}</span>
-          {msgTokenFee}
-          {msgRelayerFee}
-          {msgReceiveAmount}
-          {msgBTCfee}
-          {msgTonMax}
+          <div>Bridge fee: <span>{msgBridgeFee + " " + suffixe}</span></div>
+          <div>{msgTokenFee}</div>
+          <div>{msgRelayerFee}</div>
+          <div>{msgReceiveAmount}</div>
+          <div>{msgBTCfee}</div>
+          <div>{msgTonMax}</div>
         </div>
       );
     };

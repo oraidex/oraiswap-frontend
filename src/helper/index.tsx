@@ -142,7 +142,7 @@ export const getNetworkGasPrice = async (chainId): Promise<number> => {
     if (findToken) {
       return findToken.feeCurrencies[0].gasPriceStep.average;
     }
-  } catch {}
+  } catch { }
   return 0;
 };
 
@@ -400,6 +400,7 @@ export const isConnectSpecificNetwork = (status: string | null) => {
 export const getAddressTransferForEvm = async (walletByNetworks: WalletsByNetwork, network: CustomChainInfo) => {
   let address = '';
   if (network.chainId === EVM_CHAIN_ID_COMMON.TRON_CHAIN_ID) {
+    if (!isMobile() && isConnectSpecificNetwork(walletByNetworks.tron)) return '';
     const accountTron: interfaceRequestTron = await window.tronLinkDapp.request({
       method: 'tron_requestAccounts'
     });
@@ -426,7 +427,7 @@ export const getAddressTransfer = async (network: CustomChainInfo, walletByNetwo
         JSON.parse(JSON.parse(localStorage.getItem('persist:root'))?.config)?.tonAddress ||
         toUserFriendlyAddress(window.Ton?.account?.address);
       // address = useTonAddress();
-    } else if (network.networkType === 'evm' && isConnectSpecificNetwork(walletByNetworks.evm)) {
+    } else if (network.networkType === 'evm') {
       address = await getAddressTransferForEvm(walletByNetworks, network);
     } else if (network.networkType == 'svm' && isConnectSpecificNetwork(walletByNetworks.solana)) {
       let provider = window?.solana;

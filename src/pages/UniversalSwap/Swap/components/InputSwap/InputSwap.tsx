@@ -119,9 +119,9 @@ export default function InputSwap({
           <div className={cx('left')}>
             <div className={cx('icon')}>
               {(token.icon && isConfirmToken === 'init') || isConfirmToken === 'confirmed' ? (
-                <img className={cx('logo')} src={token.icon} alt="icon" width={30} height={30} />
+                <img className={cx('logo')} style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent' }} src={token.icon} alt="icon" width={30} height={30} />
               ) : (
-                <img className={cx('logo')} src={DEFAULT_TOKEN_ICON_URL} alt="icon" width={30} height={30} />
+                <img className={cx('logo')} style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent' }} src={DEFAULT_TOKEN_ICON_URL} alt="icon" width={30} height={30} />
               )}
             </div>
 
