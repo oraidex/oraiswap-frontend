@@ -89,6 +89,7 @@ import styles from './index.module.scss';
 import ModalConfirmUnverifiedToken from 'components/Modals/ModalConfirmUnverifiedToken/ModalConfirmUnverifiedToken';
 import { set } from 'lodash';
 import { isMobile } from '@walletconnect/browser-utils';
+import { StdFee } from '@cosmjs/stargate';
 
 const cx = cn.bind(styles);
 
@@ -388,6 +389,7 @@ const SwapComponent: React.FC<{
       }
 
       const tonAddress = tonWallet?.sender?.address?.toString();
+      const fee:  StdFee | "auto" | number = originalFromToken.chainId === 'Oraichain' && originalToToken.cosmosBased ? 1.8 : "auto"
       const swapData = {
         sender: {
           cosmos: cosmosAddress,
@@ -405,7 +407,8 @@ const SwapComponent: React.FC<{
         recipientAddress: isCustomRecipient ? addressTransfer : undefined,
         simulatePrice: averageRatio?.amount && new BigDecimal(averageRatio.amount).div(SIMULATE_INIT_AMOUNT).toString(),
         relayerFee: relayerFeeUniversal,
-        alphaSmartRoutes
+        alphaSmartRoutes,
+        fee
       };
 
       const univeralSwapHandler = new UniversalSwapHandler(
