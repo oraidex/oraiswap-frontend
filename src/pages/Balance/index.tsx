@@ -822,6 +822,7 @@ const Balance: React.FC<BalanceProps> = () => {
       );
 
       if (findRelayerFee) relayerFee.relayerAmount = findRelayerFee.amount;
+      const fee = from.chainId === 'Oraichain' && newToToken.cosmosBased ? 1.8 : "auto"
       const universalSwapHandler = new UniversalSwapHandler(
         {
           sender: { cosmos: cosmosAddress, evm: latestEvmAddress, tron: tronAddress },
@@ -833,7 +834,8 @@ const Balance: React.FC<BalanceProps> = () => {
           bridgeFee: 1,
           amounts: amountsBalance,
           simulateAmount,
-          simulatePrice: '1000000'
+          simulatePrice: '1000000',
+          fee
         },
         {
           // @ts-ignore
