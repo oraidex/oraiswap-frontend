@@ -389,7 +389,7 @@ const SwapComponent: React.FC<{
       }
 
       const tonAddress = tonWallet?.sender?.address?.toString();
-      const fee:  StdFee | "auto" | number = originalFromToken.chainId === 'Oraichain' && originalToToken.cosmosBased ? 1.8 : "auto"
+      const fee: StdFee | "auto" | number = originalFromToken.chainId === 'Oraichain' && originalToToken.cosmosBased && originalToToken.chainId !== originalFromToken.chainId ? 1.8 : "auto"
       const swapData = {
         sender: {
           cosmos: cosmosAddress,
