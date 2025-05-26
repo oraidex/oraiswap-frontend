@@ -423,7 +423,7 @@ const SwapComponent: React.FC<{
             isIbcWasm: useIbcWasm,
 
             // FIXME: hardcode with case celestia not check balance
-            isCheckBalanceIbc: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
+            skipBalanceIbcCheck: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
           }
         },
         oraidexCommon
