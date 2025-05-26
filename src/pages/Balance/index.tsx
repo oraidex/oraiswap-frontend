@@ -843,7 +843,7 @@ const Balance: React.FC<BalanceProps> = () => {
           evmWallet: new Metamask(window.tronWebDapp),
           swapOptions: {
             isIbcWasm: false,
-            isCheckBalanceIbc: [from.coinGeckoId, newToToken.coinGeckoId].includes('pepe') ? true : false
+            skipRelayerFeeCheck: [from.coinGeckoId, newToToken.coinGeckoId].includes('pepe') ? true : false
           }
         },
         oraidexCommon
