@@ -122,7 +122,7 @@ import { parsePoolKey } from '@oraichain/oraiswap-v3';
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
 import { toUtf8 } from '@cosmjs/encoding';
 
-interface BalanceProps { }
+interface BalanceProps {}
 export const isMaintainBridge = false;
 
 const Balance: React.FC<BalanceProps> = () => {
@@ -583,7 +583,10 @@ const Balance: React.FC<BalanceProps> = () => {
       solRelayer = SOL_RELAYER_ADDRESS_DEFAI_MEME;
     }
 
-    const listNotCheckBalanceOraichainToSol = [ORAI, "cw20:orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp:scORAI"];
+    const listNotCheckBalanceOraichainToSol = [
+      ORAI,
+      'cw20:orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp:scORAI'
+    ];
 
     if (!fromToken.contractAddress && transferAmount < 0.01) {
       return displayToast(TToastType.TX_FAILED, {
@@ -677,7 +680,7 @@ const Balance: React.FC<BalanceProps> = () => {
             JSON.stringify({
               transfer: {
                 recipient: receiverAddress,
-                amount: toAmount(transferAmount, fromToken.decimals).toString(),
+                amount: toAmount(transferAmount, fromToken.decimals).toString()
               }
             })
           )
@@ -693,7 +696,6 @@ const Balance: React.FC<BalanceProps> = () => {
         }
       });
     }
-
 
     try {
       const result = await window.client.signAndBroadcast(oraiAddress, instructions, 'auto', solAddress);
@@ -822,7 +824,7 @@ const Balance: React.FC<BalanceProps> = () => {
       );
 
       if (findRelayerFee) relayerFee.relayerAmount = findRelayerFee.amount;
-      const fee = from.chainId === 'Oraichain' && newToToken.cosmosBased ? 1.8 : "auto"
+      const fee = from.chainId === 'Oraichain' && newToToken.cosmosBased ? 1.8 : 'auto';
       const universalSwapHandler = new UniversalSwapHandler(
         {
           sender: { cosmos: cosmosAddress, evm: latestEvmAddress, tron: tronAddress },

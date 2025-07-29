@@ -74,7 +74,7 @@ const Swap: React.FC = () => {
     { condition: bottomImg, className: styles.bottom, type: 'img', src: bottomImg }
   ];
 
-  const [statusChart, setStatusChart] = useState<"left" | "right" | "hide" | "show">("show");
+  const [statusChart, setStatusChart] = useState<'left' | 'right' | 'hide' | 'show'>('show');
 
   return (
     <>
@@ -104,8 +104,8 @@ const Swap: React.FC = () => {
         </div>
       )}
       <Content nonBackground>
-        <div className={cx('swap-container', statusChart === "right" ? "swap-container-right" : "")}>
-          <div className={cx('swap-col', 'w60', statusChart === "hide" ? "swap-col-hide" : "")}>
+        <div className={cx('swap-container', statusChart === 'right' ? 'swap-container-right' : '')}>
+          <div className={cx('swap-col', 'w60', statusChart === 'hide' ? 'swap-col-hide' : '')}>
             <div>
               {!mobileMode && (
                 <Chart
@@ -149,7 +149,13 @@ const Swap: React.FC = () => {
               </div>
             )}
 
-            <SwapComponent setStatusChart={setStatusChart} statusChart={statusChart} fromTokenDenom={fromTokenDenom} toTokenDenom={toTokenDenom} setSwapTokens={setSwapTokens} />
+            <SwapComponent
+              setStatusChart={setStatusChart}
+              statusChart={statusChart}
+              fromTokenDenom={fromTokenDenom}
+              toTokenDenom={toTokenDenom}
+              setSwapTokens={setSwapTokens}
+            />
             {configTheme.swapBox.bottom && (
               <img className={styles.swapBottom} src={configTheme.swapBox.bottom} alt="" />
             )}
