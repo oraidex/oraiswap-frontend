@@ -79,7 +79,9 @@ jobs:
           VITE_APP_SENTRY_ENVIRONMENT: production
           CI: false
       - name: Deploy to firebase
-        run: yarn firebase deploy --only hosting:oraiswap
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.import-credentials.outputs.file_path }}
+        run: yarn firebase -P default deploy --only hosting:oraiswap
 
       - name: Remove credentials file
         run: rm ${{ steps.import-credentials.outputs.file_path }}
