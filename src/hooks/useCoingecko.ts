@@ -5,6 +5,20 @@ import { CoinGeckoId } from '@oraichain/oraidex-common';
 import { cosmosTokens, evmTokens } from 'initCommon';
 
 /**
+ * Chunks an array into smaller arrays of specified size
+ * @param array - The array to chunk
+ * @param chunkSize - The size of each chunk
+ * @returns Array of chunks
+ */
+const chunkArray = <T>(array: readonly T[], chunkSize: number): T[][] => {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+};
+
+/**
  * Constructs the URL to retrieve prices from CoinGecko.
  * @param tokens
  * @returns
@@ -55,28 +69,36 @@ export const getCoingeckoPrices = async <T extends CoinGeckoId>(
   cacheRank?: CoinGeckoPrices<string>,
   signal?: AbortSignal
 ): Promise<{ prices: CoinGeckoPrices<string>; ranks: CoinGeckoPrices<string> }> => {
-  const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
+  const CHUNK_SIZE = 40; // Maximum tokens per API call
+  const tokenChunks = chunkArray(tokens, CHUNK_SIZE);
 
   const prices = { ...cachePrices };
   const ranks = { ...cacheRank };
 
-  // by default not return data then use cached version
-  try {
-    const resp = await fetch(coingeckoPricesURL, { signal });
-    const rawData = (await resp.json()) as {
-      [C in T]?: {
-        usd: number;
-        usd_24h_vol: number;
+  // Fetch prices for each chunk
+  const fetchPromises = tokenChunks.map(async (chunk) => {
+    try {
+      const coingeckoPricesURL = buildCoinGeckoPricesURL(chunk);
+      const resp = await fetch(coingeckoPricesURL, { signal });
+      const rawData = (await resp.json()) as {
+        [C in T]?: {
+          usd: number;
+          usd_24h_vol: number;
+        };
       };
-    };
-    // update cached
-    for (const key in rawData) {
-      prices[key] = rawData[key].usd;
-      ranks[key] = rawData[key].usd_24h_vol || 0;
+
+      // Update cached data
+      for (const key in rawData) {
+        prices[key] = rawData[key].usd;
+        ranks[key] = rawData[key].usd_24h_vol || 0;
+      }
+    } catch (error) {
+      console.log(`Error fetching prices for chunk: ${chunk.join(', ')}`, error);
     }
-  } catch {
-    // remain old cache
-    console.log('error getting coingecko prices: ', prices);
-  }
+  });
+
+  // Wait for all chunks to complete (using allSettled to avoid crashes)
+  await Promise.allSettled(fetchPromises);
+
   return { prices, ranks };
 };
