@@ -65,6 +65,13 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Copy env
         run: cp .env.example .env
+
+      - name: Import Firebase service account credentials
+        id: import-credentials
+        run: |
+          echo ${{ secrets.FIREBASE_DEPLOYER_CREDENTIALS }} | base64 -d > $(pwd)/serviceaccount.json
+          echo "file_path=$(pwd)/serviceaccount.json" >> $GITHUB_OUTPUT
+
       - name: Build Production
         run: yarn build
         env:
@@ -72,7 +79,10 @@ jobs:
           VITE_APP_SENTRY_ENVIRONMENT: production
           CI: false
       - name: Deploy to firebase
-        run: yarn firebase deploy --only hosting:oraiswap --token ${{ secrets.FIREBASE_TOKEN }}
+        run: yarn firebase deploy --only hosting:oraiswap
+
+      - name: Remove credentials file
+        run: rm ${{ steps.import-credentials.outputs.file_path }}
       - name: Send discord message
         uses: appleboy/discord-action@master
         with:
