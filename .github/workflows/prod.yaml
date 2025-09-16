@@ -1,0 +1,18 @@
+name: Deploy Prod
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DISPATCH_INFRA_TOKEN }}
+          repository: oraichain/infra
+          event-type: cloudflare
+          client-payload: '{"repo": "oraidex/oraiswap-frontend", "ref_name": "${{ github.ref_name }}", "ref": "${{ github.ref }}", "node_version": 22, "cf_project_name": "oraidex-app-prod"}'
