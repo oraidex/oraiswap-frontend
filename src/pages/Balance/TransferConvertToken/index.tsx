@@ -1,5 +1,12 @@
 import { NetworkChainId } from '@oraichain/common';
-import { BigDecimal, BTC_CONTRACT, parseTokenInfoRawDenom, toDisplay, TokenItemType } from '@oraichain/oraidex-common';
+import {
+  BigDecimal,
+  BTC_CONTRACT,
+  parseTokenInfoRawDenom,
+  toDisplay,
+  TokenItemType,
+  solChainId
+} from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
 import ArrowDownIconLight from 'assets/icons/arrow_light.svg?react';
@@ -475,7 +482,7 @@ const TransferConvertToken: FC<{
             const isValidateAmount = !convertAmount || convertAmount <= 0 || convertAmount > maxAmount;
             const isCosmosToCosmos = token?.cosmosBased && to?.cosmosBased;
             const isValidateFee = !msgBridgeFee && !isCosmosToCosmos;
-            // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
+            const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
             // const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
             const isDisabled =
               isValidateFee ||
@@ -484,7 +491,8 @@ const TransferConvertToken: FC<{
               !addressTransfer ||
               receivedAmount < 0 ||
               isBTCLegacy ||
-              isValidateFeeTon;
+              isValidateFeeTon ||
+              isSolBridge;
 
             return (
               <button
