@@ -95,11 +95,10 @@ export const NoticeBanner = ({
 
   const [bannerIdx, setBannersIdx] = useState(0);
   const [banners, setBanners] = useState<Banner[]>([]);
-
+  const BASE_URL = import.meta.env.VITE_APP_STRAPI_BASE_URL || 'https://cms.oraidex.io';
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        const BASE_URL = import.meta.env.VITE_APP_STRAPI_BASE_URL || 'https://nice-fireworks-d26703b63e.strapiapp.com';
         const res = await axios.get('api/banners?populate=*', { baseURL: BASE_URL });
         return res.data.data;
       } catch (error) {
@@ -143,7 +142,7 @@ export const NoticeBanner = ({
     <div className={styles.noticeWrapper}>
       <div className={`${styles.note} ${bannerInfo.headline ? '' : styles.onlyText}`}>
         {bannerInfo.media?.data?.attributes?.url && (
-          <img src={bannerInfo.media.data.attributes.url} alt="banner-icon" width="30" height="30" />
+          <img src={BASE_URL + bannerInfo.media.data.attributes.url} alt="banner-icon" width="30" height="30" />
         )}
         <div className={`${styles.text}`}>
           {bannerInfo.headline && <span className={styles.title}>{bannerInfo.headline}</span>}
