@@ -482,7 +482,8 @@ const TransferConvertToken: FC<{
             const isValidateAmount = !convertAmount || convertAmount <= 0 || convertAmount > maxAmount;
             const isCosmosToCosmos = token?.cosmosBased && to?.cosmosBased;
             const isValidateFee = !msgBridgeFee && !isCosmosToCosmos;
-            const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
+            const isTonBridge = token.chainId === TonChainId || toNetworkChainId === TonChainId;
+            // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
             // const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
             const isDisabled =
               isValidateFee ||
@@ -492,7 +493,7 @@ const TransferConvertToken: FC<{
               receivedAmount < 0 ||
               isBTCLegacy ||
               isValidateFeeTon ||
-              isSolBridge;
+              isTonBridge;
 
             return (
               <button
