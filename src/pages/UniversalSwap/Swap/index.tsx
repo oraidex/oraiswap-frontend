@@ -90,6 +90,7 @@ import ModalConfirmUnverifiedToken from 'components/Modals/ModalConfirmUnverifie
 import { set } from 'lodash';
 import { isMobile } from '@walletconnect/browser-utils';
 import { StdFee } from '@cosmjs/stargate';
+import { TonChainId } from 'context/ton-provider';
 
 const cx = cn.bind(styles);
 
@@ -98,7 +99,7 @@ const SwapComponent: React.FC<{
   fromTokenDenom: string;
   toTokenDenom: string;
   setSwapTokens: (denoms: [string, string]) => void;
-  setStatusChart: (status: "left" | "right" | "hide" | "show") => void;
+  setStatusChart: (status: 'left' | 'right' | 'hide' | 'show') => void;
   statusChart: string;
 }> = ({ fromTokenDenom, toTokenDenom, setSwapTokens, setStatusChart, statusChart }) => {
   const mobileMode = isMobile();
@@ -389,7 +390,12 @@ const SwapComponent: React.FC<{
       }
 
       const tonAddress = tonWallet?.sender?.address?.toString();
-      const fee: StdFee | "auto" | number = originalFromToken.chainId === 'Oraichain' && originalToToken.cosmosBased && originalToToken.chainId !== originalFromToken.chainId ? 1.8 : "auto"
+      const fee: StdFee | 'auto' | number =
+        originalFromToken.chainId === 'Oraichain' &&
+        originalToToken.cosmosBased &&
+        originalToToken.chainId !== originalFromToken.chainId
+          ? 1.8
+          : 'auto';
       const swapData = {
         sender: {
           cosmos: cosmosAddress,
@@ -423,7 +429,9 @@ const SwapComponent: React.FC<{
             isIbcWasm: useIbcWasm,
 
             // FIXME: hardcode with case celestia not check balance
-            skipBalanceIbcCheck: [originalFromToken.chainId, originalToToken.chainId].includes('celestia') ? true : false
+            skipBalanceIbcCheck: [originalFromToken.chainId, originalToToken.chainId].includes('celestia')
+              ? true
+              : false
           }
         },
         oraidexCommon
@@ -668,16 +676,17 @@ const SwapComponent: React.FC<{
         <div className={cx('ratio', getClassRatio())} onClick={() => isRoutersSwapData && setOpenRoutes(!openRoutes)}>
           <span className={cx('text')}>
             {waringImpactBiggerFive && <WarningIcon />}
-            {`1 ${originalFromToken.name} ≈ ${averageRatio
-              ? numberWithCommas(averageRatio.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
-                maximumFractionDigits: 6
-              })
-              : averageSimulateData
+            {`1 ${originalFromToken.name} ≈ ${
+              averageRatio
+                ? numberWithCommas(averageRatio.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
+                    maximumFractionDigits: 6
+                  })
+                : averageSimulateData
                 ? numberWithCommas(averageSimulateData?.displayAmount / SIMULATE_INIT_AMOUNT, undefined, {
-                  maximumFractionDigits: 6
-                })
+                    maximumFractionDigits: 6
+                  })
                 : '0'
-              }
+            }
       ${originalToToken.name}`}
           </span>
           {!!isRoutersSwapData && !isPreviousSimulate && !!routersSwapData?.routes.length && (
@@ -764,11 +773,14 @@ const SwapComponent: React.FC<{
           <div className={cx('header')}>
             <div className={cx('title')}>From</div>
             <div className={cx('actions')}>
-              {
-                !mobileMode && <div onClick={() => setStatusChart(statusChart === "hide" ? "show" : "hide")} className={cx('actions-item')}>
+              {!mobileMode && (
+                <div
+                  onClick={() => setStatusChart(statusChart === 'hide' ? 'show' : 'hide')}
+                  className={cx('actions-item')}
+                >
                   <IconChart />
                 </div>
-              }
+              )}
               <span className={cx('icon')} onClick={() => setOpenSetting(true)}>
                 <IconOirSettings onClick={() => setOpenSetting(true)} />
               </span>
@@ -932,6 +944,7 @@ const SwapComponent: React.FC<{
             )}
           </div>
           {(() => {
+            const isTonSwap = originalFromToken.chainId === TonChainId || originalToToken.chainId === TonChainId;
             const { disabledSwapBtn, disableMsg } = getDisableSwap({
               originalToToken,
               walletByNetworks,
@@ -952,7 +965,7 @@ const SwapComponent: React.FC<{
                   if (impactWarning > 5) return setOpenSwapWarning(true);
                   handleSubmit();
                 }}
-                disabled={disabledSwapBtn}
+                disabled={disabledSwapBtn || isTonSwap}
               >
                 {!disabledSwapBtn && (
                   <div className={classNames(styles.eventItem, styles[event])}>
