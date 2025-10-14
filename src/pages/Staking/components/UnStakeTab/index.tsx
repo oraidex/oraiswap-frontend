@@ -63,7 +63,8 @@ const UnStakeTab = () => {
       const result = await cw20StakingClient.unbond({
         amount: toAmount(amount).toString(),
         stakingToken: ORAIX_TOKEN_INFO.contractAddress,
-        unbondPeriod: unstakeType === UN_STAKE_ENUM.NORMAL ? undefined : TIMER.SECOND_OF_DAY
+        unbondPeriod: undefined
+        // unbondPeriod: unstakeType === UN_STAKE_ENUM.NORMAL ? undefined : TIMER.SECOND_OF_DAY
       });
 
       if (result) {
@@ -145,7 +146,8 @@ const UnStakeTab = () => {
     <div className={styles.unstakeTab}>
       <InputBalance
         onSubmit={(unstakeType) => {
-          setOpen(true);
+          // setOpen(true);
+          handleUnstake();
           setUnstakeType(unstakeType);
         }}
         balance={stakedAmount}
@@ -157,12 +159,12 @@ const UnStakeTab = () => {
         showLoading={false}
       />
 
-      <div className={styles.note}>
+      {/* <div className={styles.note}>
         To withdraw your stake, you will need to activate a{' '}
         <span className={styles.noteHighlight}>30-day unbonding period no fee</span> or{' '}
         <span className={styles.noteHighlight}>only 24-hour unbonding period with a 10% fee</span>. You may withdraw at
         any time, but your tokens will become available again only after this duration
-      </div>
+      </div> */}
 
       <div className={styles.result}>
         {listUnstake?.length <= 0 ? null : (

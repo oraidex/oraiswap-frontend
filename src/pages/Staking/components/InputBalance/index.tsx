@@ -132,12 +132,12 @@ const InputBalance = ({
           {showLoading && loading && <Loader width={22} height={22} />}&nbsp;
           {isInsufficient ? 'Insufficient' : type === STAKE_TAB.Stake ? 'Stake' : 'Unstake'}
         </Button>
-        {type === STAKE_TAB.UnStake && (
+        {/* {type === STAKE_TAB.UnStake && (
           <Button type="primary" onClick={() => onSubmit(UN_STAKE_ENUM.RAPID)} disabled={disabled}>
             {showLoading && loading && <Loader width={22} height={22} />}&nbsp;
             {isInsufficient ? 'Insufficient' : 'Quick Unstake'}
           </Button>
-        )}
+        )} */}
       </div>
     </div>
   );
