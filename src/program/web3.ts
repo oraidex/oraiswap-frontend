@@ -38,8 +38,8 @@ export const connectionMainnet: string[] = [
   'https://api.mainnet.solana.com', // Official Solana Labs
   // 'https://solana-rpc.publicnode.com', // PublicNode (Allnodes), free, high volume
   'https://rpc.ankr.com/solana', // Ankr public RPC (rate-limited)
-  'https://api.mainnet-beta.solana.com', // Official alternative
-  'https://solana-mainnet.gateway.tatum.io/'
+  'https://api.mainnet-beta.solana.com' // Official alternative
+  // 'https://solana-mainnet.gateway.tatum.io/'
 ];
 
 export const getStatusMemeBridge = (fromToken) => {
