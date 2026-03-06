@@ -45,6 +45,7 @@ import useGetFeeSol from '../hooks/useGetFeeSol';
 import useTonBridgeHandler, { EXTERNAL_MESSAGE_FEE } from '../hooks/useTonBridgeHandler';
 import styles from './index.module.scss';
 import { getStatusMemeBridge } from 'program/web3';
+import { displayToast, TToastType } from 'components/Toasts/Toast';
 
 const TransferConvertToken: FC<{
   token: TokenItemType;
@@ -108,7 +109,10 @@ const TransferConvertToken: FC<{
       }
       return await onClickTransfer(convertAmount, toNetworkChainId);
     } catch (error) {
-      console.log({ error });
+      console.log({ error: error?.message });
+      displayToast(TToastType.TX_FAILED, {
+        message: `Transaction failed: ${error?.message}`
+      });
     } finally {
       setTransferLoading(false);
     }

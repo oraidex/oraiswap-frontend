@@ -21,6 +21,7 @@ import {
   SOLANA_WEBSOCKET as DEFAULT_SOLANA_WEBSOCKET,
   MEMO_PROGRAM_ID
 } from '@oraichain/oraidex-common';
+import { delay } from 'libs/nomic/utils';
 
 export const commitmentLevel = 'confirmed';
 export const TOKEN_RESERVES = 1_000_000_000_000_000;
@@ -32,6 +33,14 @@ export const SOL_RELAYER_ADDRESS_DEFAI_MEME = '56YWJtsv4EVFindS2TTsqBwGvCggAUopm
 export const ORAICHAIN_RELAYER_ADDRESS_AGENTS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p';
 export const ORAICHAIN_RELAYER_ADDRESS_DEFAI_MEME = 'orai1rrlmvsaukfeg874fjsuxntsl22hw2j6u65hyng';
 export const connection = 'https://solana-public.agents.land';
+export const connectionMainnet: string[] = [
+  'https://kora-8cwrc2-fast-mainnet.helius-rpc.com',
+  'https://api.mainnet.solana.com', // Official Solana Labs
+  // 'https://solana-rpc.publicnode.com', // PublicNode (Allnodes), free, high volume
+  'https://rpc.ankr.com/solana', // Ankr public RPC (rate-limited)
+  'https://api.mainnet-beta.solana.com', // Official alternative
+  'https://solana-mainnet.gateway.tatum.io/'
+];
 
 export const getStatusMemeBridge = (fromToken) => {
   return ['defai', 'meme'].includes(fromToken.tag) && !['CRISIS', 'MOOBS'].includes(fromToken.name);
@@ -46,6 +55,32 @@ export class Web3SolanaProgramInteraction {
       wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
     });
   }
+
+  private withConnectionRetry = async <T>(fn: (conn: Connection) => Promise<T>): Promise<T> => {
+    try {
+      return await fn(this.connection);
+    } catch (err) {
+      console.warn('Connection query failed, retrying with mainnet RPCs...', err);
+      let lastError: unknown = err;
+      let result: T | null = null;
+      for (const rpc of connectionMainnet) {
+        try {
+          const fallbackConn = new Connection(rpc, {
+            commitment: commitmentLevel,
+            wsEndpoint: DEFAULT_SOLANA_WEBSOCKET
+          });
+          await delay(1000);
+          result = await fn(fallbackConn);
+          break;
+        } catch (e) {
+          console.warn(`Mainnet RPC failed (${rpc}):`, e);
+          lastError = e;
+        }
+      }
+      if (result !== null) return result;
+      throw lastError;
+    }
+  };
 
   bridgeSolToOrai = async (
     wallet: WalletContextState,
@@ -62,7 +97,7 @@ export class Web3SolanaProgramInteraction {
 
         const walletTokenAccount = getAssociatedTokenAddressSync(mintPubkey, wallet.publicKey);
         const relayerTokenAccount = getAssociatedTokenAddressSync(mintPubkey, relayerPubkey);
-        const accountInfo = await this.connection.getAccountInfo(relayerTokenAccount);
+        const accountInfo = await this.withConnectionRetry((conn) => conn.getAccountInfo(relayerTokenAccount));
         console.log('----accountInfo----', accountInfo);
         const lamports = accountInfo?.lamports || 0;
         // check the connection
@@ -131,25 +166,27 @@ export class Web3SolanaProgramInteraction {
       }
 
       transaction.feePayer = wallet.publicKey;
-      const blockhash = await this.connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash.blockhash;
 
       if (wallet.signTransaction) {
-        const signedTx = await wallet.signTransaction(transaction);
-        const sTx = signedTx.serialize();
-        console.log('---- simulate tx', await this.connection.simulateTransaction(signedTx));
-        const signature = await this.connection.sendRawTransaction(sTx, {
-          preflightCommitment: 'confirmed',
-          skipPreflight: false
+        const { signature, res } = await this.withConnectionRetry(async (conn) => {
+          const blockhash = await conn.getLatestBlockhash();
+          transaction.recentBlockhash = blockhash.blockhash;
+          const signedTx = await wallet.signTransaction(transaction);
+          const sTx = signedTx.serialize();
+          const sig = await conn.sendRawTransaction(sTx, {
+            preflightCommitment: 'confirmed',
+            skipPreflight: false
+          });
+          const confirmRes = await conn.confirmTransaction(
+            {
+              signature: sig,
+              blockhash: blockhash.blockhash,
+              lastValidBlockHeight: blockhash.lastValidBlockHeight
+            },
+            'confirmed'
+          );
+          return { signature: sig, res: confirmRes };
         });
-        const res = await this.connection.confirmTransaction(
-          {
-            signature,
-            blockhash: blockhash.blockhash,
-            lastValidBlockHeight: blockhash.lastValidBlockHeight
-          },
-          'confirmed'
-        );
         console.log('Successfully initialized.\n Signature: ', signature);
         return {
           result: res,
@@ -174,18 +211,18 @@ export class Web3SolanaProgramInteraction {
     const wallet = new PublicKey(walletAddress);
     const tokenMint = new PublicKey(tokenMintAddress);
 
-    // Fetch the token account details
-    const response = await this.connection.getTokenAccountsByOwner(wallet, {
-      mint: tokenMint
+    const tokenAccountInfo = await this.withConnectionRetry(async (conn) => {
+      const response = await conn.getTokenAccountsByOwner(wallet, {
+        mint: tokenMint
+      });
+      if (response.value.length == 0) {
+        console.log('No token account found for the specified mint address.');
+        return null;
+      }
+      return conn.getTokenAccountBalance(response.value[0].pubkey);
     });
 
-    if (response.value.length == 0) {
-      console.log('No token account found for the specified mint address.');
-      return;
-    }
-
-    // Get the balance
-    const tokenAccountInfo = await this.connection.getTokenAccountBalance(response.value[0].pubkey);
+    if (!tokenAccountInfo) return;
 
     // Convert the balance from integer to decimal format
 
@@ -195,7 +232,7 @@ export class Web3SolanaProgramInteraction {
   };
 
   getSolanaBalance = async (publicKey: PublicKey) => {
-    const balance = await this.connection.getBalance(publicKey);
+    const balance = await this.withConnectionRetry((conn) => conn.getBalance(publicKey));
     const balanceSolana = new BigNumber(balance).dividedBy(LAMPORTS_PER_SOL).toNumber();
 
     return balanceSolana;
@@ -207,9 +244,11 @@ export class Web3SolanaProgramInteraction {
       // const walletPublicKey = new PublicKey(walletAddress);
 
       // Fetch all token accounts owned by the wallet
-      const tokenAccounts = await this.connection.getParsedTokenAccountsByOwner(walletPublicKey, {
-        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') // SPL Token Program ID
-      });
+      const tokenAccounts = await this.withConnectionRetry((conn) =>
+        conn.getParsedTokenAccountsByOwner(walletPublicKey, {
+          programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') // SPL Token Program ID
+        })
+      );
 
       // Process token accounts to list balances and mint addresses
       const tokens = tokenAccounts.value
@@ -249,20 +288,19 @@ export class Web3SolanaProgramInteraction {
   handleTransactionError = async ({ error }: { error: TransactionExpiredTimeoutError }) => {
     try {
       if (this.isTransactionExpiredTimeoutError(error) || error['signature']) {
-        const result = await this.connection.getSignatureStatus(error.signature, {
-          searchTransactionHistory: true
-        });
+        const result = await this.withConnectionRetry((conn) =>
+          conn.getSignatureStatus(error.signature, {
+            searchTransactionHistory: true
+          })
+        );
 
         if (result?.value?.confirmationStatus) {
-          console.log(result);
-
           return { transaction: error.signature, result };
         }
       }
-
       return null;
     } catch (e) {
-      console.log(e);
+      console.log('Error in handleTransactionError', e);
       return null;
     }
   };
