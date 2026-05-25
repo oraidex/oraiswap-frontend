@@ -36,9 +36,9 @@ export const connection = 'https://solana-public.agents.land';
 export const connectionMainnet: string[] = [
   // 'https://kora-8cwrc2-fast-mainnet.helius-rpc.com',
   // 'https://api.mainnet.solana.com', // Official Solana Labs
-  'https://solana-rpc.publicnode.com', // PublicNode (Allnodes), free, high volume
   'https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ',
-  'https://rpc.ironforge.network/mainnet?apiKey=01HYNQ388BQNCFHTKG8WHRMMWC'
+  'https://rpc.ironforge.network/mainnet?apiKey=01HYNQ388BQNCFHTKG8WHRMMWC',
+  'https://solana-rpc.publicnode.com' // PublicNode (Allnodes), free, high volume
   // 'https://rpc.ankr.com/solana', // Ankr public RPC (rate-limited)
   // 'https://api.mainnet-beta.solana.com' // Official alternative
   // 'https://solana-mainnet.gateway.tatum.io/'
