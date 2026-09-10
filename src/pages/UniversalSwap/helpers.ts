@@ -303,14 +303,14 @@ export const getFromToToken = (
   const fromToken =
     (isEvmSwap
       ? tokenMap[fromTokenDenomSwap]
-      : allOraichainTokens.find(
+      : (allOraichainTokens.find(
           (token) => token.denom === fromTokenDenomSwap || token.contractAddress === fromTokenDenomSwap
-        ) ?? tokenMap[fromTokenDenomSwap]) || onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
+        ) ?? tokenMap[fromTokenDenomSwap])) || onchainTokens.find((token) => token.denom === fromTokenDenomSwap);
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenomSwap]
-    : allOraichainTokens.find(
+    : (allOraichainTokens.find(
         (token) => token.denom === toTokenDenomSwap || token.contractAddress === toTokenDenomSwap
-      ) ?? tokenMap[toTokenDenomSwap];
+      ) ?? tokenMap[toTokenDenomSwap]);
   onchainTokens.find((token) => token.denom === toTokenDenomSwap);
   return { fromToken, toToken };
 };
@@ -366,7 +366,8 @@ export const getProtocolsSmartRoute = (
   toToken: TokenItemType,
   { useAlphaIbcWasm, useIbcWasm }
 ) => {
-  const protocols = ['Oraidex', 'OraidexV3'];
+  const protocols = ['Oraidex'];
+  // const protocols = ['Oraidex', 'OraidexV3'];
   if (useIbcWasm && !useAlphaIbcWasm) return protocols;
   if (fromToken?.chainId === 'noble-1' || toToken?.chainId === 'noble-1') return protocols;
 
@@ -422,7 +423,7 @@ export const getAverageRatio = (
     const displayAmount = new BigDecimal(simulateData.displayAmount).div(fromAmountToken).toNumber();
     averageRatio = {
       amount: toAmount(displayAmount ? displayAmount : averageSimulateData?.displayAmount, originalFromToken.decimals),
-      displayAmount: displayAmount ? displayAmount : averageSimulateData?.displayAmount ?? 0
+      displayAmount: displayAmount ? displayAmount : (averageSimulateData?.displayAmount ?? 0)
     };
   }
   return { averageRatio };
