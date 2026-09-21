@@ -7,6 +7,7 @@ import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import TokenBalance from 'components/TokenBalance';
+import TokenIcon from 'components/TokenIcon';
 import { getTransactionUrl } from 'helper';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -251,7 +252,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   return (
                     <>
                       {Token1Icon && (
-                        <img style={{ borderRadius: '100%' }} src={Token1Icon} className={cx('logo', theme)} alt="" />
+                        <TokenIcon style={{ borderRadius: '100%' }} src={Token1Icon} className={cx('logo', theme)} alt="" />
                       )}
                       <div className={cx('title', theme)}>
                         <div>{token1InfoData?.symbol ?? ''}</div>
@@ -334,7 +335,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                   return (
                     <>
                       {Token2Icon && (
-                        <img style={{ borderRadius: '100%' }} src={Token2Icon} className={cx('logo', theme)} alt="" />
+                        <TokenIcon style={{ borderRadius: '100%' }} src={Token2Icon} className={cx('logo', theme)} alt="" />
                       )}
                       <div className={cx('title', theme)}>
                         <div>{token2InfoData?.symbol ?? ''}</div>
@@ -429,7 +430,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
             <div className={cx('stats_info_row', theme)}>
               <div>
                 {Token1Icon && (
-                  <img
+                  <TokenIcon
                     style={{ borderRadius: '100%' }}
                     src={Token1Icon}
                     className={cx('stats_info_lg', theme)}
@@ -456,7 +457,7 @@ const NewPoolModal: FC<ModalProps> = ({ isOpen, close, open }) => {
           <div className={cx('stats_info_wrapper', theme)}>
             <div className={cx('stats_info_row', theme)}>
               {Token2Icon && (
-                <img style={{ borderRadius: '100%' }} src={Token2Icon} className={cx('stats_info_lg', theme)} alt="" />
+                <TokenIcon style={{ borderRadius: '100%' }} src={Token2Icon} className={cx('stats_info_lg', theme)} alt="" />
               )}
               <div>
                 <span className={cx('stats_info_value_amount', theme)}>{amountToken2} </span>

@@ -10,6 +10,7 @@ import IconoirCancel from 'assets/icons/iconoir_cancel.svg?react';
 import NoResultDark from 'assets/images/no-result-dark.svg?react';
 import NoResultLight from 'assets/images/no-result.svg?react';
 import SearchInput from 'components/SearchInput';
+import TokenIcon from 'components/TokenIcon';
 import { Themes } from 'context/theme-context';
 import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
 import { CoinGeckoPrices } from 'hooks/useCoingecko';
@@ -139,7 +140,7 @@ export default function SelectToken({
             .map((token) => {
               const tokenIconUrl = (isLightTheme ? token.iconLight : token.icon) || DEFAULT_TOKEN_ICON_URL;
               const tokenIcon = (
-                <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} src={tokenIconUrl} alt="icon" width={30} height={30} />
+                <TokenIcon style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent' }} src={tokenIconUrl} alt="icon" width={30} height={30} />
               );
 
               const networkIcon = getChainIcon({

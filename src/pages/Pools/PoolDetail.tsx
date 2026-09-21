@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { isMobile } from '@walletconnect/browser-utils';
 import AddIcon from 'assets/icons/Add.svg?react';
 import BackIcon from 'assets/icons/ic_back.svg?react';
+import TokenIcon from 'components/TokenIcon';
 import classNames from 'classnames';
 import { Button } from 'components/Button';
 import Tabs from 'components/TabCustom';
@@ -171,8 +172,8 @@ const PoolDetail: React.FC = () => {
               <BackIcon className={styles.backIcon} />
               <div className={styles.info}>
                 <div className={classNames(styles.icons, styles[theme])}>
-                  <img style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="icon" width={30} height={30} />
-                  <img style={{ borderRadius: '100%' }} src={QuoteTokenIcon} alt="icon" width={30} height={30} />
+                  <TokenIcon style={{ borderRadius: '100%' }} src={BaseTokenIcon} alt="icon" width={30} height={30} />
+                  <TokenIcon style={{ borderRadius: '100%' }} src={QuoteTokenIcon} alt="icon" width={30} height={30} />
                 </div>
                 <span>
                   {baseToken?.name?.toUpperCase()} /{' '}

@@ -2,6 +2,7 @@ import { TokenItemType } from '@oraichain/oraidex-common';
 import ArrowImg from 'assets/icons/arrow_new.svg';
 import cn from 'classnames/bind';
 import TokenBalance from 'components/TokenBalance';
+import TokenIcon from 'components/TokenIcon';
 import NumberFormat from 'react-number-format';
 import { TokenInfo } from 'types/token';
 import styles from './InputSwap.module.scss';
@@ -119,9 +120,9 @@ export default function InputSwap({
           <div className={cx('left')}>
             <div className={cx('icon')}>
               {(token.icon && isConfirmToken === 'init') || isConfirmToken === 'confirmed' ? (
-                <img className={cx('logo')} src={token.icon} alt="icon" width={30} height={30} />
+                <TokenIcon className={cx('logo')} src={token.icon} alt="icon" width={30} height={30} />
               ) : (
-                <img className={cx('logo')} src={DEFAULT_TOKEN_ICON_URL} alt="icon" width={30} height={30} />
+                <TokenIcon className={cx('logo')} src={DEFAULT_TOKEN_ICON_URL} alt="icon" width={30} height={30} />
               )}
             </div>
 

@@ -12,6 +12,7 @@ import { getExplorerScan } from '../helpers';
 import { useGetTransHistory } from '../Swap/hooks';
 import styles from './HistoryTab.module.scss';
 import { chainInfosWithIcon, flattenTokensWithIcon } from 'initCommon';
+import TokenIcon from 'components/TokenIcon';
 
 const cx = cn.bind(styles);
 const RowsComponent: React.FC<{
@@ -42,9 +43,9 @@ const RowsComponent: React.FC<{
           <div className={styles.list}>
             <div className={styles.img}>
               {theme === 'light' ? (
-                <img src={fromToken.iconLight} alt="" width={26} height={26} />
+                <TokenIcon src={fromToken.iconLight} alt="" width={26} height={26} />
               ) : (
-                <img src={fromToken.icon} alt="" width={26} height={26} />
+                <TokenIcon src={fromToken.icon} alt="" width={26} height={26} />
               )}
               <div className={styles.imgChain}>
                 {theme === 'light' ? (
@@ -71,9 +72,9 @@ const RowsComponent: React.FC<{
           <div className={styles.list}>
             <div className={styles.img}>
               {theme === 'light' ? (
-                <img src={toToken.iconLight} alt="" width={26} height={26} />
+                <TokenIcon src={toToken.iconLight} alt="" width={26} height={26} />
               ) : (
-                <img src={toToken.icon} alt="" width={26} height={26} />
+                <TokenIcon src={toToken.icon} alt="" width={26} height={26} />
               )}
               <div className={styles.imgChain}>
                 {theme === 'light' ? (

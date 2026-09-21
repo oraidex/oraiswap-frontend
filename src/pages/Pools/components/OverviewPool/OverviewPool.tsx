@@ -5,6 +5,7 @@ import IconCopyAddress from 'assets/icons/ic_copy_address.svg?react';
 import SuccessIcon from 'assets/icons/toast_success.svg?react';
 import classNames from 'classnames';
 import { DEFAULT_TOKEN_ICON_URL } from 'helper/constants';
+import TokenIcon from 'components/TokenIcon';
 import { formatDisplayUsdt, formatNumberKMB } from 'helper/format';
 import useConfigReducer from 'hooks/useConfigReducer';
 import { useCopyClipboard } from 'hooks/useCopyClipboard';
@@ -123,11 +124,11 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
           {listBTCAddresses.includes(token2.denom) || listBTCAddresses.includes(token2.contractAddress) ? (
             <div className={styles.tokens}>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                <img src={BaseTokenIcon} alt="" />
+                <TokenIcon src={BaseTokenIcon} alt="" />
                 <span className={styles.value}>{oraiBtcAllocation.oraiBalanceDisplay}</span>
               </div>
               <div className={classNames(styles.tokenItem, styles[theme])}>
-                <img src={QuoteTokenIcon} alt="" />
+                <TokenIcon src={QuoteTokenIcon} alt="" />
                 <span className={styles.value}>{oraiBtcAllocation.btcBalanceDisplay}</span>
               </div>
             </div>
@@ -141,7 +142,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
                     token1?.decimals
                   )}
                 </span>
-                <img src={BaseTokenIcon} alt="" />
+                <TokenIcon src={BaseTokenIcon} alt="" />
 
                 <span className={styles.denom}>
                   {token1Denom?.length < 13 ? token1Denom : reduceString(token1Denom, 7, 6)}
@@ -164,7 +165,7 @@ export const OverviewPool = ({ poolDetailData }: { poolDetailData: PoolDetail })
                     token2?.decimals
                   )}
                 </span>
-                <img src={QuoteTokenIcon} alt="" />
+                <TokenIcon src={QuoteTokenIcon} alt="" />
                 <span className={styles.denom}>
                   {token2Denom?.length < 13 ? token2Denom : reduceString(token2Denom, 7, 6)}
                 </span>

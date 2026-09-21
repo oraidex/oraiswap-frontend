@@ -5,7 +5,8 @@ import {
   parseTokenInfoRawDenom,
   toDisplay,
   TokenItemType,
-  solChainId
+  solChainId,
+  COSMOS_CHAIN_ID_COMMON
 } from '@oraichain/oraidex-common';
 import loadingGif from 'assets/gif/loading.gif';
 import ArrowDownIcon from 'assets/icons/arrow.svg?react';
@@ -289,6 +290,40 @@ const TransferConvertToken: FC<{
   };
 
   const isBTCLegacy = token?.contractAddress === BTC_CONTRACT;
+  const canTransfer =
+    listedTokens.length > 0 ||
+    evmChains.find((chain) => chain.chainId === token.chainId) ||
+    btcChains.find((chain) => chain.chainId !== token.chainId);
+  const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
+  const isValidateAmount = !convertAmount || convertAmount <= 0 || convertAmount > maxAmount;
+  const isCosmosToCosmos = token?.cosmosBased && to?.cosmosBased;
+  const isValidateFee = !msgBridgeFee && !isCosmosToCosmos;
+  const isTonBridge = token.chainId === TonChainId || toNetworkChainId === TonChainId;
+  const toInjective =
+    token.chainId === COSMOS_CHAIN_ID_COMMON.ORAICHAIN_CHAIN_ID && toNetworkChainId === 'injective-1';
+  const isDisabled =
+    isValidateFee ||
+    isValidateAmount ||
+    transferLoading ||
+    !addressTransfer ||
+    receivedAmount < 0 ||
+    isBTCLegacy ||
+    isValidateFeeTon ||
+    isTonBridge ||
+    toInjective;
+  const disabledMessage = (() => {
+    if (transferLoading) return 'Processing transfer…';
+    if (isBTCLegacy) return 'BTC Legacy is not supported.';
+    if (isTonBridge) return 'TON bridge is temporarily unavailable.';
+    if (toInjective) return 'Bridging to Injective is unavailable.';
+    if (!addressTransfer) return 'Recipient address is unavailable.';
+    if (!convertAmount || convertAmount <= 0) return 'Enter an amount.';
+    if (convertAmount > maxAmount) return 'Amount exceeds your balance.';
+    if (isValidateFeeTon) return 'Amount must cover the bridge fee.';
+    if (receivedAmount < 0) return 'Amount is too low to cover fees.';
+    if (isValidateFee) return 'Bridge fee is unavailable. Try again later.';
+    return null;
+  })();
 
   return (
     <div className={classNames(styles.tokenFromGroup, styles.small)} style={{ flexWrap: 'wrap' }}>
@@ -459,6 +494,11 @@ const TransferConvertToken: FC<{
               ))}
             </div>
           </div>
+          {canTransfer && isDisabled && disabledMessage && (
+            <p className={classNames(styles.disabledMessage, styles[theme])} role="status">
+              {disabledMessage}
+            </p>
+          )}
         </div>
         {renderBridgeFee()}
 
@@ -476,43 +516,18 @@ const TransferConvertToken: FC<{
         )}
       </div>
       <div className={styles.transferTab}>
-        {(() => {
-          if (
-            listedTokens.length > 0 ||
-            evmChains.find((chain) => chain.chainId === token.chainId) ||
-            btcChains.find((chain) => chain.chainId !== token.chainId)
-          ) {
-            const isValidateFeeTon = bridgeFeeTon ? convertAmount < bridgeFeeTon : false;
-            const isValidateAmount = !convertAmount || convertAmount <= 0 || convertAmount > maxAmount;
-            const isCosmosToCosmos = token?.cosmosBased && to?.cosmosBased;
-            const isValidateFee = !msgBridgeFee && !isCosmosToCosmos;
-            const isTonBridge = token.chainId === TonChainId || toNetworkChainId === TonChainId;
-            // const isSolBridge = token.chainId === solChainId || toNetworkChainId === solChainId;
-            // const isBridgeBitcoin = token.chainId === ('bitcoin' as any) || toNetworkChainId === ('bitcoin' as any);
-            const isDisabled =
-              isValidateFee ||
-              isValidateAmount ||
-              transferLoading ||
-              !addressTransfer ||
-              receivedAmount < 0 ||
-              isBTCLegacy ||
-              isValidateFeeTon ||
-              isTonBridge;
-
-            return (
-              <button
-                disabled={isDisabled}
-                className={classNames(styles.tfBtn, styles[theme])}
-                onClick={onTransferConvert}
-              >
-                {transferLoading && <Loader width={20} height={20} />}
-                <span>
-                  <strong>{renderTransferConvertButton(toNetworkChainId, token, toNetwork, receivedAmount)}</strong>
-                </span>
-              </button>
-            );
-          }
-        })()}
+        {canTransfer && (
+          <button
+            disabled={isDisabled}
+            className={classNames(styles.tfBtn, styles[theme])}
+            onClick={onTransferConvert}
+          >
+            {transferLoading && <Loader width={20} height={20} />}
+            <span>
+              <strong>{renderTransferConvertButton(toNetworkChainId, token, toNetwork, receivedAmount)}</strong>
+            </span>
+          </button>
+        )}
       </div>
 
       <PowerByOBridge theme={theme} />

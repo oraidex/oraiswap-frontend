@@ -7,6 +7,7 @@ import cn from 'classnames/bind';
 import Input from 'components/Input';
 import Loader from 'components/Loader';
 import Modal from 'components/Modal';
+import TokenIcon from 'components/TokenIcon';
 import { displayToast, TToastType } from 'components/Toasts/Toast';
 import { getTransactionUrl, handleErrorTransaction } from 'helper';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -351,7 +352,7 @@ const NewTokenModal: FC<ModalProps> = ({ isOpen, close, open }) => {
                         onChange={(e) => setTokenLogoUrl(e?.target?.value)}
                         placeholder="https://orai.io"
                       />
-                      {tokenLogoUrl && <img src={tokenLogoUrl} alt="Logo" width={50} height={50} />}
+                      {tokenLogoUrl && <TokenIcon src={tokenLogoUrl} alt="Logo" width={50} height={50} />}
                     </div>
                   </div>
                 </div>

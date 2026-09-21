@@ -1,5 +1,6 @@
 import styles from './index.module.scss';
 import ArrowImg from 'assets/icons/arrow_right.svg';
+import TokenIcon from 'components/TokenIcon';
 
 export const TooltipSwapBridge = ({
   type,
@@ -18,7 +19,7 @@ export const TooltipSwapBridge = ({
       <div className={styles.tooltipUniversalSwapRoutes}>
         <div className={styles.tooltipUniversalSwapRoute}>
           <div className={styles.tooltipUniversalSwapRouteImg}>
-            <img style={{ borderRadius: '100%' }} src={TokenInIcon} alt="" width={40} height={40} />
+            <TokenIcon style={{ borderRadius: '100%' }} src={TokenInIcon} alt="" width={40} height={40} />
             <div className={styles.tooltipUniversalSwapRouteImgAbs}>
               <div>
                 <img src={NetworkFromIcon} alt="" />
@@ -32,7 +33,7 @@ export const TooltipSwapBridge = ({
         </div>
         <div className={styles.tooltipUniversalSwapRoute}>
           <div className={styles.tooltipUniversalSwapRouteImg}>
-            <img style={{ borderRadius: '100%' }} src={TokenOutIcon} alt="" width={40} height={40} />
+            <TokenIcon style={{ borderRadius: '100%' }} src={TokenOutIcon} alt="" width={40} height={40} />
             <div className={styles.tooltipUniversalSwapRouteImgAbs}>
               <div>{type === 'Swap' ? <img src={NetworkFromIcon} alt="" /> : <img src={NetworkToIcon} alt="" />}</div>
             </div>
