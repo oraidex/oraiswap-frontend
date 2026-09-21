@@ -299,8 +299,9 @@ const TransferConvertToken: FC<{
   const isCosmosToCosmos = token?.cosmosBased && to?.cosmosBased;
   const isValidateFee = !msgBridgeFee && !isCosmosToCosmos;
   const isTonBridge = token.chainId === TonChainId || toNetworkChainId === TonChainId;
-  const toInjective =
-    token.chainId === COSMOS_CHAIN_ID_COMMON.ORAICHAIN_CHAIN_ID && toNetworkChainId === 'injective-1';
+  const oraichainAndInjective =
+    (token.chainId === COSMOS_CHAIN_ID_COMMON.ORAICHAIN_CHAIN_ID && toNetworkChainId === 'injective-1') ||
+    (token.chainId === 'injective-1' && toNetworkChainId === COSMOS_CHAIN_ID_COMMON.ORAICHAIN_CHAIN_ID);
   const isDisabled =
     isValidateFee ||
     isValidateAmount ||
@@ -310,12 +311,12 @@ const TransferConvertToken: FC<{
     isBTCLegacy ||
     isValidateFeeTon ||
     isTonBridge ||
-    toInjective;
+    oraichainAndInjective;
   const disabledMessage = (() => {
     if (transferLoading) return 'Processing transfer…';
     if (isBTCLegacy) return 'BTC Legacy is not supported.';
     if (isTonBridge) return 'TON bridge is temporarily unavailable.';
-    if (toInjective) return 'Bridging to Injective is unavailable.';
+    if (oraichainAndInjective) return 'Bridging to Injective is unavailable.';
     if (!addressTransfer) return 'Recipient address is unavailable.';
     if (!convertAmount || convertAmount <= 0) return 'Enter an amount.';
     if (convertAmount > maxAmount) return 'Amount exceeds your balance.';
@@ -517,11 +518,7 @@ const TransferConvertToken: FC<{
       </div>
       <div className={styles.transferTab}>
         {canTransfer && (
-          <button
-            disabled={isDisabled}
-            className={classNames(styles.tfBtn, styles[theme])}
-            onClick={onTransferConvert}
-          >
+          <button disabled={isDisabled} className={classNames(styles.tfBtn, styles[theme])} onClick={onTransferConvert}>
             {transferLoading && <Loader width={20} height={20} />}
             <span>
               <strong>{renderTransferConvertButton(toNetworkChainId, token, toNetwork, receivedAmount)}</strong>
