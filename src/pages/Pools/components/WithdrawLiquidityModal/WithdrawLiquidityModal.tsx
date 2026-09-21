@@ -1,5 +1,6 @@
 import { BTC_CONTRACT, ORAI, toAmount } from '@oraichain/oraidex-common';
 import CloseIcon from 'assets/icons/ic_close_modal.svg?react';
+import TokenIcon from 'components/TokenIcon';
 import cn from 'classnames/bind';
 import { Button } from 'components/Button';
 import Loader from 'components/Loader';
@@ -130,7 +131,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
             </div>
             <div className={cx('row-amount')}>
               <div className={cx('token')}>
-                {Token1Icon && <img src={Token1Icon} className={cx('logo')} />}
+                {Token1Icon && <TokenIcon src={Token1Icon} className={cx('logo')} />}
                 <div className={cx('title', theme)}>
                   <div>{token1?.name}</div>
                   <div className={cx('des')}>Oraichain</div>
@@ -148,7 +149,7 @@ export const WithdrawLiquidityModal: FC<ModalProps> = ({
             </div>
             <div className={cx('row-amount')}>
               <div className={cx('token')}>
-                {Token2Icon && <img src={Token2Icon} className={cx('logo')} />}
+                {Token2Icon && <TokenIcon src={Token2Icon} className={cx('logo')} />}
                 <div className={cx('title', theme)}>
                   {/* TODO: remove after pool close */}
                   <div>{token2?.name === 'BTC (Legacy)' ? 'BTC' : token2?.name}</div>

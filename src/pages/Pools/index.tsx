@@ -23,6 +23,7 @@ import styles from './index.module.scss';
 import { oraichainTokensWithIcon } from 'initCommon';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/configure';
+import TokenIcon from 'components/TokenIcon';
 
 export type PoolTableData = PoolInfoResponse & {
   reward: string[];
@@ -122,7 +123,7 @@ const Pools: React.FC<{}> = () => {
     if (isReverseLogo) {
       return (
         <div className={styles.symbols}>
-          <img
+          <TokenIcon
             width={32}
             height={32}
             src={QuoteTokenIcon}
@@ -130,7 +131,7 @@ const Pools: React.FC<{}> = () => {
             style={{ borderRadius: '100%' }}
             alt=""
           />
-          <img
+          <TokenIcon
             width={32}
             height={32}
             src={BaseTokenIcon}
@@ -144,7 +145,7 @@ const Pools: React.FC<{}> = () => {
 
     return (
       <div className={styles.symbols}>
-        <img
+        <TokenIcon
           width={32}
           height={32}
           src={BaseTokenIcon}
@@ -152,7 +153,7 @@ const Pools: React.FC<{}> = () => {
           style={{ borderRadius: '100%' }}
           alt=""
         />
-        <img
+        <TokenIcon
           width={32}
           height={32}
           src={QuoteTokenIcon}

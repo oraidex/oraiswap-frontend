@@ -1,6 +1,7 @@
 import { TokenItemType } from '@oraichain/oraidex-common';
 import classNames from 'classnames';
 import TokenBalance from 'components/TokenBalance';
+import TokenIcon from 'components/TokenIcon';
 import TransferConvertToken from '../TransferConvertToken';
 import styles from './index.module.scss';
 
@@ -41,6 +42,8 @@ const TokenItem: React.FC<TokenItemProps> = ({
   toToken
 }) => {
   const isActive = isBtcToken ? isBtcOfOwallet && active : active;
+  const tokenIcon = theme === 'light' ? token?.iconLight : token?.icon;
+
   return (
     <div
       className={classNames(styles.tokenWrapper, styles[theme], { [styles.active]: isActive }, className)}
@@ -51,11 +54,16 @@ const TokenItem: React.FC<TokenItemProps> = ({
     >
       <div className={styles.balanceAmountInfo}>
         <div className={styles.token}>
-          {theme === 'light' ? (
-            <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} width={44} height={44} src={token?.iconLight} alt="icon-light" />
-          ) : (
-            <img style={{ borderRadius: '100%', backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent', }} width={44} height={44} src={token?.icon} alt="icon-light" />
-          )}
+          <TokenIcon
+            style={{
+              borderRadius: '100%',
+              backgroundColor: token?.coinGeckoId === 'usdai' ? 'white' : 'transparent'
+            }}
+            width={44}
+            height={44}
+            src={tokenIcon}
+            alt={`${token?.name ?? 'Token'} icon`}
+          />
           <div className={styles.tokenInfo}>
             <div className={classNames(styles.tokenName, styles[theme])}>{token.name}</div>
           </div>

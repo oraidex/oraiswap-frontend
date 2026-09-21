@@ -12,6 +12,7 @@ import StakeIcon from 'assets/icons/stake.svg';
 import WalletIcon from 'assets/icons/wallet-v3.svg';
 import cn from 'classnames/bind';
 import { Table, TableHeaderProps } from 'components/Table';
+import TokenIcon from 'components/TokenIcon';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { useCoinGeckoPrices } from 'hooks/useCoingecko';
 import useConfigReducer from 'hooks/useConfigReducer';
@@ -133,11 +134,11 @@ export const AssetsTab: FC<{ networkFilter: string }> = ({ networkFilter }) => {
         <div className={styles.assets}>
           <div className={styles.left}>
             {data?.icon ? theme === 'light' ? (
-              <img style={{
+              <TokenIcon style={{
                 backgroundColor: data?.coinGeckoId === 'usdai' ? 'white' : 'transparent',
-              }} src={data.icon} className={cx('logo')} alt="icon" />
+              }} src={data.iconLight || data.icon} className={cx('logo')} alt="icon" />
             ) : (
-              <img style={{
+              <TokenIcon style={{
                 backgroundColor: data?.coinGeckoId === 'usdai' ? 'white' : 'transparent',
               }} className={cx('logo')} src={data.icon} alt="icon" />
             ) : <DefaultIcon className={cx('logo')} />}
