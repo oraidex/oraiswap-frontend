@@ -1,12 +1,23 @@
-import { TokenItemType } from '@oraichain/oraidex-common';
+import { COSMOS_CHAIN_ID_COMMON, TokenItemType } from '@oraichain/oraidex-common';
 import { OraiswapRouterReadOnlyInterface } from '@oraichain/oraidex-contracts-sdk';
-import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
+import { SimulateResponse, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { TokenInfo } from 'types/token';
 import { useDebounce } from 'hooks/useDebounce';
 import { handleErrorRateLimit } from 'helper';
 import { flattenTokens, oraichainTokens } from 'initCommon';
+
+const NO_ROUTE_RESPONSE: SimulateResponse = {
+  amount: '0',
+  displayAmount: 0,
+  routes: {
+    swapAmount: '0',
+    returnAmount: '0',
+    routes: [],
+    error: { message: 'No route available' }
+  }
+};
 
 export const getRouterConfig = (options?: {
   path?: string;
@@ -57,6 +68,9 @@ export const useSimulate = (
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([initAmount || null, 0]);
   const debouncedFromAmount = useDebounce(fromAmountToken, 800);
   const enabled = !!fromTokenInfoData && !!toTokenInfoData && !!debouncedFromAmount && fromAmountToken > 0;
+  const isOraichainToInjective =
+    originalFromTokenInfo?.chainId === COSMOS_CHAIN_ID_COMMON.ORAICHAIN_CHAIN_ID &&
+    originalToTokenInfo?.chainId === 'injective-1';
   let refetchInterval: number | boolean = 10000;
   if (simulateOption?.isAvgSimulate) refetchInterval = false;
   const {
@@ -67,6 +81,8 @@ export const useSimulate = (
     [queryKey, fromTokenInfoData, toTokenInfoData, debouncedFromAmount],
     async () => {
       try {
+        if (isOraichainToInjective) return NO_ROUTE_RESPONSE;
+
         const res = await UniversalSwapHelper.handleSimulateSwap({
           flattenTokens: flattenTokens,
           oraichainTokens: oraichainTokens,
